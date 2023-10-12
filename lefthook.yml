@@ -1,0 +1,21 @@
+---
+skip_output:
+  - execution
+pre-commit:
+  parallel: true
+  commands:
+    tofu:
+      glob: "tofu/**/*.{tf,tfvars}"
+      run: tofu fmt -check -diff {staged_files}
+    tflint:
+      glob: "tofu/**/*.{tf,tfvars}"
+      run: tflint --recursive
+full:
+  parallel: true
+  commands:
+    tofu:
+      glob: "tofu/**/*.{tf,tfvars}"
+      run: tofu fmt -check -diff {all_files}
+    tflint:
+      glob: "tofu/**/*.{tf,tfvars}"
+      run: tflint --recursive
