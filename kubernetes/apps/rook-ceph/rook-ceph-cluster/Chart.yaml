@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: rook-ceph-cluster
+version: 1.0.0
+type: application
+dependencies:
+  - name: rook-ceph-cluster
+    version: 1.12.5
+    repository: https://charts.rook.io/release

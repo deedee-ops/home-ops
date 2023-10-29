@@ -1,0 +1,5 @@
+---
+rook-ceph:
+  enableDiscoveryDaemon: true
+  monitoring:
+    enabled: true

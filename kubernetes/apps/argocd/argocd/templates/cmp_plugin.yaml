@@ -1,0 +1,77 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/configmap-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp-plugin
+data:
+  avp-kustomize.yaml: |
+    ---
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-vault-plugin-kustomize
+    spec:
+      allowConcurrency: true
+      discover:
+        find:
+          command:
+            - find
+            - "."
+            - -name
+            - kustomization.yaml
+      generate:
+        command:
+          - sh
+          - "-c"
+          - "kustomize build . | argocd-vault-plugin generate -"
+      lockRepo: false
+  avp-helm.yaml: |
+    ---
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-vault-plugin-helm
+    spec:
+      allowConcurrency: true
+      discover:
+        find:
+          command:
+            - sh
+            - "-c"
+            - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+      init:
+        command: [sh, -c]
+        args: ["helm dependency build"]
+      generate:
+        command:
+          - sh
+          - "-c"
+          - >-
+            helm template -n $ARGOCD_APP_NAMESPACE --name-template $ARGOCD_APP_NAME --include-crds . |
+            argocd-vault-plugin generate -
+      lockRepo: false
+  avp.yaml: |
+    ---
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: argocd-vault-plugin
+    spec:
+      allowConcurrency: true
+      discover:
+        find:
+          command:
+            - sh
+            - "-c"
+            - >-
+              find . -name '*.yaml' -exec grep -Hoc '<path\\|avp\\.kubernetes\\.io' {} \\; |
+              grep -v ':0' | sed -E 's@:[^:]*@@g'
+      generate:
+        command:
+          - argocd-vault-plugin
+          - generate
+          - "."
+      lockRepo: false

@@ -1,0 +1,6 @@
+---
+secrets-store-csi-driver:
+  crds:
+    enabled: true
+  syncSecret:
+    enabled: true

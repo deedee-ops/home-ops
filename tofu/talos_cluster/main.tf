@@ -31,7 +31,7 @@ data "talos_client_configuration" "this" {
 
 data "talos_cluster_kubeconfig" "this" {
   depends_on = [
-    talos_machine_bootstrap.this
+    talos_machine_bootstrap.controlplanes
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
@@ -58,6 +58,8 @@ data "talos_machine_disks" "this" {
 
 locals {
   cluster_endpoint = var.cluster_endpoint == "" ? var.cluster.vip : var.cluster_endpoint
+  controlplanes    = merge([for name, node in var.cluster.machines : { (name) = node } if node.type == "controlplane"]...)
+  workers          = merge([for name, node in var.cluster.machines : { (name) = node } if node.type == "worker"]...)
   endpoints        = compact([for name, node in var.cluster.machines : node.type == "controlplane" ? (node.primary_ip == "" ? local.cluster_endpoint : node.primary_ip) : ""])
   nodes            = compact([for name, node in var.cluster.machines : (node.primary_ip == "" ? local.cluster_endpoint : node.primary_ip)])
 }

@@ -1,0 +1,171 @@
+---
+vault:
+  global:
+    enabled: true
+    tlsDisable: false
+    serverTelemetry:
+      prometheusOperator: true
+
+  injector:
+    enabled: false
+
+  csi:
+    enabled: true
+    image:
+      repository: public.ecr.aws/hashicorp/vault-csi-provider
+      tag: "1.4.0"
+    daemonSet:
+      securityContext:
+        container:
+          readOnlyRootFilesystem: true
+    agent:
+      enabled: false
+    volumes:
+      - name: tls
+        secret:
+          defaultMode: 420
+          secretName: vault-server-tls
+    volumeMounts:
+      - name: tls
+        mountPath: /vault/tls
+        readOnly: true
+
+  server:
+    statefulSet:
+      securityContext:
+        container:
+          readOnlyRootFilesystem: true
+    image:
+      repository: public.ecr.aws/hashicorp/vault
+      tag: "1.15.0"
+
+    updateStrategyType: "RollingUpdate"
+
+    resources:
+      requests:
+        memory: 512Mi
+
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Admin
+        gethomepage.dev/name: Vault
+        gethomepage.dev/icon: vault.png
+        gethomepage.dev/description: Hashicorp Vault
+      hosts:
+        - host: "vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - /
+      tls:
+        - hosts:
+            - "vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+    readinessProbe:
+      enabled: true
+      path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+    livenessProbe:
+      enabled: true
+      path: "/v1/sys/health?standbyok=true"
+      initialDelaySeconds: 60
+
+    postStart:
+      - /bin/sh
+      - -c
+      - sleep 5 && vault operator unseal "$(cat /vault/userconfig/vault-unseal/UNSEAL_KEY)" || true
+
+    extraEnvironmentVars:
+      VAULT_CACERT: /vault/userconfig/vault-server-tls/tls.ca
+
+    volumes:
+      - name: userconfig-vault-server-tls
+        secret:
+          defaultMode: 420
+          secretName: vault-server-tls
+      - name: userconfig-vault-unseal
+        secret:
+          defaultMode: 420
+          secretName: vault-unseal
+      - name: tmp
+        emptyDir: {}
+
+    volumeMounts:
+      - mountPath: /vault/userconfig/vault-server-tls
+        name: userconfig-vault-server-tls
+        readOnly: true
+      - mountPath: /vault/userconfig/vault-unseal
+        name: userconfig-vault-unseal
+        readOnly: true
+      - mountPath: /tmp
+        name: tmp
+
+    auditStorage:
+      enabled: true
+
+    dataStorage:
+      enabled: true
+
+    standalone:
+      enabled: false
+
+    ha:
+      enabled: true
+      replicas: 3
+      raft:
+        enabled: true
+        setNodeId: true
+
+        config: |
+          ui = true
+
+          telemetry {
+            prometheus_retention_time = "30s"
+            disable_hostname = true
+          }
+
+          listener "tcp" {
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file = "/vault/userconfig/vault-server-tls/tls.crt"
+            tls_key_file = "/vault/userconfig/vault-server-tls/tls.key"
+            tls_client_ca_file = "/vault/userconfig/vault-server-tls/tls.ca"
+
+            telemetry {
+              unauthenticated_metrics_access = "true"
+            }
+          }
+
+          storage "raft" {
+            path = "/vault/data"
+              retry_join {
+              leader_api_addr = "https://vault-0.vault-internal:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-server-tls/tls.ca"
+              leader_client_cert_file = "/vault/userconfig/vault-server-tls/tls.crt"
+              leader_client_key_file = "/vault/userconfig/vault-server-tls/tls.key"
+            }
+            retry_join {
+              leader_api_addr = "https://vault-1.vault-internal:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-server-tls/tls.ca"
+              leader_client_cert_file = "/vault/userconfig/vault-server-tls/tls.crt"
+              leader_client_key_file = "/vault/userconfig/vault-server-tls/tls.key"
+            }
+            retry_join {
+              leader_api_addr = "https://vault-2.vault-internal:8200"
+              leader_ca_cert_file = "/vault/userconfig/vault-server-tls/tls.ca"
+              leader_client_cert_file = "/vault/userconfig/vault-server-tls/tls.crt"
+              leader_client_key_file = "/vault/userconfig/vault-server-tls/tls.key"
+            }
+          }
+
+          service_registration "kubernetes" {}
+
+  serverTelemetry:
+    serviceMonitor:
+      enabled: true
+    prometheusRules:
+      enabled: false
+
+  ui:
+    enabled: true

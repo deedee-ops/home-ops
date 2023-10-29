@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/argoproj.io/application_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapshot-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/ajgon/home-ops.git
+      path: kubernetes/apps/kube-system/snapshot-controller
+      targetRevision: master
+      plugin:
+        name: argocd-vault-plugin-helm
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+  ignoreDifferences:
+    - kind: Secret
+      group: ""
+      name: snapshot-validation-webhook-tls
+      jsonPointers:
+        - "/data"
+    - kind: ValidatingWebhookConfiguration
+      group: admissionregistration.k8s.io
+      name: snapshot-validation-webhook
+      jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
+        - /webhooks/1/clientConfig/caBundle

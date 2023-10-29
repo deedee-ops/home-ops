@@ -1,0 +1,281 @@
+---
+argo-cd:
+  global:
+    deploymentStrategy:
+      type: RollingUpdate
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+      seccompProfile:
+        type: RuntimeDefault
+  configs:
+    params:
+      # by default argocd handles SSL termination on its own, which breaks TLS termination on nginx,
+      # causing infinite loop
+      "server.insecure": true
+    cm:
+      # this customization make sync-waves work properly
+      resource.customizations: |
+        argoproj.io/Application:
+          health.lua: |
+            hs = {}
+            hs.status = "Progressing"
+            hs.message = ""
+            if obj.status ~= nil then
+              if obj.status.health ~= nil then
+                hs.status = obj.status.health.status
+                if obj.status.health.message ~= nil then
+                  hs.message = obj.status.health.message
+                end
+              end
+            end
+            return hs
+
+  controller:
+    replicas: 2
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  dex:
+    enabled: false
+
+  notifications:
+    enabled: false
+
+  server:
+    replicas: 2
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    autoscaling:
+      enabled: false
+    ingress:
+      enabled: true
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Admin
+        gethomepage.dev/name: ArgoCD
+        gethomepage.dev/icon: argocd.png
+        gethomepage.dev/description: CD Platform
+      ingressClassName: internal
+      hosts:
+        - "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  repoServer:
+    replicas: 2
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    podLabels:
+      # for downloading helm charts from various sources
+      egress/enabled: "true"
+    autoscaling:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    serviceAccount:
+      automountServiceAccountToken: true
+    volumes:
+      - configMap:
+          name: cmp-plugin
+        name: cmp-plugin
+      - name: custom-tools
+        emptyDir: {}
+      - name: cache
+        emptyDir: {}
+
+    initContainers:
+      - name: download-tools
+        image: alpine:latest
+        command: [sh, -ec]
+        env:
+          - name: AVP_VERSION
+            # renovate: datasource=github-releases depName=argocd-vault-plugin
+            value: "v1.16.1"
+        args:
+          # yamllint disable rule:line-length
+          - |
+            AVP_VERSION="$(echo "${AVP_VERSION}" | tr -d v)"
+
+            wget -O /custom-tools/argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 && \
+            chmod +x /custom-tools/argocd-vault-plugin
+          # yamllint enable rule:line-length
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - mountPath: /custom-tools
+            name: custom-tools
+    extraContainers:
+      - name: avp-helm
+        command:
+          - /var/run/argocd/argocd-cmp-server
+        image: quay.io/argoproj/argocd:v2.8.4
+        envFrom:
+          - secretRef:
+              name: argocd-vault-plugin-config
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - mountPath: /var/run/argocd
+            name: var-files
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /home/argocd/.cache
+            name: cache
+
+          # Register plugins into sidecar
+          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+            subPath: avp-helm.yaml
+            name: cmp-plugin
+
+          # Important: Mount tools into $PATH
+          - name: custom-tools
+            subPath: argocd-vault-plugin
+            mountPath: /usr/local/bin/argocd-vault-plugin
+
+      # argocd-vault-plugin with Kustomize
+      - name: avp-kustomize
+        command: [/var/run/argocd/argocd-cmp-server]
+        image: quay.io/argoproj/argocd:v2.8.4
+        envFrom:
+          - secretRef:
+              name: argocd-vault-plugin-config
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - mountPath: /var/run/argocd
+            name: var-files
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /home/argocd/.cache
+            name: cache
+
+          # Register plugins into sidecar
+          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+            subPath: avp-kustomize.yaml
+            name: cmp-plugin
+
+          # Important: Mount tools into $PATH
+          - name: custom-tools
+            subPath: argocd-vault-plugin
+            mountPath: /usr/local/bin/argocd-vault-plugin
+
+      # argocd-vault-plugin with plain YAML
+      - name: avp
+        command: [/var/run/argocd/argocd-cmp-server]
+        image: quay.io/argoproj/argocd:v2.8.4
+        envFrom:
+          - secretRef:
+              name: argocd-vault-plugin-config
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+          - mountPath: /var/run/argocd
+            name: var-files
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+          - mountPath: /tmp
+            name: tmp
+          - mountPath: /home/argocd/.cache
+            name: cache
+
+          # Register plugins into sidecar
+          - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+            subPath: avp.yaml
+            name: cmp-plugin
+
+          # Important: Mount tools into $PATH
+          - name: custom-tools
+            subPath: argocd-vault-plugin
+            mountPath: /usr/local/bin/argocd-vault-plugin
+
+  applicationSet:
+    enabled: false
+
+  redis:
+    enabled: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+argocd-image-updater:
+  fullnameOverride: argocd-image-updater
+  replicaCount: 1
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    capabilities:
+      drop:
+        - ALL

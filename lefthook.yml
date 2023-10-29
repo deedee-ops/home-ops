@@ -1,21 +1,34 @@
 ---
+# yaml-language-server: $schema=https://json.schemastore.org/lefthook.json
 skip_output:
   - execution
 pre-commit:
   parallel: true
   commands:
+    shellcheck:
+      glob: "*.sh{,.j2}"
+      run: shellcheck {staged_files}
     tofu:
       glob: "tofu/**/*.{tf,tfvars}"
       run: tofu fmt -check -diff {staged_files}
     tflint:
       glob: "tofu/**/*.{tf,tfvars}"
       run: tflint --recursive
+    yamllint:
+      glob: "*.y*ml"
+      run: yamllint -s {staged_files}
 full:
   parallel: true
   commands:
+    shellcheck:
+      glob: "*.sh{,.j2}"
+      run: shellcheck {all_files}
     tofu:
       glob: "tofu/**/*.{tf,tfvars}"
       run: tofu fmt -check -diff {all_files}
     tflint:
       glob: "tofu/**/*.{tf,tfvars}"
       run: tflint --recursive
+    yamllint:
+      glob: "*.y*ml"
+      run: yamllint -s {all_files}

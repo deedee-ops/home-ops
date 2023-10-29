@@ -1,3 +1,10 @@
+### Helm ###
+# Chart dependencies
+**/charts/*.tgz
+
+# Chart locks
+Chart.lock
+
 ### Terraform ###
 # Local .terraform directories
 **/.terraform/*

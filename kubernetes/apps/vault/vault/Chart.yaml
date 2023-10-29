@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: vault
+version: 1.0.0
+type: application
+dependencies:
+  - name: vault
+    version: 0.25.0
+    repository: https://helm.releases.hashicorp.com

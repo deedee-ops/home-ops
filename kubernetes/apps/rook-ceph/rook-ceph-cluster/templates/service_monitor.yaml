@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    team: rook
+  name: rook-ceph-mgr
+spec:
+  endpoints:
+    - interval: 30s
+      path: /metrics
+      port: http-metrics
+  selector:
+    matchLabels:
+      app: rook-ceph-mgr

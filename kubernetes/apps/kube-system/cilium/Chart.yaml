@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: cilium
+version: 1.0.0
+type: application
+dependencies:
+  - name: cilium
+    version: 1.14.3
+    repository: https://helm.cilium.io
