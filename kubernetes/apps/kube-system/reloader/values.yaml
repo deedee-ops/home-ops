@@ -1,0 +1,7 @@
+---
+reloader:
+  fullnameOverride: reloader
+  reloader:
+    reloadStrategy: annotations
+    podMonitor:
+      enabled: true
