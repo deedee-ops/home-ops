@@ -1,0 +1,40 @@
+---
+kyverno:
+  # broken api detection in chart
+  apiVersionOverride:
+    podDisruptionBudget: "policy/v1"
+  crds:
+    install: true
+  grafana:
+    enabled: false
+  cleanupJobs:
+    admissionReports:
+      image:
+        registry: public.ecr.aws
+    clusterAdmissionReports:
+      image:
+        registry: public.ecr.aws
+  backgroundController:
+    serviceMonitor:
+      enabled: true
+  cleanupController:
+    serviceMonitor:
+      enabled: true
+  reportsController:
+    serviceMonitor:
+      enabled: true
+  admissionController:
+    # kyverno works with 1 or 3+ replicas
+    replicas: 3
+    updateStrategy:
+      type: RollingUpdate
+    serviceMonitor:
+      enabled: true
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: kyverno
+            app.kubernetes.io/component: kyverno

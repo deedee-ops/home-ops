@@ -1,0 +1,372 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: podsecurity-subrule-baseline
+  annotations:
+    policies.kyverno.io/title: Baseline Pod Security Standards
+    policies.kyverno.io/category: Pod Security, EKS Best Practices
+    policies.kyverno.io/severity: high
+    kyverno.io/kyverno-version: 1.8.0
+    policies.kyverno.io/minversion: 1.8.0
+    kyverno.io/kubernetes-version: "1.24"
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      The baseline profile of the Pod Security Standards is a collection of the
+      most basic and important steps that can be taken to secure Pods. Beginning
+      with Kyverno 1.8, an entire profile may be assigned to the cluster through a
+      single rule. This policy configures the baseline profile through the latest
+      version of the Pod Security Standards cluster wide.
+spec:
+  generateExistingOnPolicyUpdate: true
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: baseline
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - rook-ceph
+                - vault
+      validate:
+        podSecurity:
+          level: baseline
+          version: latest
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-ro-rootfs
+  annotations:
+    policies.kyverno.io/title: Require Read-Only Root Filesystem
+    policies.kyverno.io/category: Best Practices, EKS Best Practices, PSP Migration
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      A read-only root file system helps to enforce an immutable infrastructure strategy;
+      the container only needs to write on the mounted volume that persists the state.
+      An immutable root filesystem can also prevent malicious binaries from writing to the
+      host system. This policy validates that containers define a securityContext
+      with `readOnlyRootFilesystem: true`.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: validate-readOnlyRootFilesystem
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      exclude:
+        any:
+          - resources:
+              namespaces:
+                - kube-system
+                - rook-ceph
+          # https://github.com/kubernetes/ingress-nginx/issues/9504
+          - resources:
+              kinds:
+                - Pod
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: ingress-nginx
+                  app.kubernetes.io/component: controller
+      validate:
+        message: "Root filesystem must be read-only."
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  readOnlyRootFilesystem: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-security-context-constraint-anyuid
+  annotations:
+    policies.kyverno.io/title: Disallow use of the SecurityContextConstraint (SCC) anyuid
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: high
+    kyverno.io/kyverno-version: 1.6.0
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.20"
+    policies.kyverno.io/subject: Role,ClusterRole,RBAC
+    policies.kyverno.io/description: >-
+      Disallow the use of the SecurityContextConstraint (SCC) anyuid which allows a pod to run with the UID
+      as declared in the image instead of a random UID
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: check-security-context-constraint
+      match:
+        any:
+          - resources:
+              kinds:
+                - ClusterRole
+                - Role
+      validate:
+        message: >-
+                  Use of the SecurityContextConstraint (SCC) anyuid is not allowed
+        foreach:
+          - list: request.object.rules[]
+            deny:
+              conditions:
+                all:
+                  - key: anyuid
+                    operator: AnyIn
+                    value: "{{`{{element.resourceNames[]}}`}}"
+                  - key: "{{`{{`}} element.verbs[]  | contains(@, 'use') || contains(@, '*') {{`}}`}}"
+                    operator: Equals
+                    value: true
+    - name: check-security-context-roleref
+      match:
+        any:
+          - resources:
+              kinds:
+                - ClusterRoleBinding
+                - RoleBinding
+      validate:
+        message: >-
+                  Use of the SecurityContextConstraint (SCC) anyuid is not allowed
+        deny:
+          conditions:
+            all:
+              - key: system:openshift:scc:anyuid
+                operator: Equals
+                value: "{{`{{request.object.roleRef.name}}`}}"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-binding-system-groups
+  annotations:
+    policies.kyverno.io/title: Restrict Binding System Groups
+    policies.kyverno.io/category: Security, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
+    kyverno.io/kyverno-version: 1.8.0
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      Certain system groups exist in Kubernetes which grant permissions that
+      are used for certain system-level functions yet typically never appropriate
+      for other users. This policy prevents creating bindings to some of these
+      groups including system:anonymous, system:unauthenticated, and system:masters.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: restrict-anonymous
+      match:
+        any:
+          - resources:
+              kinds:
+                - RoleBinding
+                - ClusterRoleBinding
+      validate:
+        message: "Binding to system:anonymous is not allowed."
+        pattern:
+          roleRef:
+            name: "!system:anonymous"
+    - name: restrict-unauthenticated
+      match:
+        any:
+          - resources:
+              kinds:
+                - RoleBinding
+                - ClusterRoleBinding
+      validate:
+        message: "Binding to system:unauthenticated is not allowed."
+        pattern:
+          roleRef:
+            name: "!system:unauthenticated"
+    - name: restrict-masters
+      match:
+        any:
+          - resources:
+              kinds:
+                - RoleBinding
+                - ClusterRoleBinding
+      validate:
+        message: "Binding to system:masters is not allowed."
+        pattern:
+          roleRef:
+            name: "!system:masters"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-binding-clusteradmin
+  annotations:
+    policies.kyverno.io/title: Restrict Binding to Cluster-Admin
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: RoleBinding, ClusterRoleBinding, RBAC
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      The cluster-admin ClusterRole allows any action to be performed on any resource
+      in the cluster and its granting should be heavily restricted. This
+      policy prevents binding to the cluster-admin ClusterRole in
+      RoleBinding or ClusterRoleBinding resources.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: clusteradmin-bindings
+      match:
+        any:
+          - resources:
+              kinds:
+                - RoleBinding
+                - ClusterRoleBinding
+      validate:
+        message: "Binding to cluster-admin is not allowed."
+        pattern:
+          roleRef:
+            name: "!cluster-admin"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-escalation-verbs-roles
+  annotations:
+    policies.kyverno.io/title: Restrict Escalation Verbs in Roles
+    policies.kyverno.io/category: Security
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Role, ClusterRole, RBAC
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      The verbs `impersonate`, `bind`, and `escalate` may all potentially lead to
+      privilege escalation and should be tightly controlled. This policy prevents
+      use of these verbs in Role or ClusterRole resources.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: escalate
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+                - ClusterRole
+      validate:
+        message: "Use of verbs `escalate`, `bind`, and `impersonate` are forbidden."
+        foreach:
+          - list: "request.object.rules[]"
+            deny:
+              conditions:
+                all:
+                  - key: "{{`{{ element.apiGroups || '' }}`}}"
+                    operator: AnyIn
+                    value:
+                      - rbac.authorization.k8s.io
+                  - key: "{{`{{ element.resources || '' }}`}}"
+                    operator: AnyIn
+                    value:
+                      - clusterroles
+                      - roles
+                  - key: "{{`{{ element.verbs }}`}}"
+                    operator: AnyIn
+                    value:
+                      - bind
+                      - escalate
+                      - impersonate
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-wildcard-verbs
+  annotations:
+    policies.kyverno.io/title: Restrict Wildcard in Verbs
+    policies.kyverno.io/category: Security, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Role, ClusterRole, RBAC
+    kyverno.io/kyverno-version: 1.6.2
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      Wildcards ('*') in verbs grants all access to the resources referenced by it and
+      does not follow the principal of least privilege. As much as possible,
+      avoid such open verbs unless scoped to perhaps a custom API group.
+      This policy blocks any Role or ClusterRole that contains a wildcard entry in
+      the verbs list found in any rule.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: wildcard-verbs
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+                - ClusterRole
+      validate:
+        message: "Use of a wildcard ('*') in any verbs is forbidden."
+        deny:
+          conditions:
+            any:
+              - key: "{{`{{`}} contains(request.object.rules[].verbs[], '*') {{`}}`}}"
+                operator: Equals
+                value: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: restrict-wildcard-resources
+  annotations:
+    policies.kyverno.io/title: Restrict Wildcards in Resources
+    policies.kyverno.io/category: Security, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ClusterRole, Role, RBAC
+    kyverno.io/kyverno-version: 1.7.0
+    policies.kyverno.io/minversion: 1.6.0
+    kyverno.io/kubernetes-version: "1.23"
+    policies.kyverno.io/description: >-
+      Wildcards ('*') in resources grants access to all of the resources referenced by
+      the given API group and does not follow the principal of least privilege. As much as possible,
+      avoid such open resources unless scoped to perhaps a custom API group.
+      This policy blocks any Role or ClusterRole that contains a wildcard entry in
+      the resources list found in any rule.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: wildcard-resources
+      match:
+        any:
+          - resources:
+              kinds:
+                - Role
+                - ClusterRole
+      validate:
+        message: "Use of a wildcard ('*') in any resources is forbidden."
+        deny:
+          conditions:
+            any:
+              - key: "{{`{{`}} contains(request.object.rules[].resources[], '*') {{`}}`}}"
+                operator: Equals
+                value: true

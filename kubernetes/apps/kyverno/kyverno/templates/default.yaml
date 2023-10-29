@@ -1,0 +1,94 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-pod-probes
+  annotations:
+    pod-policies.kyverno.io/autogen-controllers: DaemonSet,Deployment,StatefulSet
+    policies.kyverno.io/title: Require Pod Probes
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/description: >-
+      Liveness and readiness probes need to be configured to correctly manage a Pod's
+      lifecycle during deployments, restarts, and upgrades. For each Pod, a periodic
+      `livenessProbe` is performed by the kubelet to determine if the Pod's containers
+      are running or need to be restarted. A `readinessProbe` is used by Services
+      and Deployments to determine if the Pod is ready to receive network traffic.
+      This policy validates that all containers have one of livenessProbe and readinessProbe
+      defined.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: validate-probes
+      match:
+        all:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - default
+      preconditions:
+        all:
+          - key: "{{`{{request.operation || 'BACKGROUND'}}`}}"
+            operator: AnyIn
+            value:
+              - CREATE
+              - UPDATE
+      validate:
+        message: "Liveness and readiness probes are required for all containers."
+        foreach:
+          - list: request.object.spec.containers[]
+            deny:
+              conditions:
+                all:
+                  - key: livenessProbe
+                    operator: AllNotIn
+                    value: "{{`{{`}} element.keys(@)[] {{`}}`}}"
+                  - key: readinessProbe
+                    operator: AllNotIn
+                    value: "{{`{{`}} element.keys(@)[] {{`}}`}}"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-requests-limits
+  annotations:
+    policies.kyverno.io/title: Require Limits and Requests
+    policies.kyverno.io/category: Best Practices, EKS Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/description: >-
+      As application workloads share cluster resources, it is important to limit resources
+      requested and consumed by each Pod. It is recommended to require resource requests and
+      limits per Pod, especially for memory and CPU. If a Namespace level request or limit is specified,
+      defaults will automatically be applied to each Pod based on the LimitRange configuration.
+      This policy validates that all containers have something specified for memory and CPU
+      requests and memory limits.
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: validate-resources
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - default
+      validate:
+        message: "CPU and memory resource requests and limits are required."
+        pattern:
+          spec:
+            containers:
+              - resources:
+                  requests:
+                    memory: "?*"
+                    cpu: "?*"
+                  limits:
+                    memory: "?*"
