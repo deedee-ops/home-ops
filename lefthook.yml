@@ -20,6 +20,8 @@ pre-commit:
 full:
   parallel: true
   commands:
+    healtcheck:
+      run: "go-task healthcheck:cluster healthcheck:repo"
     shellcheck:
       glob: "*.sh{,.j2}"
       run: shellcheck {all_files}

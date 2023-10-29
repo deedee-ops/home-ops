@@ -1,0 +1,19 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "list-${rsrc}-${claim}-${ts}"
+  namespace: "${namespace}"
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      containers:
+        - name: list
+          image: ghcr.io/restic/restic:0.16.0
+          args: ["snapshots"]
+          envFrom:
+            - secretRef:
+                name: "restic-${rsrc}-${claim}"

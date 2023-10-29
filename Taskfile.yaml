@@ -1,0 +1,64 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  CLUSTER_DIR: "{{.ROOT_DIR}}/kubernetes"
+
+includes:
+  healthcheck: .taskfiles/Healthcheck/Tasks.yaml
+  volsync: .taskfiles/VolSync/Tasks.yaml
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - "sh -c 'go-task -l || task -l'"
+
+  mount-volume:
+    desc: >-
+      Mount a PersistentVolumeClaim to a temporary pod (ex. task mount-volume claim=data-vault-0 [namespace=default])
+    interactive: true
+    vars:
+      claim: '{{ or .claim (fail "PersistentVolumeClaim `claim` is required") }}'
+      namespace: '{{.namespace | default "default"}}'
+    # yamllint disable rule:line-length
+    cmd: |
+      kubectl run -n {{.namespace}} debug-{{.claim}} -i --tty --rm --image=null --privileged --overrides='
+        {
+          "apiVersion": "v1",
+          "spec": {
+            "containers": [
+              {
+                "name": "debug",
+                "image": "public.ecr.aws/docker/library/alpine:edge",
+                "command": [
+                  "/bin/sh",
+                  "-c",
+                  "echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories; apk update; /bin/sh"
+                ],
+                "stdin": true,
+                "stdinOnce": true,
+                "tty": true,
+                "volumeMounts": [
+                  {
+                    "name": "config",
+                    "mountPath": "/config"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "config",
+                "persistentVolumeClaim": {
+                  "claimName": "{{.claim}}"
+                }
+              }
+            ],
+            "restartPolicy": "Never"
+          }
+        }'
+    # yamllint enable rule:line-length
+    preconditions:
+      - kubectl -n {{.namespace}} get pvc {{.claim}}
