@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: alertmanager
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: alertmanager
+    egress:
+      - toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+      - toFQDNs:
+          - matchName: "<path:kubernetes/data/internal/kube-prometheus-stack#EXTERNAL_PING_HOST>"

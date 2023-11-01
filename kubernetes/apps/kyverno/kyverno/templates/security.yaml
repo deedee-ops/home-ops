@@ -34,6 +34,7 @@ spec:
           - resources:
               namespaces:
                 - kube-system
+                - monitoring
                 - rook-ceph
                 - vault
       validate:

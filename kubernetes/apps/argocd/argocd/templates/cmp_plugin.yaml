@@ -50,7 +50,8 @@ data:
           - sh
           - "-c"
           - >-
-            helm template -n $ARGOCD_APP_NAMESPACE --name-template $ARGOCD_APP_NAME --include-crds . |
+            helm template -n $ARGOCD_APP_NAMESPACE --name-template $ARGOCD_APP_NAME --include-crds
+            -a monitoring.coreos.com/v1 . |
             argocd-vault-plugin generate -
       lockRepo: false
   avp.yaml: |

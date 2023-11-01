@@ -41,8 +41,23 @@ resource "talos_machine_configuration_apply" "controlplanes" {
             name = "none"
           }
         }
+        controllerManager = {
+          extraArgs = {
+            "bind-address" = "0.0.0.0"
+          }
+        }
         proxy = {
           disabled = true
+        }
+        scheduler = {
+          extraArgs = {
+            "bind-address" = "0.0.0.0"
+          }
+        }
+        etcd = {
+          extraArgs = {
+            "listen-metrics-urls" = "http://0.0.0.0:2381"
+          }
         }
         inlineManifests = [
           {

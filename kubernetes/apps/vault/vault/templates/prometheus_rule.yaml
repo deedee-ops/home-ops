@@ -49,7 +49,7 @@ spec:
           annotations:
             summary: Vault too many pending tokens (instance {{`{{ $labels.instance }}`}})
             description: |
-              Too many pending tokens {{`{{ $labels.instance }}`}}: {{`{{ $value | printf \"%.2f\"}}`}}%
+              Too many pending tokens {{`{{ $labels.instance }}`}}: {{`{{ $value | printf "%.2f"}}`}}%
                 VALUE = {{`{{ $value }}`}}
                 LABELS = {{`{{ $labels }}`}}
         - alert: VaultTooManyInfinityTokens
@@ -60,7 +60,7 @@ spec:
           annotations:
             summary: Vault too many infinity tokens (instance {{`{{ $labels.instance }}`}})
             description: |
-              Too many infinity tokens {{`{{ $labels.instance }}`}}: {{`{{ $value | printf \"%.2f\"}}`}}%
+              Too many infinity tokens {{`{{ $labels.instance }}`}}: {{`{{ $value | printf "%.2f"}}`}}%
                 VALUE = {{`{{ $value }}`}}
                 LABELS = {{`{{ $labels }}`}}
         - alert: VaultClusterHealth
@@ -71,6 +71,6 @@ spec:
           annotations:
             summary: Vault cluster health (instance {{`{{ $labels.instance }}`}})
             description: |
-              Vault cluster is not healthy {{`{{ $labels.instance }}`}}: {{`{{ $value | printf \"%.2f\"}}`}}%\n
+              Vault cluster is not healthy {{`{{ $labels.instance }}`}}: {{`{{ $value | printf "%.2f"}}`}}%
                 VALUE = {{`{{ $value }}`}}
                 LABELS = {{`{{ $labels }}`}}

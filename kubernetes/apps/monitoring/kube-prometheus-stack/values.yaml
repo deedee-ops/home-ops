@@ -1,0 +1,138 @@
+---
+kube-prometheus-stack:
+  crds:
+    enabled: true
+  cleanPrometheusOperatorObjectNames: true
+  defaultRules:
+    create: true
+  alertmanager:
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Monitoring
+        gethomepage.dev/name: Alertmanager
+        gethomepage.dev/icon: alertmanager.png
+        gethomepage.dev/description: Alerts Management
+      hosts:
+        - &host "alertmanager.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      tls:
+        - hosts:
+            - *host
+      path: /
+    alertmanagerSpec:
+      replicas: 2
+      podAntiAffinity: hard
+      useExistingSecret: true
+      configSecret: alertmanager-secret
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: ceph-block
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 64Mi
+    podDisruptionBudget:
+      enabled: false
+  grafana:
+    enabled: false
+  kubeApiServer:
+    enabled: true
+  kubelet:
+    enabled: true
+  kubeControllerManager:
+    enabled: true
+    endpoints: &controlplane
+      - <path:kubernetes/data/internal/base#IP_CONTROLPLANE_1>
+      - <path:kubernetes/data/internal/base#IP_CONTROLPLANE_2>
+      - <path:kubernetes/data/internal/base#IP_CONTROLPLANE_3>
+    service:
+      enabled: true
+      port: 10257
+      targetPort: 10257
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+  coreDns:
+    enabled: true
+  kubeEtcd:
+    enabled: true
+    endpoints: *controlplane
+    service:
+      enabled: true
+      port: 2381
+      targetPort: 2381
+  kubeScheduler:
+    enabled: true
+    endpoints: *controlplane
+    service:
+      enabled: true
+      port: 10259
+      targetPort: 10259
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+  # cilium does kubeproxy
+  kubeProxy:
+    enabled: false
+  kubeStateMetrics:
+    enabled: true
+  # subchart configuration
+  kube-state-metrics:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
+  nodeExporter:
+    enabled: true
+  prometheusOperator:
+    serviceMonitor:
+      sampleLimit: 500
+  prometheus:
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "false"
+        gethomepage.dev/group: Monitoring
+        gethomepage.dev/name: Prometheus
+        gethomepage.dev/icon: prometheus.png
+        gethomepage.dev/description: Metrics Collector
+      hosts:
+        - &host "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      tls:
+        - hosts:
+            - *host
+      path: /
+    prometheusSpec:
+      replicas: 2
+      replicaExternalLabelName: __replica__
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      scrapeConfigSelectorNilUsesHelmValues: false
+      walCompression: true
+      enableFeaturs:
+        - auto-gomaxprocs
+        - memory-snapshot-on-shutdown
+        - new-service-discovery-manager
+      retention: 7d
+      retentionSize: 15GB
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: ceph-block
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 50Gi
