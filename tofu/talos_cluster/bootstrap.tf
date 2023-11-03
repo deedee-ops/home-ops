@@ -102,7 +102,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
 
                   [mon]
                   mon_data_avail_warn = 15
-
+                  # dummy comment to avoid talos applier newline bug
             EOS
           },
           {
@@ -164,31 +164,31 @@ resource "talos_machine_configuration_apply" "controlplanes" {
           },
           {
             name : "app-rook-ceph"
-            contents : file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph/application.yaml")
-          },
-          {
-            name : "app-rook-ceph-cluster"
             contents : yamlencode(local.patched_rook_ceph_app)
           },
           {
+            name : "app-rook-ceph-cluster"
+            contents : yamlencode(local.patched_rook_ceph_cluster_app)
+          },
+          {
             name : "app-snapshot-controller"
-            contents : file("${path.root}/../../kubernetes/apps/kube-system/snapshot-controller/application.yaml")
+            contents : yamlencode(local.patched_snapshot_controller_app)
           },
           {
             name : "app-volsync"
-            contents : file("${path.root}/../../kubernetes/apps/backups/volsync/application.yaml")
+            contents : yamlencode(local.patched_volsync_app)
           },
           {
             name : "app-secrets-store-csi-driver"
-            contents : file("${path.root}/../../kubernetes/apps/kube-system/secrets-store-csi-driver/application.yaml")
+            contents : yamlencode(local.patched_secrets_store_csi_driver_app)
           },
           {
             name : "app-argocd-update",
-            contents : file("${path.root}/../../kubernetes/apps/argocd/argocd/application.yaml")
+            contents : yamlencode(local.patched_argocd_app)
           },
           {
             name : "app-vault"
-            contents : file("${path.root}/../../kubernetes/apps/database/vault/application.yaml")
+            contents : yamlencode(local.patched_vault_app)
           },
         ]
         extraManifests = [
@@ -258,14 +258,55 @@ resource "talos_machine_configuration_apply" "workers" {
 
 locals {
   # hashicorp... have mercy
+  patched_argocd_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/argocd/argocd/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/argocd/argocd/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+              }, {
+              helm = {
+                valuesObject = {
+                  "argo-cd" = {
+                    server = {
+                      ingress = {
+                        hosts = ["argocd.placeholder"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
   patched_rook_ceph_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+            }, { helm = {} }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
+  patched_rook_ceph_cluster_app = {
     for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph-cluster/application.yaml")) : k => try(
       merge(v, {
         sources = [
           merge(
-            yamldecode(file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph-cluster/application.yaml")).spec.sources[0], {
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/rook-ceph/rook-ceph-cluster/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+              }, {
               helm = {
-                valueFiles = ["./values.yaml"],
                 valuesObject = {
                   "rook-ceph-cluster" = {
                     cephClusterSpec = {
@@ -273,10 +314,85 @@ locals {
                         nodes = var.cluster.ceph.storage_nodes
                       }
                     }
+                    ingress = {
+                      dashboard = {
+                        host = { name = "rook.placeholder", path = "/" }
+                        tls  = [{ hosts = ["vault.placeholder"] }]
+                      }
+                    }
                   }
                 }
               }
             }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
+  patched_secrets_store_csi_driver_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/kube-system/secrets-store-csi-driver/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/kube-system/secrets-store-csi-driver/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+            }, { helm = {} }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
+  patched_snapshot_controller_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/kube-system/snapshot-controller/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/kube-system/snapshot-controller/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+            }, { helm = {} }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
+  patched_vault_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/vault/vault/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/vault/vault/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+              }, {
+              helm = {
+                valuesObject = {
+                  "vault" = {
+                    server = {
+                      ingress = {
+                        hosts = [{ host = "vault.placeholder", paths = ["/"] }]
+                        tls   = [{ hosts = ["vault.placeholder"] }]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          )
+        ]
+        }
+      ),
+      v
+  ) }
+  patched_volsync_app = {
+    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/backups/volsync/application.yaml")) : k => try(
+      merge(v, {
+        sources = [
+          merge(
+            {
+              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/backups/volsync/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
+            }, { helm = {} }
           )
         ]
         }

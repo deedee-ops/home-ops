@@ -74,6 +74,9 @@ argo-cd:
       ingressClassName: internal
       hosts:
         - "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      tls:
+        - hosts:
+            - "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
     metrics:
       enabled: true
       serviceMonitor:
