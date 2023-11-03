@@ -102,6 +102,9 @@ resource "talos_machine_configuration_apply" "controlplanes" {
 
                   [mon]
                   mon_data_avail_warn = 15
+
+                  [osd]
+                  osd crush update on start = false
                   # dummy comment to avoid talos applier newline bug
             EOS
           },

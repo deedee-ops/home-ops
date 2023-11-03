@@ -103,46 +103,12 @@ rook-ceph-cluster:
           csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
           csi.storage.k8s.io/fstype: ext4
   cephFileSystems:
-    - name: ceph-ephemeral-filesystem
-      spec:
-        metadataPool:
-          replicated:
-            size: 2
-        dataPools:
-          - failureDomain: host
-            replicated:
-              size: 2
-            name: data0
-            crushRoot: ephemeral
-        metadataServer:
-          activeCount: 1
-          activeStandby: true
-          resources:
-            requests:
-              cpu: 1000m
-              memory: 4Gi
-            limits:
-              memory: 4Gi
-      storageClass:
-        enabled: true
-        isDefault: false
-        name: ceph-ephemeral-filesystem
-        pool: data0
-        reclaimPolicy: Delete
-        allowVolumeExpansion: true
-        parameters:
-          csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
-          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
-          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
-          csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
-          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-          csi.storage.k8s.io/fstype: ext4
     - name: ceph-persistent-filesystem
       spec:
         metadataPool:
           replicated:
             size: 3
+          crushRoot: persistent
         dataPools:
           - failureDomain: host
             replicated:
@@ -180,6 +146,7 @@ rook-ceph-cluster:
           failureDomain: host
           replicated:
             size: 2
+          crushRoot: ephemeral
         dataPool:
           failureDomain: host
           erasureCoded:

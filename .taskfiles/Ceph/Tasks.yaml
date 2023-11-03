@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  buildCrushMapScript: "{{.ROOT_DIR}}/.taskfiles/Ceph/build-crush-map.sh"
+
+tasks:
+  build-crush-map:
+    desc: Build crush map (ex. task rookceph:build-crush-map tfvars=tofu/dexter.tfvars)
+    cmds:
+      - kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.ceph.health}=HEALTH_OK' cephcluster rook-ceph
+      - "{{.buildCrushMapScript}} {{.tfvars}}"
+      - kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.ceph.health}=HEALTH_OK' cephcluster rook-ceph
+    vars:
+      tfvars: '{{ or .tfvars (fail "`tfvars` path is required") }}'
+    preconditions:
+      - sh: test -f {{.buildCrushMapScript}}

@@ -6,6 +6,7 @@ vars:
   CLUSTER_DIR: "{{.ROOT_DIR}}/kubernetes"
 
 includes:
+  ceph: .taskfiles/Ceph/Tasks.yaml
   healthcheck: .taskfiles/Healthcheck/Tasks.yaml
   volsync: .taskfiles/VolSync/Tasks.yaml
 
