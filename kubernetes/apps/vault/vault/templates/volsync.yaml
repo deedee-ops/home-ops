@@ -18,8 +18,9 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-ephemeral-block
-    storageClassName: ceph-persistent-block
+    volumeSnapshotClassName: ceph-block
+    # class name of cache temporary volume, not source PVC
+    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -44,8 +45,9 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-ephemeral-block
-    storageClassName: ceph-persistent-block
+    volumeSnapshotClassName: ceph-block
+    # class name of cache temporary volume, not source PVC
+    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -70,8 +72,9 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-ephemeral-block
-    storageClassName: ceph-persistent-block
+    volumeSnapshotClassName: ceph-block
+    # class name of cache temporary volume, not source PVC
+    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000

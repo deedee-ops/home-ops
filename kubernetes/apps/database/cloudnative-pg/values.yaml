@@ -1,0 +1,65 @@
+---
+cloudnative-pg:
+  crds:
+    create: true
+
+app-template:
+  global:
+    fullnameOverride: postgres-logical-backup
+
+  defaultPodOptions:
+    labels:
+      route-to/nas: "true"
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      type: cronjob
+      cronjob:
+        schedule: "0 1 * * *"   # daily at 1am
+        successfulJobsHistory: 2
+        failedJobsHistory: 3
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/ajgon/postgres-logical-backup
+            tag: "16.0"
+
+          env:
+            POSTGRES_DATABASE: all
+            POSTGRES_HOST: "<path:kubernetes/data/internal/cloudnative-pg#HOST>"
+            POSTGRES_PORT: "5432"
+            S3_BUCKET: "backups"
+            S3_ENDPOINT: "http://<path:kubernetes/data/internal/base#IP_NAS>:9000"
+            S3_PREFIX: "<path:kubernetes/data/internal/base#CLUSTER_NAME>/cloudnative-pg/logical"
+            S3_REGION: "us-east-1"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+  service:
+    main:
+      enabled: false
+
+  persistence:
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: cloudnative-pg
