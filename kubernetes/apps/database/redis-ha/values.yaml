@@ -1,0 +1,96 @@
+---
+redis-ha:
+  image:
+    repository: public.ecr.aws/docker/library/redis
+    tag: 7.2.2-alpine
+
+  replicas: 2
+
+  auth: true
+  existingSecret: redis-ha-secret
+  authKey: auth
+
+  containerSecurityContext: &containerSecurityContext
+    runAsUser: 10000
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - ALL
+  securityContext: &securityContext
+    runAsUser: 10000
+    fsGroup: 10000
+    runAsNonRoot: true
+
+  exporter:
+    enabled: true
+    image: quay.io/oliver006/redis_exporter
+    tag: v1.55.0-alpine
+    extraArgs:
+      include-system-metrics: true
+    serviceMonitor:
+      enabled: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        memory: 1Gi
+
+  haproxy:
+    enabled: true
+    image:
+      repository: public.ecr.aws/docker/library/haproxy
+      tag: 2.8.3-alpine
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    containerSecurityContext: *containerSecurityContext
+    securityContext: *securityContext
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        memory: 1Gi
+
+  persistentVolume:
+    enabled: false
+
+  redis:
+    masterGroupName: mymaster
+    config:
+      maxmemory: "512mb"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 300Mi
+      limits:
+        memory: 512Mi
+
+  sentinel:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 300Mi
+      limits:
+        memory: 512Mi
+
+  splitBrainDetection:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 300Mi
+      limits:
+        memory: 512Mi
+
+  topologySpreadConstraints:
+    enabled: true
+    maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
