@@ -18,8 +18,8 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    storageClassName: ceph-block
+    volumeSnapshotClassName: ceph-ephemeral-block
+    storageClassName: ceph-persistent-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -44,8 +44,8 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    storageClassName: ceph-block
+    volumeSnapshotClassName: ceph-ephemeral-block
+    storageClassName: ceph-persistent-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -70,8 +70,8 @@ spec:
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    storageClassName: ceph-block
+    volumeSnapshotClassName: ceph-ephemeral-block
+    storageClassName: ceph-persistent-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000

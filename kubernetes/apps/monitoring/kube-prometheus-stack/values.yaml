@@ -29,7 +29,7 @@ kube-prometheus-stack:
       storage:
         volumeClaimTemplate:
           spec:
-            storageClassName: ceph-block
+            storageClassName: ceph-ephemeral-block
             accessModes:
               - ReadWriteOnce
             resources:
@@ -130,7 +130,7 @@ kube-prometheus-stack:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: ceph-block
+            storageClassName: ceph-ephemeral-block
             accessModes:
               - ReadWriteOnce
             resources:

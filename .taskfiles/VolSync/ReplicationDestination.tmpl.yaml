@@ -11,7 +11,8 @@ spec:
     repository: "restic-${rsrc}-${claim}"
     destinationPVC: "${claim}"
     copyMethod: Direct
-    storageClassName: ceph-block
+    # class name of cache temporary volume, not destination PVC
+    storageClassName: ceph-ephemeral-block
     # IMPORTANT NOTE:
     #   Set to the last X number of snapshots to restore from
     previous: ${previous}
