@@ -1,5 +1,18 @@
 ---
 kyverno:
+  config:
+    webhooks:
+      - namespaceSelector:
+          matchExpressions:
+            - key: kubernetes.io/metadata.name
+              operator: NotIn
+              values:
+                - kube-system
+                - kyverno
+      - objectSelector:
+          matchExpressions:
+            - key: webhooks.kyverno.io/exclude
+              operator: DoesNotExist
   # broken api detection in chart
   apiVersionOverride:
     podDisruptionBudget: "policy/v1"
