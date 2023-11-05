@@ -27,11 +27,6 @@ spec:
         pod-security.kubernetes.io/audit: privileged
         pod-security.kubernetes.io/warn: privileged
   ignoreDifferences:
-    - kind: Secret
-      group: ""
-      name: vault-server-tls
-      jsonPointers:
-        - "/data"
     - kind: StatefulSet
       group: apps
       name: vault

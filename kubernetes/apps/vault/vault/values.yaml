@@ -1,4 +1,6 @@
 ---
+skipVolsyncSecrets: false
+
 vault:
   global:
     enabled: true

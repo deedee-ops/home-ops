@@ -131,6 +131,17 @@ resource "talos_machine_configuration_apply" "controlplanes" {
               apiVersion: v1
               kind: Secret
               metadata:
+                name: vault-server-tls
+                namespace: vault
+              type: kubernetes.io/tls
+              data:
+                tls.ca: "${base64encode(tls_self_signed_cert.ca.cert_pem)}"
+                tls.key: "${base64encode(tls_private_key.vault.private_key_pem)}"
+                tls.crt: "${base64encode(tls_locally_signed_cert.vault.cert_pem)}"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
                 name: restic-vault-data-vault-0
                 namespace: vault
               type: Opaque
@@ -275,6 +286,7 @@ locals {
                     server = {
                       ingress = {
                         hosts = ["argocd.placeholder"]
+                        tls   = [{ hosts = ["argocd.placeholder"] }]
                       }
                     }
                   }
@@ -371,6 +383,7 @@ locals {
               }, {
               helm = {
                 valuesObject = {
+                  skipVolsyncSecrets = true
                   "vault" = {
                     server = {
                       ingress = {

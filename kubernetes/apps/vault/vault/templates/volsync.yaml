@@ -1,3 +1,46 @@
+# yamllint disable rule:line-length
+# {{ if not .Values.skipVolsyncSecrets }}
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: restic-vault-data-vault-0
+  namespace: vault
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: "<path:kubernetes/data/internal/volsync#AWS_ACCESS_KEY_ID>"
+  AWS_SECRET_ACCESS_KEY: "<path:kubernetes/data/internal/volsync#AWS_SECRET_ACCESS_KEY>"
+  RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
+  RESTIC_REPOSITORY: "<path:kubernetes/data/internal/volsync#RESTIC_REPOSITORY_TEMPLATE>/vault/data-vault-0"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: restic-vault-data-vault-1
+  namespace: vault
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: "<path:kubernetes/data/internal/volsync#AWS_ACCESS_KEY_ID>"
+  AWS_SECRET_ACCESS_KEY: "<path:kubernetes/data/internal/volsync#AWS_SECRET_ACCESS_KEY>"
+  RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
+  RESTIC_REPOSITORY: "<path:kubernetes/data/internal/volsync#RESTIC_REPOSITORY_TEMPLATE>/vault/data-vault-1"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: restic-vault-data-vault-2
+  namespace: vault
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: "<path:kubernetes/data/internal/volsync#AWS_ACCESS_KEY_ID>"
+  AWS_SECRET_ACCESS_KEY: "<path:kubernetes/data/internal/volsync#AWS_SECRET_ACCESS_KEY>"
+  RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
+  RESTIC_REPOSITORY: "<path:kubernetes/data/internal/volsync#RESTIC_REPOSITORY_TEMPLATE>/vault/data-vault-2"
+# {{ end }}
+# yamllint enable rule:line-length
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1

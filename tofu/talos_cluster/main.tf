@@ -4,6 +4,11 @@ terraform {
       source  = "siderolabs/talos"
       version = "0.3.4"
     }
+
+    tls = {
+      source  = "hashicorp/tls"
+      version = "4.0.4"
+    }
   }
 
   required_version = "~> 1.6"
