@@ -1,0 +1,39 @@
+---
+# yamllint disable rule:line-length
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  annotations:
+  name: kube-image-keeper-registry-garbage-collection
+spec:
+  concurrencyPolicy: Forbid
+  schedule: 0 0 * * 0
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          serviceAccount: kube-image-keeper-registry-restart
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: public.ecr.aws/bitnami/kubectl:1.27.7
+              command:
+                - bash
+                - -c
+                - |
+                  set -e
+                  kubectl set env deploy kube-image-keeper-registry REGISTRY_STORAGE_MAINTENANCE_READONLY="{\"enabled\":true}"
+
+                  # wait for deployment to berolled out and terminated pods to be deleted to prevent exec’ing into a terminating pod (see https://binx.io/2022/01/18/how-to-run-a-post-deployment-script-on-kubernetes/)
+                  kubectl rollout status deploy kube-image-keeper-registry
+                  SELECTOR=$(kubectl get deploy kube-image-keeper-registry -o wide --no-headers | awk '{print $NF}')
+                  while [[ $(kubectl get pods --selector ${SELECTOR} --no-headers | awk '{print $3}' | uniq) != "Running" ]]; do
+                    echo "waiting for terminating pods to be deleted"
+                    sleep 1
+                  done
+
+                  kubectl exec deploy/kube-image-keeper-registry -- bin/registry garbage-collect /etc/docker/registry/config.yml --delete-untagged=true
+                  kubectl set env deploy kube-image-keeper-registry REGISTRY_STORAGE_MAINTENANCE_READONLY-
+# yamllint enable rule:line-length

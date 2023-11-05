@@ -62,14 +62,3 @@ specs:
                 protocol: TCP
         toCIDRSet:
           - cidr: <path:kubernetes/data/internal/base#IP_NAS>/32
-  - endpointSelector:
-      matchLabels:
-        app.kubernetes.io/created-by: volsync
-    egress:
-      - toPorts:
-          - ports:
-              # minio
-              - port: "9000"
-                protocol: TCP
-        toCIDRSet:
-          - cidr: <path:kubernetes/data/internal/base#IP_NAS>/32

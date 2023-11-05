@@ -1,0 +1,62 @@
+---
+kube-image-keeper:
+  cachedImagesExpiryDelay: 30
+  installCRD: true
+  architectures:
+    - amd64
+
+  controllers:
+    replicas: 2
+    podSecurityContext: &podSecurityContext
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext: &securityContext
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
+
+    image:
+      repository: quay.io/enix/kube-image-keeper
+    webhook:
+      ignoredNamespaces:
+        - kube-system
+    podMonitor:
+      create: true
+
+  proxy:
+    image:
+      repository: quay.io/enix/kube-image-keeper
+    podMonitor:
+      create: true
+    podAnnotations:
+      kyverno.io/ignore: "podsecurity-subrule-baseline"
+    podSecurityContext: *podSecurityContext
+    securityContext: *securityContext
+
+  registry:
+    image:
+      repository: public.ecr.aws/docker/library/registry
+    podSecurityContext:
+      <<: *podSecurityContext
+      runAsUser: 65000
+      runAsGroup: 65000
+    securityContext:
+      <<: *securityContext
+      runAsUser: 65000
+      runAsGroup: 65000
+    persistence:
+      s3:
+        region: us-east-1
+        regionendpoint: "http://<path:kubernetes/data/internal/base#IP_NAS>:9000"
+        bucket: docker
+        encrypt: false
+        secure: false
+        v4auth: true
+      s3ExistingSecret: kube-image-keeper-secret
+    garbageCollection:
+      # cronjob from helm uses docker.io image, disable it and use our own with proper one
+      schedule: ""

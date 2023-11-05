@@ -8,6 +8,13 @@ app-template:
       sysctls:
         - name: net.ipv4.ip_unprivileged_port_start
           value: "0"
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: smtp-relay
 
   controllers:
     main:

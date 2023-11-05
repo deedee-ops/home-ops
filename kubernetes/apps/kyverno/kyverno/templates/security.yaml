@@ -29,6 +29,12 @@ spec:
           - resources:
               kinds:
                 - Pod
+              selector:
+                matchExpressions:
+                  - key: kyverno.io/ignore
+                    operator: NotIn
+                    values:
+                      - podsecurity-subrule-baseline
       exclude:
         any:
           - resources:

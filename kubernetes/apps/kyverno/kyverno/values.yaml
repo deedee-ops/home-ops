@@ -28,6 +28,22 @@ kyverno:
       image:
         registry: public.ecr.aws
   backgroundController:
+    rbac:
+      clusterRole:
+        extraResources:
+          - apiGroups:
+              - apps
+            resources:
+              - deployments
+              - daemonsets
+              - statefulsets
+            verbs:
+              - get
+              - list
+              - patch
+              - update
+              - watch
+
     serviceMonitor:
       enabled: true
   cleanupController:
