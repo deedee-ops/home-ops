@@ -146,10 +146,10 @@ resource "talos_machine_configuration_apply" "controlplanes" {
                 namespace: vault
               type: Opaque
               stringData:
-                AWS_ACCESS_KEY_ID: "${var.initial_secrets.volsync_access_key_id}"
-                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.volsync_secret_access_key}"
+                AWS_ACCESS_KEY_ID: "${var.initial_secrets.s3_access_key_id}"
+                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.s3_secret_access_key}"
                 RESTIC_PASSWORD: "${var.initial_secrets.volsync_restic_password}"
-                RESTIC_REPOSITORY: "${var.initial_secrets.volsync_restic_repository_template}/vault/data-vault-0"
+                RESTIC_REPOSITORY: "s3:${var.initial_secrets.s3_url}/${var.initial_secrets.s3_bucket}/volsync/data-vault-0"
               ---
               apiVersion: v1
               kind: Secret
@@ -161,7 +161,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
                 AWS_ACCESS_KEY_ID: "${var.initial_secrets.volsync_access_key_id}"
                 AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.volsync_secret_access_key}"
                 RESTIC_PASSWORD: "${var.initial_secrets.volsync_restic_password}"
-                RESTIC_REPOSITORY: "${var.initial_secrets.volsync_restic_repository_template}/vault/data-vault-1"
+                RESTIC_REPOSITORY: "s3:${var.initial_secrets.s3_url}/${var.initial_secrets.s3_bucket}/volsync/data-vault-1"
               ---
               apiVersion: v1
               kind: Secret
@@ -173,7 +173,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
                 AWS_ACCESS_KEY_ID: "${var.initial_secrets.volsync_access_key_id}"
                 AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.volsync_secret_access_key}"
                 RESTIC_PASSWORD: "${var.initial_secrets.volsync_restic_password}"
-                RESTIC_REPOSITORY: "${var.initial_secrets.volsync_restic_repository_template}/vault/data-vault-2"
+                RESTIC_REPOSITORY: "s3:${var.initial_secrets.s3_url}/${var.initial_secrets.s3_bucket}/volsync/data-vault-2"
             EOS
           },
           {

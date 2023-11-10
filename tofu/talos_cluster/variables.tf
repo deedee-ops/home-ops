@@ -30,10 +30,11 @@ variable "cluster_endpoint" {
 
 variable "initial_secrets" {
   type = object({
-    vault_unseal                       = string
-    volsync_access_key_id              = string
-    volsync_secret_access_key          = string
-    volsync_restic_password            = string
-    volsync_restic_repository_template = string
+    s3_access_key_id        = string
+    s3_bucket               = string
+    s3_secret_access_key    = string
+    s3_url                  = string
+    vault_unseal            = string
+    volsync_restic_password = string
   })
 }

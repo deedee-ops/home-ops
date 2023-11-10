@@ -50,9 +50,9 @@ kube-image-keeper:
       runAsGroup: 65000
     persistence:
       s3:
-        region: us-east-1
-        regionendpoint: "http://<path:kubernetes/data/internal/base#IP_NAS>:9000"
-        bucket: docker
+        region: "<path:kubernetes/data/internal/base#S3_REGION>"
+        regionendpoint: "<path:kubernetes/data/internal/base#S3_URL>"
+        bucket: "<path:kubernetes/data/internal/kube-image-keeper#S3_BUCKET>"
         encrypt: false
         secure: false
         v4auth: true

@@ -34,8 +34,8 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-      destinationPath: "s3://backups/<path:kubernetes/data/internal/base#CLUSTER_NAME>/cloudnative-pg/"
-      endpointURL: "http://<path:kubernetes/data/internal/base#IP_NAS>:9000/"
+      destinationPath: "s3://<path:kubernetes/data/internal/base#S3_BUCKET>/cloudnative-pg/"
+      endpointURL: "<path:kubernetes/data/internal/base#S3_URL>"
       serverName: &currentCluster postgres-v5
       s3Credentials:
         accessKeyId:
@@ -51,8 +51,8 @@ spec:
         wal:
           compression: bzip2
           maxParallel: 8
-        destinationPath: "s3://backups/<path:kubernetes/data/internal/base#CLUSTER_NAME>/cloudnative-pg/"
-        endpointURL: "http://<path:kubernetes/data/internal/base#IP_NAS>:9000/"
+        destinationPath: "s3://<path:kubernetes/data/internal/base#S3_BUCKET>/cloudnative-pg/"
+        endpointURL: "<path:kubernetes/data/internal/base#S3_URL>"
         s3Credentials:
           accessKeyId:
             name: cloudnative-pg-secret

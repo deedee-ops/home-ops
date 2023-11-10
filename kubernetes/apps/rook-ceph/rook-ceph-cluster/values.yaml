@@ -139,37 +139,6 @@ rook-ceph-cluster:
           csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
           csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
           csi.storage.k8s.io/fstype: ext4
-  cephObjectStores:
-    - name: ceph-ephemeral-objectstore
-      spec:
-        metadataPool:
-          failureDomain: host
-          replicated:
-            size: 2
-          crushRoot: ephemeral
-        dataPool:
-          failureDomain: host
-          erasureCoded:
-            dataChunks: 2
-            codingChunks: 1
-          crushRoot: ephemeral
-        gateway:
-          port: 9333
-          resources:
-            requests:
-              cpu: 1000m
-              memory: 1Gi
-            limits:
-              memory: 2Gi
-          instances: 1
-          priorityClassName: system-cluster-critical
-      storageClass:
-        enabled: true
-        name: ceph-ephemeral-objectstore
-        reclaimPolicy: Delete
-        volumeBindingMode: "Immediate"
-        parameters:
-          region: us-east-1
   ingress:
     enabled: true
     dashboard:
