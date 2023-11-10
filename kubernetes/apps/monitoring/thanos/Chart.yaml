@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: thanos
+version: 1.0.0
+type: application
+dependencies:
+  - name: thanos
+    version: 12.15.0
+    repository: https://charts.bitnami.com/bitnami

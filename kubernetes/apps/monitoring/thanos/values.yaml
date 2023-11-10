@@ -1,0 +1,86 @@
+---
+thanos:
+  image:
+    registry: quay.io
+    repository: thanos/thanos
+    tag: v0.31.0
+  existingObjstoreSecret: thanos-objstore-secret
+  query:
+    enabled: true
+    replicaCount: 2
+    replicaLabel: ["__replica__"]
+    dnsDiscovery:
+      sidecarsService: kube-prometheus-stack-thanos-discovery
+      sidecarsNamespace: monitoring
+  queryFrontend:
+    enabled: true
+    replicaCount: 2
+    ingress:
+      enabled: true
+      overrideAlertQueryURL: true
+      ingressClassName: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Monitoring
+        gethomepage.dev/name: Thanos
+        gethomepage.dev/icon: thanos.png
+        gethomepage.dev/description: Metrics Collector and Deduplicator
+      hostname: "thanos.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  bucketweb:
+    enabled: true
+    replicaCount: 2
+    podLabels:
+      route-to/nas: "true"
+  compactor:
+    enabled: true
+    podLabels:
+      route-to/nas: "true"
+    extraFlags:
+      - --compact.concurrency=4
+      - --delete-delay=30m
+    retentionResolutionRaw: 30d
+    retentionResolution5m: 60d
+    retentionResolution1h: 90d
+    persistence:
+      enabled: true
+      storageClass: ceph-ephemeral-block
+      size: 100Gi
+  storegateway:
+    enabled: true
+    replicaCount: 2
+    podLabels:
+      route-to/nas: "true"
+    persistence:
+      enabled: true
+      storageClass: ceph-ephemeral-block
+      size: 10Gi
+  ruler:
+    enabled: true
+    replicaCount: 2
+    podLabels:
+      route-to/nas: "true"
+    replicaLabel: __replica__
+    queryURL: "https://thanos.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    alertmanagers:
+      - "http://alertmanager-operated.monitoring.svc.cluster.local:9093"
+    extraFlags:
+      - "--web.prefix-header=X-Forwarded-Prefix"
+    config: |-
+      groups:
+        - name: PrometheusWatcher
+          rules:
+            - alert: PrometheusDown
+              annotations:
+                summary: A Prometheus has disappeared from Prometheus target discovery
+              expr: absent(up{job="kube-prometheus-stack-prometheus"})
+              for: 5m
+              labels:
+                severity: critical
+    persistence:
+      enabled: true
+      storageClass: ceph-ephemeral-block
+      size: 10Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

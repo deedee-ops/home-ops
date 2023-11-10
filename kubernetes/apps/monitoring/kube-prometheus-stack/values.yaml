@@ -112,8 +112,15 @@ kube-prometheus-stack:
         - hosts:
             - *host
       path: /
+    thanosService:
+      enabled: true
+    thanosServiceMonitor:
+      enabled: true
     prometheusSpec:
       replicas: 2
+      podMetadata:
+        labels:
+          route-to/nas: "true"
       replicaExternalLabelName: __replica__
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
@@ -127,6 +134,12 @@ kube-prometheus-stack:
         - new-service-discovery-manager
       retention: 7d
       retentionSize: 15GB
+      thanos:
+        image: quay.io/thanos/thanos:v0.32.5
+        objectStorageConfig:
+          existingSecret:
+            name: thanos-objstore-secret
+            key: objstore.yml
       storageSpec:
         volumeClaimTemplate:
           spec:
