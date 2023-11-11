@@ -5,6 +5,8 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres-16
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   instances: 2
   # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql

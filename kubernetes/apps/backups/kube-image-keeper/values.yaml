@@ -40,6 +40,8 @@ kube-image-keeper:
   registry:
     image:
       repository: public.ecr.aws/docker/library/registry
+    podAnnotations:
+      reloader.stakater.com/auto: "true"
     podSecurityContext:
       <<: *podSecurityContext
       runAsUser: 65000

@@ -42,6 +42,8 @@ redis-ha:
 
   haproxy:
     enabled: true
+    annotations:
+      reloader.stakater.com/auto: "true"
     image:
       repository: public.ecr.aws/docker/library/haproxy
       tag: 2.8.3-alpine
@@ -64,6 +66,8 @@ redis-ha:
 
   redis:
     masterGroupName: mymaster
+    annotations:
+      reloader.stakater.com/auto: "true"
     config:
       maxmemory: "512mb"
     resources:

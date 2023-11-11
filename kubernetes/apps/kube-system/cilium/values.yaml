@@ -14,6 +14,10 @@ cilium:
   cluster:
     name: kubernetes
     id: 1
+  clustermesh:
+    apiserver:
+      service:
+        externalTrafficPolicy: local
   cgroup:
     autoMount:
       enabled: false

@@ -23,6 +23,9 @@ kube-prometheus-stack:
       path: /
     alertmanagerSpec:
       replicas: 2
+      podMetadata:
+        annotations:
+          reloader.stakater.com/auto: "true"
       podAntiAffinity: hard
       useExistingSecret: true
       configSecret: alertmanager-secret
