@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: authelia
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: authelia
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+secrets:
+  - name: authelia
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/service-account-token
+metadata:
+  name: authelia
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: authelia
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    kubernetes.io/service-account.name: authelia
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: authelia
+  namespace: "{{ .Release.Namespace }}"
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+      - secrets
+    verbs:
+      - get
+      - watch
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: authelia
+roleRef:
+  kind: ClusterRole
+  name: authelia
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: authelia
+    namespace: "{{ .Release.Namespace }}"
