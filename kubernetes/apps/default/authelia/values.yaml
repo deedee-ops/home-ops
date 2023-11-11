@@ -1,0 +1,155 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: authelia
+
+  controllers:
+    main:
+      replicas: 2
+      strategy: RollingUpdate
+
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/ajgon/authelia
+            tag: 4.37.5
+
+          env:
+
+            TZ: Europe/Warsaw
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/health
+                  port: 9091
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+
+        config-sync:
+          image:
+            repository: ghcr.io/kiwigrid/k8s-sidecar
+            tag: 1.25.2
+            pullPolicy: IfNotPresent
+
+          env:
+            - name: FOLDER
+              value: /config
+            - name: LABEL
+              value: authelia.com/enabled
+            - name: NAMESPACE
+              value: ALL
+            - name: RESOURCE
+              value: both
+            - name: UNIQUE_FILENAMES
+              value: "true"
+            - name: METHOD
+              value: WATCH
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 200Mi
+
+  serviceAccount:
+    create: false
+    name: authelia
+
+  service:
+    main:
+      ports:
+        http:
+          enabled: true
+          port: 9091
+        metrics:
+          enabled: true
+          port: 9959
+
+  serviceMonitor:
+    main:
+      enabled: true
+      endpoints:
+        - port: metrics
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+      className: internal
+      hosts:
+        - host: "authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 9091
+      tls:
+        - hosts:
+            - "authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config-file:
+      enabled: true
+      type: configMap
+      name: authelia-configmap
+      subPath: configuration.yaml
+      mountPath: /config/configuration.yaml
+      readOnly: false
+      advancedMounts:
+        main:
+          main:
+            - path: /config/configuration.yaml
+              subPath: configuration.yaml
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: authelia
