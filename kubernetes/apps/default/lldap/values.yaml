@@ -1,0 +1,114 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: lldap
+
+  controllers:
+    main:
+      type: deployment
+      replicas: 2
+      strategy: RollingUpdate
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/ajgon/lldap
+            tag: 0.5.0
+
+          env:
+            LLDAP_DATABASE_DRIVER: "postgres"
+            LLDAP_HTTP_URL: "http://lldap.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+            # passing LLDAP_KEY directly won't work, still filepath needs to be provided
+            LLDAP_KEY_FILE: "/secrets/LLDAP_KEY"
+            LLDAP_LDAPS_OPTIONS__ENABLED: "false"
+            LLDAP_LDAP_BASE_DN: "dc=home,dc=arpa"
+            LLDAP_LDAP_USER_EMAIL: "<path:kubernetes/data/internal/lldap#LLDAP_LDAP_USER_DN>@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+            LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET: "true"
+            LLDAP_SMTP_OPTIONS__FROM: "lldap@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+            LLDAP_SMTP_OPTIONS__PORT: "25"
+            LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.default.svc.cluster.local
+            LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION: NONE
+            LLDAP_VERBOSE: "true"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 17170
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 5m
+              memory: 36Mi
+            limits:
+              memory: 128Mi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 17170
+        ldap:
+          port: 389
+          targetPort: 3890
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Admin
+        gethomepage.dev/name: LLDAP
+        gethomepage.dev/icon: badge.png
+        gethomepage.dev/description: Lightweight LDAP Provider
+      className: internal
+      hosts:
+        - host: "lldap.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 17170
+      tls:
+        - hosts:
+            - "lldap.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: lldap
