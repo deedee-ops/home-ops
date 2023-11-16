@@ -23,6 +23,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
           }]
         }
         install = {
+          # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
           image = "ghcr.io/siderolabs/installer:v1.5.4"
           disk  = data.talos_machine_disks.this[each.key].disks[0].name
         }
@@ -243,6 +244,7 @@ resource "talos_machine_configuration_apply" "workers" {
           hostname = each.key
         }
         install = {
+          # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
           image = "ghcr.io/siderolabs/installer:v1.5.3"
           disk  = data.talos_machine_disks.this[each.key].disks[0].name
         }

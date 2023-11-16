@@ -117,7 +117,7 @@ argo-cd:
         command: [sh, -ec]
         env:
           - name: AVP_VERSION
-            # renovate: datasource=github-releases depName=argocd-vault-plugin
+            # renovate: datasource=github-releases depName=argoproj-labs/argocd-vault-plugin
             value: "v1.16.1"
         args:
           # yamllint disable rule:line-length

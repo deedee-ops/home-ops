@@ -20,6 +20,7 @@ name: "Renovate"
     paths:
       - .github/renovate-bot.json5
       - .github/renovate.json5
+      - .github/renovate/**.json5
 
 env:
   LOG_LEVEL: info

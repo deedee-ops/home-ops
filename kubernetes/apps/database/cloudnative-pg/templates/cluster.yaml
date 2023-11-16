@@ -9,7 +9,7 @@ metadata:
     reloader.stakater.com/auto: "true"
 spec:
   instances: 2
-  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql
+  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=redhat
   imageName: "ghcr.io/cloudnative-pg/postgresql:16.0-4"
   enableSuperuserAccess: true
   inheritedMetadata:
