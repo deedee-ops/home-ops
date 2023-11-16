@@ -8,7 +8,13 @@
     ":semanticCommits",
     ":automergeDigest",
     ":automergeBranch",
-    "helpers:pinGitHubActionDigests"
+    ":automergePatch",
+    "helpers:pinGitHubActionDigests",
+    "github>ajgon/home-ops//.github/renovate/autoMerge.json5",
+    "github>ajgon/home-ops//.github/renovate/commitMessage.json5",
+    "github>ajgon/home-ops//.github/renovate/customManagers.json5",
+    "github>ajgon/home-ops//.github/renovate/labels.json5",
+    "github>ajgon/home-ops//.github/renovate/semanticCommits.json5"
   ],
   "platform": "github",
   "onboarding": false,
