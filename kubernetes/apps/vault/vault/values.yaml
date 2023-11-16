@@ -39,7 +39,7 @@ vault:
           readOnlyRootFilesystem: true
     image:
       repository: public.ecr.aws/hashicorp/vault
-      tag: "1.15.0"
+      tag: "1.15.2"
 
     updateStrategyType: "RollingUpdate"
 
