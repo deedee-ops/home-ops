@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: init-db
-          image: ghcr.io/ajgon/postgres-init:16.0
+          image: ghcr.io/ajgon/postgres-init:16.1
           volumeMounts:
             - mountPath: /secrets
               name: secrets
