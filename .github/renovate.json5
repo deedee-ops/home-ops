@@ -1,0 +1,35 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:enableMajor",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":automergeDigest",
+    ":automergeBranch",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "platform": "github",
+  "onboarding": false,
+  "requireConfig": "optional",
+  "suppressNotifications": ["prIgnoreNotification"],
+  "ignorePaths": [
+    "schemas/**/*.*",
+    "tofu/talos_cluster/manifests/*.yaml"
+  ],
+  "helm-values": {
+    "fileMatch": ["(^|/)kubernetes/.+\\.ya?ml$"]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)\\.taskfiles/.+\\.ya?ml$",
+      "(^|/)kubernetes/.+\\.ya?ml$"
+    ]
+  },
+  "terraform": {
+    "fileMatch": [
+      "(^|/)tofu/.+\\.tf$"
+    ]
+  }
+}
