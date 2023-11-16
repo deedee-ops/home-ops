@@ -30,7 +30,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/ajgon/postgres-logical-backup
-            tag: "16.0"
+            tag: "16.1"
 
           env:
             POSTGRES_DATABASE: all
