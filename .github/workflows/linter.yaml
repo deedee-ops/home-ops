@@ -1,0 +1,55 @@
+# yamllint disable rule:comments
+---
+name: "Linter"
+
+'on':
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  linter:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Token
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
+        id: generate-token
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          token: "${{ steps.generate-token.outputs.token }}"
+
+      - name: Install OpenTofu
+        uses: opentofu/setup-opentofu@b06654f7ba51088e987c0a454d042360df3ebe86 # v1.0.1
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
+
+      - name: Init TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # v2.0.0
+
+      - name: Run tofu formatter
+        run: tofu fmt -check -diff -recursive tofu/
+
+      - name: Run tofu lint
+        run: tflint -f compact
+
+      - name: Run yamllint
+        uses: karancode/yamllint-github-action@fdef6bc189425ecc84cc4543b2674566c0827053 # v2.1.1
+        with:
+          yamllint_strict: true
+          yamllint_comment: true
+        env:
+          GITHUB_ACCESS_TOKEN: "${{ steps.generate-token.outputs.token }}"
+# yamllint enable rule:comments

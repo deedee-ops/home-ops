@@ -1,3 +1,4 @@
+# yamllint disable rule:comments
 ---
 name: "Renovate"
 
@@ -57,3 +58,4 @@ jobs:
         with:
           configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
           token: "${{ steps.generate-token.outputs.token }}"
+# yamllint enable rule:comments

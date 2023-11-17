@@ -1,0 +1,9 @@
+---
+area/github:
+  - ".github/**/*"
+area/kubernetes:
+  - "kubernetes/**/*"
+area/hack:
+  - "hack/**/*"
+area/tofu:
+  - "tofu/**/*"
