@@ -1,0 +1,39 @@
+---
+# yaml-language-server: disabled
+# Area
+- name: area/github
+  color: "72ccf3"
+  description: >-
+    Changes made in the github directory
+- name: area/kubernetes
+  color: "72ccf3"
+  description: >-
+    Changes made in the kubernetes directory
+- name: area/hack
+  color: "72ccf3"
+  description: >-
+    Changes made in the hack directory
+- name: area/tofu
+  color: "72ccf3"
+  description: >-
+    Changes made in the tofu directory
+# Renovate
+- name: renovate/container
+  color: "009485"
+- name: renovate/github-action
+  color: "009485"
+- name: renovate/github-release
+  color: "009485"
+- name: renovate/helm
+  color: "009485"
+- name: renovate/tofu
+  color: "009485"
+# Semantic Type
+- name: type/digest
+  color: "ffec19"
+- name: type/patch
+  color: "ffec19"
+- name: type/minor
+  color: "ff9800"
+- name: type/major
+  color: "f6412d"

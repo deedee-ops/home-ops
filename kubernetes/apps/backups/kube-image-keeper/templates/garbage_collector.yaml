@@ -1,9 +1,9 @@
 ---
 # yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/cronjob.json
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  annotations:
   name: kube-image-keeper-registry-garbage-collection
 spec:
   concurrencyPolicy: Forbid

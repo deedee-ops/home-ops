@@ -17,11 +17,15 @@ pre-commit:
     yamllint:
       glob: "*.y*ml"
       run: yamllint -s {staged_files}
+    egress-comment:
+      glob: "*.y*ml"
+      run: go-task lint:egress-comment || task lint:egress-comment
+    yaml-json-schema:
+      glob: "*.y*ml"
+      run: go-task lint:yaml-json-schema || task lint:yaml-json-schema
 full:
   parallel: true
   commands:
-    healtcheck:
-      run: "go-task healthcheck:cluster healthcheck:repo"
     shellcheck:
       glob: "*.sh{,.j2}"
       run: shellcheck {all_files}
@@ -34,3 +38,9 @@ full:
     yamllint:
       glob: "*.y*ml"
       run: yamllint -s {all_files}
+    egress-comment:
+      glob: "*.y*ml"
+      run: go-task lint:egress-comment || task lint:egress-comment
+    yaml-json-schema:
+      glob: "*.y*ml"
+      run: go-task lint:yaml-json-schema || task lint:yaml-json-schema

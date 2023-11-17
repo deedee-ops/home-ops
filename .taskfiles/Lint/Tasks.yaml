@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  crdSchemaJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/crd-schema-job.sh"
+  egressCommentJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/egress-comment-job.sh"
+  kubeconformJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/kubeconform-job.sh"
+  yamlJsonSchemaJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/yaml-json-schema-job.sh"
+
+tasks:
+
+  crd-schema:
+    desc: Check for missing cluster schemas
+    silent: true
+    cmds:
+      - bash {{.crdSchemaJobScript}}
+    preconditions:
+      - sh: test -f {{.crdSchemaJobScript}}
+
+  egress-comment:
+    desc: Check for missing egress enabling explaining comments
+    silent: true
+    cmds:
+      - bash {{.egressCommentJobScript}}
+    preconditions:
+      - sh: test -f {{.egressCommentJobScript}}
+
+  kubeconform:
+    desc: Check helm templates against kubeconform
+    silent: true
+    cmds:
+      - bash {{.kubeconformJobScript}}
+    preconditions:
+      - sh: test -f {{.kubeconformJobScript}}
+
+  yaml-json-schema:
+    desc: Check for missing yaml-language-serve stanzas in YAML files
+    silent: true
+    cmds:
+      - bash {{.yamlJsonSchemaJobScript}}
+    preconditions:
+      - sh: test -f {{.yamlJsonSchemaJobScript}}

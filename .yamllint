@@ -9,3 +9,4 @@ rules:
 
 ignore:
   - tofu/talos_cluster/manifests/*.yaml
+  - tofu/talos_cluster/manifests/*.yaml

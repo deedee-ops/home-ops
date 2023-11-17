@@ -9,6 +9,17 @@
       "ignoreTests": true,
       "automergeType": "branch",
       "matchUpdateTypes": ["minor", "patch"]
+    }, {
+      "description": "Do not automerge talos versions",
+      "packagePatterns": [
+        "^ghcr\\.io\\/siderolabs\\/",
+        "^registry\\.k8s\\.io\\/kube-apiserver",
+        "^registry\\.k8s\\.io\\/kube-controller-manager",
+        "^registry\\.k8s\\.io\\/kube-scheduler"
+      ],
+      "automerge": false,
+      "ignoreTests": false,
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
     }
   ]
 }

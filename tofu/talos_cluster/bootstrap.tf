@@ -10,6 +10,15 @@ resource "talos_machine_configuration_apply" "controlplanes" {
   config_patches = [
     yamlencode({
       machine = {
+        kubelet = {
+          # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+          image                               = "ghcr.io/siderolabs/kubelet:v1.28.2"
+          defaultRuntimeSeccompProfileEnabled = true
+          disableManifestsDirectory           = true
+          extraArgs = {
+            "rotate-server-certificates" = true
+          }
+        }
         network = {
           hostname = each.key
           interfaces = [{
@@ -24,7 +33,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
         }
         install = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-          image = "ghcr.io/siderolabs/installer:v1.5.5"
+          image = "ghcr.io/siderolabs/installer:v1.5.3"
           disk  = data.talos_machine_disks.this[each.key].disks[0].name
         }
         features = {
@@ -42,7 +51,13 @@ resource "talos_machine_configuration_apply" "controlplanes" {
             name = "none"
           }
         }
+        apiServer = {
+          # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver
+          image = "registry.k8s.io/kube-apiserver:v1.28.2"
+        }
         controllerManager = {
+          # renovate: datasource=docker depName=registry.k8s.io/kube-controller-manager
+          image = "registry.k8s.io/kube-controller-manager:v1.28.2"
           extraArgs = {
             "bind-address" = "0.0.0.0"
           }
@@ -51,6 +66,8 @@ resource "talos_machine_configuration_apply" "controlplanes" {
           disabled = true
         }
         scheduler = {
+          # renovate: datasource=docker depName=registry.k8s.io/kube-scheduler
+          image = "registry.k8s.io/kube-scheduler:v1.28.2"
           extraArgs = {
             "bind-address" = "0.0.0.0"
           }

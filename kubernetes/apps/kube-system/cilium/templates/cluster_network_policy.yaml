@@ -39,6 +39,7 @@ specs:
               dns:
                 - matchPattern: "*"
 ---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
 apiVersion: "cilium.io/v2"
 kind: CiliumClusterwideNetworkPolicy
 metadata:
@@ -61,4 +62,4 @@ specs:
               - port: "9000"
                 protocol: TCP
         toCIDRSet:
-          - cidr: <path:kubernetes/data/internal/base#IP_NAS>/32
+          - cidr: "<path:kubernetes/data/internal/base#IP_NAS>/32"

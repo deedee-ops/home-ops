@@ -1,4 +1,6 @@
+# yamllint disable rule:comments
 ---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: "Renovate"
 
 'on':
@@ -57,3 +59,4 @@ jobs:
         with:
           configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
           token: "${{ steps.generate-token.outputs.token }}"
+# yamllint enable rule:comments

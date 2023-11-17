@@ -27,7 +27,7 @@
     },
     {
       "matchDatasources": ["terraform-provider"],
-      "addLabels": ["renovate/terraform"]
+      "addLabels": ["renovate/tofu"]
     },
     {
       "matchDatasources": ["github-releases", "github-tags"],

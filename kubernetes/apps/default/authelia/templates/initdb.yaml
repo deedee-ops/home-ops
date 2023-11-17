@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/job.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/job.json
 # yamllint enable
 apiVersion: batch/v1
 kind: Job

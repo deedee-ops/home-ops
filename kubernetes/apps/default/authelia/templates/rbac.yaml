@@ -1,4 +1,6 @@
 ---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/serviceaccount-v1.json
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -11,6 +13,7 @@ metadata:
 secrets:
   - name: authelia
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
 apiVersion: v1
 kind: Secret
 type: kubernetes.io/service-account-token
@@ -23,6 +26,7 @@ metadata:
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     kubernetes.io/service-account.name: authelia
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/clusterrole.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -39,6 +43,7 @@ rules:
       - watch
       - list
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/clusterrolebinding.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -51,3 +56,4 @@ subjects:
   - kind: ServiceAccount
     name: authelia
     namespace: "{{ .Release.Namespace }}"
+# yamllint enable rule:line-length
