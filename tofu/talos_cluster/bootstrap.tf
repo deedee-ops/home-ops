@@ -176,8 +176,8 @@ resource "talos_machine_configuration_apply" "controlplanes" {
                 namespace: vault
               type: Opaque
               stringData:
-                AWS_ACCESS_KEY_ID: "${var.initial_secrets.volsync_access_key_id}"
-                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.volsync_secret_access_key}"
+                AWS_ACCESS_KEY_ID: "${var.initial_secrets.s3_access_key_id}"
+                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.s3_secret_access_key}"
                 RESTIC_PASSWORD: "${var.initial_secrets.volsync_restic_password}"
                 RESTIC_REPOSITORY: "s3:${var.initial_secrets.s3_url}/${var.initial_secrets.s3_bucket}/volsync/data-vault-1"
               ---
@@ -188,8 +188,8 @@ resource "talos_machine_configuration_apply" "controlplanes" {
                 namespace: vault
               type: Opaque
               stringData:
-                AWS_ACCESS_KEY_ID: "${var.initial_secrets.volsync_access_key_id}"
-                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.volsync_secret_access_key}"
+                AWS_ACCESS_KEY_ID: "${var.initial_secrets.s3_access_key_id}"
+                AWS_SECRET_ACCESS_KEY: "${var.initial_secrets.s3_secret_access_key}"
                 RESTIC_PASSWORD: "${var.initial_secrets.volsync_restic_password}"
                 RESTIC_REPOSITORY: "s3:${var.initial_secrets.s3_url}/${var.initial_secrets.s3_bucket}/volsync/data-vault-2"
             EOS
@@ -207,20 +207,12 @@ resource "talos_machine_configuration_apply" "controlplanes" {
             contents : yamlencode(local.patched_snapshot_controller_app)
           },
           {
-            name : "app-volsync"
-            contents : yamlencode(local.patched_volsync_app)
-          },
-          {
             name : "app-secrets-store-csi-driver"
             contents : yamlencode(local.patched_secrets_store_csi_driver_app)
           },
           {
             name : "app-argocd-update",
             contents : yamlencode(local.patched_argocd_app)
-          },
-          {
-            name : "app-vault"
-            contents : yamlencode(local.patched_vault_app)
           },
         ]
         extraManifests = [
@@ -304,8 +296,7 @@ locals {
                   "argo-cd" = {
                     server = {
                       ingress = {
-                        hosts = ["argocd.placeholder"]
-                        tls   = [{ hosts = ["argocd.placeholder"] }]
+                        enabled = false
                       }
                     }
                   }
@@ -350,8 +341,7 @@ locals {
                     }
                     ingress = {
                       dashboard = {
-                        host = { name = "rook.placeholder", path = "/" }
-                        tls  = [{ hosts = ["vault.placeholder"] }]
+                        host = false
                       }
                     }
                   }
@@ -385,48 +375,6 @@ locals {
           merge(
             {
               for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/kube-system/snapshot-controller/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
-            }, { helm = {} }
-          )
-        ]
-        }
-      ),
-      v
-  ) }
-  patched_vault_app = {
-    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/vault/vault/application.yaml")) : k => try(
-      merge(v, {
-        sources = [
-          merge(
-            {
-              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/vault/vault/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
-              }, {
-              helm = {
-                valuesObject = {
-                  skipVolsyncSecrets = true
-                  "vault" = {
-                    server = {
-                      ingress = {
-                        hosts = [{ host = "vault.placeholder", paths = ["/"] }]
-                        tls   = [{ hosts = ["vault.placeholder"] }]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          )
-        ]
-        }
-      ),
-      v
-  ) }
-  patched_volsync_app = {
-    for k, v in yamldecode(file("${path.root}/../../kubernetes/apps/backups/volsync/application.yaml")) : k => try(
-      merge(v, {
-        sources = [
-          merge(
-            {
-              for kk, vv in yamldecode(file("${path.root}/../../kubernetes/apps/backups/volsync/application.yaml")).spec.sources[0] : kk => vv if kk != "plugin"
             }, { helm = {} }
           )
         ]

@@ -40,7 +40,6 @@ stringData:
   RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
   RESTIC_REPOSITORY: "s3:<path:kubernetes/data/internal/base#S3_URL>/<path:kubernetes/data/internal/base#S3_BUCKET>/volsync/data-vault-2"
 # {{ end }}
-# yamllint enable rule:line-length
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -55,15 +54,20 @@ spec:
     copyMethod: Snapshot
     pruneIntervalDays: 7
     repository: restic-vault-data-vault-0
+    volumeSnapshotClassName: ceph-block
+    cacheCapacity: 10Gi
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
     retain:
       daily: 7
       weekly: 4
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    # class name of cache temporary volume, not source PVC
-    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -82,15 +86,20 @@ spec:
     copyMethod: Snapshot
     pruneIntervalDays: 7
     repository: restic-vault-data-vault-1
+    volumeSnapshotClassName: ceph-block
+    cacheCapacity: 10Gi
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
     retain:
       daily: 7
       weekly: 4
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    # class name of cache temporary volume, not source PVC
-    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
@@ -109,16 +118,160 @@ spec:
     copyMethod: Snapshot
     pruneIntervalDays: 7
     repository: restic-vault-data-vault-2
+    volumeSnapshotClassName: ceph-block
+    cacheCapacity: 10Gi
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
     retain:
       daily: 7
       weekly: 4
       monthly: 6
       yearly: 3
       within: 3d
-    volumeSnapshotClassName: ceph-block
-    # class name of cache temporary volume, not source PVC
-    storageClassName: ceph-ephemeral-block
     moverSecurityContext:
       fsGroup: 1000
       runAsUser: 1000
       runAsGroup: 100
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-vault-0
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: init-vault-data-vault-0
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ceph-persistent-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-vault-1
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: init-vault-data-vault-1
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ceph-persistent-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-vault-2
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  accessModes:
+    - ReadWriteOnce
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: init-vault-data-vault-2
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ceph-persistent-block
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: init-vault-data-vault-0
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  trigger:
+    manual: restore-init
+  restic:
+    repository: restic-vault-data-vault-0
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-block
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    cacheCapacity: 10Gi
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
+    capacity: 10Gi
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 100
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: init-vault-data-vault-1
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  trigger:
+    manual: restore-init
+  restic:
+    repository: restic-vault-data-vault-1
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-block
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    cacheCapacity: 10Gi
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
+    capacity: 10Gi
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 100
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: init-vault-data-vault-2
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  trigger:
+    manual: restore-init
+  restic:
+    repository: restic-vault-data-vault-2
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-block
+    cacheStorageClassName: ceph-ephemeral-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    cacheCapacity: 10Gi
+    storageClassName: ceph-ephemeral-block
+    accessModes:
+      - ReadWriteOnce
+    capacity: 10Gi
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 100
+# yamllint enable rule:line-length

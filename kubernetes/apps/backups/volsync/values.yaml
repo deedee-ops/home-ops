@@ -1,4 +1,6 @@
 ---
+skipNetworkPolicy: false
+
 volsync:
   manageCRDs: true
   metrics:

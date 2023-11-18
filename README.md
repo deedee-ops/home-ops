@@ -1,15 +1,46 @@
-## dexter
+# homelab
 
-```bash
-tofu -chdir=tofu/talos_cluster init
-tofu -chdir=tofu/talos_cluster apply -var-file=../dexter.tfvars
+## Bootstrap
 
-talosctl config merge <(tofu -chdir=tofu/talos_cluster output -raw talosconfig)
-# you need konfig plugin for that: kubectl krew install konfig
-printf '%s' "$(kubectl konfig import <(tofu -chdir=tofu/talos_cluster output -raw kubeconfig))" > "${KUBECONFIG}"
+### Stage 1: rook-ceph
 
-# after cluster provisions
-go-task ceph:build-crush-map tfvars=tofu/dexter.tfvars
-for v in 0 1 2; do go-task volsync:restore rsrc=vault namespace=vault claim=data-vault-$v previous=1; done
-kubectl apply -f kubernetes/clusters/dexter/argocd/app-of-apps/application.yaml
-```
+- Bootstrap cluster
+
+    ```bash
+    tofu -chdir=tofu/talos_cluster init
+    tofu -chdir=tofu/talos_cluster apply -var-file=../homelab.tfvars
+    ```
+
+- Wait for everything to deploy (all apps in ArgoCD are green)
+- Create kubeconfig and talosconfig
+
+    ```bash
+    talosctl config merge <(tofu -chdir=tofu/talos_cluster output -raw talosconfig)
+    # you need konfig plugin for that: kubectl krew install konfig
+    printf '%s' "$(kubectl konfig import <(tofu -chdir=tofu/talos_cluster output -raw kubeconfig))" > "${KUBECONFIG}"
+    ```
+
+- Create proper CRUSH map for ceph
+
+    ```bash
+    go-task ceph:build-crush-map tfvars=tofu/homelab.tfvars
+    ```
+
+- If ceph blockpools or filesystems, are stuck in "progressing" state, just delete them. They should be recreated
+  properly and attached to corresponding CRUSH map.
+
+### Stage 2: vault
+
+- Bootstrap volsync and vault
+
+    ```bash
+    go-task bootstrap:stage2
+    ```
+
+### Stage 3: app-of-apps
+
+- Bootstrap everything else
+
+    ```bash
+    kubectl apply -f kubernetes/clusters/dexter/argocd/app-of-apps/application.yaml
+    ```

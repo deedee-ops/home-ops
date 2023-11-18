@@ -16,6 +16,16 @@ tasks:
     cmds:
       - "sh -c 'go-task -l || task -l'"
 
+  'bootstrap:stage2':
+    desc: Install volsync and vault
+    cmds:
+      - kubectl apply -f kubernetes/apps/backups/volsync/bootstrap.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application volsync
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application volsync
+      - kubectl apply -f kubernetes/apps/vault/vault/bootstrap.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application vault
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application vault
+
   mount-volume:
     desc: >-
       Mount a PersistentVolumeClaim to a temporary pod (ex. task mount-volume claim=data-vault-0 [namespace=default])

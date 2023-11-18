@@ -12,6 +12,12 @@ tasks:
       - kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.ceph.health}=HEALTH_OK' cephcluster rook-ceph
       - "{{.buildCrushMapScript}} {{.tfvars}}"
       - kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.ceph.health}=HEALTH_OK' cephcluster rook-ceph
+      - >
+        kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.phase}=Ready'
+        cephblockpool ceph-ephemeral-block
+      - >
+        kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.phase}=Ready'
+        cephblockpool ceph-persistent-block
     vars:
       tfvars: '{{ or .tfvars (fail "`tfvars` path is required") }}'
     preconditions:
