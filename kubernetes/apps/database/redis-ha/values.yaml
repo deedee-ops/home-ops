@@ -46,7 +46,7 @@ redis-ha:
       reloader.stakater.com/auto: "true"
     image:
       repository: public.ecr.aws/docker/library/haproxy
-      tag: 2.8.3-alpine
+      tag: 2.8.4-alpine
     metrics:
       enabled: true
       serviceMonitor:
