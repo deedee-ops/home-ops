@@ -10,6 +10,8 @@ metadata:
   annotations:
     meta.helm.sh/release-name: authelia
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookFailed
 secrets:
   - name: authelia
 ---

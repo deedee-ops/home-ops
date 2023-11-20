@@ -143,7 +143,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-vault-0
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -162,7 +162,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-vault-1
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -181,7 +181,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: data-vault-2
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -200,7 +200,7 @@ kind: ReplicationDestination
 metadata:
   name: init-vault-data-vault-0
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   trigger:
     manual: restore-init
@@ -227,7 +227,7 @@ kind: ReplicationDestination
 metadata:
   name: init-vault-data-vault-1
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   trigger:
     manual: restore-init
@@ -254,7 +254,7 @@ kind: ReplicationDestination
 metadata:
   name: init-vault-data-vault-2
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   trigger:
     manual: restore-init

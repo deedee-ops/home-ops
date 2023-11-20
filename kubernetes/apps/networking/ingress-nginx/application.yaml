@@ -10,7 +10,7 @@ spec:
   sources:
     - repoURL: https://github.com/ajgon/home-ops.git
       targetRevision: master
-      path: kubernetes/apps/networking/nginx
+      path: kubernetes/apps/networking/ingress-nginx
       plugin:
         name: argocd-vault-plugin-helm
   destination:

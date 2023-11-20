@@ -1,6 +1,31 @@
 ---
 secrets-store-csi-driver:
-  crds:
-    enabled: true
+  linux:
+    crds:
+      enabled: true
+    registrar:
+      driver:
+        resources:
+          limits:
+            cpu: "1"  # cannot disable it, so set it high
+            memory: 200Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
+      resources:
+        limits:
+          cpu: "1"  # cannot disable it, so set it high
+          memory: 100Mi
+        requests:
+          cpu: 10m
+          memory: 20Mi
+      livenessProbe:
+        resources:
+          limits:
+            cpu: "1"  # cannot disable it, so set it high
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
   syncSecret:
     enabled: true

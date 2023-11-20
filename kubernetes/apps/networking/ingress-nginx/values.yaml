@@ -7,7 +7,7 @@ ingress-nginx:
     enableAnnotationValidations: true
     service:
       annotations:
-        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/base#IP_INGRESS_INTERNAL>
+        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/ingress-nginx#IP_INTERNAL>
     ingressClassResource:
       name: internal
       default: true
@@ -52,13 +52,13 @@ ingress-nginx:
       client-header-timeout: 120
       enable-brotli: "true"
       enable-real-ip: "true"
-      # global-auth-method: GET
-      # global-auth-url: http://authelia.auth.svc.cluster.local:9091/api/verify
-      # global-auth-signin: https://authelia.rzegocki.dev?rm=$request_method
-      # global-auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-      # global-auth-cache-key: "$remote_user$http_cookie"
-      # global-auth-cache-duration: "200 202 30m, 401 1m"
-      # global-auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
+      global-auth-method: GET
+      global-auth-url: http://authelia.default.svc.cluster.local:9091/api/verify
+      global-auth-signin: https://authelia.rzegocki.dev?rm=$request_method
+      global-auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
+      global-auth-cache-key: "$remote_user$http_cookie"
+      global-auth-cache-duration: "200 202 30m, 401 403 1m"
+      global-auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
       hsts-max-age: 31449600
       keep-alive-requests: 10000
       keep-alive: 120

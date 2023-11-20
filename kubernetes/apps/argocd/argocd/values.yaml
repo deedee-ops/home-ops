@@ -9,6 +9,10 @@ argo-cd:
       runAsGroup: 999
       seccompProfile:
         type: RuntimeDefault
+    hostAliases:
+      - ip: "<path:kubernetes/data/internal/ingress-nginx#IP_INTERNAL>"
+        hostnames:
+          - "authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
   configs:
     params:
       # by default argocd handles SSL termination on its own, which breaks TLS termination on nginx,
@@ -31,6 +35,20 @@ argo-cd:
               end
             end
             return hs
+      url: "https://argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      oidc.config: |
+          name: Authelia
+          issuer: "https://authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          clientID: argocd
+          clientSecret: "<path:kubernetes/data/internal/argocd#OIDC_SECRET_RAW>"
+          cliClientID: argocd-cli
+          requestedScopes:
+            - openid
+            - profile
+            - email
+            - groups
+    rbac:
+      policy.csv: g, lldap_admin, role:admin
 
   controller:
     replicas: 2

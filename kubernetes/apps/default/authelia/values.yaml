@@ -132,6 +132,12 @@ app-template:
             - "authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
   persistence:
+    config:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /config
     config-file:
       enabled: true
       type: configMap

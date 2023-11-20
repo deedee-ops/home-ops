@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: rook-ceph-cluster
+specs:
+  - endpointSelector: {}
+    egress:
+      - toCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#CIDR_CEPH>"

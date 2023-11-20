@@ -87,7 +87,7 @@ app-template:
       advancedMounts:
         main:
           main:
-            - path: /data/maddy.conf
+            - path: /config/maddy.conf
               subPath: maddy.conf
     data:
       enabled: true

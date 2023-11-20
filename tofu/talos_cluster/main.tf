@@ -40,7 +40,7 @@ data "talos_cluster_kubeconfig" "this" {
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.nodes[0]
+  node                 = values(local.controlplanes)[0].primary_ip
 }
 
 data "talos_machine_disks" "this" {
