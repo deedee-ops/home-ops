@@ -3,6 +3,9 @@
 echo "ceph osd crush add-bucket ephemeral root"
 echo "ceph osd crush add-bucket persistent root"
 
+echo "ceph osd crush rule create-replicated replicated_mgr ephemeral host"
+echo "ceph osd pool set .mgr crush_rule replicated_mgr"
+
 jq -r '.cluster.ceph.storage_nodes[] | . as $node | .devices[] | ("ceph osd crush add-bucket " + $node.name + "-" + .config.crushRoot + " host")' < "$1"
 jq -r '.cluster.ceph.storage_nodes[] | . as $node | .devices[] | ("ceph osd crush move " + $node.name + "-" + .config.crushRoot + " root=" + .config.crushRoot)' < "$1"
 
