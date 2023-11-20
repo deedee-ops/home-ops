@@ -7,7 +7,7 @@ ingress-nginx:
     enableAnnotationValidations: true
     service:
       annotations:
-        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/base#IP_INGRESS_INTERNAL>
+        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/ingress-nginx#IP_INTERNAL>
     ingressClassResource:
       name: internal
       default: true

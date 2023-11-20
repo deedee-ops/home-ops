@@ -7,7 +7,8 @@ metadata:
 spec:
   loadBalancerIPs: true
   interfaces:
-    - ^enx.*
+    - ^enp.*
+    - ^vbr.*
   nodeSelector:
     matchLabels:
       kubernetes.io/os: linux
@@ -19,4 +20,4 @@ metadata:
   name: pool
 spec:
   cidrs:
-    - cidr: 10.100.90.0/24
+    - cidr: "<path:kubernetes/data/internal/base#CIDR_LOADBALANCER>"
