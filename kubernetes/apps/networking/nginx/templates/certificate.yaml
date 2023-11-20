@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: root-domain-tls
   issuerRef:
-    name: letsencrypt-staging
+    name: "<path:kubernetes/data/internal/base#CERT_ISSUER_REF>"
     kind: ClusterIssuer
   commonName: "<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
   dnsNames:

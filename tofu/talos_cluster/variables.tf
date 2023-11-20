@@ -1,13 +1,32 @@
 variable "cluster" {
   type = object({
-    name = string
-    vip  = optional(string)
+    name        = string
+    vip         = optional(string)
+    nameservers = list(string)
     machines = map(object({
       disk_filter = optional(map(string), {})
       patch       = optional(string, "")
       primary_ip  = optional(string, "")
-      primary_mac = optional(string, "")
       type        = string
+      interfaces = list(object({
+        interface      = optional(string)
+        deviceSelector = optional(map(string))
+        dhcp           = optional(bool)
+        addresses      = optional(list(string))
+        routes = optional(list(object({
+          network = optional(string)
+          gateway = optional(string)
+        })))
+        vip = optional(object({
+          ip = optional(string)
+        }))
+        bridge = optional(object({
+          interfaces = list(string)
+          stp = object({
+            enabled = bool
+          })
+        }))
+      }))
     }))
     ceph = object({
       public_network  = string

@@ -20,21 +20,16 @@ resource "talos_machine_configuration_apply" "controlplanes" {
           }
         }
         network = {
-          hostname = each.key
-          interfaces = [{
-            deviceSelector = {
-              hardwareAddr = each.value.primary_mac
-            }
-            dhcp = true
-            vip = {
-              ip : local.cluster_endpoint
-            }
-          }]
+          hostname    = each.key
+          interfaces  = each.value.interfaces
+          nameservers = var.cluster.nameservers
         }
         install = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-          image = "ghcr.io/siderolabs/installer:v1.5.5"
-          disk  = data.talos_machine_disks.this[each.key].disks[0].name
+          image      = "ghcr.io/siderolabs/installer:v1.5.5"
+          disk       = data.talos_machine_disks.this[each.key].disks[0].name
+          bootloader = true
+          wipe       = true
         }
         features = {
           kubePrism = {
@@ -249,19 +244,49 @@ resource "talos_machine_configuration_apply" "workers" {
   config_patches = [
     yamlencode({
       machine = {
+        kubelet = {
+          # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+          image                               = "ghcr.io/siderolabs/kubelet:v1.28.4"
+          defaultRuntimeSeccompProfileEnabled = true
+          disableManifestsDirectory           = true
+          extraArgs = {
+            "rotate-server-certificates" = true
+          }
+        }
         network = {
-          hostname = each.key
+          hostname    = each.key
+          interfaces  = [for item in each.value.interfaces : { for key, value in item : key => value if value != null }]
+          nameservers = var.cluster.nameservers
+        }
+        udev = {
+          rules = [
+            "ACTION==\"add\", SUBSYSTEM==\"thunderbolt\", ATTR{authorized}==\"0\", ATTR{authorized}=\"1\""
+          ]
         }
         install = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-          image = "ghcr.io/siderolabs/installer:v1.5.5"
-          disk  = data.talos_machine_disks.this[each.key].disks[0].name
+          image      = "ghcr.io/siderolabs/installer:v1.5.5"
+          disk       = data.talos_machine_disks.this[each.key].disks[0].name
+          bootloader = true
+          wipe       = true
+          extensions = [
+            # renovate: datasource=docker depName=ghcr.io/siderolabs/i915-ucode versioning=regex:^(?<major>\d+)$
+            { image = "ghcr.io/siderolabs/i915-ucode:20231030" },
+            # renovate: datasource=docker depName=ghcr.io/siderolabs/thunderbolt
+            { image = "ghcr.io/siderolabs/thunderbolt:v1.5.5" }
+          ]
         }
         features = {
           kubePrism = {
             enabled = true
             port    = 7445
           }
+        }
+        kernel = {
+          modules = [
+            { name = "thunderbolt" },
+            { name = "thunderbolt_net" }
+          ]
         }
       }
       cluster = {
