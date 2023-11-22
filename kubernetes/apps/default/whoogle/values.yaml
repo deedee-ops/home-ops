@@ -1,0 +1,71 @@
+---
+app-template:
+  controllers:
+    main:
+      pod:
+        labels:
+          # proxying to google
+          egress/enabled: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/benbusby/whoogle-search
+            tag: 0.8.4
+            pullPolicy: IfNotPresent
+
+          command:  # disable tor
+            - /bin/sh
+            - -c
+            - ./run
+
+          env:
+            EXPOSE_PORT: 5000
+            WHOOGLE_CONFIG_DISABLE: 1
+            WHOOGLE_CONFIG_GET_ONLY: 1
+            WHOOGLE_CONFIG_NEW_TAB: 1
+            WHOOGLE_CONFIG_THEME: dark
+            WHOOGLE_CONFIG_URL: "https://whoogle.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+            WHOOGLE_TOR_SERVICE: 0
+            WHOOGLE_CONFIG_TOR: 0
+            TZ: Europe/Warsaw
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthz
+                  port: 5000
+            readiness: *probes
+            liveness: *probes
+
+  service:
+    main:
+      ports:
+        http:
+          port: 5000
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Whoogle
+        gethomepage.dev/icon: whooglesearch.png
+        gethomepage.dev/description: Google Proxy and Anonymizer
+      hosts:
+        - host: "whoogle.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 5000
+      tls:
+        - hosts:
+            - "whoogle.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
