@@ -1,0 +1,8 @@
+---
+silence-operator:
+  image:
+    name: "quay.io/giantswarm/silence-operator"
+    tag: "0.11.1"
+
+  rbac:
+    create: true
