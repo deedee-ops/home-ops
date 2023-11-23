@@ -1,0 +1,59 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: schemas
+spec:
+  type: ExternalName
+  externalName: raw.githubusercontent.com
+  ports:
+    - port: 443
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: schemas
+  annotations:
+    nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /ajgon/home-ops/master/schemas/$1
+    nginx.ingress.kubernetes.io/upstream-vhost: raw.githubusercontent.com
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/configuration-snippet: |-
+      more_clear_input_headers "Cookie";
+      more_clear_headers "Content-Security-Policy";
+spec:
+  ingressClassName: internal
+  rules:
+    - host: "schemas.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      http:
+        paths:
+          - backend:
+              service:
+                name: schemas
+                port:
+                  number: 443
+            path: /(.*)
+            pathType: Prefix
+  tls:
+    - hosts:
+        - "schemas.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: schemas
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: ingress-nginx
+    egress:
+      - toFQDNs:
+          - matchName: raw.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"
+# yamllint enable rule:line-length
