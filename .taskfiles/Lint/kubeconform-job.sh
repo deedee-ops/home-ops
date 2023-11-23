@@ -7,6 +7,9 @@ helm_templates="$(find "${SCRIPT_DIR}/../../kubernetes/apps" -mindepth 2 -maxdep
 error=0
 
 for helm in ${helm_templates}; do
+  if [ -f "${helm}/.kubeconformignore" ]; then
+    continue
+  fi
   if ! helm dependency update "${helm}" > /dev/null 2>&1; then
     if [ $error == 0 ]; then
       echo "Found helm templates not passing kubeconform test"
