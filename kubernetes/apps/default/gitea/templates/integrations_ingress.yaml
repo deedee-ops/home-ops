@@ -1,0 +1,43 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+# yamllint enable rule:line-length
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    blackbox/noprobe: "true"
+    nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: gitea-integrations
+spec:
+  ingressClassName: internal
+  rules:
+    - host: "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      http:
+        paths:
+          # renovate
+          - backend:
+              service:
+                name: gitea-http
+                port:
+                  number: 3000
+            path: /.*/info/.*
+            pathType: Prefix
+          # renovate, argocd
+          - backend:
+              service:
+                name: gitea-http
+                port:
+                  number: 3000
+            # using '\.' breaks ingress for some reason
+            path: /.*[.]git
+            pathType: Prefix
+          # docker registry
+          - backend:
+              service:
+                name: gitea-http
+                port:
+                  number: 3000
+            path: /v2
+            pathType: Prefix

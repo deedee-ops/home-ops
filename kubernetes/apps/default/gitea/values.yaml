@@ -1,0 +1,133 @@
+---
+gitea:
+  replicaCount: 2
+  strategy:
+    type: RollingUpdate
+  image:
+    rootless: true
+  ingress:
+    enabled: true
+    apiVersion: networking.k8s.io/v1
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Apps
+      gethomepage.dev/name: Gitea
+      gethomepage.dev/icon: gitea.png
+      gethomepage.dev/description: Git Repositories
+    hosts:
+      - host: "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: gitea
+  deployment:
+    annotations:
+      secret.reloader.stakater.com/reload: >-
+        gitea,gitea-init,gitea-inline-config,gitea-ldap,gitea-registry,gitea-secret
+  persistence:
+    enabled: true
+    storageClass: ceph-persistent-filesystem
+    size: 20Gi
+    accessModes:
+      - ReadWriteMany
+    mount: true
+    create: false
+    claimName: gitea-data
+  initContainers:
+    resources:
+      limits: {}
+  gitea:
+    ldap:
+      - name: lldap
+        securityProtocol: unencrypted
+        host: lldap.default.svc.cluster.local
+        port: "389"
+        userSearchBase: ou=people,dc=home,dc=arpa
+        userFilter: (&(objectClass=person)(|(uid=%[1]s)(mail=%[1]s)))
+        adminFilter: (memberof=cn=lldap_admin,ou=groups,dc=home,dc=arpa)
+        usernameAttribute: uid
+        emailAttribute: mail
+        existingSecret: gitea-ldap
+    config:
+      attachment:
+        ENABLED: true
+        MAX_SIZE: 64
+      cache:
+        ENABLED: true
+        ADAPTER: redis
+      # https://gitea.com/gitea/helm-chart/src/branch/main/templates/gitea/config.yaml#L30
+      cron.GIT_GC_REPOS:
+        ENABLED: false
+      cron.cleanup_packages:
+        ENABLED: true
+        RUN_AT_START: true
+        OLDER_THAN: 1m
+      database:
+        DB_TYPE: postgres
+        HOST: "<path:kubernetes/data/internal/cloudnative-pg#HOST>"
+        NAME: "<path:kubernetes/data/internal/gitea#DB_DATABASE>"
+        SCHEMA: public
+        SSL_MODE: require
+      indexer:
+        # bleve won't work in HA environment: https://github.com/go-gitea/gitea/issues/17563
+        REPO_INDEXER_ENABLED: false
+      mailer:
+        ENABLED: true
+        PROTOCOL: "smtp"
+        FORCE_TRUST_SERVER_CERT: true
+        SMTP_ADDR: smtp-relay.default.svc.cluster.local
+        SMTP_PORT: 25
+        FROM: "gitea@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+        SUBJECT_PREFIX: "[GITEA]"
+      queue:
+        TYPE: redis
+      picture:
+        DISABLE_GRAVATAR: true
+        ENABLE_FEDERATED_AVATAR: false
+      security:
+        REVERSE_PROXY_LIMIT: 1
+        REVERSE_PROXY_AUTHENTICATION_USER: "Remote-User"
+        REVERSE_PROXY_TRUSTED_PROXIES: "172.16.0.0/12"
+      server:
+        DISABLE_SSH: false
+        OFFLINE_MODE: true
+        ENABLE_PPROF: true
+        HTTP_PORT: 3000
+        SSH_DOMAIN: "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        SSH_PORT: 2222
+      service:
+        DISABLE_REGISTRATION: true
+        REQUIRE_SIGNIN_VIEW: true
+        ENABLE_NOTIFY_MAIL: true
+        ENABLE_REVERSE_PROXY_AUTHENTICATION: true
+        ENABLE_REVERSE_PROXY_AUTO_REGISTRATION: false
+        ENABLE_REVERSE_PROXY_EMAIL: false
+      session:
+        PROVIDER: redis
+      ui:
+        DEFAULT_THEME: "arc-green"
+      webhook:
+        ALLOWED_HOST_LIST: "*.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    additionalConfigSources:
+      - secret:
+          secretName: gitea-secret
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  redis-cluster:
+    enabled: false
+  postgresql-ha:
+    enabled: false
+  postgresql:
+    enabled: false

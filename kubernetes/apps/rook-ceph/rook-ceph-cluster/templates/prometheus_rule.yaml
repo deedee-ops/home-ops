@@ -12,26 +12,26 @@ spec:
     - name: ceph-extra.rules
       rules:
         - alert: CephOSDHighWriteThroughput
-          expr: sum(rate(ceph_osd_op_w_in_bytes[5m])) > 20971520
-          for: 5m
+          expr: sum(rate(ceph_osd_op_w_in_bytes[15m])) > 20971520
+          for: 15m
           labels:
             severity: warning
           annotations:
             summary: Ceph OSDs are under high write pressure
             description: |-
               Ceph OSDs have a lot of writes. Use
-              sum(rate(ceph_osd_op_w_in_bytes[5m])) > 20971520
+              increase(container_fs_writes_bytes_total{namespace!~"rook-ceph"}[5m]) > 1048576000
               metric to find the culprit and investigate.
         - alert: CephOSDHighWriteIOPS
-          expr: sum(rate(ceph_osd_op_w[10m])) > 40
-          for: 5m
+          expr: sum(rate(ceph_osd_op_w[15m])) > 40
+          for: 15m
           labels:
             severity: warning
           annotations:
             summary: Ceph OSDs use a lot of IOPS
             description: |-
               Ceph OSDs have a lot of writes. Use
-              sum(rate(ceph_osd_op_w_in_bytes[5m])) > 20971520
+              increase(container_fs_writes_bytes_total{namespace!~"rook-ceph"}[5m]) > 1048576000
               metric to find the culprit and investigate.
         - alert: CephPGImbalancePersistent
           annotations:

@@ -119,10 +119,10 @@ data:
         host: smtp-relay.default.svc.cluster.local
         port: 25
         timeout: 5s
-        sender: authelia@ajgon.ovh
+        sender: "authelia@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
         identifier: "<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
         subject: '[Authelia] {title}'
-        startup_check_address: test-authelia@ajgon.ovh
+        startup_check_address: "test-authelia@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
         disable_html_emails: false
         disable_require_tls: true
         disable_starttls: false

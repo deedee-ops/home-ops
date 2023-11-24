@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: gitea
+version: 1.0.0
+type: application
+dependencies:
+  - name: gitea
+    version: 9.6.0
+    repository: https://dl.gitea.io/charts/

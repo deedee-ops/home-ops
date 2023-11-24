@@ -1,0 +1,92 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: restic-gitea-gitea-data
+type: Opaque
+stringData:
+  AWS_ACCESS_KEY_ID: "<path:kubernetes/data/internal/base#S3_ACCESS_KEY_ID>"
+  AWS_SECRET_ACCESS_KEY: "<path:kubernetes/data/internal/base#S3_SECRET_ACCESS_KEY>"
+  RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
+  RESTIC_REPOSITORY: "s3:<path:kubernetes/data/internal/base#S3_URL>/<path:kubernetes/data/internal/base#S3_BUCKET>/volsync/gitea-data"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: gitea-gitea-data
+spec:
+  sourcePVC: gitea-data
+  trigger:
+    schedule: "30 1 * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    repository: restic-gitea-gitea-data
+    volumeSnapshotClassName: ceph-filesystem
+    cacheCapacity: 20Gi
+    cacheStorageClassName: ceph-persistent-filesystem
+    cacheAccessModes:
+      - ReadWriteOnce
+    storageClassName: ceph-persistent-filesystem
+    accessModes:
+      - ReadWriteOnce
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 6
+      yearly: 3
+      within: 3d
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 1000
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+    - ReadWriteMany
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: init-gitea-gitea-data
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: ceph-persistent-filesystem
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: init-gitea-gitea-data
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  trigger:
+    manual: restore-init
+  restic:
+    repository: restic-gitea-gitea-data
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-filesystem
+    cacheStorageClassName: ceph-persistent-filesystem
+    cacheAccessModes:
+      - ReadWriteOnce
+    cacheCapacity: 10Gi
+    storageClassName: ceph-persistent-filesystem
+    accessModes:
+      - ReadWriteOnce
+    capacity: 20Gi
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 1000
+# yamllint enable rule:line-length

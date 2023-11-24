@@ -1,0 +1,30 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/job.json
+# yamllint enable
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: gitea-init-db-
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: init-db
+          image: ghcr.io/ajgon/postgres-init:16.1
+          volumeMounts:
+            - mountPath: /secrets
+              name: secrets
+      serviceAccount: default
+      serviceAccountName: default
+      volumes:
+        - csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: gitea
+          name: secrets
