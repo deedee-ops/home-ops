@@ -1,0 +1,28 @@
+---
+teleport-cluster:
+  clusterName: "teleport.<::RAW_ROOT_DOMAIN>"
+  kubeClusterName: deedee
+  auth:
+    teleportConfig:
+      auth_service:
+        authentication:
+          require_session_mfa: true
+  proxyListenerMode: separate
+  acme: false
+  podMonitor:
+    enabled: true
+  tls:
+    existingSecretName: root-domain-tls
+  annotations:
+    service:
+      io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/teleport#IP_INTERNAL>"
+  proxy:
+    highAvailability:
+      replicaCount: 2
+      requireAntiAffinity: true
+  persistence:
+    enabled: true
+    existingClaimName: teleport-data
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
