@@ -8,11 +8,11 @@ metadata:
 spec:
   project: default
   destination:
-    namespace: kyverno
+    namespace: monitoring
     server: https://kubernetes.default.svc
   sources:
     - repoURL: https://github.com/ajgon/home-ops.git
-      path: kubernetes/apps/kyverno/kyverno
+      path: kubernetes/apps/monitoring/kyverno
       targetRevision: master
       plugin:
         name: argocd-vault-plugin-helm

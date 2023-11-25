@@ -81,6 +81,12 @@ spec:
                 - Pod
               namespaces:
                 - default
+      exclude:
+        any:
+          - resources:
+              selector:
+                matchLabels:
+                  app.kubernetes.io/created-by: volsync
       validate:
         message: "CPU and memory resource requests and limits are required."
         pattern:
