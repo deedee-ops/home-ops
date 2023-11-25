@@ -40,6 +40,7 @@ app-template:
             tag: "16.1"
 
           env:
+            DELETE_OLDER_THAN: "14 days ago"
             POSTGRES_DATABASE: all
             POSTGRES_HOST: "<path:kubernetes/data/internal/cloudnative-pg#HOST>"
             POSTGRES_PORT: "5432"
