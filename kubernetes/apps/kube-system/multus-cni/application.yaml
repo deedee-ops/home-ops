@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/argoproj.io/application_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: multus-cni
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/ajgon/home-ops.git
+      targetRevision: master
+      path: kubernetes/apps/kube-system/multus-cni
+      plugin:
+        name: argocd-vault-plugin-helm
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

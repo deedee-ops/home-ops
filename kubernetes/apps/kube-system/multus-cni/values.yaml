@@ -1,0 +1,13 @@
+---
+multus-cni:
+  global:
+    imageRegistry: public.ecr.aws
+  initContainers: |
+    - command:
+        - /install-cni.sh
+      image: ghcr.io/siderolabs/install-cni:v1.5.0
+      imagePullPolicy: IfNotPresent
+      name: install-cni
+      volumeMounts:
+        - mountPath: /host/opt/cni/bin/
+          name: cni-bin-dir
