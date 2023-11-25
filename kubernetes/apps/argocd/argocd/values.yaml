@@ -112,6 +112,8 @@ argo-cd:
     podLabels:
       # for downloading helm charts from various sources
       egress/enabled: "true"
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: cmp-plugin
     autoscaling:
       enabled: false
     metrics:
