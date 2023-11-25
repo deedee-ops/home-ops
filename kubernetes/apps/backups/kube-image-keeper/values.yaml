@@ -24,6 +24,12 @@ kube-image-keeper:
     webhook:
       ignoredNamespaces:
         - kube-system
+      ignoredImages:
+        # cloudnative-pg images prepended with localhost are failing version check, causing
+        # postgres pods been constantly killed by operator, as it's confused and thinks
+        # that it's old version
+        - ".*cloudnative-pg/postgresql.*"
+        - "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/.*"
     podMonitor:
       create: true
 
