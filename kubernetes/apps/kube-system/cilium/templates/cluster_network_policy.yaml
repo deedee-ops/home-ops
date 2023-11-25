@@ -12,6 +12,9 @@ specs:
           values:
             - "true"
     egress:
+      - toCIDRSet:
+          # sometimes cilium mistakes svc/pod CIDR as world, so let's allow it explicitly
+          - cidr: 172.30.0.0/15
       - toEntities:
           - cluster
       - toEndpoints:
