@@ -1,5 +1,12 @@
 ---
 app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 927
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
   controllers:
     main:
       pod:
@@ -30,6 +37,16 @@ app-template:
             WHOOGLE_CONFIG_TOR: 0
             TZ: Europe/Warsaw
 
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 927
+            runAsGroup: 927
+            capabilities:
+              drop:
+                - ALL
+
           probes:
             startup: &probes
               enabled: true
@@ -40,6 +57,21 @@ app-template:
                   port: 5000
             readiness: *probes
             liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 200Mi
+
+  persistence:
+    config:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /whoogle/app/static/build
 
   service:
     main:

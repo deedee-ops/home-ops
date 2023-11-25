@@ -11,7 +11,7 @@ spec:
         - alert: KyvernoPolicyFailed
           expr: |
             increase(kyverno_policy_results_total{rule_result="fail",rule_execution_cause="background_scan"}[1m]) > 0
-          for: 1m
+          for: 0m
           labels:
             severity: warning
           annotations:

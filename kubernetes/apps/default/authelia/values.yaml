@@ -82,6 +82,31 @@ app-template:
             - name: METHOD
               value: WATCH
 
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - pgrep
+                    - -f
+                    - /app/sidecar.py
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                failureThreshold: 3
+            liveness: *probes
+
           resources:
             requests:
               cpu: 10m

@@ -5,6 +5,23 @@ gitea:
     type: RollingUpdate
   image:
     rootless: true
+    registry: ghcr.io
+    repository: ajgon/gitea
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    capabilities:
+      drop:
+        - ALL
   ingress:
     enabled: true
     apiVersion: networking.k8s.io/v1
@@ -23,6 +40,12 @@ gitea:
     tls:
       - hosts:
           - "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
@@ -45,7 +68,8 @@ gitea:
     claimName: gitea-data
   initContainers:
     resources:
-      limits: {}
+      limits:
+        memory: 512Mi
   gitea:
     ldap:
       - name: lldap
