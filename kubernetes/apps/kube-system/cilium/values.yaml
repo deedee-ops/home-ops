@@ -18,6 +18,9 @@ cilium:
     apiserver:
       service:
         externalTrafficPolicy: local
+  cni:
+    # allow other CNIs to work alongisde cilium - this is required for multus to work
+    exclusive: false
   cgroup:
     autoMount:
       enabled: false
