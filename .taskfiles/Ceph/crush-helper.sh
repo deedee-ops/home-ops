@@ -14,4 +14,4 @@ echo "ceph osd crush rule create-simple persistent persistent host firstn"
 
 for osd in $(ceph osd ls); do ceph osd metadata "${osd}" | jq -r '(.bluestore_bdev_dev_node + ":" + .hostname + " " + (.id|tostring) + " " + ((.bluestore_bdev_size|tonumber) / 1099511627776 | tostring))'; done > /tmp/ceph-osd
 
-jq -r '.cluster.ceph.storage_nodes[] | . as $node | .devices[] | ("ceph osd crush set osd." + .name + ":" + $node.name + " WEIGHT root=" + .config.crushRoot + " host=" + $node.name + "-" + .config.crushRoot)' < "$1" | sed -f <(awk '{ print "s@" $1 " WEIGHT@" $2 " " $3 "@g"}' /tmp/ceph-osd)
+jq -r '.cluster.ceph.storage_nodes[] | . as $node | .devices[] | ("ceph osd crush set osd." + .name + ":" + $node.name + " WEIGHT root=" + .config.crushRoot + " host=" + $node.name + "-" + .config.crushRoot)' < "$1" | sed -f <(awk '{ print "s@" $1 "@" $2 "@g" }' /tmp/disk-map) | sed -f <(awk '{ print "s@" $1 " WEIGHT@" $2 " " $3 "@g"}' /tmp/ceph-osd)

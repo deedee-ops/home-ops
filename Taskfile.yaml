@@ -26,6 +26,89 @@ tasks:
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application vault
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application vault
 
+  # yamllint disable rule:line-length
+  'bootstrap:stage3':
+    desc: Install rest of the cluster base logic
+    cmds:
+      - kubectl apply -f kubernetes/apps/kube-system/metrics-server/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application metrics-server
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application metrics-server
+      - kubectl apply -f kubernetes/apps/kube-system/secrets-store-csi-driver/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application secrets-store-csi-driver
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application secrets-store-csi-driver
+      - kubectl apply -f kubernetes/apps/kube-system/snapshot-controller/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application snapshot-controller
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application snapshot-controller
+      - kubectl apply -f kubernetes/apps/cert-manager/cert-manager/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cert-manager
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cert-manager
+      - kubectl apply -f kubernetes/apps/networking/ingress-nginx/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application ingress-nginx
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application ingress-nginx
+      - kubectl apply -f kubernetes/apps/kube-system/cilium/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cilium
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cilium
+      - kubectl apply -f kubernetes/apps/argocd/argocd/application.yaml
+      # wait for reapply
+      - sleep 2
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application argocd
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application argocd
+      # wait for reapply
+      - sleep 2
+      - kubectl apply -f kubernetes/apps/backups/volsync/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application volsync
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application volsync
+      # wait for reapply
+      - sleep 2
+      - kubectl apply -f kubernetes/apps/rook-ceph/rook-ceph/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application rook-ceph
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application rook-ceph
+      # wait for reapply
+      - sleep 2
+      - kubectl apply -f kubernetes/apps/rook-ceph/rook-ceph-cluster/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application rook-ceph-cluster
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application rook-ceph-cluster
+      # wait for reapply
+      - sleep 2
+      - kubectl apply -f kubernetes/apps/vault/vault/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application vault
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application vault
+      - kubectl apply -f kubernetes/apps/monitoring/kyverno/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kyverno
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kyverno
+      - kubectl apply -f kubernetes/apps/kube-system/reloader/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application reloader
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application reloader
+      - kubectl apply -f kubernetes/apps/backups/kube-image-keeper/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kube-image-keeper
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kube-image-keeper
+      - kubectl apply -f kubernetes/apps/monitoring/silence-operator/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application silence-operator
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application silence-operator
+      - kubectl apply -f kubernetes/apps/networking/smtp-relay/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application smtp-relay
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application smtp-relay
+      - kubectl apply -f kubernetes/apps/monitoring/thanos/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application thanos
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application thanos
+      - kubectl apply -f kubernetes/apps/monitoring/kube-prometheus-stack/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kube-prometheus-stack
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kube-prometheus-stack
+      - kubectl apply -f kubernetes/apps/database/redis-ha/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application redis-ha
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application redis-ha
+      - kubectl apply -f kubernetes/apps/database/cloudnative-pg/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cloudnative-pg
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cloudnative-pg
+      - kubectl -n database wait --timeout=1800s --for=jsonpath='{.status.phase}="Cluster in healthy state"' cluster postgres-16
+      - kubectl apply -f kubernetes/apps/default/lldap/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application lldap
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application lldap
+      - kubectl apply -f kubernetes/apps/default/authelia/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application authelia
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application authelia
+
+  # yamllint enable rule:line-length
   mount-volume:
     desc: >-
       Mount a PersistentVolumeClaim to a temporary pod (ex. task mount-volume claim=data-vault-0 [namespace=default])
