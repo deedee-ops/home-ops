@@ -1,0 +1,146 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-ceph-ephemeral-block
+  namespace: rook-ceph
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: ceph-ephemeral-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-ceph-persistent-block
+  namespace: rook-ceph
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: ceph-persistent-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-ceph-persistent-filesystem-rwo
+  namespace: rook-ceph
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: ceph-persistent-filesystem
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-ceph-persistent-filesystem-rwx
+  namespace: rook-ceph
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 64Mi
+  storageClassName: ceph-persistent-filesystem
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/pod.json
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-ceph-ephemeral-block
+  namespace: rook-ceph
+spec:
+  containers:
+    - name: test
+      image: public.ecr.aws/docker/library/alpine:edge
+      command:
+        - /bin/sh
+        - -c
+        - "trap : TERM INT; sleep infinity & wait"
+      volumeMounts:
+        - mountPath: "/test"
+          name: ceph
+  volumes:
+    - name: ceph
+      persistentVolumeClaim:
+        claimName: test-ceph-ephemeral-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/pod.json
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-ceph-persistent-block
+  namespace: rook-ceph
+spec:
+  containers:
+    - name: test
+      image: public.ecr.aws/docker/library/alpine:edge
+      command:
+        - /bin/sh
+        - -c
+        - "trap : TERM INT; sleep infinity & wait"
+      volumeMounts:
+        - mountPath: "/test"
+          name: ceph
+  volumes:
+    - name: ceph
+      persistentVolumeClaim:
+        claimName: test-ceph-persistent-block
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/pod.json
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-ceph-persistent-filesystem-rwo
+  namespace: rook-ceph
+spec:
+  containers:
+    - name: test
+      image: public.ecr.aws/docker/library/alpine:edge
+      command:
+        - /bin/sh
+        - -c
+        - "trap : TERM INT; sleep infinity & wait"
+      volumeMounts:
+        - mountPath: "/test"
+          name: ceph
+  volumes:
+    - name: ceph
+      persistentVolumeClaim:
+        claimName: test-ceph-persistent-filesystem-rwo
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/pod.json
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-ceph-persistent-filesystem-rwx
+  namespace: rook-ceph
+spec:
+  containers:
+    - name: test
+      image: public.ecr.aws/docker/library/alpine:edge
+      command:
+        - /bin/sh
+        - -c
+        - "trap : TERM INT; sleep infinity & wait"
+      volumeMounts:
+        - mountPath: "/test"
+          name: ceph
+  volumes:
+    - name: ceph
+      persistentVolumeClaim:
+        claimName: test-ceph-persistent-filesystem-rwx
+# yamllint enable rule:line-length
