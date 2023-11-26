@@ -19,6 +19,13 @@ spec:
           volumeMounts:
             - mountPath: /secrets
               name: secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
       volumes:
         - csi:
             driver: secrets-store.csi.k8s.io
@@ -26,3 +33,7 @@ spec:
             volumeAttributes:
               secretProviderClass: lldap
           name: secrets
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
