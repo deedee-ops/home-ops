@@ -19,6 +19,13 @@ spec:
           volumeMounts:
             - mountPath: /secrets
               name: secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
       serviceAccount: authelia
       serviceAccountName: authelia
       volumes:
@@ -28,3 +35,7 @@ spec:
             volumeAttributes:
               secretProviderClass: authelia
           name: secrets
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
