@@ -10,19 +10,14 @@ spec:
   sources:
     - repoURL: https://github.com/ajgon/home-ops.git
       targetRevision: master
-      path: kubernetes/apps/default/smtp-relay
+      path: kubernetes/apps/networking/smtp-relay
       plugin:
         name: argocd-vault-plugin-helm
   destination:
-    namespace: default
+    namespace: networking
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
       prune: true
     syncOptions:
       - CreateNamespace=true
-    managedNamespaceMetadata:
-      labels:
-        pod-security.kubernetes.io/enforce: restricted
-        pod-security.kubernetes.io/audit: restricted
-        pod-security.kubernetes.io/warn: restricted

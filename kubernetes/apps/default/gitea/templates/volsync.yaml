@@ -42,6 +42,7 @@ spec:
       yearly: 3
       within: 3d
     moverSecurityContext:
+      runAsNonRoot: true
       fsGroup: 1000
       runAsUser: 1000
       runAsGroup: 1000
@@ -88,6 +89,7 @@ spec:
       - ReadWriteOnce
     capacity: 20Gi
     moverSecurityContext:
+      runAsNonRoot: true
       fsGroup: 1000
       runAsUser: 1000
       runAsGroup: 1000

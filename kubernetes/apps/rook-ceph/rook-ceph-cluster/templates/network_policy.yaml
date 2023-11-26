@@ -1,5 +1,6 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+# {{ if not .Values.skipNetworkPolicy }}
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
@@ -9,3 +10,4 @@ specs:
     egress:
       - toCIDRSet:
           - cidr: "<path:kubernetes/data/internal/base#CIDR_CEPH>"
+# {{ end }}

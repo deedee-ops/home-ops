@@ -11,7 +11,7 @@ stringData:
   alertmanager.yaml: |
     global:
       smtp_hello: "<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
-      smtp_smarthost: "smtp-relay.default.svc.cluster.local:25"
+      smtp_smarthost: "smtp-relay.networking.svc.cluster.local:25"
       smtp_from: "alertmanager@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
       smtp_require_tls: false
     inhibit_rules:

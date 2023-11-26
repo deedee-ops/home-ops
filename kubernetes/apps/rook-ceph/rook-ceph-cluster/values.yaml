@@ -1,4 +1,6 @@
 ---
+skipNetworkPolicy: false
+
 rook-ceph-cluster:
   operatorNamespace: rook-ceph
   monitoring:

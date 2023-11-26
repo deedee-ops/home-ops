@@ -190,6 +190,10 @@ resource "talos_machine_configuration_apply" "controlplanes" {
             EOS
           },
           {
+            name : "app-kubelet-service-cert-approver"
+            contents : file("${path.root}/../../kubernetes/apps/kube-system/kubelet-serving-cert-approver/application.yaml")
+          },
+          {
             name : "app-rook-ceph"
             contents : yamlencode(local.patched_rook_ceph_app)
           },
@@ -319,6 +323,15 @@ locals {
               helm = {
                 valuesObject = {
                   "argo-cd" = {
+                    global = {
+                      hostAliases : []
+                    }
+                    configs = {
+                      cm = {
+                        url         = ""
+                        oidc.config = ""
+                      }
+                    }
                     server = {
                       ingress = {
                         enabled = false
@@ -358,6 +371,7 @@ locals {
               }, {
               helm = {
                 valuesObject = {
+                  skipNetworkPolicy = true
                   "rook-ceph-cluster" = {
                     cephClusterSpec = {
                       storage = {
