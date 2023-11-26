@@ -42,9 +42,12 @@ spec:
       yearly: 3
       within: 3d
     moverSecurityContext:
+      runAsNonRoot: true
       fsGroup: 1000
       runAsUser: 1000
       runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
 apiVersion: v1
@@ -88,7 +91,10 @@ spec:
       - ReadWriteOnce
     capacity: 10Gi
     moverSecurityContext:
+      runAsNonRoot: true
       fsGroup: 1000
       runAsUser: 1000
       runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
 # yamllint enable rule:line-length

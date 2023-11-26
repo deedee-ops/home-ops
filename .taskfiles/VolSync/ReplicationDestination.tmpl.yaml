@@ -25,6 +25,9 @@ spec:
     #   date --rfc-3339=seconds (--utc)
     # restoreAsOf: "2022-12-10T16:00:00-05:00"
     moverSecurityContext:
+      runAsNonRoot: true
       fsGroup: ${fsGroup}
       runAsUser: ${runAsUser}
       runAsGroup: ${runAsGroup}
+      seccompProfile:
+        type: RuntimeDefault

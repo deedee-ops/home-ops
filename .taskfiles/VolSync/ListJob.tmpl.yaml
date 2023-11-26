@@ -7,9 +7,18 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 3600
   template:
+    metadata:
+      labels:
+        route-to/nas: "true"
     spec:
       automountServiceAccountToken: false
       restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: list
           image: ghcr.io/restic/restic:0.16.2
@@ -17,3 +26,18 @@ spec:
           envFrom:
             - secretRef:
                 name: "restic-${rsrc}-${claim}"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            capabilities:
+              drop:
+                - ALL
