@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization.json
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - https://github.com/kubevirt/kubevirt/releases/download/v1.1.0/kubevirt-operator.yaml
+  - https://github.com/kubevirt/kubevirt/releases/download/v1.1.0/kubevirt-cr.yaml
+  - templates/multus.yaml
+  - templates/vm_namespace.yaml
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/monitorNamespace
+        value: monitoring
+      - op: replace
+        path: /spec/monitorAccount
+        value: kube-prometheus-stack-operator
+    target:
+      group: kubevirt.io
+      version: v1
+      kind: KubeVirt
+      name: kubevirt
