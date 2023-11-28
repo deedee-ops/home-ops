@@ -328,8 +328,8 @@ locals {
                     }
                     configs = {
                       cm = {
-                        url         = ""
-                        oidc.config = ""
+                        url           = ""
+                        "oidc.config" = ""
                       }
                     }
                     server = {
