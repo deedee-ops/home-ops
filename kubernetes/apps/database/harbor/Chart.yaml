@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: harbor
+version: 1.0.0
+type: application
+dependencies:
+  - name: harbor
+    version: 1.13.1
+    repository: https://helm.goharbor.io

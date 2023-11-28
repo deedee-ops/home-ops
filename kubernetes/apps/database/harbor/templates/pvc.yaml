@@ -1,0 +1,30 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolume.json
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-df75e0b3-fdc4-48bb-9d89-0ca20a01dbc8
+spec:
+  capacity:
+    storage: 500Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    server: "<path:kubernetes/data/internal/base#IP_NAS>"
+    path: "/volume1/kubernetes/registry"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: harbor-registry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 500Gi
+  volumeName: nfs-df75e0b3-fdc4-48bb-9d89-0ca20a01dbc8
+# yamllint enable rule:line-length
