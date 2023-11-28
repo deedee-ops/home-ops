@@ -1,6 +1,6 @@
 ---
 teleport-cluster:
-  clusterName: "teleport.<::RAW_ROOT_DOMAIN>"
+  clusterName: "teleport.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
   kubeClusterName: deedee
   auth:
     teleportConfig:

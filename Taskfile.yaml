@@ -39,15 +39,20 @@ tasks:
       - kubectl apply -f kubernetes/apps/kube-system/snapshot-controller/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application snapshot-controller
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application snapshot-controller
+
+      - kubectl apply -f kubernetes/apps/kube-system/cilium/application.yaml
+      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cilium
+
       - kubectl apply -f kubernetes/apps/cert-manager/cert-manager/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cert-manager
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cert-manager
       - kubectl apply -f kubernetes/apps/networking/ingress-nginx/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application ingress-nginx
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application ingress-nginx
-      - kubectl apply -f kubernetes/apps/kube-system/cilium/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cilium
+
+      # cilium will become healthly after ingress, because of hubble
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cilium
+
       - kubectl apply -f kubernetes/apps/argocd/argocd/application.yaml
       # wait for reapply
       - sleep 2

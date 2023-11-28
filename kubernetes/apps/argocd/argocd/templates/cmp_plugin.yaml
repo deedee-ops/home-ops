@@ -49,9 +49,14 @@ data:
         command:
           - sh
           - "-c"
+          # a lot of ugly hacking here :(
           - >-
-            sed -i'' 's@<::RAW_ROOT_DOMAIN>@<path:kubernetes/data/internal/base#ROOT_DOMAIN>@g' values.yaml &&
+            cp values.yaml "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" &&
+            echo 'kind: Value' >> "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" &&
+            argocd-vault-plugin generate "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" >
+            "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-out.yaml" &&
             helm template -n $ARGOCD_APP_NAMESPACE --name-template $ARGOCD_APP_NAME --include-crds
+            -f "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-out.yaml"
             -a monitoring.coreos.com/v1,monitoring.coreos.com/v1/ServiceMonitor,monitoring.coreos.com/v1/PodMonitor . |
             argocd-vault-plugin generate -
       lockRepo: false
