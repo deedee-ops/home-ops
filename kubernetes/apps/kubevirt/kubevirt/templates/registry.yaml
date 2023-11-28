@@ -1,0 +1,12 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: registry-credentials
+stringData:
+  accessKeyId: "<path:kubernetes/data/internal/harbor#REGISTRY_USERNAME>"
+  secretKey: "<path:kubernetes/data/internal/harbor#REGISTRY_PASSWORD>"

@@ -8,6 +8,7 @@ resources:
   - https://github.com/kubevirt/kubevirt/releases/download/v1.1.0/kubevirt-operator.yaml
   - https://github.com/kubevirt/kubevirt/releases/download/v1.1.0/kubevirt-cr.yaml
   - templates/multus.yaml
+  - templates/registry.yaml
 
 patches:
   - patch: |-
