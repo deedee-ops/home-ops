@@ -46,6 +46,29 @@ specs:
 apiVersion: "cilium.io/v2"
 kind: CiliumClusterwideNetworkPolicy
 metadata:
+  name: disable-untrusted-ingress
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: ingress/enabled
+          operator: NotIn
+          values:
+            - "true"
+    ingress:
+      - fromCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#CIDR_TRUSTED>"
+            except:
+              - "<path:kubernetes/data/internal/base#CIDR_SEMITRUSTED>"
+      - fromCIDRSet:
+          # sometimes cilium mistakes svc/pod CIDR as world, so let's allow it explicitly
+          - cidr: 172.30.0.0/15
+      - fromEntities:
+          - cluster
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
   name: route-to-nas
 specs:
   - endpointSelector:
