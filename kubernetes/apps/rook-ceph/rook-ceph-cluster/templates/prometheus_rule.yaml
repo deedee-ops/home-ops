@@ -33,6 +33,7 @@ spec:
               Ceph OSDs have a lot of writes. Use
               increase(container_fs_writes_bytes_total{namespace!~"rook-ceph"}[5m]) > 1048576000
               metric to find the culprit and investigate.
+        # This OSD numbers may change between cluster provisions, if you get imbalance alerts, check them first!
         - alert: CephPGImbalancePersistent
           annotations:
             summary: PGs are not balanced across OSDs
@@ -40,9 +41,9 @@ spec:
               by more than 30% from average PG count.
           expr: |
             abs(
-              ((ceph_osd_numpg{ceph_daemon=~"osd.[123]"} > 0) - on (job) group_left
-              avg(ceph_osd_numpg{ceph_daemon=~"osd.[123]"} > 0) by (job)) /
-              on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[123]"} > 0) by (job)
+              ((ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) - on (job) group_left
+              avg(ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) by (job)) /
+              on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) by (job)
             ) * on (ceph_daemon) group_left(hostname) ceph_osd_metadata > 0.30
           for: 5m
           labels:
@@ -56,9 +57,9 @@ spec:
               by more than 30% from average PG count.
           expr: |
             abs(
-              ((ceph_osd_numpg{ceph_daemon=~"osd.[045]"} > 0) - on (job) group_left
-              avg(ceph_osd_numpg{ceph_daemon=~"osd.[045]"} > 0) by (job)) /
-              on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[045]"} > 0) by (job)
+              ((ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) - on (job) group_left
+              avg(ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) by (job)) /
+              on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) by (job)
             ) * on (ceph_daemon) group_left(hostname) ceph_osd_metadata > 0.30
           for: 5m
           labels:
