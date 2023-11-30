@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cdi.kubevirt.io/storageprofile_v1beta1.json
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: ceph-ephemeral-block
+spec:
+  claimPropertySets:
+    - accessModes:
+        - ReadWriteOnce
+      volumeMode: Block
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cdi.kubevirt.io/storageprofile_v1beta1.json
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: ceph-persistent-block
+spec:
+  claimPropertySets:
+    - accessModes:
+        - ReadWriteOnce
+      volumeMode: Block
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cdi.kubevirt.io/storageprofile_v1beta1.json
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: ceph-persistent-filesystem
+spec:
+  claimPropertySets:
+    - accessModes:
+        - ReadWriteOnce
+      volumeMode: Filesystem
+    - accessModes:
+        - ReadWriteMany
+      volumeMode: Filesystem
