@@ -8,6 +8,7 @@ resources:
   - https://github.com/kubevirt/kubevirt/releases/download/v1.1.0/kubevirt-cr.yaml
   - templates/multus.yaml
   - templates/vm_namespace.yaml
+  - templates/patch.yaml
   - templates/registry.yaml
 
 patches:

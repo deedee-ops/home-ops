@@ -43,6 +43,16 @@ kyverno:
               - patch
               - update
               - watch
+          - apiGroups:
+              - monitoring.coreos.com
+            resources:
+              - prometheusrules
+            verbs:
+              - get
+              - list
+              - patch
+              - update
+              - watch
 
     serviceMonitor:
       enabled: true
