@@ -18,6 +18,12 @@ patches:
       - op: replace
         path: /spec/monitorAccount
         value: kube-prometheus-stack-operator
+      - op: replace
+        path: /spec/workloadUpdateStrategy
+        value:
+          workloadUpdateMethods:
+            - LiveMigrate
+            - Evict
     target:
       group: kubevirt.io
       version: v1
