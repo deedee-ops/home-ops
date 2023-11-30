@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policyexception.json
+apiVersion: kyverno.io/v2alpha1
+kind: PolicyException
+metadata:
+  name: harbor-ignore-require-ro-rootfs
+spec:
+  exceptions:
+    - policyName: require-ro-rootfs
+      ruleNames:
+        - validate-readOnlyRootFilesystem
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - database
+          names:
+            - harbor-*
