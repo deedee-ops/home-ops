@@ -25,8 +25,38 @@ patches:
           workloadUpdateMethods:
             - LiveMigrate
             - Evict
+      - op: replace
+        path: /spec/customizeComponents
+        value:
+          patches:
+          - type: strategic
+            resourceName: virt-operator
+            resourceType: Deployment
+            patch: '{"spec":{"template":{"spec":{"containers":[{"name":"virt-operator","resources":{"requests":{"cpu":"100m"}}}]}}}}'
+          - type: strategic
+            resourceName: virt-handler
+            resourceType: DaemonSet
+            patch: '{"spec":{"template":{"spec":{"containers":[{"name":"virt-handler","resources":{"requests":{"cpu":"50m"}}}]}}}}'
     target:
       group: kubevirt.io
       version: v1
       kind: KubeVirt
       name: kubevirt
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "100m"
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: virt-operator
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: "50m"
+    target:
+      group: apps
+      version: v1
+      kind: DaemonSet
+      name: virt-handler
