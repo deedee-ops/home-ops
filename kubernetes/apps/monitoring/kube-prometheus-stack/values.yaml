@@ -94,6 +94,8 @@ kube-prometheus-stack:
       capabilities:
         drop:
           - ALL
+    metricLabelsAllowlist:
+      - 'nodes=[kubevirt.io/schedulable]'
   nodeExporter:
     enabled: true
   prometheusOperator:
