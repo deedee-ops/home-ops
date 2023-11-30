@@ -1,4 +1,5 @@
 ---
+protectAgainstMissingValues: "rook-ceph-cluster"
 skipNetworkPolicy: false
 
 rook-ceph-cluster:

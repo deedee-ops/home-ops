@@ -1,0 +1,4 @@
+---
+# {{ if (ne "rook-ceph" .Values.protectAgainstMissingValues) }}
+# {{ required "protection variable is missing, values.yaml is missing?" .missing }}
+# {{ end }}

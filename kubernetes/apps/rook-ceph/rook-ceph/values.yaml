@@ -1,4 +1,5 @@
 ---
+protectAgainstMissingValues: "rook-ceph"
 rook-ceph:
   enableDiscoveryDaemon: true
   monitoring:
