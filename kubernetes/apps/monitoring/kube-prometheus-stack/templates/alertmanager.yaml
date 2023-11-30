@@ -42,11 +42,23 @@ stringData:
       continue: false
       routes:
         - receiver: "null"
-          match:
-            alertname: InfoInhibitor
+          matchers:
+            - alertname = InfoInhibitor
         - receiver: healthchecks
-          match:
-            alertname: Watchdog
+          matchers:
+            - alertname = Watchdog
+          repeat_interval: 15m
+        - receiver: discord-cilium
+          matchers:
+            - alertname = CiliumBlockingTrafficUsingPolicies
+          repeat_interval: 15m
+        - receiver: discord-csp
+          matchers:
+            - alertname = CSPAlert
+          repeat_interval: 15m
+        - receiver: discord-kyverno
+          matchers:
+            - alertname = KyvernoPolicyFailed
           repeat_interval: 15m
       group_wait: 1m
       group_interval: 10m
@@ -56,6 +68,15 @@ stringData:
       - name: "email"
         email_configs:
           - to: "homelab@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+      - name: "discord-cilium"
+        discord_configs:
+          - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_CILIUM_WEBHOOK>"
+      - name: "discord-csp"
+        discord_configs:
+          - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_CSP_WEBHOOK>"
+      - name: "discord-kyverno"
+        discord_configs:
+          - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_KYVERNO_WEBHOOK>"
       - name: "healthchecks"
         webhook_configs:
           - send_resolved: false
