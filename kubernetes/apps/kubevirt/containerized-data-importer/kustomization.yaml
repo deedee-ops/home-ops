@@ -9,6 +9,7 @@ resources:
   - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.58.0/cdi-cr.yaml
   - templates/svc_lb.yaml
   - templates/storage_profile.yaml
+  - templates/kyverno.yaml
 
 patches:
   - patch: |-

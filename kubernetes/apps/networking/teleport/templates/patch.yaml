@@ -3,7 +3,7 @@
 apiVersion: kyverno.io/v1
 kind: Policy
 metadata:
-  name: teleport-porxy
+  name: teleport-proxy
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:

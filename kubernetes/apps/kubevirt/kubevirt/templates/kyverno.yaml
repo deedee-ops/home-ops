@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policyexception.json
+apiVersion: kyverno.io/v2alpha1
+kind: PolicyException
+metadata:
+  name: kubevirt-ignore-podsecurity-subrule-baseline
+spec:
+  exceptions:
+    - policyName: podsecurity-subrule-baseline
+      ruleNames:
+        - baseline
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - kubevirt
+          names:
+            - virt-handler-*
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policyexception.json
+apiVersion: kyverno.io/v2alpha1
+kind: PolicyException
+metadata:
+  name: kubevirt-ignore-require-ro-rootfs
+spec:
+  exceptions:
+    - policyName: require-ro-rootfs
+      ruleNames:
+        - validate-readOnlyRootFilesystem
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - kubevirt
+          names:
+            - virt-*
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policyexception.json
+apiVersion: kyverno.io/v2alpha1
+kind: PolicyException
+metadata:
+  name: kubevirt-ignore-require-ro-rootfs
+  namespace: vms
+spec:
+  exceptions:
+    - policyName: require-ro-rootfs
+      ruleNames:
+        - validate-readOnlyRootFilesystem
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - vms
+          names:
+            - virt-launcher-*

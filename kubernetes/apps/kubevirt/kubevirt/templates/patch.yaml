@@ -7,7 +7,7 @@ metadata:
 spec:
   mutateExistingOnPolicyUpdate: true
   rules:
-    - name: remove-broken-prometheus-rule
+    - name: fix-broken-prometheus-rule
       match:
         any:
           - resources:
@@ -25,5 +25,6 @@ spec:
                   operator: Equals
                   value: prometheus-kubevirt-rules
         patchesJson6902: |-
-          - op: remove
-            path: /spec/groups/0/rules/41
+          - op: replace
+            path: /spec/groups/0/rules/41/expr
+            value: "vector(0) != 0"
