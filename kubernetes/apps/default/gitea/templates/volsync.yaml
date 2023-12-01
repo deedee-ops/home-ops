@@ -85,7 +85,7 @@ spec:
     cacheStorageClassName: ceph-persistent-filesystem
     cacheAccessModes:
       - ReadWriteOnce
-    cacheCapacity: 10Gi
+    cacheCapacity: 20Gi
     storageClassName: ceph-persistent-filesystem
     accessModes:
       - ReadWriteOnce

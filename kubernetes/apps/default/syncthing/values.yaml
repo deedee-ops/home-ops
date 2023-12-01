@@ -1,0 +1,93 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/dexters-ops/syncthing
+            tag: 1.26.1
+            pullPolicy: IfNotPresent
+
+          env:
+            TZ: Europe/Warsaw
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                failureThreshold: 30
+                periodSeconds: 10
+                httpGet:
+                  path: /rest/noauth/health
+                  port: 8384
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 256Mi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8384
+        sync:
+          port: 22000
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Syncthing
+        gethomepage.dev/icon: syncthing.png
+        gethomepage.dev/description: Continuous File Synchronization
+      hosts:
+        - host: "syncthing.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8384
+      tls:
+        - hosts:
+            - "syncthing.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: syncthing-config
+      accessMode: ReadWriteOnce
+      globalMounts:
+        - path: "/config"
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: syncthing-data
+      accessMode: ReadWriteOnce
+      globalMounts:
+        - path: "/data"
