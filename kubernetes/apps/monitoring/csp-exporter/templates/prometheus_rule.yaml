@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+  name: csp-exporter
+spec:
+  groups:
+    - name: csp-exporter.rules
+      rules:
+        - alert: CSPAlert
+          expr: 'increase(csp_violation_reports_total[1m]) > 0'
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: CSP error on {{`{{ $labels.app }}`}} app
+            description: |-
+              CSP error
+                VALUE = {{`{{ $value }}`}}
+                LABELS = {{`{{ $labels }}`}}
