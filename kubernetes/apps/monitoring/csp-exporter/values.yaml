@@ -12,7 +12,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/ajgon/csp-exporter
+            repository: ghcr.io/dexters-ops/csp-exporter
             tag: 0.1.0
             pullPolicy: IfNotPresent
 

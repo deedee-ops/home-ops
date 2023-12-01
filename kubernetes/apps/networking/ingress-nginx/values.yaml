@@ -92,6 +92,7 @@ ingress-nginx:
       whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
   tcp:
     2222: "default/gitea-ssh:22"
+    22000: "default/syncthing:22000"
   defaultBackend:
     enabled: true
     image:

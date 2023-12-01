@@ -26,7 +26,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/ajgon/maddy
+            repository: ghcr.io/dexters-ops/maddy
             tag: 0.7.0
 
           env:

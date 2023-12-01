@@ -36,7 +36,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/ajgon/postgres-logical-backup
+            repository: ghcr.io/dexters-ops/postgres-logical-backup
             tag: "16.1"
 
           env:

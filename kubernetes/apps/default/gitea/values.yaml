@@ -6,7 +6,7 @@ gitea:
   image:
     rootless: true
     registry: ghcr.io
-    repository: ajgon/gitea
+    repository: dexters-ops/gitea
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 1000

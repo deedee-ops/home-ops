@@ -25,7 +25,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/ajgon/authelia
+            repository: ghcr.io/dexters-ops/authelia
             tag: 4.37.5
 
           env:
