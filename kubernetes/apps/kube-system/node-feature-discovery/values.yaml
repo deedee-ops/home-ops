@@ -1,0 +1,13 @@
+---
+node-feature-discovery:
+  master:
+    extraLabelNs:
+      - gpu.intel.com
+      - sgx.intel.com
+    resourceLabels:
+      - gpu.intel.com/millicores
+      - gpu.intel.com/memory.max
+      - gpu.intel.com/tiles
+      - sgx.intel.com/epc
+  prometheus:
+    enable: true

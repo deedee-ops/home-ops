@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: node-feature-discovery
+version: 1.0.0
+type: application
+dependencies:
+  - name: node-feature-discovery
+    version: 0.14.3
+    repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
