@@ -1,0 +1,441 @@
+# https://github.com/kubevirt/kubevirt/issues/9689
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prometheus-kubevirt-rules
+  namespace: monitoring
+spec:
+  endpoints:
+    - bearerTokenSecret:
+        key: ""
+      honorLabels: true
+      port: metrics
+      scheme: https
+      tlsConfig:
+        ca: {}
+        cert: {}
+        insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+      - kubevirt
+  selector:
+    matchLabels:
+      prometheus.kubevirt.io: "true"
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheus-kubevirt-rules
+spec:
+  groups:
+    - name: kubevirt.rules
+      rules:
+        - expr: sum(up{namespace='kubevirt', pod=~'virt-api-.*'}) or vector(0)
+          record: kubevirt_virt_api_up
+        - expr: count(count (kube_node_status_allocatable) by (node))
+          record: kubevirt_allocatable_nodes
+        - expr: count(kube_node_status_allocatable{resource="devices_kubevirt_io_kvm"}
+            != 0) or vector(0)
+          record: kubevirt_nodes_with_kvm
+        - expr: sum(up{pod=~'virt-controller-.*', namespace='kubevirt'}) or vector(0)
+          record: kubevirt_virt_controller_up
+        - expr: sum(kubevirt_virt_controller_ready_status{namespace='kubevirt'}) or vector(0)
+          record: kubevirt_virt_controller_ready
+        - expr: sum(up{namespace='kubevirt', pod=~'virt-operator-.*'}) or vector(0)
+          record: kubevirt_virt_operator_up
+        - expr: sum(kubevirt_virt_operator_ready_status{namespace='kubevirt'}) or vector(0)
+          record: kubevirt_virt_operator_ready
+        - expr: sum(kubevirt_virt_operator_leading_status{namespace='kubevirt'})
+          record: kubevirt_virt_operator_leading
+        - expr: sum(up{pod=~'virt-handler-.*', namespace='kubevirt'}) or vector(0)
+          record: kubevirt_virt_handler_up
+        - expr: kubevirt_vmi_memory_available_bytes-kubevirt_vmi_memory_usable_bytes
+          record: kubevirt_vmi_memory_used_bytes
+        - expr: sum by(pod, container, namespace) (kube_pod_container_resource_requests{pod=~'virt-launcher-.*',
+            container='compute', resource='memory'}- on(pod,container, namespace) container_memory_working_set_bytes{pod=~'virt-launcher-.*',
+            container='compute'})
+          record: kubevirt_vm_container_free_memory_bytes_based_on_working_set_bytes
+        - expr: sum by(pod, container, namespace) (kube_pod_container_resource_requests{pod=~'virt-launcher-.*',
+            container='compute', resource='memory'}- on(pod,container, namespace) container_memory_rss{pod=~'virt-launcher-.*',
+            container='compute'})
+          record: kubevirt_vm_container_free_memory_bytes_based_on_rss
+        - expr: label_replace(label_replace(kube_persistentvolumeclaim_labels{label_restore_kubevirt_io_source_vm_name!='',
+            label_restore_kubevirt_io_source_vm_namespace!=''} == 1, 'vm_namespace', '$1',
+            'label_restore_kubevirt_io_source_vm_namespace', '(.*)'), 'vm_name', '$1',
+            'label_restore_kubevirt_io_source_vm_name', '(.*)')
+          record: kubevirt_vmsnapshot_persistentvolumeclaim_labels
+        - expr: sum by(vm_name, vm_namespace) (kubevirt_vmsnapshot_persistentvolumeclaim_labels)
+          record: kubevirt_vmsnapshot_disks_restored_from_source
+        - expr: sum by(vm_name, vm_namespace) (kube_persistentvolumeclaim_resource_requests_storage_bytes
+            * on(persistentvolumeclaim, namespace) group_left(vm_name, vm_namespace) kubevirt_vmsnapshot_persistentvolumeclaim_labels)
+          record: kubevirt_vmsnapshot_disks_restored_from_source_bytes
+        - expr: sum by (namespace) (count by (name,namespace) (kubevirt_vm_error_status_last_transition_timestamp_seconds
+            + kubevirt_vm_migrating_status_last_transition_timestamp_seconds + kubevirt_vm_non_running_status_last_transition_timestamp_seconds
+            + kubevirt_vm_running_status_last_transition_timestamp_seconds + kubevirt_vm_starting_status_last_transition_timestamp_seconds))
+          record: kubevirt_number_of_vms
+        - expr: group by (group,version,resource,subresource) (apiserver_requested_deprecated_apis{group="kubevirt.io"})
+            * on (group,version,resource,subresource) group_right() sum by (group,version,resource,subresource,verb)
+            (apiserver_request_total)
+          record: kubevirt_api_request_deprecated_total
+        - alert: VirtAPIDown
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtAPIDown
+            summary: All virt-api servers are down.
+          expr: kubevirt_virt_api_up == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: LowVirtAPICount
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowVirtAPICount
+            summary: More than one virt-api should be running if more than one worker
+              nodes exist.
+          expr: (kubevirt_allocatable_nodes > 1) and (kubevirt_virt_api_up < 2)
+          for: 60m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: LowKVMNodesCount
+          annotations:
+            description: Low number of nodes with KVM resource available.
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowKVMNodesCount
+            summary: At least two nodes with kvm resource required for VM live migration.
+          expr: (kubevirt_allocatable_nodes > 1) and (kubevirt_nodes_with_kvm < 2)
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: LowReadyVirtControllersCount
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowReadyVirtControllersCount
+            summary: Some virt controllers are running but not ready.
+          expr: kubevirt_virt_controller_ready <  kubevirt_virt_controller_up
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: NoReadyVirtController
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/NoReadyVirtController
+            summary: No ready virt-controller was detected for the last 10 min.
+          expr: kubevirt_virt_controller_ready == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: VirtControllerDown
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtControllerDown
+            summary: No running virt-controller was detected for the last 10 min.
+          expr: kubevirt_virt_controller_up == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: LowVirtControllersCount
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowVirtControllersCount
+            summary: More than one virt-controller should be ready if more than one worker
+              node.
+          expr: (kubevirt_allocatable_nodes > 1) and (kubevirt_virt_controller_ready <
+            2)
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtControllerRESTErrorsHigh
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtControllerRESTErrorsHigh
+            summary: More than 5% of the rest calls failed in virt-controller for the
+              last hour
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-controller-.*",code=~"(4|5)[0-9][0-9]"}
+            [60m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-controller-.*"}
+            [60m] ) ) >= 0.05
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtControllerRESTErrorsBurst
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtControllerRESTErrorsBurst
+            summary: More than 80% of the rest calls failed in virt-controller for the
+              last 5 minutes
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-controller-.*",code=~"(4|5)[0-9][0-9]"}
+            [5m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-controller-.*"}
+            [5m] ) ) >= 0.8
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: VirtOperatorDown
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtOperatorDown
+            summary: All virt-operator servers are down.
+          expr: kubevirt_virt_operator_up == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: LowVirtOperatorCount
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowVirtOperatorCount
+            summary: More than one virt-operator should be running if more than one worker
+              nodes exist.
+          expr: (kubevirt_allocatable_nodes > 1) and (kubevirt_virt_operator_up < 2)
+          for: 60m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtOperatorRESTErrorsHigh
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtOperatorRESTErrorsHigh
+            summary: More than 5% of the rest calls failed in virt-operator for the last
+              hour
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-operator-.*",code=~"(4|5)[0-9][0-9]"}
+            [60m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-operator-.*"}
+            [60m] ) ) >= 0.05
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtOperatorRESTErrorsBurst
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtOperatorRESTErrorsBurst
+            summary: More than 80% of the rest calls failed in virt-operator for the last
+              5 minutes
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-operator-.*",code=~"(4|5)[0-9][0-9]"}
+            [5m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-operator-.*"}
+            [5m] ) ) >= 0.8
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: LowReadyVirtOperatorsCount
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/LowReadyVirtOperatorsCount
+            summary: Some virt-operators are running but not ready.
+          expr: kubevirt_virt_operator_ready <  kubevirt_virt_operator_up
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: NoReadyVirtOperator
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/NoReadyVirtOperator
+            summary: No ready virt-operator was detected for the last 10 min.
+          expr: kubevirt_virt_operator_ready == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: NoLeadingVirtOperator
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/NoLeadingVirtOperator
+            summary: No leading virt-operator was detected for the last 10 min.
+          expr: kubevirt_virt_operator_leading == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: VirtHandlerDaemonSetRolloutFailing
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtHandlerDaemonSetRolloutFailing
+            summary: Some virt-handlers failed to roll out
+          expr: (kube_daemonset_status_number_ready{namespace='kubevirt', daemonset='virt-handler'}
+            - kube_daemonset_status_desired_number_scheduled{namespace='kubevirt', daemonset='virt-handler'})
+            != 0
+          for: 15m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtHandlerRESTErrorsHigh
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtHandlerRESTErrorsHigh
+            summary: More than 5% of the rest calls failed in virt-handler for the last
+              hour
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-handler-.*",code=~"(4|5)[0-9][0-9]"}
+            [60m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-handler-.*"}
+            [60m] ) ) >= 0.05
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtHandlerRESTErrorsBurst
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtHandlerRESTErrorsBurst
+            summary: More than 80% of the rest calls failed in virt-handler for the last
+              5 minutes
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-handler-.*",code=~"(4|5)[0-9][0-9]"}
+            [5m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-handler-.*"}
+            [5m] ) ) >= 0.8
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: VirtApiRESTErrorsHigh
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtApiRESTErrorsHigh
+            summary: More than 5% of the rest calls failed in virt-api for the last hour
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-api-.*",code=~"(4|5)[0-9][0-9]"}
+            [60m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-api-.*"}
+            [60m] ) ) >= 0.05
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: warning
+            severity: warning
+        - alert: VirtApiRESTErrorsBurst
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VirtApiRESTErrorsBurst
+            summary: More than 80% of the rest calls failed in virt-api for the last 5
+              minutes
+          expr: sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-api-.*",code=~"(4|5)[0-9][0-9]"}
+            [5m] ) )  /  sum ( rate ( rest_client_requests_total{namespace="kubevirt",pod=~"virt-api-.*"}
+            [5m] ) ) >= 0.8
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: critical
+        - alert: KubevirtVmHighMemoryUsage
+          annotations:
+            description: Container {{ $labels.container }} in pod {{ $labels.pod }} in
+              namespace {{ $labels.namespace }} free memory is less than 50Mi and it is
+              close to requested memory
+            runbook_url: https://kubevirt.io/monitoring/runbooks/KubevirtVmHighMemoryUsage
+            summary: VM is at risk of being evicted and in serious cases of memory exhaustion
+              being terminated by the runtime.
+          expr: kubevirt_vm_container_free_memory_bytes_based_on_working_set_bytes < 52428800
+            or kubevirt_vm_container_free_memory_bytes_based_on_rss < 52428800
+          for: 1m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: warning
+        - alert: OrphanedVirtualMachineInstances
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/OrphanedVirtualMachineInstances
+            summary: No ready virt-handler pod detected on node {{ $labels.node }} with
+              running vmis for more than 10 minutes
+          expr: (((max by (node) (kube_pod_status_ready{condition='true',pod=~'virt-handler.*'}
+            * on(pod) group_left(node) max by(pod,node)(kube_pod_info{pod=~'virt-handler.*',node!=''}))
+            ) == 1) or (count by (node)( kube_pod_info{pod=~'virt-launcher.*',node!=''})*0))
+            == 0
+          for: 10m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: warning
+        - alert: VMCannotBeEvicted
+          annotations:
+            description: Eviction policy for {{ $labels.name }} (on node {{ $labels.node
+              }}) is set to Live Migration but the VM is not migratable
+            runbook_url: https://kubevirt.io/monitoring/runbooks/VMCannotBeEvicted
+            summary: The VM's eviction strategy is set to Live Migration but the VM is
+              not migratable
+          expr: kubevirt_vmi_non_evictable > 0
+          for: 1m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: warning
+        - alert: KubeVirtVMIExcessiveMigrations
+          annotations:
+            description: VirtualMachineInstance {{ $labels.vmi }} has been migrated more
+              than 12 times during the last 24 hours
+            runbook_url: https://kubevirt.io/monitoring/runbooks/KubeVirtVMIExcessiveMigrations
+            summary: An excessive amount of migrations have been detected on a VirtualMachineInstance
+              in the last 24 hours.
+          expr: sum by (vmi) (max_over_time(kubevirt_vmi_migration_succeeded[1d])) >=
+            12
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: warning
+        - alert: KubeVirtNoAvailableNodesToRunVMs
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/KubeVirtNoAvailableNodesToRunVMs
+            summary: There are no available nodes in the cluster to run VMs.
+          expr: ((sum(kube_node_status_allocatable{resource='devices_kubevirt_io_kvm'})
+            or on() vector(0)) == 0 and (sum(kubevirt_configuration_emulation_enabled)
+            or on() vector(0)) == 0) or (sum(kube_node_labels{label_kubevirt_io_schedulable='true'})
+            or on() vector(0)) == 0
+          for: 5m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: critical
+            severity: warning
+        - alert: KubeVirtDeprecatedAPIRequested
+          annotations:
+            description: Detected requests to the deprecated {{ $labels.resource }}.{{
+              $labels.group }}/{{ $labels.version }} API.
+            runbook_url: https://kubevirt.io/monitoring/runbooks/KubeVirtDeprecatedAPIRequested
+            summary: Detected {{ $value }} requests in the last 10 minutes.
+          expr: sum by (resource,group,version) ((round(increase(kubevirt_api_request_deprecated_total{verb!~"LIST|WATCH"}[10m]))
+            > 0 and kubevirt_api_request_deprecated_total{verb!~"LIST|WATCH"} offset 10m)
+            or (kubevirt_api_request_deprecated_total{verb!~"LIST|WATCH"} != 0 unless
+            kubevirt_api_request_deprecated_total{verb!~"LIST|WATCH"} offset 10m))
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: info
+        - alert: OutdatedVirtualMachineInstanceWorkloads
+          annotations:
+            runbook_url: https://kubevirt.io/monitoring/runbooks/OutdatedVirtualMachineInstanceWorkloads
+            summary: Some running VMIs are still active in outdated pods after KubeVirt
+              control plane update has completed.
+          expr: kubevirt_vmi_number_of_outdated != 0
+          for: 1440m
+          labels:
+            kubernetes_operator_component: kubevirt
+            kubernetes_operator_part_of: kubevirt
+            operator_health_impact: none
+            severity: warning
+# yamllint enable rule:line-length

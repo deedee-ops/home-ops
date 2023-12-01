@@ -9,14 +9,18 @@ resources:
   - templates/multus.yaml
   - templates/vm_namespace.yaml
   - templates/registry.yaml
-  - templates/patch.yaml
   - templates/kyverno.yaml
+  # https://github.com/kubevirt/kubevirt/issues/9689
+  - templates/hack.yaml
 
 patches:
   - patch: |-
       - op: replace
         path: /spec/monitorNamespace
-        value: monitoring
+        # disable prometheus monitoring of kubevirt until rules are fixed
+        # https://github.com/kubevirt/kubevirt/issues/9689
+        # value: monitoring
+        value: invalid
       - op: replace
         path: /spec/monitorAccount
         value: kube-prometheus-stack-operator
