@@ -18,7 +18,7 @@ stringData:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: teleport-teleport-data
+  name: backup-teleport-teleport-data
 spec:
   sourcePVC: teleport-data
   trigger:

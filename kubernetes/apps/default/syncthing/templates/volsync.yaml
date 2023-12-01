@@ -18,7 +18,7 @@ stringData:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: syncthing-syncthing-config
+  name: backup-syncthing-syncthing-config
 spec:
   sourcePVC: syncthing-config
   trigger:
@@ -116,7 +116,7 @@ stringData:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: syncthing-syncthing-data
+  name: backup-syncthing-syncthing-data
 spec:
   sourcePVC: syncthing-data
   trigger:

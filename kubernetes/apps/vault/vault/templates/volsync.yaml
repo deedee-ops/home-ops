@@ -48,7 +48,7 @@ stringData:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: vault-data-vault-0
+  name: backup-vault-data-vault-0
 spec:
   sourcePVC: data-vault-0
   trigger:
@@ -83,7 +83,7 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: vault-data-vault-1
+  name: backup-vault-data-vault-1
 spec:
   sourcePVC: data-vault-1
   trigger:
@@ -118,7 +118,7 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: vault-data-vault-2
+  name: backup-vault-data-vault-2
 spec:
   sourcePVC: data-vault-2
   trigger:
