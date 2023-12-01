@@ -1,0 +1,39 @@
+---
+prometheus-smartctl-exporter-masters:
+  fullnameOverride: smartctl-exporter-masters
+  config:
+    devices:
+      - /dev/sda
+  serviceMonitor:
+    enabled: true
+  prometheusRules:
+    enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: In
+                values:
+                  - ""
+prometheus-smartctl-exporter-workers:
+  fullnameOverride: smartctl-exporter-workers
+  config:
+    devices:
+      - /dev/nvme0n1
+      - /dev/sda
+      - /dev/sdb
+  serviceMonitor:
+    enabled: true
+  prometheusRules:
+    enabled: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: NotIn
+                values:
+                  - ""
