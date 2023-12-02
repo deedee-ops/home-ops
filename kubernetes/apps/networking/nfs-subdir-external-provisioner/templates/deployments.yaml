@@ -1,0 +1,80 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/deployment.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nfs-client-kubernetes
+  name: nfs-client-kubernetes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-kubernetes
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-kubernetes
+    spec:
+      containers:
+        - env:
+            - name: NFS_SERVER
+              value: "<path:kubernetes/data/internal/base#IP_NAS>"
+            - name: NFS_PATH
+              value: /volume1/kubernetes
+            - name: PROVISIONER_NAME
+              value: home.arpa/nfs-client-kubernetes
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          name: nfs-client-kubernetes
+          volumeMounts:
+            - mountPath: /persistentvolumes
+              name: nfs-client-kubernetes
+      serviceAccountName: nfs-client-provisioner
+      volumes:
+        - name: nfs-client-kubernetes
+          nfs:
+            path: /volume1/kubernetes
+            server: "<path:kubernetes/data/internal/base#IP_NAS>"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/deployment.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nfs-client-media
+  name: nfs-client-media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-media
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-media
+    spec:
+      containers:
+        - env:
+            - name: NFS_SERVER
+              value: "<path:kubernetes/data/internal/base#IP_NAS>"
+            - name: NFS_PATH
+              value: /volume1/media
+            - name: PROVISIONER_NAME
+              value: home.arpa/nfs-client-media
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          name: nfs-client-media
+          volumeMounts:
+            - mountPath: /persistentvolumes
+              name: nfs-client-media
+      serviceAccountName: nfs-client-provisioner
+      volumes:
+        - name: nfs-client-media
+          nfs:
+            path: /volume1/media
+            server: "<path:kubernetes/data/internal/base#IP_NAS>"
+# yamllint enable rule:line-length

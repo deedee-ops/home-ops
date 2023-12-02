@@ -1,0 +1,24 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/storageclass.json
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client-kubernetes
+parameters:
+  archiveOnDelete: "false"
+  onDelete: retain
+  pathPattern: "${.PVC.annotations.nfs.io/storage-path}"
+provisioner: home.arpa/nfs-client-kubernetes
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/storageclass.json
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client-media
+parameters:
+  archiveOnDelete: "false"
+  onDelete: retain
+  pathPattern: "${.PVC.annotations.nfs.io/storage-path}"
+provisioner: home.arpa/nfs-client-media
+# yamllint enable rule:line-length
