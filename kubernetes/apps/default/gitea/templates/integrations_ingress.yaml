@@ -41,3 +41,6 @@ spec:
                   number: 3000
             path: /v2
             pathType: Prefix
+  tls:
+    - hosts:
+        - "gitea.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
