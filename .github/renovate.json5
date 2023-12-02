@@ -22,10 +22,11 @@
   "suppressNotifications": ["prIgnoreNotification"],
   "ignorePaths": [
     "schemas/**/*.*",
-    "tofu/talos_cluster/manifests/*.yaml"
+    "tofu/talos_cluster/manifests/*.yaml",
+    "kubernetes/apps/monitoring/kyverno/templates/*.yaml"
   ],
   "helm-values": {
-    "fileMatch": ["(^|/)kubernetes/.+\\.ya?ml$"]
+    "fileMatch": ["(^|/)kubernetes/.+/values.*\\.ya?ml$"]
   },
   "kubernetes": {
     "fileMatch": [
