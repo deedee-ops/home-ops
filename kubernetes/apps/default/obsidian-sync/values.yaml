@@ -1,0 +1,122 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: public.ecr.aws/docker/library/couchdb
+            tag: 3.3.2
+            pullPolicy: IfNotPresent
+
+          envFrom:
+            - secretRef:
+                name: obsidian-sync-secret
+
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65000
+            runAsGroup: 65000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 50Mi
+            limits:
+              memory: 250Mi
+
+      initContainers:
+        01-init-config:
+          image:
+            repository: public.ecr.aws/docker/library/busybox
+            tag: 1.36.1
+            pullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - "-c"
+            - "cp /tmp/config/*.ini /default.d/; ls -lrt /default.d;"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65000
+            runAsGroup: 65000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+  service:
+    main:
+      ports:
+        http:
+          port: 5984
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+      hosts:
+        - host: "obsidian-sync.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 5984
+      tls:
+        - hosts:
+            - "obsidian-sync.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config-file:
+      enabled: true
+      type: configMap
+      name: obsidian-sync-configmap
+      advancedMounts:
+        main:
+          01-init-config:
+            - path: /tmp/config
+    config-default-storage:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      advancedMounts:
+        main:
+          main:
+            - path: "/opt/couchdb/etc/default.d"
+          01-init-config:
+            - path: /default.d
+    config-local-storage:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      advancedMounts:
+        main:
+          main:
+            - path: "/opt/couchdb/etc/local.d"
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: obsidian-sync-data
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: "/opt/couchdb/data"
