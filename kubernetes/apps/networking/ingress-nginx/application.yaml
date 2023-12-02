@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   sources:
-    - repoURL: https://github.com/ajgon/home-ops.git
+    - repoURL: https://github.com/deedee-ops/home-ops.git
       targetRevision: master
       path: kubernetes/apps/networking/ingress-nginx
       plugin:

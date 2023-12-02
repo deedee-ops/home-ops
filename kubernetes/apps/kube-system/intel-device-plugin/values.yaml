@@ -4,12 +4,12 @@ intel-device-plugins-gpu:
   sharedDevNum: 10
   nodeFeatureRule: false
   image:
-    hub: ghcr.io/dexters-ops
+    hub: ghcr.io/deedee-ops
 
 intel-device-plugins-operator:
   manager:
     image:
-      hub: ghcr.io/dexters-ops
+      hub: ghcr.io/deedee-ops
 
 app-template:
   global:

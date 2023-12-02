@@ -18,7 +18,7 @@ metadata:
   name: schemas
   annotations:
     nginx.ingress.kubernetes.io/enable-global-auth: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: /ajgon/home-ops/master/schemas/$1
+    nginx.ingress.kubernetes.io/rewrite-target: /deedee-ops/home-ops/master/schemas/$1
     nginx.ingress.kubernetes.io/upstream-vhost: raw.githubusercontent.com
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/configuration-snippet: |-
