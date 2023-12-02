@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/argoproj.io/application_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nfs-subdir-external-provisioner
+  namespace: argocd
+spec:
+  destination:
+    namespace: networking
+    server: https://kubernetes.default.svc
+  project: default
+  sources:
+    - repoURL: https://github.com/deedee-ops/home-ops.git
+      path: kubernetes/apps/networking/nfs-subdir-external-provisioner
+      targetRevision: master
+      plugin:
+        name: argocd-vault-plugin-kustomize
+
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
