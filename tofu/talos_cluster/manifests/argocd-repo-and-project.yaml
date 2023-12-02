@@ -7,12 +7,12 @@ metadata:
     managed-by: argocd.argoproj.io
   labels:
     argocd.argoproj.io/secret-type: repository
-  name: repo-ajgon-home-ops
+  name: repo-deedee-ops-home-ops
   namespace: argocd
 stringData:
   name: home-ops
   type: git
-  url: https://github.com/ajgon/home-ops.git
+  url: https://github.com/deedee-ops/home-ops.git
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject

@@ -12,14 +12,14 @@ spec:
   project: default
   sources:
     - path: kubernetes/clusters/dexter
-      repoURL: https://github.com/ajgon/home-ops.git
+      repoURL: https://github.com/deedee-ops/home-ops.git
       targetRevision: master
       directory:
         recurse: true
         include: "*/application.yaml"
         exclude: "*/app-of-apps/application.yaml"
     - path: kubernetes/apps
-      repoURL: https://github.com/ajgon/home-ops.git
+      repoURL: https://github.com/deedee-ops/home-ops.git
       targetRevision: master
       directory:
         recurse: true

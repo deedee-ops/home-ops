@@ -25,7 +25,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/dexters-ops/lldap
+            repository: ghcr.io/deedee-ops/lldap
             tag: 0.5.0
 
           env:

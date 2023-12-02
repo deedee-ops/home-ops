@@ -12,7 +12,7 @@ app-template:
       containers:
         main:
           image:
-            repository: ghcr.io/dexters-ops/syncthing
+            repository: ghcr.io/deedee-ops/syncthing
             tag: 1.26.1
             pullPolicy: IfNotPresent
 
