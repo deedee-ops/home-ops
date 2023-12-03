@@ -32,3 +32,8 @@ spec:
       name: kube-image-keeper-registry-http-secret
       jsonPointers:
         - "/data"
+    - kind: CronJob
+      group: batch
+      name: kube-image-keeper-registry-garbage-collection
+      jsonPointers:
+        - "/spec/jobTemplate/spec/template/spec/containers/0/image"
