@@ -1,6 +1,6 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policyexception.json
-apiVersion: kyverno.io/v2alpha1
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/kyverno.io/policyexception_v2beta1.json
+apiVersion: kyverno.io/v2beta1
 kind: PolicyException
 metadata:
   name: cdi-ignore-require-ro-rootfs

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/kyverno.io/clusterpolicy_v1.json
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -51,7 +51,7 @@ spec:
                     operator: AllNotIn
                     value: "{{`{{`}} element.keys(@)[] {{`}}`}}"
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/clusterpolicy_v1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/kyverno.io/clusterpolicy_v1.json
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:

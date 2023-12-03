@@ -14,7 +14,7 @@ stringData:
   RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
   RESTIC_REPOSITORY: "s3:<path:kubernetes/data/internal/base#S3_URL>/<path:kubernetes/data/internal/base#S3_BUCKET>/volsync/syncthing-config"
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -68,7 +68,7 @@ spec:
       storage: 128Mi
   storageClassName: ceph-persistent-block
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
@@ -112,7 +112,7 @@ stringData:
   RESTIC_PASSWORD: "<path:kubernetes/data/internal/volsync#RESTIC_PASSWORD>"
   RESTIC_REPOSITORY: "s3:<path:kubernetes/data/internal/base#S3_URL>/<path:kubernetes/data/internal/base#S3_BUCKET>/volsync/syncthing-data"
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -166,7 +166,7 @@ spec:
       storage: 20Gi
   storageClassName: ceph-persistent-block
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:

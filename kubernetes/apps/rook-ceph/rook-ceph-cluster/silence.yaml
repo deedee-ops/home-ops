@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.giantswarm.io/silence_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
 apiVersion: monitoring.giantswarm.io/v1alpha1
 kind: Silence
 metadata:
@@ -11,7 +11,7 @@ spec:
       value: CephNodeNetworkPacketDrops
       isRegex: false
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.giantswarm.io/silence_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
 apiVersion: monitoring.giantswarm.io/v1alpha1
 kind: Silence
 metadata:
@@ -23,7 +23,7 @@ spec:
       value: CephNodeNetworkPacketErrors
       isRegex: false
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.giantswarm.io/silence_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
 # after every talos upgrade, this prediction starts returning nonsense
 apiVersion: monitoring.giantswarm.io/v1alpha1
 kind: Silence

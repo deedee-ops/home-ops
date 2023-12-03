@@ -44,7 +44,7 @@ stringData:
   RESTIC_REPOSITORY: "s3:<path:kubernetes/data/internal/base#S3_URL>/<path:kubernetes/data/internal/base#S3_BUCKET>/volsync/data-vault-2"
 # {{ end }}
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -79,7 +79,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -114,7 +114,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationsource_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
@@ -206,7 +206,7 @@ spec:
       storage: 10Gi
   storageClassName: ceph-persistent-block
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
@@ -236,7 +236,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
@@ -266,7 +266,7 @@ spec:
       seccompProfile:
         type: RuntimeDefault
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/volsync.backube/replicationdestination_v1alpha1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:

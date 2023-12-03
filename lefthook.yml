@@ -19,10 +19,10 @@ pre-commit:
       run: yamllint -s {staged_files}
     egress-comment:
       glob: "*.y*ml"
-      run: go-task lint:egress-comment || task lint:egress-comment
+      run: ./.taskfiles/Lint/egress-comment-job.sh
     yaml-json-schema:
       glob: "*.y*ml"
-      run: go-task lint:yaml-json-schema || task lint:yaml-json-schema
+      run: ./.taskfiles/Lint/yaml-json-schema-job.sh {staged_files}
 full:
   parallel: true
   commands:
@@ -40,7 +40,7 @@ full:
       run: yamllint -s {all_files}
     egress-comment:
       glob: "*.y*ml"
-      run: go-task lint:egress-comment || task lint:egress-comment
+      run: ./.taskfiles/Lint/egress-comment-job.sh
     yaml-json-schema:
       glob: "*.y*ml"
-      run: go-task lint:yaml-json-schema || task lint:yaml-json-schema
+      run: ./.taskfiles/Lint/yaml-json-schema-job.sh {all_files}

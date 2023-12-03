@@ -1,6 +1,6 @@
 # https://github.com/kubevirt/kubevirt/issues/9689
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/servicemonitor_v1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/servicemonitor_v1.json
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -25,7 +25,7 @@ spec:
       prometheus.kubevirt.io: "true"
 ---
 # yamllint disable rule:line-length
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/prometheusrule_v1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:

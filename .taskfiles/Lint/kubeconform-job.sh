@@ -21,7 +21,7 @@ for helm in ${helm_templates}; do
     continue
   fi
 
-  if ! helm template "${helm}" | kubeconform -schema-location default -schema-location 'https://raw.githubusercontent.com/ajgon/home-ops/master/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /dev/null 2>&1; then
+  if ! helm template "${helm}" | kubeconform -schema-location default -schema-location 'https://deedee-ops.github.io/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /dev/null 2>&1; then
     if [ $error == 0 ]; then
       echo "Found helm templates not passing kubeconform test"
     fi

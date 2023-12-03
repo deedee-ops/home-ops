@@ -3,20 +3,11 @@
 version: "3"
 
 vars:
-  crdSchemaJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/crd-schema-job.sh"
   egressCommentJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/egress-comment-job.sh"
   kubeconformJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/kubeconform-job.sh"
   yamlJsonSchemaJobScript: "{{.ROOT_DIR}}/.taskfiles/Lint/yaml-json-schema-job.sh"
 
 tasks:
-
-  crd-schema:
-    desc: Check for missing cluster schemas
-    silent: true
-    cmds:
-      - bash {{.crdSchemaJobScript}}
-    preconditions:
-      - sh: test -f {{.crdSchemaJobScript}}
 
   egress-comment:
     desc: Check for missing egress enabling explaining comments
