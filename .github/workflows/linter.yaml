@@ -33,11 +33,6 @@ jobs:
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
 
-      - name: Setup go-task
-        uses: arduino/setup-task@e26d8975574116b0097a1161e0fe16ba75d84c1c # v1.0.3
-        with:
-          repo-token: "${{ steps.generate-token.outputs.token }}"
-
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
@@ -68,11 +63,11 @@ jobs:
           GITHUB_ACCESS_TOKEN: "${{ steps.generate-token.outputs.token }}"
 
       - name: Run task lint:egress-comment
-        run: task lint:egress-comment
+        run: ./.taskfiles/Lint/egress-comment-job.sh
 
       - name: Run task lint:kubeconform
-        run: task lint:kubeconform
+        run: ./.taskfiles/Lint/kubeconform-job.sh
 
       - name: Run task lint:yaml-json-schema
-        run: task lint:yaml-json-schema
+        run: ./.taskfiles/Lint/yaml-json-schema-job.sh
 # yamllint enable rule:comments

@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:comments-indentation
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/postgresql.cnpg.io/cluster_v1.json
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/postgresql.cnpg.io/cluster_v1.json
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
