@@ -105,3 +105,34 @@ spec:
                       matchLabels:
                         app.kubernetes.io/name: kube-image-keeper
                         app.kubernetes.io/component: controllers
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kyverno.io/policy_v1.json
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: kube-image-keeper-registry-garbage-collection
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: set-cronjob-image
+      match:
+        any:
+          - resources:
+              kinds:
+                - CronJob
+              names:
+                - kube-image-keeper-registry-garbage-collection
+      mutate:
+        targets:
+          - apiVersion: batch/v1
+            kind: CronJob
+            preconditions:
+              all:
+                - key: "{{`{{target.metadata.name}}`}}"
+                  operator: Equals
+                  value: kube-image-keeper-registry-garbage-collection
+        patchesJson6902: |-
+          # necessary for fetching images from external repositories
+          - path: "/spec/jobTemplate/spec/template/spec/containers/0/image"
+            op: replace
+            value: public.ecr.aws/bitnami/kubectl:1.28.4

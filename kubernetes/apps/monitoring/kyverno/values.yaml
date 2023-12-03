@@ -44,6 +44,16 @@ kyverno:
               - update
               - watch
           - apiGroups:
+              - batch
+            resources:
+              - cronjobs
+            verbs:
+              - get
+              - list
+              - patch
+              - update
+              - watch
+          - apiGroups:
               - monitoring.coreos.com
             resources:
               - prometheusrules
@@ -53,7 +63,6 @@ kyverno:
               - patch
               - update
               - watch
-
     serviceMonitor:
       enabled: true
   cleanupController:

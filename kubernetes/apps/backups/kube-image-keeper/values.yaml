@@ -65,6 +65,3 @@ kube-image-keeper:
         secure: false
         v4auth: true
       s3ExistingSecret: kube-image-keeper-secret
-    garbageCollection:
-      # cronjob from helm uses docker.io image, disable it and use our own with proper one
-      schedule: ""
