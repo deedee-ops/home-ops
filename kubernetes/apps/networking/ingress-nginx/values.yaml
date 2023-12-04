@@ -111,6 +111,7 @@ ingress-nginx:
         type: RuntimeDefault
     containerSecurityContext:
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       runAsNonRoot: true
       runAsUser: 101
       runAsGroup: 82

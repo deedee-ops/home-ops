@@ -29,6 +29,8 @@ spec:
               value: home.arpa/nfs-client-kubernetes
           image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
           name: nfs-client-kubernetes
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /persistentvolumes
               name: nfs-client-kubernetes
@@ -68,6 +70,8 @@ spec:
               value: home.arpa/nfs-client-media
           image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
           name: nfs-client-media
+          securityContext:
+            readOnlyRootFilesystem: true
           volumeMounts:
             - mountPath: /persistentvolumes
               name: nfs-client-media
