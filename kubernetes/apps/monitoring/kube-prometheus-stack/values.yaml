@@ -21,14 +21,115 @@ kube-prometheus-stack:
         - hosts:
             - *host
       path: /
+    config:
+      global:
+        smtp_hello: "<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+        smtp_smarthost: "smtp-relay.networking.svc.cluster.local:25"
+        smtp_from: "alertmanager@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+        smtp_require_tls: false
+      inhibit_rules:
+        - source_matchers:
+            - severity="critical"
+          target_matchers:
+            - severity=~"warning|info"
+          equal:
+            - namespace
+            - alertname
+        - source_matchers:
+            - severity="warning"
+          target_matchers:
+            - severity="info"
+          equal:
+            - namespace
+            - alertname
+        - source_matchers:
+            - alertname="InfoInhibitor"
+          target_matchers:
+            - severity="info"
+          equal:
+            - namespace
+      route:
+        receiver: email
+        group_by:
+          - namespace
+        continue: false
+        routes:
+          - receiver: "null"
+            matchers:
+              - alertname = InfoInhibitor
+          - receiver: healthchecks
+            matchers:
+              - alertname = Watchdog
+            repeat_interval: 15m
+          - receiver: discord-cilium
+            matchers:
+              - alertname = CiliumBlockingTrafficUsingPolicies
+            repeat_interval: 15m
+          - receiver: discord-csp
+            matchers:
+              - alertname = CSPAlert
+            repeat_interval: 15m
+          - receiver: discord-kyverno
+            matchers:
+              - alertname = KyvernoPolicyFailed
+            repeat_interval: 15m
+        group_wait: 1m
+        group_interval: 10m
+        repeat_interval: 12h
+      receivers:
+        - name: "null"
+        - name: "email"
+          email_configs:
+            - to: "homelab@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+        - name: "discord-cilium"
+          discord_configs:
+            - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_CILIUM_WEBHOOK>"
+              message: '{{ template "homelab.discord.message" . }}'
+              title: '{{ template "homelab.discord.title" . }}'
+        - name: "discord-csp"
+          discord_configs:
+            - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_CSP_WEBHOOK>"
+              message: '{{ template "homelab.discord.message" . }}'
+              title: '{{ template "homelab.discord.title" . }}'
+        - name: "discord-kyverno"
+          discord_configs:
+            - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_KYVERNO_WEBHOOK>"
+              message: '{{ template "homelab.discord.message" . }}'
+              title: '{{ template "homelab.discord.title" . }}'
+        - name: "healthchecks"
+          webhook_configs:
+            - send_resolved: false
+              url: "<path:kubernetes/data/internal/kube-prometheus-stack#EXTERNAL_PING_URL>"
+              http_config:
+                follow_redirects: true
+      templates:
+        - '/etc/alertmanager/config/*.tmpl'
+    templateFiles:
+      # https://github.com/prometheus/alertmanager/issues/3310
+      discord_msg.tmpl: |-
+        {{ define "homelab.discord.title" }}
+            Fire! {{ .GroupLabels.SortedPairs.Values | join " " }}
+        {{ end }}
+
+        {{ define "homelab.discord.message" }}
+            {{ range .Alerts.Firing }}
+              Alert: **{{ printf "%.150s" .Annotations.summary }}** ({{ .Labels.severity }})
+              Description: {{ printf "%.150s" .Annotations.description }}
+              Alertname: {{ .Labels.alertname }}
+              Namespace: {{ .Labels.namespace }}
+              Service: {{ .Labels.service }}
+            {{ end }}
+
+            {{ if gt (len .Alerts.Resolved) 0 }}
+                Also {{ .Alerts.Resolved | len }} resolved alerts.
+            {{ end }}
+        {{ end }}
     alertmanagerSpec:
       replicas: 2
       podMetadata:
         annotations:
           reloader.stakater.com/auto: "true"
       podAntiAffinity: hard
-      useExistingSecret: true
-      configSecret: alertmanager-secret
       storage:
         volumeClaimTemplate:
           spec:
