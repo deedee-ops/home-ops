@@ -1,10 +1,14 @@
 ---
 # yaml-language-server: disabled
 area/github:
-  - ".github/**/*"
+  - changed-files:
+      - any-glob-to-any-file: .github/**/*
 area/kubernetes:
-  - "kubernetes/**/*"
+  - changed-files:
+      - any-glob-to-any-file: kubernetes/**/*
 area/hack:
-  - "hack/**/*"
+  - changed-files:
+      - any-glob-to-any-file: hack/**/*
 area/tofu:
-  - "tofu/**/*"
+  - changed-files:
+      - any-glob-to-any-file: tofu/**/*
