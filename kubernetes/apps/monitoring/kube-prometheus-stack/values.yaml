@@ -227,6 +227,7 @@ kube-prometheus-stack:
       podMetadata:
         labels:
           route-to/nas: "true"
+      podAntiAffinity: hard
       replicaExternalLabelName: __replica__
       ruleSelectorNilUsesHelmValues: false
       serviceMonitorSelectorNilUsesHelmValues: false
