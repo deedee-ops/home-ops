@@ -37,6 +37,7 @@ kyverno:
               - deployments
               - daemonsets
               - statefulsets
+              - pods
             verbs:
               - get
               - list
