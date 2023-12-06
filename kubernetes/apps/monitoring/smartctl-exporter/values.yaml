@@ -1,39 +1,147 @@
 ---
-prometheus-smartctl-exporter-masters:
-  fullnameOverride: smartctl-exporter-masters
-  config:
-    devices:
-      - /dev/sda
+app-template:
+  defaultPodOptions:
+    hostNetwork: true
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+
+  controllers:
+    main:
+      enabled: false
+
+    masters:
+      type: daemonset
+
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: In
+                      values:
+                        - ""
+
+      containers:
+        main:
+          args:
+            - --smartctl.path=/usr/sbin/smartctl
+            - --smartctl.interval=120s
+            - --smartctl.device=/dev/sda
+            - --web.listen-address=0.0.0.0:9633
+            - --web.telemetry-path=/metrics
+
+          image:
+            repository: quay.io/prometheuscommunity/smartctl-exporter
+            tag: v0.11.0
+            pullPolicy: IfNotPresent
+
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            readOnlyRootFilesystem: true
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 9633
+            readiness: *probes
+            liveness: *probes
+
+    workers:
+      type: daemonset
+
+      pod:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: NotIn
+                      values:
+                        - ""
+      containers:
+        main:
+          args:
+            - --smartctl.path=/usr/sbin/smartctl
+            - --smartctl.interval=120s
+            - --smartctl.device=/dev/nvme0n1
+            - --smartctl.device=/dev/sda
+            - --smartctl.device=/dev/sdb
+            - --web.listen-address=0.0.0.0:9633
+            - --web.telemetry-path=/metrics
+
+          image:
+            repository: quay.io/prometheuscommunity/smartctl-exporter
+            tag: v0.11.0
+            pullPolicy: IfNotPresent
+
+          securityContext:
+            privileged: true
+            runAsUser: 0
+            readOnlyRootFilesystem: true
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 9633
+            readiness: *probes
+            liveness: *probes
+
+  serviceAccount:
+    create: true
+    name: smartctl-exporter
+
+  service:
+    main:
+      enabled: false
+    masters:
+      enabled: true
+      controller: masters
+      ports:
+        http:
+          port: 9633
+    workers:
+      enabled: true
+      controller: workers
+      ports:
+        http:
+          port: 9633
+
   serviceMonitor:
-    enabled: true
-  prometheusRules:
-    enabled: false
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: In
-                values:
-                  - ""
-prometheus-smartctl-exporter-workers:
-  fullnameOverride: smartctl-exporter-workers
-  config:
-    devices:
-      - /dev/nvme0n1
-      - /dev/sda
-      - /dev/sdb
-  serviceMonitor:
-    enabled: true
-  prometheusRules:
-    enabled: false
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: NotIn
-                values:
-                  - ""
+    masters:
+      enabled: true
+      serviceName: smartctl-exporter-masters
+      endpoints:
+        - port: http
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
+    workers:
+      enabled: true
+      serviceName: smartctl-exporter-workers
+      endpoints:
+        - port: http
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
+
+  persistence:
+    dev:
+      enabled: true
+      type: hostPath
+      hostPath: /dev
+      hostPathType: ""
+      globalMounts:
+        - path: /hostdev
