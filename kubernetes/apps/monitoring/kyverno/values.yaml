@@ -32,12 +32,21 @@ kyverno:
       clusterRole:
         extraResources:
           - apiGroups:
+              - ""
+            resources:
+              - pods
+            verbs:
+              - get
+              - list
+              - patch
+              - update
+              - watch
+          - apiGroups:
               - apps
             resources:
               - deployments
               - daemonsets
               - statefulsets
-              - pods
             verbs:
               - get
               - list
