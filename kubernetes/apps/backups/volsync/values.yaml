@@ -2,10 +2,6 @@
 skipNetworkPolicy: false
 
 volsync:
-  # https://github.com/backube/volsync/pull/1000
-  image:
-    repository: ghcr.io/ajgon/volsync
-    tag: test
   manageCRDs: true
   metrics:
     disableAuth: true
