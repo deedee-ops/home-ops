@@ -140,7 +140,8 @@ spec:
 
         - alert: PodMemoryHighUsage
           expr: >-
-            sum(container_memory_usage_bytes{container!="",pod!~"prometheus-.*"} / 1048576) by (namespace,pod) > 4096
+            sum(container_memory_usage_bytes{container!="",pod!~"prometheus-.*|virt-launcher-.*"} / 1048576)
+            by (namespace,pod) > 4096
           for: 5m
           labels:
             severity: warning
@@ -152,7 +153,7 @@ spec:
 
         - alert: PodMemoryVeryHighUsage
           expr: >-
-            sum(container_memory_usage_bytes{container!="",pod!~"prometheus-.*"} / 1048576) by (namespace,pod) > 12288
+            sum(container_memory_usage_bytes{container!=""} / 1048576) by (namespace,pod) > 16384
           for: 5m
           labels:
             severity: critical
