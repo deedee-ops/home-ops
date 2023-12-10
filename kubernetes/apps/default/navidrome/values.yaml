@@ -1,8 +1,6 @@
 ---
 app-template:
   defaultPodOptions:
-    labels:
-      route-to/nas: "true"
     securityContext:
       fsGroup: 65000
       runAsNonRoot: true

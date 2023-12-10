@@ -1,0 +1,204 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/paperless-ngx
+            tag: '2.1.1@sha256:6a27bb319d2c0a0d7316263d8f94fb63e2b08d2bdbdf9f9f2f69108712c3c728'
+            pullPolicy: IfNotPresent
+
+          env:
+            PAPERLESS_ALLOWED_HOSTS: "*"
+            PAPERLESS_CONSUMER_POLLING: 30  # in seconds, ionotify doesn't work for ceph filesystem
+            PAPERLESS_CONSUMER_RECURSIVE: "true"
+            PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+            PAPERLESS_DBPORT: 5432
+            PAPERLESS_DBSSLMODE: require
+            PAPERLESS_ENABLE_HTTP_REMOTE_USER: "true"
+            PAPERLESS_HTTP_REMOTE_USER_HEADER_NAME: "HTTP_REMOTE_USER"
+            PAPERLESS_OCR_LANGUAGE: "eng+pol"
+            PAPERLESS_PORT: 8000
+            PAPERLESS_REDIS: "redis://:<path:kubernetes/data/internal/redis-ha#PASSWORD>@redis-ha-haproxy.database.svc.cluster.local:6379"
+            PAPERLESS_TASK_WORKERS: 2
+            PAPERLESS_TIKA_ENABLED: 1
+            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://localhost:3000"
+            PAPERLESS_TIKA_ENDPOINT: "http://localhost:9998"
+            PAPERLESS_TIME_ZONE: "Europe/Warsaw"
+            PAPERLESS_URL: "https://paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+            TZ: Europe/Warsaw
+
+          securityContext: &securityContext
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes-main
+              custom: true
+              spec:
+                httpGet:
+                  path: /static/signin.css
+                  port: 8000
+                failureThreshold: 30
+                periodSeconds: 10
+            readiness: *probes-main
+            liveness: *probes-main
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              memory: 5Gi
+
+        gotenberg:
+          image:
+            repository: ghcr.io/deedee-ops/gotenberg
+            tag: 7.10.1
+            pullPolicy: IfNotPresent
+          securityContext:
+            <<: *securityContext
+            runAsUser: 1001
+            runAsGroup: 1001
+          probes:
+            startup: &probes-gotenberg
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 3000
+            readiness: *probes-gotenberg
+            liveness: *probes-gotenberg
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 256Mi
+
+        tika:
+          image:
+            repository: ghcr.io/deedee-ops/tika
+            tag: 2.9.1
+            pullPolicy: IfNotPresent
+          securityContext: *securityContext
+          probes:
+            startup: &probes-tika
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /version
+                  port: 9998
+            readiness: *probes-tika
+            liveness: *probes-tika
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8000
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy: default-src 'self' 'unsafe-inline' data: blob: wss:;
+          manifest-src 'self' *.<path:kubernetes/data/internal/base#ROOT_DOMAIN>;
+          img-src 'self' data: *.<path:kubernetes/data/internal/base#ROOT_DOMAIN>; object-src 'self';
+          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/paperless;";
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Paperless-ngx
+        gethomepage.dev/icon: paperless.png
+        gethomepage.dev/description: Documents Archive
+      hosts:
+        - host: "paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8000
+      tls:
+        - hosts:
+            - "paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    api:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+      hosts:
+        - host: "paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /api
+              pathType: Prefix
+              service:
+                name: main
+                port: 8000
+      tls:
+        - hosts:
+            - "paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: paperless-ngx-config
+      storageClass: ceph-persistent-block
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: "/config"
+    consume:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: paperless-ngx-consume
+      advancedMounts:
+        main:
+          main:
+            - path: "/data/consume"
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: paperless-ngx-data
+      advancedMounts:
+        main:
+          main:
+            - path: "/data/media"
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: paperless-ngx

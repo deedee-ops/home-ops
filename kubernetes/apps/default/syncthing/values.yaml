@@ -91,3 +91,17 @@ app-template:
       accessMode: ReadWriteOnce
       globalMounts:
         - path: "/data"
+    external-paperless-consume:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: paperless-ngx-consume
+      globalMounts:
+        - path: "/external/consume"
+    external-paperless-data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: paperless-ngx-data
+      globalMounts:
+        - path: "/external/documents"
+          subPath: "documents/archive"
+          readOnly: true
