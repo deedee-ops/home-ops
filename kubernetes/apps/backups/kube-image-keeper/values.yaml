@@ -52,6 +52,11 @@ kube-image-keeper:
       <<: *podSecurityContext
       runAsUser: 65000
       runAsGroup: 65000
+    garbageCollection:
+      # schedule: "0 0 * * *"
+      # deleteUntagged: "false"
+      # garbage collector is currently broken, it will be fixed on 1.5.0 # @todo
+      schedule: false
     securityContext:
       <<: *securityContext
       runAsUser: 65000
