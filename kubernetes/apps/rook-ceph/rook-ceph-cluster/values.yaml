@@ -40,6 +40,13 @@ rook-ceph-cluster:
       useAllDevices: false
 
     resources:
+      mgr:
+        limits:
+          cpu: "1000m"
+          memory: "2Gi"
+        requests:
+          cpu: "500m"
+          memory: "512Mi"
       mgr-sidecar:
         limits:
           cpu: "1000m"
