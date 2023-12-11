@@ -45,6 +45,9 @@ harbor:
     persistentVolumeClaim:
       registry:
         existingClaim: harbor-registry
+      jobservice:
+        jobLog:
+          existingClaim: harbor-jobservice
   database:
     type: external
     external:
