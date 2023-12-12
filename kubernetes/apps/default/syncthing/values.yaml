@@ -105,3 +105,10 @@ app-template:
         - path: "/external/documents"
           subPath: "documents/archive"
           readOnly: true
+    external-obsidian-assets:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: miniserve-data
+      globalMounts:
+        - path: "/external/obsidian-assets"
+          subPath: "obsidian-assets"

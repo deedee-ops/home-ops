@@ -1,0 +1,77 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/miniserve
+            tag: 0.24.0
+            pullPolicy: IfNotPresent
+
+          env:
+            ENVDIR_PARANOID: "true"  # hack to remove all k8s set env variables from invidious app context
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8080
+            readiness: *probes
+            liveness: *probes
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Miniserve
+        gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/svenstaro/miniserve/data/logo.svg
+        gethomepage.dev/description: Static Files Server
+      hosts:
+        - host: "files.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8080
+      tls:
+        - hosts:
+            - "files.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: miniserve-data
+      advancedMounts:
+        main:
+          main:
+            - path: "/data"
