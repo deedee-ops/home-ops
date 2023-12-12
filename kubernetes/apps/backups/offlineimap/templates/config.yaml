@@ -1,0 +1,36 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: offlineimap-secret
+stringData:
+  offlineimap.conf: |-
+    [general]
+    ui = ttyui
+    accounts = RemoteMailProvider
+    metadata = /config/_meta
+
+    [Account RemoteMailProvider]
+    localrepository = LocalMail
+    remoterepository = RemoteMail
+
+    [Repository LocalMail]
+    type = Maildir
+    localfolders = /data
+
+    [Repository RemoteMail]
+    type = IMAP
+    remotehost = <path:kubernetes/data/internal/offlineimap#HOST>
+    remoteuser = <path:kubernetes/data/internal/offlineimap#USERNAME>
+    remotepass = <path:kubernetes/data/internal/offlineimap#PASSWORD>
+    remoteport = <path:kubernetes/data/internal/offlineimap#PORT>
+    sslcacertfile = /etc/ssl/cert.pem
+    ssl = yes
+    expunge = no
+    folderfilter = lambda foldername: foldername not in ['INBOX.Trash']
+    maxconnections = 3
+    readonly = True
