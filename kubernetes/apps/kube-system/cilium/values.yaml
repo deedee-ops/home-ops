@@ -64,7 +64,7 @@ cilium:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Admin
           gethomepage.dev/name: Hubble
-          gethomepage.dev/icon: hubble.png
+          gethomepage.dev/icon: cilium.png
           gethomepage.dev/description: Cilium Hubble
         hosts:
           - "hubble.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
