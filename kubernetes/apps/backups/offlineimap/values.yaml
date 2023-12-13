@@ -32,6 +32,30 @@ app-template:
               drop:
                 - ALL
 
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - pgrep
+                    - -f
+                    - offlineimap
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+
   service:
     main:
       enabled: false
