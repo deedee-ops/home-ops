@@ -1,0 +1,124 @@
+---
+app-template:
+  defaultPodOptions:
+    labels:
+      # fetching RSS feeds
+      egress/enabled: "true"
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/miniflux
+            tag: 2.0.51
+            pullPolicy: IfNotPresent
+
+          env:
+            AUTH_PROXY_HEADER: Remote-User
+            CREATE_ADMIN: 1
+            INVIDIOUS_INSTANCE: "invidious.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+            METRICS_ALLOWED_NETWORKS: 172.30.0.0/15
+            METRICS_COLLECTOR: 1
+            POLLING_PARSING_ERROR_LIMIT: 3
+            RUN_MIGRATIONS: 1
+            YOUTUBE_EMBED_URL_OVERRIDE: "https://invidious.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/embed/"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthcheck
+                  port: 3000
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 750Mi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 3000
+
+  serviceMonitor:
+    main:
+      enabled: true
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy: default-src 'self' 'unsafe-inline' data: blob: wss:
+          *.<path:kubernetes/data/internal/base#ROOT_DOMAIN>;
+          object-src 'none'; img-src 'self' data: https:; media-src 'self' https:;
+          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/miniflux;";
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Miniflux
+        gethomepage.dev/icon: miniflux.png
+        gethomepage.dev/description: RSS Client
+      hosts:
+        - host: "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 3000
+      tls:
+        - hosts:
+            - "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+    fever:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+      hosts:
+        - host: "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /fever
+              pathType: Prefix
+              service:
+                name: main
+                port: 3000
+      tls:
+        - hosts:
+            - "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: miniflux
