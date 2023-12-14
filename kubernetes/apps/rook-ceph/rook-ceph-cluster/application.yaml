@@ -30,3 +30,9 @@ spec:
         pod-security.kubernetes.io/enforce: privileged
         pod-security.kubernetes.io/audit: privileged
         pod-security.kubernetes.io/warn: privileged
+  ignoreDifferences:
+    - kind: CephCluster
+      group: ceph.rook.io
+      name: rook-ceph
+      jsonPointers:
+        - "/spec/storage/nodes"
