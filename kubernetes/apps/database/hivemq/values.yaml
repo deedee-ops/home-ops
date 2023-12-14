@@ -1,0 +1,38 @@
+---
+hivemq-platform-operator:
+  image:
+    repository: ghcr.io/deedee-ops
+hivemq-platform:
+  image:
+    repository: ghcr.io/deedee-ops
+    tag: '4.23.0@sha256:93a1d089123856f77d11217efce070dd46e43af052c1f46923491b1ad35f1c36'
+  nodes:
+    replicaCount: 2
+  extensions:
+    - name: hivemq-allow-all-extension
+      enabled: false
+    - name: hivemq-file-rbac-extension
+      enabled: true
+      extensionUri: preinstalled
+  additionalVolumes:
+    - type: secret
+      name: hivemq-secret
+      mountName: file-rbac-config
+      path: /opt/hivemq/extensions/hivemq-file-rbac-extension/
+      subPath: extension-config.xml
+    - type: secret
+      name: hivemq-secret
+      mountName: file-rbac-credentials
+      path: /opt/hivemq/extensions/hivemq-file-rbac-extension/
+      subPath: credentials.xml
+  services:
+    - type: mqtt
+      exposed: true
+      containerPort: 1883
+      port: 1883
+    - type: control-center
+      exposed: true
+      containerPort: 8080
+  controlCenter:
+    username: "<path:kubernetes/data/internal/hivemq#CONTROL_CENTER_USERNAME>"
+    password: "<path:kubernetes/data/internal/hivemq#CONTROL_CENTER_PASSWORD>"

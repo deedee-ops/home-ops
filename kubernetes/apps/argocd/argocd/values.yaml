@@ -35,6 +35,14 @@ argo-cd:
               end
             end
             return hs
+      # this customization asks argo to ignore CiliumIdentity resources
+      resource.exclusions: |
+        - apiGroups:
+          - cilium.io
+          kinds:
+          - CiliumIdentity
+          clusters:
+          - "*"
       url: "https://argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       oidc.config: |
           name: Authelia

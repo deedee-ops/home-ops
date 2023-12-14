@@ -126,7 +126,29 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: test-ceph-persistent-filesystem-rwx
+  name: test-ceph-persistent-filesystem-rwx-a
+  namespace: rook-ceph
+spec:
+  containers:
+    - name: test
+      image: public.ecr.aws/docker/library/alpine:edge
+      command:
+        - /bin/sh
+        - -c
+        - "trap : TERM INT; sleep infinity & wait"
+      volumeMounts:
+        - mountPath: "/test"
+          name: ceph
+  volumes:
+    - name: ceph
+      persistentVolumeClaim:
+        claimName: test-ceph-persistent-filesystem-rwx
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/pod.json
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-ceph-persistent-filesystem-rwx-b
   namespace: rook-ceph
 spec:
   containers:
