@@ -71,7 +71,7 @@ app-template:
       type: cronjob
       cronjob:
         schedule: "0 0 * * *"   # once a day
-        successfulJobsHistory: 2
+        successfulJobsHistory: 0
         failedJobsHistory: 5
       pod:
         securityContext:
