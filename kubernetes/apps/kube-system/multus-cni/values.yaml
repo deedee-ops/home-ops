@@ -13,9 +13,9 @@ multus-cni:
           name: cni-bin-dir
     # https://github.com/k8snetworkplumbingwg/multus-cni/issues/1089#issuecomment-1565597102
     - command:
-        - rm
-      args:
-        - /host/etc/cni/net.d/00-multus.conf
+        - sh
+        - -c
+        - "rm /host/etc/cni/net.d/00-multus.conf || true"
       image: alpine
       imagePullPolicy: IfNotPresent
       name: delete-multus-conf-workaround
