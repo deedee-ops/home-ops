@@ -1,0 +1,89 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      pod:
+        labels:
+          # downloading various plugins and connecting to providers
+          egress/enabled: "true"
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/home-assistant
+            tag: 2023.12.3
+            pullPolicy: IfNotPresent
+
+          env:
+            POSTGRES_ENABLED: "true"
+            POSTGRES_PORT: "5432"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: false
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 1Gi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8123
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: 'more_clear_headers "Content-Security-Policy";'
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Home
+        gethomepage.dev/name: Home Assistant
+        gethomepage.dev/icon: home-assistant.png
+        gethomepage.dev/description: Home Automation management
+      hosts:
+        - host: "home.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8123
+      tls:
+        - hosts:
+            - "home.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: home-assistant-config
+      globalMounts:
+        - path: /config
