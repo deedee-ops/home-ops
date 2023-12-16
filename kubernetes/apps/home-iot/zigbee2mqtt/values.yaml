@@ -1,0 +1,116 @@
+---
+app-template:
+  defaultPodOptions:
+    nodeSelector:
+      sonoff.feature.node.kubernetes.io/zigbee: "true"
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      containers:
+        main:
+          image:
+            repository: ghcr.io/koenkk/zigbee2mqtt
+            tag: 1.34.0
+          env:
+            TZ: Europe/Warsaw
+            ZIGBEE2MQTT_DATA: /config
+          envFrom:
+            - secretRef:
+                name: zigbee2mqtt-secret
+
+          securityContext:
+            privileged: true
+            runAsNonRoot: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8080
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+
+      initContainers:
+        01-init-config:
+          image:
+            repository: public.ecr.aws/docker/library/busybox
+            tag: 1.36.1
+            pullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - "-c"
+            - "[ ! -f /config/configuration.yaml ] && cp /tmp/config/configuration.yaml /config || true"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65000
+            runAsGroup: 65000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Home
+        gethomepage.dev/name: zigbee2mqtt
+        gethomepage.dev/icon: zigbee2mqtt.png
+        gethomepage.dev/description: Zigbee compatibility layer
+      hosts:
+        - host: "zigbee2mqtt.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8080
+      tls:
+        - hosts:
+            - "zigbee2mqtt.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: zigbee2mqtt-config
+      globalMounts:
+        - path: /config
+    config-file:
+      enabled: true
+      type: configMap
+      name: zigbee2mqtt-configmap
+      advancedMounts:
+        main:
+          01-init-config:
+            - path: /tmp/config

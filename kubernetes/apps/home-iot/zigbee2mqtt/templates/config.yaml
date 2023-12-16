@@ -1,0 +1,47 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/configmap-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zigbee2mqtt-configmap
+data:
+  configuration.yaml: |
+    advanced:
+      pan_id: GENERATE
+      ext_pan_id: GENERATE
+      network_key: GENERATE
+      last_seen: ISO_8601
+      legacy_api: false
+      legacy_availability_payload: false
+      log_level: info
+      log_output:
+        - console
+    availability:
+      active:
+        timeout: 60
+      passive:
+        timeout: 2160
+    device_options:
+      retain: true
+    frontend:
+      port: 8080
+      host: 0.0.0.0
+      url: "https://zigbee2mqtt.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    homeassistant:
+      discovery_topic: 'homeassistant'
+      legacy_entity_attributes: false
+      legacy_triggers: false
+      status_topic: 'homeassistant/status'
+    mqtt:
+      include_device_information: true
+      keepalive: 60
+      reject_unauthorized: true
+      server: 'mqtt://hivemq-hivemq-cluster.database.svc.cluster.local:1883'
+      version: 5
+    permit_join: false
+    serial:
+      port: "/dev/ttyUSB0"
+      disable_led: false
+      baudrate: 115200
