@@ -46,7 +46,11 @@ redis-ha:
       reloader.stakater.com/auto: "true"
     image:
       repository: public.ecr.aws/docker/library/haproxy
-      tag: 2.9.1-alpine
+    # https://github.com/DandyDeveloper/charts/issues/252
+    extraConfig: |
+      global
+        maxconn 256
+        fd-hard-limit 10000
     metrics:
       enabled: true
       serviceMonitor:
