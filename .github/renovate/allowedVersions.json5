@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["ceph/ceph"],
+      // 18.2.1 has broken prometheus module
+      "allowedVersions": "!/18\.2\.1/"
+  ]
+}
