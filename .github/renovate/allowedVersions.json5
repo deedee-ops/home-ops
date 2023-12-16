@@ -6,5 +6,6 @@
       "matchPackagePatterns": ["ceph/ceph"],
       // 18.2.1 has broken prometheus module
       "allowedVersions": "!/18\.2\.1/"
+    }
   ]
 }

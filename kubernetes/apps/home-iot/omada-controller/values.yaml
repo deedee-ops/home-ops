@@ -1,0 +1,114 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 508
+      runAsNonRoot: false
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: mbentley/omada-controller
+            tag: 5.13-chromium
+            pullPolicy: IfNotPresent
+
+          env:
+            TZ: Europe/Warsaw
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              custom: true
+              spec:
+                failureThreshold: 30
+                periodSeconds: 10
+                httpGet:
+                  scheme: HTTPS
+                  path: /favicon.ico
+                  port: 8043
+            liveness: *probes
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8043
+    omada:
+      controller: main
+      type: LoadBalancer
+      annotations:
+        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/omada-controller#IP_INTERNAL>
+      ports:
+        managerv1:
+          port: 29811
+          protocol: TCP
+        adoptv1:
+          port: 29812
+          protocol: TCP
+        upgradev1:
+          port: 29813
+          protocol: TCP
+        managerv2:
+          port: 29814
+          protocol: TCP
+        transferv2:
+          port: 29815
+          protocol: TCP
+        rtty:
+          port: 29816
+          protocol: TCP
+        appdiscovery:
+          port: 27001
+          protocol: UDP
+        discovery:
+          port: 29810
+          protocol: UDP
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        nginx.ingress.kubernetes.io/proxy-redirect-from: "https://omada.<path:kubernetes/data/internal/base#ROOT_DOMAIN>:8043/login"
+        nginx.ingress.kubernetes.io/proxy-redirect-to: "https://omada.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/login"
+        nginx.ingress.kubernetes.io/upstream-vhost: "omada.<path:kubernetes/data/internal/base#ROOT_DOMAIN>:8043"
+        nginx.ingress.kubernetes.io/configuration-snippet: 'more_clear_headers "X-Content-Type-Options";'
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Home
+        gethomepage.dev/name: Omada Controller
+        gethomepage.dev/icon: omada.png
+        gethomepage.dev/description: WiFi control plane
+      hosts:
+        - host: "omada.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8043
+      tls:
+        - hosts:
+            - "omada.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: omada-controller-data
+      globalMounts:
+        - path: /opt/tplink/EAPController/data
+    logs:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /opt/tplink/EAPController/logs
