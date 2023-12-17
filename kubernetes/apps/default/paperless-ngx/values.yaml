@@ -16,7 +16,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/paperless-ngx
-            tag: '2.1.1@sha256:6a27bb319d2c0a0d7316263d8f94fb63e2b08d2bdbdf9f9f2f69108712c3c728'
+            tag: '2.1.3@sha256:8a7d2b6effdf7cf3ba46cdefd26a630fbab6edb45427bd46e46bb9d8b438df3a'
             pullPolicy: IfNotPresent
 
           env:
