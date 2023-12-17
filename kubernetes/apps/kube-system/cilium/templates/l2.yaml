@@ -21,3 +21,4 @@ metadata:
 spec:
   cidrs:
     - cidr: "<path:kubernetes/data/internal/base#CIDR_LOADBALANCER>"
+    - cidr: "<path:kubernetes/data/internal/base#CIDR_IOT>"
