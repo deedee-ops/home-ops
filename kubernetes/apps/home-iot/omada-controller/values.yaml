@@ -15,7 +15,7 @@ app-template:
       containers:
         main:
           image:
-            repository: mbentley/omada-controller
+            repository: ghcr.io/deedee-ops/omada-controller
             tag: 5.13-chromium
             pullPolicy: IfNotPresent
 
@@ -32,7 +32,7 @@ app-template:
                 periodSeconds: 10
                 httpGet:
                   scheme: HTTPS
-                  path: /favicon.ico
+                  path: /api/v2/anon/info
                   port: 8043
             liveness: *probes
 
