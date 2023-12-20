@@ -48,7 +48,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
         }
         apiServer = {
           # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver
-          image = "registry.k8s.io/kube-apiserver:v1.28.5"
+          image = "registry.k8s.io/kube-apiserver:v1.29.0"
         }
         controllerManager = {
           # renovate: datasource=docker depName=registry.k8s.io/kube-controller-manager
