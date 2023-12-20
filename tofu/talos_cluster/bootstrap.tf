@@ -62,7 +62,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
         }
         scheduler = {
           # renovate: datasource=docker depName=registry.k8s.io/kube-scheduler
-          image = "registry.k8s.io/kube-scheduler:v1.28.5"
+          image = "registry.k8s.io/kube-scheduler:v1.29.0"
           extraArgs = {
             "bind-address" = "0.0.0.0"
           }
