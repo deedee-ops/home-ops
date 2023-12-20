@@ -12,7 +12,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
       machine = {
         kubelet = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-          image                               = "ghcr.io/siderolabs/kubelet:v1.28.5"
+          image                               = "ghcr.io/siderolabs/kubelet:v1.29.0"
           defaultRuntimeSeccompProfileEnabled = true
           disableManifestsDirectory           = true
           extraArgs = {
@@ -250,7 +250,7 @@ resource "talos_machine_configuration_apply" "workers" {
       machine = {
         kubelet = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-          image                               = "ghcr.io/siderolabs/kubelet:v1.28.5"
+          image                               = "ghcr.io/siderolabs/kubelet:v1.29.0"
           defaultRuntimeSeccompProfileEnabled = true
           disableManifestsDirectory           = true
           extraArgs = {
