@@ -52,7 +52,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
         }
         controllerManager = {
           # renovate: datasource=docker depName=registry.k8s.io/kube-controller-manager
-          image = "registry.k8s.io/kube-controller-manager:v1.28.5"
+          image = "registry.k8s.io/kube-controller-manager:v1.29.0"
           extraArgs = {
             "bind-address" = "0.0.0.0"
           }
