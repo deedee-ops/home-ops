@@ -26,7 +26,7 @@ resource "talos_machine_configuration_apply" "controlplanes" {
         }
         install = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-          image      = "ghcr.io/siderolabs/installer:v1.6.0"
+          image      = "ghcr.io/siderolabs/installer:v1.6.1"
           disk       = data.talos_machine_disks.this[each.key].disks[0].name
           bootloader = true
           wipe       = true
@@ -269,7 +269,7 @@ resource "talos_machine_configuration_apply" "workers" {
         }
         install = {
           # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-          image      = "factory.talos.dev/installer/537d6bf0e502c1ed868a8fbf898cef26981aa46c9a387c52adc21e8adc5342a8:v1.6.0"
+          image      = "factory.talos.dev/installer/537d6bf0e502c1ed868a8fbf898cef26981aa46c9a387c52adc21e8adc5342a8:v1.6.1"
           disk       = data.talos_machine_disks.this[each.key].disks[0].name
           bootloader = true
           wipe       = true
