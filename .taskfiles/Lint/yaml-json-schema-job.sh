@@ -3,7 +3,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # search for manifests without JSON schema links
-yaml_files="$(sh -c "find . -name '*.y*ml' -not -name '*.tmpl.y*ml' -not -name 'values.y*ml' -not -path \"$(yq '.ignore|join("\" -not -path ./\"")' "${SCRIPT_DIR}/../../.yamllint")\"")"
+yaml_files="$(sh -c "find . -name '*.y*ml' -not -name '*.tmpl.y*ml' -not -name 'values.*y*ml' -not -path \"$(yq '.ignore|join("\" -not -path ./\"")' "${SCRIPT_DIR}/../../.yamllint")\"")"
 error=0
 declare -A CURL_CACHE 2>/dev/null || false
 CURL_CACHE["disabled"]="1"

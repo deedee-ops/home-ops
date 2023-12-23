@@ -1,4 +1,5 @@
 ---
 snapshot-controller:
-  serviceMonitor:
-    create: true
+  controller:
+    serviceMonitor:
+      create: true

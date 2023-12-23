@@ -64,9 +64,9 @@ tasks:
   snapshot:
     desc: Trigger a Restic ReplicationSource snapshot (ex. task volsync:snapshot rsrc=vault claim=data-vault-0 [namespace=default])
     cmds:
-      - kubectl -n {{.namespace}} patch replicationsources {{.rsrc}}-{{.claim}} --type merge -p '{"spec":{"trigger":{"manual":"{{.ts}}"}}}'
-      - bash {{.waitForJobScript}} volsync-src-{{.rsrc}}-{{.claim}} {{.namespace}}
-      - kubectl -n {{.namespace}} wait job/volsync-src-{{.rsrc}}-{{.claim}} --for condition=complete --timeout=120m
+      - kubectl -n {{.namespace}} patch replicationsources backup-{{.rsrc}}-{{.claim}} --type merge -p '{"spec":{"trigger":{"manual":"{{.ts}}"}}}'
+      - bash {{.waitForJobScript}} volsync-src-backup-{{.rsrc}}-{{.claim}} {{.namespace}}
+      - kubectl -n {{.namespace}} wait job/volsync-src-backup-{{.rsrc}}-{{.claim}} --for condition=complete --timeout=120m
       # TODO: Find a way to output logs
       # Error from server (NotFound): jobs.batch "volsync-src-zzztest" not found
       # - kubectl -n {{.namespace}} logs job/volsync-src-{{.rsrc}}
@@ -76,7 +76,7 @@ tasks:
       namespace: '{{.namespace | default "default"}}'
     preconditions:
       - sh: test -f {{.waitForJobScript}}
-      - sh: kubectl -n {{.namespace}} get replicationsources {{.rsrc}}-{{.claim}}
+      - sh: kubectl -n {{.namespace}} get replicationsources backup-{{.rsrc}}-{{.claim}}
         msg: "ReplicationSource '{{.rsrc}}' not found in namespace '{{.namespace}}'"
 
   # To run restore jobs in parallel for all replicationdestinations:

@@ -40,3 +40,9 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore talhelper secrets and fields
+talos/**/clusterconfig
+talsecret*
+talenv*
+!*.sops.yaml

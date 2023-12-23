@@ -7,17 +7,20 @@ vars:
 
 tasks:
   build-crush-map:
-    desc: Build crush map (ex. task rookceph:build-crush-map tfvars=tofu/dexter.tfvars)
+    desc: Build crush map (ex. task rookceph:build-crush-map cluster=deedee)
     cmds:
-      - "{{.buildCrushMapScript}} {{.tfvars}}"
+      - "{{.buildCrushMapScript}} {{.cluster}}"
       - >
         kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.phase}=Ready'
         cephblockpool ceph-ephemeral-block
       - >
         kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.phase}=Ready'
         cephblockpool ceph-persistent-block
+      - >
+        kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.phase}=Ready'
+        cephfilesystem ceph-persistent-filesystem
       - kubectl -n rook-ceph wait --timeout=1800s --for=jsonpath='{.status.ceph.health}=HEALTH_OK' cephcluster rook-ceph
     vars:
-      tfvars: '{{ or .tfvars (fail "`tfvars` path is required") }}'
+      cluster: '{{ or .cluster (fail "`cluster` path is required") }}'
     preconditions:
       - sh: test -f {{.buildCrushMapScript}}

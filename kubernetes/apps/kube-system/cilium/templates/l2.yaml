@@ -1,3 +1,4 @@
+# {{ if not .Values.skipCiliumExternals }}
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliuml2announcementpolicy_v2alpha1.json
 apiVersion: cilium.io/v2alpha1
@@ -22,3 +23,4 @@ spec:
   cidrs:
     - cidr: "<path:kubernetes/data/internal/base#CIDR_LOADBALANCER>"
     - cidr: "<path:kubernetes/data/internal/base#CIDR_IOT>"
+# {{ end }}
