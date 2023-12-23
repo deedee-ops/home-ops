@@ -8,5 +8,6 @@ rules:
     max: 120
 
 ignore:
-  - tofu/talos_cluster/manifests/*.yaml
-  - tofu/talos_cluster/manifests/*.yaml
+  - "*.sops.yaml"
+  - talos/*/clusterconfig/*.yaml
+  - talos/*/tal*.yaml

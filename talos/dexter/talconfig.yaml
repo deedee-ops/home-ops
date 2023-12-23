@@ -1,0 +1,302 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+# yamllint enable rule:line-length
+clusterName: &cluster dexter
+
+clusterPodNets:
+  - 172.30.0.0/16
+clusterSvcNets:
+  - 172.31.0.0/16
+
+endpoint: https://${clusterEndpointIP}:6443
+
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.6.0
+
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.28.5
+
+additionalApiServerCertSans:
+  - ${clusterEndpointIP}
+
+additionalMachineCertSans:
+  - ${clusterEndpointIP}
+
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: ed
+    ipAddress: 10.100.91.1
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5b:01
+        addresses:
+          - 10.100.91.1/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: &masterLabels
+      topology.kubernetes.io/region: *cluster
+      topology.kubernetes.io/zone: master
+
+  - hostname: edd
+    ipAddress: 10.100.91.2
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5b:02
+        addresses:
+          - 10.100.91.2/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *masterLabels
+
+  - hostname: eddy
+    ipAddress: 10.100.91.3
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5b:03
+        addresses:
+          - 10.100.91.3/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *masterLabels
+
+  - hostname: naruto
+    ipAddress: 10.100.92.1
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: false
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5c:01
+        addresses:
+          - 10.100.92.1/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: &workerLabels
+      topology.kubernetes.io/region: *cluster
+      topology.kubernetes.io/zone: worker
+
+  - hostname: sakura
+    ipAddress: 10.100.92.2
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: false
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5c:02
+        addresses:
+          - 10.100.92.2/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *workerLabels
+
+  - hostname: sasuke
+    ipAddress: 10.100.92.3
+    talosImageURL: ghcr.io/siderolabs/installer
+    installDisk: /dev/vda
+    controlPlane: false
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 00:00:0a:64:5c:03
+        addresses:
+          - 10.100.92.3/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *workerLabels
+
+controlPlane:
+  patches:
+    # Configure NTP
+    - &ntpPatch |-
+      machine:
+        time:
+          disabled: false
+          servers:
+            - time.cloudflare.com
+
+    # Enable cluster discovery
+    - &discoveryPatch |-
+      cluster:
+        discovery:
+          registries:
+            kubernetes:
+              disabled: false
+            service:
+              disabled: true
+
+    # Enable KubePrism
+    - &kubePrismPatch |-
+      machine:
+        features:
+          kubePrism:
+            enabled: true
+            port: 7445
+
+    # Configure kubelet
+    - &kubeletPatch |-
+      machine:
+        kubelet:
+          extraArgs:
+            feature-gates: GracefulNodeShutdown=true
+            rotate-server-certificates: true
+
+    # Cluster configuration
+    - |-
+      cluster:
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+        proxy:
+          disabled: true
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+
+    # ETCD configuration
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+
+    # Enable K8s Talos API Access
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+            allowedRoles:
+              - os:admin
+            allowedKubernetesNamespaces:
+              - kube-system
+
+    - |-
+      cluster:
+        inlineManifests:
+          - name: vault-secrets
+            contents: |
+              ---
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                labels:
+                  kubernetes.io/metadata.name: vault
+                name: vault
+              ---
+              apiVersion: v1
+              kind: Secret
+              type: Opaque
+              metadata:
+                name: vault-unseal
+                namespace: vault
+              stringData:
+                UNSEAL_KEY: "${vaultUnseal}"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: vault-server-tls
+                namespace: vault
+              type: kubernetes.io/tls
+              data:
+                tls.ca: "${vaultTLSca}"
+                tls.key: "${vaultTLSkey}"
+                tls.crt: "${vaultTLScert}"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-0
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-0"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-1
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-1"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-2
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-2"
+
+
+worker:
+  patches:
+    - *ntpPatch
+    - *discoveryPatch
+    - *kubePrismPatch
+    - *kubeletPatch
+
+    # udev rules
+    - |-
+      machine:
+        udev:
+          rules:
+            - ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"

@@ -1,0 +1,76 @@
+---
+skipCiliumExternals: true
+skipNetworkPolicy: true
+skipVolsyncSecrets: true
+
+argo-cd:
+  global:
+    hostAliases: []
+  configs:
+    cm:
+      url: ''
+      'oidc.config': ''
+  server:
+    ingress:
+      enabled: false
+
+cilium:
+  hubble:
+    ui:
+      ingress:
+        enabled: false
+
+rook-ceph-cluster:
+  cephClusterSpec:
+    storage:
+      nodes:
+        - name: naruto
+          devices:
+            - name: /dev/vdb
+              config:
+                crushRoot: ephemeral
+            - name: /dev/vdc
+              config:
+                crushRoot: persistent
+        - name: sakura
+          devices:
+            - name: /dev/vdb
+              config:
+                crushRoot: ephemeral
+            - name: /dev/vdc
+              config:
+                crushRoot: persistent
+        - name: sasuke
+          devices:
+            - name: /dev/vdb
+              config:
+                crushRoot: ephemeral
+            - name: /dev/vdc
+              config:
+                crushRoot: persistent
+
+  configOverride: |
+    [global]
+    bdev_enable_discard = true
+    bdev_async_discard = true
+    osd_class_update_on_start = false
+
+    public network = 10.100.92.0/24
+    cluster network = 10.100.92.0/24
+    public addr = ""
+    cluster addr = ""
+
+    [mon]
+    mon_data_avail_warn = 15
+
+    [osd]
+    osd crush update on start = false
+
+  ingress:
+    dashboard:
+      host: false
+
+vault:
+  server:
+    ingress:
+      enabled: false

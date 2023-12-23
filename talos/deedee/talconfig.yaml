@@ -1,0 +1,408 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+# yamllint enable rule:line-length
+clusterName: &cluster deedee
+
+clusterPodNets:
+  - 172.30.0.0/16
+clusterSvcNets:
+  - 172.31.0.0/16
+
+endpoint: https://${clusterEndpointIP}:6443
+
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.6.0
+
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.28.5
+
+additionalApiServerCertSans:
+  - ${clusterEndpointIP}
+
+additionalMachineCertSans:
+  - ${clusterEndpointIP}
+
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: huey
+    ipAddress: 10.100.21.10
+    installDiskSelector:
+      size: 128GB
+      model: "SK hynix*"
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 70:b5:e8:7c:e3:b1
+        addresses:
+          - 10.100.21.10/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: &masterLabels
+      topology.kubernetes.io/region: *cluster
+      topology.kubernetes.io/zone: master
+
+  - hostname: dewey
+    ipAddress: 10.100.21.11
+    installDiskSelector:
+      size: 128GB
+      model: "SK hynix*"
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 70:b5:e8:7c:e3:88
+        addresses:
+          - 10.100.21.11/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *masterLabels
+
+  - hostname: louie
+    ipAddress: 10.100.21.12
+    installDiskSelector:
+      size: 128GB
+      model: "SK hynix*"
+    controlPlane: true
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 70:b5:e8:7c:e3:f6
+        addresses:
+          - 10.100.21.12/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
+        vip:
+          ip: ${clusterEndpointIP}
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *masterLabels
+
+  - hostname: blossom
+    ipAddress: 10.100.22.10
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915-ucode
+            - siderolabs/thunderbolt
+    installDiskSelector:
+      size: 128GB
+      model: TS128GMTS430S
+    controlPlane: false
+    kernelModules:
+      - name: thunderbolt
+      - name: thunderbolt_net
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 48:21:0b:51:61:e0
+        dhcp: false
+      - interface: vbr0
+        addresses:
+          - 10.100.22.10/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        bridge:
+          interfaces:
+            - enp86s0
+          stp:
+            enabled: false
+        dhcp: false
+      - deviceSelector:
+          busPath: 1-1.0
+        addresses:
+          - 10.254.22.10/32
+        routes:
+          - network: 10.254.22.11/32
+            gateway: ""
+        dhcp: false
+      - deviceSelector:
+          busPath: 0-1.0
+        addresses:
+          - 10.254.22.10/32
+        routes:
+          - network: 10.254.22.12/32
+            gateway: ""
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: &workerLabels
+      topology.kubernetes.io/region: *cluster
+      topology.kubernetes.io/zone: worker
+
+  - hostname: bubbles
+    ipAddress: 10.100.22.11
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915-ucode
+            - siderolabs/thunderbolt
+    installDiskSelector:
+      size: 128GB
+      model: TS128GMTS430S
+    controlPlane: false
+    kernelModules:
+      - name: thunderbolt
+      - name: thunderbolt_net
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 48:21:0b:51:58:a4
+        dhcp: false
+      - interface: vbr0
+        addresses:
+          - 10.100.22.11/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        bridge:
+          interfaces:
+            - enp86s0
+          stp:
+            enabled: false
+        dhcp: false
+      - deviceSelector:
+          busPath: 0-1.0
+        addresses:
+          - 10.254.22.11/32
+        routes:
+          - network: 10.254.22.10/32
+            gateway: ""
+        dhcp: false
+      - deviceSelector:
+          busPath: 1-1.0
+        addresses:
+          - 10.254.22.11/32
+        routes:
+          - network: 10.254.22.12/32
+            gateway: ""
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *workerLabels
+
+  - hostname: buttercup
+    ipAddress: 10.100.22.12
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915-ucode
+            - siderolabs/thunderbolt
+    installDiskSelector:
+      size: 128GB
+      model: TS128GMTS430S
+    controlPlane: false
+    kernelModules:
+      - name: thunderbolt
+      - name: thunderbolt_net
+    disableSearchDomain: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: 48:21:0b:51:61:c8
+        dhcp: false
+      - interface: vbr0
+        addresses:
+          - 10.100.22.12/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        bridge:
+          interfaces:
+            - enp86s0
+          stp:
+            enabled: false
+        dhcp: false
+      - deviceSelector:
+          busPath: 1-1.0
+        addresses:
+          - 10.254.22.12/32
+        routes:
+          - network: 10.254.22.10/32
+            gateway: ""
+        dhcp: false
+      - deviceSelector:
+          busPath: 0-1.0
+        addresses:
+          - 10.254.22.12/32
+        routes:
+          - network: 10.254.22.11/32
+            gateway: ""
+        dhcp: false
+    nameservers:
+      - 10.100.1.1
+    nodeLabels: *workerLabels
+
+controlPlane:
+  patches:
+    # Configure NTP
+    - &ntpPatch |-
+      machine:
+        time:
+          disabled: false
+          servers:
+            - time.cloudflare.com
+
+    # Enable cluster discovery
+    - &discoveryPatch |-
+      cluster:
+        discovery:
+          registries:
+            kubernetes:
+              disabled: false
+            service:
+              disabled: true
+
+    # Enable KubePrism
+    - &kubePrismPatch |-
+      machine:
+        features:
+          kubePrism:
+            enabled: true
+            port: 7445
+
+    # Configure kubelet
+    - &kubeletPatch |-
+      machine:
+        kubelet:
+          extraArgs:
+            feature-gates: GracefulNodeShutdown=true
+            rotate-server-certificates: true
+
+    # Cluster configuration
+    - |-
+      cluster:
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+
+    # kube-proxy configuration
+    - &proxyPatch |-
+      cluster:
+        proxy:
+          disabled: true
+
+    # ETCD configuration
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+
+    # Enable K8s Talos API Access
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+            allowedRoles:
+              - os:admin
+            allowedKubernetesNamespaces:
+              - kube-system
+
+    - |-
+      cluster:
+        inlineManifests:
+          - name: vault-secrets
+            contents: |
+              ---
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                labels:
+                  kubernetes.io/metadata.name: vault
+                name: vault
+              ---
+              apiVersion: v1
+              kind: Secret
+              type: Opaque
+              metadata:
+                name: vault-unseal
+                namespace: vault
+              stringData:
+                UNSEAL_KEY: "${vaultUnseal}"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: vault-server-tls
+                namespace: vault
+              type: kubernetes.io/tls
+              data:
+                tls.ca: "${vaultTLSca}"
+                tls.key: "${vaultTLSkey}"
+                tls.crt: "${vaultTLScert}"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-0
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-0"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-1
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-1"
+              ---
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: restic-vault-data-vault-2
+                namespace: vault
+              type: Opaque
+              stringData:
+                AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
+                AWS_SECRET_ACCESS_KEY: "${s3SecretAccessKey}"
+                RESTIC_PASSWORD: "${volsyncResticPassword}"
+                RESTIC_REPOSITORY: "s3:${s3URL}/${s3Bucket}/volsync/data-vault-2"
+
+worker:
+  patches:
+    - *ntpPatch
+    - *discoveryPatch
+    - *kubePrismPatch
+    - *kubeletPatch
+    - *proxyPatch
+
+    # udev rules
+    - |-
+      machine:
+        udev:
+          rules:
+            - ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
