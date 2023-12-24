@@ -135,4 +135,5 @@ spec:
           # necessary for fetching images from external repositories
           - path: "/spec/jobTemplate/spec/template/spec/containers/0/image"
             op: replace
-            value: public.ecr.aws/bitnami/kubectl:1.28.4
+            # renovate: datasource=docker depName=public.ecr.aws/bitnami/kubectl
+            value: "public.ecr.aws/bitnami/kubectl:1.28.4"
