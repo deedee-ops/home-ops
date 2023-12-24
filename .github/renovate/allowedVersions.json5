@@ -6,6 +6,11 @@
       "matchPackagePatterns": ["ceph/ceph"],
       // 18.2.1 has broken prometheus module
       "allowedVersions": "!/18\.2\.1/"
+    }, {
+      "matchDatasources": ["docker"],
+      "matchPackagePatterns": ["sig-storage/csi-provisioner"],
+      // 3.6.x introduces "Lost connection to socket" regression
+      "allowedVersions": "!/3\.6\./"
     }
   ]
 }
