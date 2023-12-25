@@ -13,6 +13,7 @@
       "description": "Do not automerge talos versions",
       "packagePatterns": [
         "^ghcr\\.io\\/siderolabs\\/",
+        "^ghcr\\.io\\/.*\\/talosctl",
         "^registry\\.k8s\\.io\\/kube-apiserver",
         "^registry\\.k8s\\.io\\/kube-controller-manager",
         "^registry\\.k8s\\.io\\/kube-scheduler"
