@@ -11,6 +11,11 @@
       "matchPackagePatterns": ["sig-storage/csi-provisioner"],
       // 3.6.x introduces "Lost connection to socket" regression
       "allowedVersions": "!/3\.6\./"
+    }, {
+      "matchDatasources": ["helm"],
+      "matchPackagePatterns": ["cilium"],
+      // 1.14.4 and above introduces CPU spikes with DNS netpols
+      "allowedVersions": "!/1\.14\.[4-9]/"
     }
   ]
 }
