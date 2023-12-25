@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: offlineimap
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: offlineimap
+    egress:
+      - toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+      - toFQDNs:
+          - matchName: "<path:kubernetes/data/internal/offlineimap#HOST>"

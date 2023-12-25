@@ -1,0 +1,91 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: disable-egress
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: egress/enabled
+          operator: NotIn
+          values:
+            - "true"
+    egress:
+      - toCIDRSet:
+          # sometimes cilium mistakes svc/pod CIDR as world, so let's allow it explicitly
+          - cidr: 172.30.0.0/15
+      - toEntities:
+          - cluster
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: kube-system
+              k8s-app: kube-dns
+        toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+  - endpointSelector:
+      matchLabels:
+        k8s-app: kube-dns
+    egress:
+      - toEntities:
+          - world
+        toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: disable-untrusted-ingress
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: ingress/enabled
+          operator: NotIn
+          values:
+            - "true"
+    ingress:
+      - fromCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#CIDR_TRUSTED>"
+            except:
+              - "<path:kubernetes/data/internal/base#CIDR_SEMITRUSTED>"
+      - fromCIDRSet:
+          # sometimes cilium mistakes svc/pod CIDR as world, so let's allow it explicitly
+          - cidr: 172.30.0.0/15
+      - fromEntities:
+          - cluster
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: route-to-nas
+specs:
+  - endpointSelector:
+      matchLabels:
+        route-to/nas: "true"
+    egress:
+      - toPorts:
+          - ports:
+              # NFS
+              - port: "111"
+                protocol: ANY
+              - port: "892"
+                protocol: ANY
+              - port: "2049"
+                protocol: ANY
+              # minio
+              - port: "9000"
+                protocol: TCP
+        toCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#IP_NAS>/32"
