@@ -21,6 +21,7 @@ spec:
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
   ignoreDifferences:
     - kind: Secret
       group: ""
