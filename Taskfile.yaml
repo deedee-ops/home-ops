@@ -215,3 +215,64 @@ tasks:
     # yamllint enable rule:line-length
     preconditions:
       - kubectl -n {{.namespace}} get pvc {{.claim}}
+
+  'talos:debug':
+    desc: >-
+      Run privileged pod, with talos host mounted in /host and host networking enabled
+      [node=blossom namespace=kube-system]
+    interactive: true
+    vars:
+      node: '{{ or .node (fail "Node name `node` is required") }}'
+      namespace: '{{.namespace | default "kube-system"}}'
+    # yamllint disable rule:line-length
+    cmd: |
+      kubectl run -n {{.namespace}} debug-{{.node}} -i --tty --rm --image=null --privileged --overrides='
+        {
+          "apiVersion": "v1",
+          "spec": {
+            "nodeSelector": {
+              "kubernetes.io/hostname": "{{ .node }}"
+            },
+            "containers": [
+              {
+                "name": "debug",
+                "image": "public.ecr.aws/docker/library/alpine:edge",
+                "command": [
+                  "/bin/sh",
+                  "-c",
+                  "echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories; apk update; /bin/sh"
+                ],
+                "securityContext": {
+                  "privileged": true
+                },
+                "stdin": true,
+                "stdinOnce": true,
+                "tty": true,
+                "volumeMounts": [
+                  {
+                    "name": "host",
+                    "mountPath": "/host"
+                  }
+                ]
+              }
+            ],
+            "hostNetwork": true,
+            "tolerations": [
+              { "key": "node-role.kubernetes.io/control-plane", "operator": "Exists", "effect": "NoSchedule" },
+              { "key": "node.kubernetes.io/unschedulable", "operator": "Exists", "effect": "NoSchedule" }
+            ],
+            "volumes": [
+              {
+                "name": "host",
+                "hostPath": {
+                  "path": "/",
+                  "type": "Directory"
+                }
+              }
+            ],
+            "restartPolicy": "Never"
+          }
+        }'
+    # yamllint enable rule:line-length
+    preconditions:
+      - kubectl get node {{.node}}

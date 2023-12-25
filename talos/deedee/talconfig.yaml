@@ -30,8 +30,7 @@ nodes:
   - hostname: huey
     ipAddress: 10.100.21.10
     installDiskSelector:
-      size: 128GB
-      model: "SK hynix*"
+      size: "<= 150GB"
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -54,8 +53,7 @@ nodes:
   - hostname: dewey
     ipAddress: 10.100.21.11
     installDiskSelector:
-      size: 128GB
-      model: "SK hynix*"
+      size: "<= 150GB"
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -76,8 +74,7 @@ nodes:
   - hostname: louie
     ipAddress: 10.100.21.12
     installDiskSelector:
-      size: 128GB
-      model: "SK hynix*"
+      size: "<= 150GB"
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -104,8 +101,7 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
-      size: 128GB
-      model: TS128GMTS430S
+      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
@@ -158,8 +154,7 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
-      size: 128GB
-      model: TS128GMTS430S
+      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
@@ -210,8 +205,7 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
-      size: 128GB
-      model: TS128GMTS430S
+      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
