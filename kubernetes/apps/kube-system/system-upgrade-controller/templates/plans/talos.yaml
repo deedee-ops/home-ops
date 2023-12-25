@@ -36,23 +36,24 @@ spec:
       operator: Exists
       effect: NoSchedule
   prepare:
-    image: &image ghcr.io/siderolabs/talosctl:v1.6.0
+    image: ghcr.io/deedee-ops/talosctl:1.6.0
     envs: &envs
-      - name: NODE_IP
+      - name: TALOS_NODE_IP
         valueFrom:
           fieldRef:
             fieldPath: status.hostIP
     args:
-      - --nodes=$(NODE_IP)
+      - --nodes=$(TALOS_NODE_IP)
       - health
       - --server=false
   upgrade:
-    image: *image
+    image: ghcr.io/deedee-ops/talosctl:1.6.0
     envs: *envs
     args:
-      - --nodes=$(NODE_IP)
+      - --nodes=$(TALOS_NODE_IP)
       - upgrade
-      - --image=ghcr.io/buroa/installer:$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
+      # TALOS_IMAGE_NAME is determined by deedee-ops/talosctl image
+      - --image=$(TALOS_IMAGE_NAME):$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
       - --preserve=true
       - --wait=false
       - --reboot-mode=powercycle  # thunderbolt issue with kexec
