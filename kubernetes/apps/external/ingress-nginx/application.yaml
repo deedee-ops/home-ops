@@ -3,18 +3,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ingress-nginx-internal
+  name: ingress-nginx-external
   namespace: argocd
 spec:
   project: default
   sources:
     - repoURL: https://github.com/deedee-ops/home-ops.git
       targetRevision: master
-      path: kubernetes/apps/networking/ingress-nginx
+      path: kubernetes/apps/external/ingress-nginx
       plugin:
         name: argocd-vault-plugin-helm
   destination:
-    namespace: networking
+    namespace: external
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:

@@ -1,17 +1,18 @@
 ---
 ingress-nginx:
-  fullnameOverride: nginx-internal
+  fullnameOverride: nginx-external
   controller:
     replicaCount: 2
     allowSnippetAnnotations: true
     enableAnnotationValidations: true
     service:
       annotations:
-        io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/ingress-nginx#IP_INTERNAL>
+        io.cilium/lb-ipam-ips: <path:kubernetes/data/external/ingress-nginx#IP_INTERNAL>
+    maxmindLicenseKey: "<path:kubernetes/data/external/ingress-nginx#MAXMIND_LICENSE_KEY>"
     ingressClassResource:
-      name: internal
-      default: true
-      controllerValue: k8s.io/internal
+      name: external
+      default: false
+      controllerValue: k8s.io/external
     podSecurityContext:
       runAsNonRoot: true
       runAsUser: 101
@@ -34,7 +35,7 @@ ingress-nginx:
           - key: ingress-class
             operator: In
             values:
-              - internal
+              - external
     topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -42,7 +43,7 @@ ingress-nginx:
         labelSelector:
           matchLabels:
             app.kubernetes.io/name: ingress-nginx
-            app.kubernetes.io/instance: ingress-nginx-internal
+            app.kubernetes.io/instance: ingress-nginx-external
             app.kubernetes.io/component: controller
     resources:
       requests:
@@ -56,12 +57,9 @@ ingress-nginx:
         enabled: true
     extraArgs:
       default-ssl-certificate: networking/root-domain-tls
-    addHeaders:
-      Content-Security-Policy: >-
-        default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:
-        https://*.<path:kubernetes/data/internal/base#ROOT_DOMAIN>; object-src 'none';
-        report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/default;
     config:
+      # taken from https://github.com/superseriousbusiness/gotosocial/blob/main/internal/web/robots.go
+      block-user-agents: "GPTBot,~*GPTBot*,ChatGPT-User,~*ChatGPT-User*,Google-Extended,~*Google-Extended*,CCBot,~*CCBot*,Omgilibot,~*Omgilibot*,FacebookBot,~*FacebookBot*"
       # never use custom-http-errors, as forwarding goes haywire
       client-body-buffer-size: 100M
       client-body-timeout: 120
@@ -69,13 +67,6 @@ ingress-nginx:
       enable-brotli: "true"
       enable-ocsp: "true"
       enable-real-ip: "true"
-      global-auth-method: GET
-      global-auth-url: http://authelia.default.svc.cluster.local:9091/api/verify
-      global-auth-signin: https://authelia.rzegocki.dev?rm=$request_method
-      global-auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-      global-auth-cache-key: "$remote_user$http_cookie"
-      global-auth-cache-duration: "200 202 30m, 401 403 1m"
-      global-auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
       hide-headers: Server,X-Powered-By
       hsts-max-age: 31449600
       keep-alive-requests: 10000
@@ -106,32 +97,9 @@ ingress-nginx:
       force-ssl-redirect: "true"
       ssl-protocols: TLSv1.3 TLSv1.2
       ssl-redirect: "false"
-      whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+      use-geoip2: true
   tcp:
     2222: "default/gitea-ssh:22"
     22000: "default/syncthing:22000"
   defaultBackend:
-    enabled: true
-    image:
-      repository: ghcr.io/tarampampam/error-pages
-      tag: "2.26"
-    extraEnvs:
-      - name: TEMPLATE_NAME
-        value: orient
-      - name: SHOW_DETAILS
-        value: "false"
-    podSecurityContext:
-      runAsNonRoot: true
-      runAsUser: 101
-      runAsGroup: 82
-      seccompProfile:
-        type: RuntimeDefault
-    containerSecurityContext:
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 101
-      runAsGroup: 82
-      capabilities:
-        drop:
-          - ALL
+    enabled: false
