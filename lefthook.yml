@@ -5,14 +5,14 @@ skip_output:
 pre-commit:
   parallel: true
   commands:
+    opentofu:
+      glob: "opentofu/**/*.{tf,tfvars}"
+      run: tofu fmt -check -diff {staged_files}
     shellcheck:
       glob: "*.sh{,.j2}"
       run: shellcheck {staged_files}
-    tofu:
-      glob: "tofu/**/*.{tf,tfvars}"
-      run: tofu fmt -check -diff {staged_files}
     tflint:
-      glob: "tofu/**/*.{tf,tfvars}"
+      glob: "opentofu/**/*.{tf,tfvars}"
       run: tflint --recursive
     yamllint:
       glob: "*.y*ml"
@@ -26,14 +26,14 @@ pre-commit:
 full:
   parallel: true
   commands:
+    opentofu:
+      glob: "opentofu/**/*.{tf,tfvars}"
+      run: tofu fmt -check -diff {all_files}
     shellcheck:
       glob: "*.sh{,.j2}"
       run: shellcheck {all_files}
-    tofu:
-      glob: "tofu/**/*.{tf,tfvars}"
-      run: tofu fmt -check -diff {all_files}
     tflint:
-      glob: "tofu/**/*.{tf,tfvars}"
+      glob: "opentofu/**/*.{tf,tfvars}"
       run: tflint --recursive
     yamllint:
       glob: "*.y*ml"

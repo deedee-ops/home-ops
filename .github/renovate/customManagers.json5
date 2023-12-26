@@ -7,7 +7,7 @@
       "fileMatch": [
         "(^|/)kubernetes/.+\\.ya?ml$",
         "(^|/)talos/.+\\.ya?ml$",
-        "(^|/)tofu/.+\\.tf$"
+        "(^|/)opentofu/.+\\.tf$"
       ],
       "matchStrings": [
         "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?( extractVersion=(?<extractVersion>\\S+))?\n[^:\"]*?:[ \"]*(?<currentValue>[^\"\r\n]+)\"*\n"

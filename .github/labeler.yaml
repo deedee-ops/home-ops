@@ -9,6 +9,6 @@ area/kubernetes:
 area/hack:
   - changed-files:
       - any-glob-to-any-file: hack/**/*
-area/tofu:
+area/opentofu:
   - changed-files:
-      - any-glob-to-any-file: tofu/**/*
+      - any-glob-to-any-file: opentofu/**/*
