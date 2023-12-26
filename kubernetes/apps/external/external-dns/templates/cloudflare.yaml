@@ -1,0 +1,12 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: external-dns-secret
+stringData:
+  CF_API_TOKEN: "<path:kubernetes/data/external/external-dns#CF_API_TOKEN>"
+  CF_ZONE_ID: "<path:kubernetes/data/external/external-dns#CF_ZONE_ID>"

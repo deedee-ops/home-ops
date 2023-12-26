@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: external-dns
+version: 1.0.0
+type: application
+dependencies:
+  - name: external-dns
+    version: 1.13.1
+    repository: https://kubernetes-sigs.github.io/external-dns/
