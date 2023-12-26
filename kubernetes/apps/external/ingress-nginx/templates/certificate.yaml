@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: root-domain
+spec:
+  secretName: root-domain-tls
+  issuerRef:
+    name: "<path:kubernetes/data/internal/ingress-nginx#CERT_ISSUER_REF>"
+    kind: ClusterIssuer
+  commonName: "<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  dnsNames:
+    - "<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    - "*.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
