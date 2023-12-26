@@ -3,5 +3,10 @@ node-feature-discovery:
   master:
     extraLabelNs:
       - gpu.intel.com
+  worker:
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+
   prometheus:
     enable: true
