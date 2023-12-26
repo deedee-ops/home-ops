@@ -1,0 +1,103 @@
+---
+app-template:
+  defaultPodOptions:
+    labels:
+      # workaround, enable egress here (which effectively removes the "disable" rule) to apply properly custom
+      # rule in netpol yaml, to limit cloudflared daemon only to `external` namespace
+      egress/enabled: "true"
+    securityContext:
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: cloudflared
+
+  controllers:
+    main:
+      replicas: 2
+      strategy: RollingUpdate
+      annotations:
+        reloader.stakater.com/auto: "true"
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/cloudflared
+            tag: 2023.10.0
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+            - "<path:kubernetes/data/external/cloudflared#CLOUDFLARE_TUNNEL_ID>"
+
+          env:
+            NO_AUTOUPDATE: "true"
+            TUNNEL_CRED_FILE: /etc/cloudflared/creds/credentials.json
+            TUNNEL_METRICS: 0.0.0.0:8080
+            TUNNEL_TRANSPORT_PROTOCOL: quic
+            TUNNEL_POST_QUANTUM: true
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /ready
+                  port: 8080
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 5m
+              memory: 128M
+            limits:
+              memory: 256M
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+
+  serviceMonitor:
+    main:
+      enabled: true
+
+  persistence:
+    config:
+      enabled: true
+      type: configMap
+      name: cloudflared-configmap
+      globalMounts:
+        - path: /etc/cloudflared/config/config.yaml
+          subPath: config.yaml
+          readOnly: true
+    creds:
+      type: secret
+      name: cloudflared-secret
+      globalMounts:
+        - path: /etc/cloudflared/creds/credentials.json
+          subPath: credentials.json
+          readOnly: true

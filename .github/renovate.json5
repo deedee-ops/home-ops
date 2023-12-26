@@ -23,7 +23,7 @@
   "suppressNotifications": ["prIgnoreNotification"],
   "ignorePaths": [
     "schemas/**/*.*",
-    "tofu/talos_cluster/manifests/*.yaml",
+    "opentofu/talos_cluster/manifests/*.yaml",
     "kubernetes/apps/monitoring/kyverno/templates/*.yaml"
   ],
   "helm-values": {
@@ -37,7 +37,7 @@
   },
   "terraform": {
     "fileMatch": [
-      "(^|/)tofu/.+\\.tf$"
+      "(^|/)opentofu/.+\\.tf$"
     ]
   }
 }

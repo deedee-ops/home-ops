@@ -30,6 +30,7 @@ spec:
                 - Pod
               namespaces:
                 - default
+                - external
       preconditions:
         all:
           - key: "{{`{{request.operation || 'BACKGROUND'}}`}}"
@@ -81,6 +82,7 @@ spec:
                 - Pod
               namespaces:
                 - default
+                - external
       exclude:
         any:
           - resources:

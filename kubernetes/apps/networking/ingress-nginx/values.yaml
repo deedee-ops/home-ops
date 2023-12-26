@@ -55,7 +55,7 @@ ingress-nginx:
       enable-real-ip: "true"
       global-auth-method: GET
       global-auth-url: http://authelia.default.svc.cluster.local:9091/api/verify
-      global-auth-signin: https://authelia.rzegocki.dev?rm=$request_method
+      global-auth-signin: https://authelia.<path:kubernetes/data/internal/base#ROOT_DOMAIN>?rm=$request_method
       global-auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
       global-auth-cache-key: "$remote_user$http_cookie"
       global-auth-cache-duration: "200 202 30m, 401 403 1m"

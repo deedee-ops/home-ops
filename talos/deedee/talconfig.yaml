@@ -306,6 +306,14 @@ controlPlane:
           extraArgs:
             listen-metrics-urls: http://0.0.0.0:2381
 
+    # Custom sysctl settings
+    - &sysctlPatch |-
+      machine:
+        sysctls:
+          # cloudflared post-quantum QUIC requirement: https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
+          net.core.rmem_max: 2500000
+          net.core.wmem_max: 2500000
+
     # Enable K8s Talos API Access
     - |-
       machine:
@@ -393,6 +401,7 @@ worker:
     - *kubePrismPatch
     - *kubeletPatch
     - *proxyPatch
+    - *sysctlPatch
 
     # udev rules
     - |-
