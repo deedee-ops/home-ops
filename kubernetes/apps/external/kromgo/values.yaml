@@ -1,0 +1,80 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: kromgo
+
+  controllers:
+    main:
+      replicas: 2
+      strategy: RollingUpdate
+      annotations:
+        reloader.stakater.com/auto: "true"
+      containers:
+        main:
+          image:
+            repository: ghcr.io/kashalls/kromgo
+            tag: 0.2.4@sha256:2c1076986904babdcfed38ffcf848e7609f3e108ee350a46ce8ed201407a8b81
+
+          env:
+            PROMETHEUS_URL: http://thanos-query-frontend.monitoring.svc.cluster.local:9090
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 5m
+              memory: 10M
+            limits:
+              memory: 64M
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    main:
+      enabled: true
+      className: external
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "external.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      hosts:
+        - host: "kromgo.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              service:
+                name: main
+                port: 8080
+      tls:
+        - hosts:
+            - "kromgo.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config-file:
+      type: configMap
+      name: kromgo-configmap
+      globalMounts:
+        - path: /kromgo/config.yaml
+          subPath: config.yaml
+          readOnly: true
