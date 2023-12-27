@@ -63,6 +63,9 @@ argo-cd:
     rbac:
       policy.csv: g, lldap_admin, role:admin
 
+    secret:
+      githubSecret: "<path:kubernetes/data/internal/argocd#GITHUB_SECRET>"
+
   controller:
     replicas: 2
     containerSecurityContext:
