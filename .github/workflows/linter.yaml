@@ -16,16 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate Token
-        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
-        id: generate-token
+        uses: actions/create-github-app-token@2986852ad836768dfea7781f31828eb3e17990fa # v1
+        id: app-token
         with:
-          app_id: "${{ secrets.BOT_APP_ID }}"
-          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+          app-id: "${{ secrets.BOT_APP_ID }}"
+          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          token: "${{ steps.generate-token.outputs.token }}"
+          token: "${{ steps.app-token.outputs.token }}"
 
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@b06654f7ba51088e987c0a454d042360df3ebe86 # v1.0.1
@@ -43,7 +43,7 @@ jobs:
       - name: Init TFLint
         run: tflint --init
         env:
-          GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
+          GITHUB_TOKEN: "${{ steps.app-token.outputs.token }}"
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
@@ -60,7 +60,7 @@ jobs:
           yamllint_strict: true
           yamllint_comment: true
         env:
-          GITHUB_ACCESS_TOKEN: "${{ steps.generate-token.outputs.token }}"
+          GITHUB_ACCESS_TOKEN: "${{ steps.app-token.outputs.token }}"
 
       - name: Run task lint:egress-comment
         run: ./.taskfiles/Lint/egress-comment-job.sh
