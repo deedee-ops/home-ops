@@ -1,3 +1,4 @@
+# yamllint disable rule:comments
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: "Release"
@@ -13,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate Token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@2986852ad836768dfea7781f31828eb3e17990fa # v1
         id: app-token
         with:
           app-id: "${{ secrets.BOT_APP_ID }}"
           private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout Default Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
           token: "${{ steps.app-token.outputs.token }}"
 
@@ -50,3 +51,4 @@ jobs:
               --repo="${GITHUB_REPOSITORY}" \
               --title="${release_tag}" \
               --generate-notes
+# yamllint enable rule:comments
