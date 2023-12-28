@@ -247,6 +247,9 @@ nodes:
       - 10.100.1.1
     nodeLabels: *workerLabels
 
+imageFactory:
+  installerURLTmpl: "{{.RegistryURL}}/installer-secureboot/{{.ID}}:{{.Version}}"
+
 controlPlane:
   patches:
     # Configure NTP
@@ -313,6 +316,23 @@ controlPlane:
           # cloudflared post-quantum QUIC requirement: https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
           net.core.rmem_max: 2500000
           net.core.wmem_max: 2500000
+
+    # secureboot
+    - &secureBootPatch |-
+      machine:
+        install:
+          wipe: true
+        systemDiskEncryption:
+          ephemeral:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
+          state:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
 
     # Enable K8s Talos API Access
     - |-
@@ -402,6 +422,7 @@ worker:
     - *kubeletPatch
     - *proxyPatch
     - *sysctlPatch
+    - *secureBootPatch
 
     # udev rules
     - |-
