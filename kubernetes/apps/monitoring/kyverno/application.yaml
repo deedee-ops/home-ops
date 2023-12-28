@@ -22,3 +22,11 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  ignoreDifferences:
+    - kind: ClusterPolicy
+      group: kyverno.io
+      jsonPointers:
+        - "/spec/rules/0/skipBackgroundRequests"
+        - "/spec/rules/1/skipBackgroundRequests"
+        - "/spec/rules/2/skipBackgroundRequests"
+        - "/spec/rules/3/skipBackgroundRequests"
