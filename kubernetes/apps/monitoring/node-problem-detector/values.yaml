@@ -1,0 +1,12 @@
+---
+node-problem-detector:
+  settings:
+    # https://github.com/kubernetes/node-problem-detector/tree/master/config
+    log_monitors:
+      - /config/kernel-monitor.json
+    custom_plugin_monitors:
+      - /config/network-problem-monitor.json
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

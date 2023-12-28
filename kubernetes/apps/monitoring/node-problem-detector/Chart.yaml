@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: node-problem-detector
+version: 1.0.0
+type: application
+dependencies:
+  - name: node-problem-detector
+    version: 2.3.11
+    repository: https://charts.deliveryhero.io/
