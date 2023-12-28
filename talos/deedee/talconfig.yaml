@@ -29,8 +29,7 @@ cniConfig:
 nodes:
   - hostname: huey
     ipAddress: 10.100.21.10
-    installDiskSelector:
-      size: "<= 150GB"
+    installDisk: /dev/sda
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -52,8 +51,7 @@ nodes:
 
   - hostname: dewey
     ipAddress: 10.100.21.11
-    installDiskSelector:
-      size: "<= 150GB"
+    installDisk: /dev/sda
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -73,8 +71,7 @@ nodes:
 
   - hostname: louie
     ipAddress: 10.100.21.12
-    installDiskSelector:
-      size: "<= 150GB"
+    installDisk: /dev/sda
     controlPlane: true
     disableSearchDomain: true
     networkInterfaces:
@@ -247,6 +244,9 @@ nodes:
       - 10.100.1.1
     nodeLabels: *workerLabels
 
+imageFactory:
+  installerURLTmpl: "{{.RegistryURL}}/installer-secureboot/{{.ID}}:{{.Version}}"
+
 controlPlane:
   patches:
     # Configure NTP
@@ -313,6 +313,23 @@ controlPlane:
           # cloudflared post-quantum QUIC requirement: https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
           net.core.rmem_max: 2500000
           net.core.wmem_max: 2500000
+
+    # secureboot
+    - &secureBootPatch |-
+      machine:
+        install:
+          wipe: true
+        systemDiskEncryption:
+          ephemeral:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
+          state:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
 
     # Enable K8s Talos API Access
     - |-
@@ -402,6 +419,7 @@ worker:
     - *kubeletPatch
     - *proxyPatch
     - *sysctlPatch
+    - *secureBootPatch
 
     # udev rules
     - |-
