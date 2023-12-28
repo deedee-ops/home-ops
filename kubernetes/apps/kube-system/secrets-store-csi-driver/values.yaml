@@ -3,6 +3,7 @@ secrets-store-csi-driver:
   linux:
     crds:
       enabled: true
+    tolerations: []
     registrar:
       driver:
         resources:
