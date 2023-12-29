@@ -3,12 +3,12 @@
 apiVersion: kyverno.io/v2beta1
 kind: PolicyException
 metadata:
-  name: zigbee2mqtt-ignore-podsecurity-subrule-baseline
+  name: node-problem-detector-ignore-require-ro-rootfs
 spec:
   exceptions:
-    - policyName: podsecurity-subrule-baseline
+    - policyName: require-ro-rootfs
       ruleNames:
-        - baseline
+        - validate-readOnlyRootFilesystem
   match:
     any:
       - resources:
@@ -17,4 +17,4 @@ spec:
           namespaces:
             - "{{ .Release.Namespace }}"
           names:
-            - zigbee2mqtt-*
+            - node-problem-detector-*
