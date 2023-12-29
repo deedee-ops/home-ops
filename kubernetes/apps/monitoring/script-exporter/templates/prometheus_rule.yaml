@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: script-exporter
+spec:
+  groups:
+    - name: script-exporter.rules
+      rules:
+        - alert: KyvernoPoliciesFailed
+          annotations:
+            summary: Kyverno policies failed
+            description: |
+              Some of the resources are failing kyverno security policies
+                VALUE = {{`{{ $value }}`}}
+                LABELS = {{`{{ $labels }}`}}
+          expr: kyverno_policies_failed > 0
+          for: 1m
+          labels:
+            severity: warning
