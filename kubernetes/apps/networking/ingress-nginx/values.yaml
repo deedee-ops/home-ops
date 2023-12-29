@@ -67,7 +67,9 @@ ingress-nginx:
       client-body-timeout: 120
       client-header-timeout: 120
       enable-brotli: "true"
-      enable-ocsp: "true"
+      # don't enable OCSP, it requires calling external service,
+      # which will be blocked by netpol and cause nginx to return 500
+      # enable-ocsp: "true"
       enable-real-ip: "true"
       global-auth-method: GET
       global-auth-url: http://authelia.default.svc.cluster.local:9091/api/verify
