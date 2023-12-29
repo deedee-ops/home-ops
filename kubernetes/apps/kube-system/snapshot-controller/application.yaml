@@ -14,11 +14,6 @@ spec:
       path: kubernetes/apps/kube-system/snapshot-controller
       targetRevision: master
       plugin:
-        name: argocd-vault-plugin-kustomize
-    - repoURL: https://github.com/deedee-ops/home-ops.git
-      path: kubernetes/apps/kube-system/snapshot-controller
-      targetRevision: master
-      plugin:
         name: argocd-vault-plugin-helm
   destination:
     namespace: kube-system
