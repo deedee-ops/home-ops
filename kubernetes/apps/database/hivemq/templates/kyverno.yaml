@@ -15,6 +15,6 @@ spec:
           kinds:
             - Pod
           namespaces:
-            - database
+            - "{{ .Release.Namespace }}"
           names:
             - hivemq-*
