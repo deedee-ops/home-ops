@@ -1,0 +1,87 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/serviceaccount-v1.json
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: invidious-restarter
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/role.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: invidious-restarter
+rules:
+  - apiGroups:
+      - apps
+      - extensions
+    resources:
+      - deployments
+    resourceNames:
+      - invidious
+    verbs:
+      - get
+      - patch
+      - list
+      - watch
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/rolebinding.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: invidious-restarter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: invidious-restarter
+subjects:
+  - kind: ServiceAccount
+    name: invidious-restarter
+    namespace: "{{ .Release.Namespace }}"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/cronjob.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: invidious-restarter
+spec:
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 0
+  schedule: '0 4 * * *'
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      ttlSecondsAfterFinished: 0
+      template:
+        spec:
+          serviceAccountName: invidious-restarter
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: "public.ecr.aws/bitnami/kubectl:1.29.0"
+              args:
+                - 'rollout'
+                - 'restart'
+                - 'deployment/invidious'
+              securityContext:
+                runAsNonRoot: true
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                seccompProfile:
+                  type: RuntimeDefault
+                capabilities:
+                  drop:
+                    - ALL
+              readinessProbe: &probes
+                exec:
+                  command:
+                    - "true"
+              livenessProbe: *probes
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+# yamllint enable rule:line-length
