@@ -1,0 +1,75 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/script-exporter
+            tag: 2.16.0
+            pullPolicy: IfNotPresent
+
+          env:
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 9469
+            readiness: *probes
+            liveness: *probes
+
+  serviceAccount:
+    name: script-exporter
+    create: false
+
+  service:
+    main:
+      ports:
+        http:
+          port: 9469
+
+  serviceMonitor:
+    main:
+      enabled: true
+      endpoints:
+        - port: http
+          scheme: http
+          path: /probe
+          params:
+            script:
+              - kyverno-policies-failed
+          interval: 1m
+          scrapeTimeout: 10s
+
+
+  persistence:
+    config-file:
+      type: configMap
+      name: script-exporter-configmap
+      defaultMode: 0750
+      globalMounts:
+        - path: /config
+          readOnly: true

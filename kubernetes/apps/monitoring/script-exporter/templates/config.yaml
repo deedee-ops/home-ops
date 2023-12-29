@@ -1,0 +1,21 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/configmap-v1.json
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: script-exporter-configmap
+data:
+  config.yaml: |
+    ---
+    scripts:
+      - name: kyverno-policies-failed
+        command: /config/kyverno-policies-failed.sh
+        timeout:
+          max_timeout: 10
+  kyverno-policies-failed.sh: |
+    #!/bin/sh
+    echo "# HELP kyverno_policies_failed Number of failed kyverno policies for given resource"
+    echo "# TYPE kyverno_policies_failed gauge"
+    kubectl get policyreports -A -o wide | grep -v '0      0      0' | grep -v '^NAMESPACE' | awk '{ print "kyverno_policies_failed{target_namespace=\"" $1 "\",target_name=\"" $4 "\",target_kind=\"" $ 3 "\"} " $6}'
+# yamllint enable rule:line-length
