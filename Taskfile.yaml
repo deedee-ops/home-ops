@@ -138,9 +138,6 @@ tasks:
       - kubectl apply -f kubernetes/apps/kube-system/reloader/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application reloader
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application reloader
-      - kubectl apply -f kubernetes/apps/backups/kube-image-keeper/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kube-image-keeper
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kube-image-keeper
       - kubectl apply -f kubernetes/apps/monitoring/silence-operator/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application silence-operator
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application silence-operator
