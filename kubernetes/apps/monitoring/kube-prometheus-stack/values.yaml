@@ -16,10 +16,10 @@ kube-prometheus-stack:
         gethomepage.dev/icon: alertmanager.png
         gethomepage.dev/description: Alerts Management
       hosts:
-        - &host "alertmanager.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        - "alertmanager.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       tls:
         - hosts:
-            - *host
+            - "alertmanager.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       path: /
     config:
       global:
@@ -213,10 +213,10 @@ kube-prometheus-stack:
         gethomepage.dev/icon: prometheus.png
         gethomepage.dev/description: Metrics Collector
       hosts:
-        - &host "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        - "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       tls:
         - hosts:
-            - *host
+            - "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       path: /
     thanosService:
       enabled: true

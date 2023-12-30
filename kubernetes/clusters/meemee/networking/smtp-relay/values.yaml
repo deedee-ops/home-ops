@@ -1,0 +1,105 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+      sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: "0"
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      replicas: 1
+      strategy: RollingUpdate
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/maddy
+            tag: 0.7.0
+
+          env:
+            DEBUG: "false"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /metrics
+                  port: 9749
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              memory: 50Mi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 25
+        metrics:
+          enabled: true
+          port: 9749
+
+  serviceMonitor:
+    main:
+      enabled: true
+      endpoints:
+        - port: "9749"
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
+
+  persistence:
+    config:
+      enabled: true
+      readOnly: true
+      type: configMap
+      name: smtp-relay-configmap
+      advancedMounts:
+        main:
+          main:
+            - path: /config/maddy.conf
+              subPath: maddy.conf
+    data:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      size: 1Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /dev/shm
+
+    secrets:
+      enabled: true
+      type: nfs
+      accessMode: ReadWriteMany
+      server: 10.100.10.1
+      path: "/volume1/clusters/meemee/smtp-relay"
+      advancedMounts:
+        main:
+          main:
+            - path: /secrets

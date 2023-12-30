@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: argocd
+spec:
+  groups:
+    - name: argocd.rules
+      rules:
+        - alert: ArgocdServiceNotSynced
+          expr: argocd_app_info{sync_status!="Synced"} != 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: ArgoCD service not synced (instance {{`{{ $labels.instance }}`}})
+            description: |-
+              Service {{`{{ $labels.name }}`}} run by argo is currently not in sync.
+                VALUE = {{`{{ $value }}`}}
+                LABELS = {{`{{ $labels }}`}}
+        - alert: ArgocdServiceUnhealthy
+          expr: argocd_app_info{health_status!~"Healthy|Suspended"} != 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: ArgoCD service unhealthy (instance {{`{{ $labels.instance }}`}})
+            description: |-
+              Service {{`{{ $labels.name }}`}} run by argo is currently not healthy.
+                VALUE = {{`{{ $value }}`}}
+                LABELS = {{`{{ $labels }}`}}
+        - alert: ArgocdImageUpdaterError
+          expr: increase(argocd_image_updater_k8s_api_errors_total[5m]) > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: Argocd image updater failed
+            description: |-
+              Argocd image updater failed, check the updater pod logs.
+                VALUE = {{`{{ $value }}`}}
+                LABELS = {{`{{ $labels }}`}}
