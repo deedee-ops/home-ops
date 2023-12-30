@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: kube-prometheus-stack
+version: 1.0.0
+type: application
+dependencies:
+  - name: kube-prometheus-stack
+    version: 55.5.1
+    repository: https://prometheus-community.github.io/helm-charts

@@ -1,0 +1,100 @@
+---
+argo-cd:
+  global:
+    deploymentStrategy:
+      type: RollingUpdate
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+      seccompProfile:
+        type: RuntimeDefault
+  configs:
+    params:
+      # by default argocd handles SSL termination on its own, which breaks TLS termination on nginx,
+      # causing infinite loop
+      "server.insecure": true
+    repositories:
+      deedee-ops-home-ops:
+        name: home-ops
+        type: git
+        url: https://github.com/deedee-ops/home-ops.git
+
+  controller:
+    replicas: 1
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  dex:
+    enabled: false
+
+  notifications:
+    enabled: false
+
+  server:
+    replicas: 1
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    autoscaling:
+      enabled: false
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - "argocd.nas.rzegocki.dev"
+      tls:
+        - hosts:
+            - "argocd.nas.rzegocki.dev"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  repoServer:
+    replicas: 1
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    autoscaling:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    serviceAccount:
+      automountServiceAccountToken: true
+
+  applicationSet:
+    enabled: false
+
+  redis:
+    enabled: true
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true

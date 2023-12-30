@@ -1,0 +1,175 @@
+---
+kube-prometheus-stack:
+  crds:
+    enabled: true
+  cleanPrometheusOperatorObjectNames: true
+  defaultRules:
+    create: true
+  alertmanager:
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - "alertmanager.nas.rzegocki.dev"
+      tls:
+        - hosts:
+            - "alertmanager.nas.rzegocki.dev"
+      path: /
+    config:
+      global:
+        smtp_hello: "ajgon.ovh"
+        smtp_smarthost: "smtp-relay.networking.svc.cluster.local:25"
+        smtp_from: "alertmanager@ajgon.ovh"
+        smtp_require_tls: false
+      inhibit_rules:
+        - source_matchers:
+            - severity="critical"
+          target_matchers:
+            - severity=~"warning|info"
+          equal:
+            - namespace
+            - alertname
+        - source_matchers:
+            - severity="warning"
+          target_matchers:
+            - severity="info"
+          equal:
+            - namespace
+            - alertname
+        - source_matchers:
+            - alertname="InfoInhibitor"
+          target_matchers:
+            - severity="info"
+          equal:
+            - namespace
+      route:
+        receiver: email
+        group_by:
+          - namespace
+        continue: false
+        routes:
+          - receiver: "null"
+            matchers:
+              - alertname = InfoInhibitor
+          - receiver: healthchecks
+            matchers:
+              - alertname = Watchdog
+            repeat_interval: 15m
+        group_wait: 1m
+        group_interval: 10m
+        repeat_interval: 12h
+      receivers:
+        - name: "null"
+        - name: "email"
+          email_configs:
+            - to: "homelab@ajgon.ovh"
+        - name: "healthchecks"
+          webhook_configs:
+            - send_resolved: false
+              url_file: "/secrets/EXTERNAL_PING_URL"
+              http_config:
+                follow_redirects: true
+      templates:
+        - '/etc/alertmanager/config/*.tmpl'
+    alertmanagerSpec:
+      replicas: 1
+      podMetadata:
+        annotations:
+          reloader.stakater.com/auto: "true"
+      podAntiAffinity: hard
+      storage: {}  # emptyDir
+      volumes:
+        - name: secrets
+          nfs:
+            path: /volume1/clusters/meemee/kube-prometheus-stack
+            server: 10.100.10.1
+      volumeMounts:
+        - mountPath: /secrets
+          name: secrets
+    podDisruptionBudget:
+      enabled: false
+  grafana:
+    enabled: false
+  kubeApiServer:
+    enabled: true
+  kubelet:
+    enabled: true
+  kubeControllerManager:
+    enabled: true
+    endpoints: &controlplane
+      - 10.100.25.10
+    service:
+      enabled: true
+      port: 10257
+      targetPort: 10257
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+  coreDns:
+    enabled: true
+  kubeEtcd:
+    enabled: true
+    endpoints: *controlplane
+    service:
+      enabled: true
+      port: 2381
+      targetPort: 2381
+  kubeScheduler:
+    enabled: true
+    endpoints: *controlplane
+    service:
+      enabled: true
+      port: 10259
+      targetPort: 10259
+    serviceMonitor:
+      enabled: true
+      https: true
+      insecureSkipVerify: true
+  # cilium does kubeproxy
+  kubeProxy:
+    enabled: false
+  kubeStateMetrics:
+    enabled: true
+  # subchart configuration
+  kube-state-metrics:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
+  nodeExporter:
+    enabled: true
+  prometheusOperator:
+    serviceMonitor:
+      sampleLimit: 500
+  prometheus:
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - "prometheus.nas.rzegocki.dev"
+      tls:
+        - hosts:
+            - "prometheus.nas.rzegocki.dev"
+      path: /
+    prometheusSpec:
+      replicas: 1
+      podAntiAffinity: hard
+      replicaExternalLabelName: __replica__
+      ruleSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      scrapeConfigSelectorNilUsesHelmValues: false
+      walCompression: true
+      enableFeaturs:
+        - auto-gomaxprocs
+        - memory-snapshot-on-shutdown
+        - new-service-discovery-manager
+      retention: 7d
+      retentionSize: 15GB
+      storageSpec:
+        emptyDir: {}
