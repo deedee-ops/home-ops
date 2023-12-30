@@ -51,6 +51,7 @@ This semi hyper-converged cluster runs [Talos Linux](https://talos.dev), an immu
 - [external-dns](https://github.com/kubernetes-sigs/external-dns): Automatically manages DNS records from my cluster in a cloud DNS provider.
 - [ingress-nginx](https://github.com/kubernetes/ingress-nginx): Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer.
 - [rook](https://rook.io): Distributed block storage for peristent storage.
+- [spegel](https://github.com/XenitAB/spegel): Stateless cluster local OCI registry mirror.
 - [vault](https://www.vaultproject.io/): Safe and encrypted storage for all Kubernetes secrets.
 - [volsync](https://github.com/backube/volsync): Backup and recovery of persistent volume claims.
 

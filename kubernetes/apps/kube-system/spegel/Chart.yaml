@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: spegel
+version: 1.0.0
+type: application
+dependencies:
+  - name: spegel
+    version: v0.0.16
+    repository: oci://ghcr.io/xenitab/helm-charts
