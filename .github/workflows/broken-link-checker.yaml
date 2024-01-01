@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ steps.app-token.outputs.token }}"
         with:
-          args: --verbose --no-progress --exclude-mail './**/*.md'
+          args: --verbose --no-progress --exclude-mail --require-https --exclude 'twitter.com|intel.com' './**/*.md'
 
       - name: Find Link Checker Issue
         id: broken-link-check-issue

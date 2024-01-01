@@ -22,7 +22,7 @@ partprobe $DISK
 
 ### Stage 0: talos
 
-- Refer to corresponding cluster README: [dexter](talos/dexter/README.md) or [deedee](talos/deedee/README.md)
+- Refer to corresponding cluster README: [dexter](../talos/dexter/README.md) or [deedee](../talos/deedee/README.md)
 - Nodes will be in `NotReady` state with networking errors - this is expected, as there is no CNI at this moment.
 
 ### Stage 1: Cilium, rook-ceph and ArgoCD
