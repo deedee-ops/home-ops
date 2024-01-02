@@ -67,6 +67,12 @@ app-template:
       enabled: true
       className: internal
       annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy: default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
+          data: mediastream: blob: wss: https://*.<path:kubernetes/data/internal/base#ROOT_DOMAIN>; object-src 'none';
+          img-src 'self' data: blob: https:;
+          media-src 'self' data: blob: https:;
+          report-uri https://csp.rzegocki.dev/report/csp/navidrome;";
         gethomepage.dev/enabled: "true"
         gethomepage.dev/group: Media
         gethomepage.dev/name: Navidrome
