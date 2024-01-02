@@ -17,47 +17,6 @@ tasks:
       - "sh -c 'go-task -l || task -l'"
 
   # yamllint disable rule:line-length
-  'bootstrap:meemee':
-    desc: >-
-      Install core manifests
-    cmds:
-      # necessary CRDs
-      - kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
-      - kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
-      - kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
-
-      # apps
-      - kubectl apply -f https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
-
-      - helm dependency build kubernetes/clusters/meemee/argocd/argocd/
-      - kubectl create namespace argocd
-      - helm template -n argocd argocd kubernetes/clusters/meemee/argocd/argocd/ | kubectl apply -n argocd -f -
-      - kubectl -n argocd rollout status deployment argocd-redis --timeout=1800s
-      - kubectl -n argocd rollout status deployment argocd-server --timeout=1800s
-      - kubectl -n argocd rollout status deployment argocd-repo-server --timeout=1800s
-
-      - kubectl apply -f kubernetes/clusters/meemee/kube-system/metrics-server/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application metrics-server
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application metrics-server
-
-      - kubectl apply -f kubernetes/clusters/meemee/cert-manager/cert-manager/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application cert-manager
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application cert-manager
-      - kubectl apply -f kubernetes/clusters/meemee/networking/ingress-nginx/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application ingress-nginx
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application ingress-nginx
-
-      - kubectl apply -f kubernetes/apps/kube-system/reloader/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application reloader
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application reloader
-
-      - kubectl apply -f kubernetes/clusters/meemee/networking/smtp-relay/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application smtp-relay
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application smtp-relay
-      - kubectl apply -f kubernetes/clusters/meemee/monitoring/kube-prometheus-stack/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kube-prometheus-stack
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kube-prometheus-stack
-
   'bootstrap:stage1':
     desc: >-
       Install core manifests for CNI, storage and GitOps (ex. task bootstrap:stage1 cluster=deedee)
