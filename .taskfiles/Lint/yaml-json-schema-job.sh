@@ -3,7 +3,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # search for manifests without JSON schema links
-yaml_files="$(sh -c "find . -name '*.y*ml' -not -name '*.tmpl.y*ml' -not -name 'values.*y*ml' -not -path \"$(yq '.ignore|join("\" -not -path ./\"")' "${SCRIPT_DIR}/../../.yamllint")\"")"
+yaml_files="$(sh -c "find . -name '*.y*ml' -not -name \"$(yq '.ignoreNames|join("\" -not -name \"")' "${SCRIPT_DIR}/../../.yaml-json-schema")\" -not -path ./\"$(yq '.ignorePaths|join("\" -not -path ./\"")' "${SCRIPT_DIR}/../../.yaml-json-schema")\"")"
 error=0
 declare -A CURL_CACHE 2>/dev/null || false
 CURL_CACHE["disabled"]="1"
@@ -15,7 +15,9 @@ for file in $yaml_files; do
     fi
   fi
   # shellcheck disable=SC2016
-  yq -s '"/tmp/test_split_" + $index' "${file}"
+  if ! yq -s '"/tmp/test_split_" + $index' "${file}" 2> /dev/null; then
+    cp "${file}" /tmp/test_split_0.yml
+  fi
   if grep -Hoc '# yaml-language-serve' /tmp/test_split_* | grep -q ':0$'; then
     if [ $error == 0 ]; then
       echo "Found YAML files without valid JSON schema manifest links:"

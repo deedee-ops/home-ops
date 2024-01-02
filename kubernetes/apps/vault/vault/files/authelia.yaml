@@ -1,0 +1,12 @@
+---
+# yaml-language-server: disabled
+access_control:
+  rules:
+    - policy: two_factor
+      domain:
+        - 'vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>'
+      subject:
+        - ['user:admin']
+    - policy: deny
+      domain:
+        - 'vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>'

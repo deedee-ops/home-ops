@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: smartctl-exporter.rules
+rules:
+  - alert: SmartDeviceHighTemperature
+    annotations:
+      summary: Mounted drive {{ $labels.device }} on device {{ $labels.instance }}
+        has a temperature higher than 70°C.
+    expr: smartctl_device_temperature > 70
+    for: 15m
+    labels:
+      severity: critical
+  - alert: SmartDeviceTestFailed
+    annotations:
+      summary: Mounted drive {{ $labels.device }} on device {{ $labels.instance }}
+        did not pass its SMART test.
+    expr: |
+      (
+        smartctl_device_smart_status != 1
+      or
+        smartctl_device_status != 1
+      )
+    for: 15m
+    labels:
+      severity: critical
+  - alert: SmartDeviceCriticalWarning
+    annotations:
+      summary: Mounted drive {{ $labels.device }} on device {{ $labels.instance }}
+        is in a critical state.
+    expr: smartctl_device_critical_warning != 0
+    for: 15m
+    labels:
+      severity: critical
+  - alert: SmartCTLDeviceMediaErrors
+    annotations:
+      message: Device {{ $labels.device }} on instance {{ $labels.instance }} has
+        media errors
+    expr: smartctl_device_media_errors != 0
+    for: 1m
+    labels:
+      severity: error
+  - alert: SmartCTLDeviceCriticalWarning
+    annotations:
+      message: Device {{ $labels.device }} on instance {{ $labels.instance }} has
+        media errors
+    expr: smartctl_device_critical_warning != 0
+    for: 1m
+    labels:
+      severity: warning
+  - alert: SmartCTLDeviceAvailableSpareUnderThreadhold
+    annotations:
+      message: Device {{ $labels.device }} on instance {{ $labels.instance }} is
+        under available spare threashold.
+    expr: smartctl_device_available_spare_threshold > smartctl_device_available_spare
+    for: 1m
+    labels:
+      severity: warning
+  - alert: SmartCTLDeviceStatus
+    annotations:
+      message: Device {{ $labels.device }} on instance {{ $labels.instance }} has
+        a bad status
+    expr: smartctl_device_status != 1
+    for: 1m
+    labels:
+      severity: error
+  - alert: SmartCTLDInterfaceSlow
+    annotations:
+      message: Device {{ $labels.device }} on instance {{ $labels.instance }} interface
+        is slower then it should be
+    expr: smartctl_device_interface_speed{speed_type="current"} != on(device, instance,
+      namespace, pod) smartctl_device_interface_speed{speed_type="max"}
+    for: 1m
+    labels:
+      severity: warning

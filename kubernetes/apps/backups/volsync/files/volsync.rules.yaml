@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: volsync.rules
+rules:
+  - alert: VolSyncComponentAbsent
+    annotations:
+      summary: VolSync component has disappeared from Prometheus target discovery.
+    expr: |
+      absent(up{job="volsync-metrics"})
+    for: 15m
+    labels:
+      severity: critical
+  - alert: VolsyncVolumeOutOfSync
+    expr: volsync_volume_out_of_sync > 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Volsync volume not synced (backup {{ $labels.obj_namespace }}/{{ $labels.obj_name }})
+      runbook_url: https://volsync.readthedocs.io/en/stable/usage/metrics/index.html#available-metrics
+      description: |-
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}
+  - alert: VolsyncMissedIntervals
+    expr: volsync_missed_intervals_total > 0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: >-
+        Volsync sync intervals are missing (backup {{ $labels.obj_namespace }}/{{ $labels.obj_name }})
+      runbook_url: https://volsync.readthedocs.io/en/stable/usage/metrics/index.html#available-metrics
+      description: |-
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}

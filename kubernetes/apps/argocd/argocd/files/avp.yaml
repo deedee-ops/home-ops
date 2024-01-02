@@ -1,0 +1,22 @@
+---
+# yaml-language-server: disabled
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: argocd-vault-plugin
+spec:
+  allowConcurrency: true
+  discover:
+    find:
+      command:
+        - sh
+        - "-c"
+        - >-
+          find . -name '*.yaml' -exec grep -Hoc '<path\\|avp\\.kubernetes\\.io' {} \\; |
+          grep -v ':0' | sed -E 's@:[^:]*@@g'
+  generate:
+    command:
+      - argocd-vault-plugin
+      - generate
+      - "."
+  lockRepo: false

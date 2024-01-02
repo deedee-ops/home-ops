@@ -1,0 +1,137 @@
+---
+# yaml-language-server: disabled
+theme: dark
+default_redirection_url: 'https://dashboard.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/'
+default_2fa_method: 'webauthn'
+server:
+  host: 0.0.0.0
+  port: 9091
+  asset_path: ''
+  headers:
+    csp_template: ''
+  buffers:
+    read: 4096
+    write: 4096
+  timeouts:
+    read: 6s
+    write: 6s
+    idle: 30s
+  enable_pprof: false
+  enable_expvars: false
+log:
+  level: info
+  format: text
+  file_path: ''
+  keep_stdout: true
+telemetry:
+  metrics:
+    enabled: true
+    address: 'tcp://0.0.0.0:9959'
+    buffers:
+      read: 4096
+      write: 4096
+totp:
+  disable: false
+  issuer: "<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  algorithm: sha1
+  digits: 6
+  period: 30
+  skew: 1
+  secret_size: 32
+webauthn:
+  disable: false
+  display_name: Authelia
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+  timeout: 60s
+ntp:
+  disable_startup_check: true
+authentication_backend:
+  password_reset:
+    disable: false
+    custom_url: ''
+  ldap:
+    implementation: custom
+    url: ldap://lldap.default.svc.cluster.local:389
+    timeout: 5s
+    start_tls: false
+    base_dn: "dc=home,dc=arpa"
+    username_attribute: uid
+    additional_users_dn: ou=people
+    users_filter: (&({username_attribute}={input})(objectClass=person))
+    additional_groups_dn: ou=groups
+    groups_filter: (member={dn})
+    group_name_attribute: cn
+    mail_attribute: mail
+    display_name_attribute: displayName
+    permit_referrals: false
+    permit_unauthenticated_bind: false
+    permit_feature_detection_failure: false
+    user: uid=<path:kubernetes/data/internal/lldap#LLDAP_LDAP_USER_DN>,ou=people,dc=home,dc=arpa
+password_policy:
+  standard:
+    enabled: false
+    min_length: 8
+    max_length: 0
+    require_uppercase: true
+    require_lowercase: true
+    require_number: true
+    require_special: true
+  zxcvbn:
+    enabled: false
+    min_score: 0
+session:
+  name: 'authelia_session'
+  domain: "<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  same_site: 'lax'
+  expiration: 18h
+  inactivity: 4h
+  remember_me_duration: 1M
+  redis:
+    host: redis-ha-haproxy.database.svc.cluster.local
+    port: 6379
+    database_index: 0
+    maximum_active_connections: 8
+    minimum_idle_connections: 0
+regulation:
+  ban_time: 5m
+  find_time: 2m
+  max_retries: 3
+storage:
+  postgres:
+    port: 5432
+    schema: public
+    timeout: 5s
+    tls:
+      skip_verify: true
+notifier:
+  disable_startup_check: false
+  smtp:
+    host: smtp-relay.networking.svc.cluster.local
+    port: 25
+    timeout: 5s
+    sender: "authelia@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+    identifier: "<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+    subject: '[Authelia] {title}'
+    startup_check_address: "test-authelia@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+    disable_html_emails: false
+    disable_require_tls: true
+    disable_starttls: false
+identity_providers:
+  oidc:
+    access_token_lifespan: 1h
+    authorize_code_lifespan: 1m
+    id_token_lifespan: 1h
+    refresh_token_lifespan: 90m
+    enforce_pkce: public_clients_only
+    enable_pkce_plain_challenge: false
+    enable_client_debug_messages: false
+    minimum_parameter_entropy: 8
+    cors:
+      allowed_origins_from_client_redirect_uris: true
+    clients:
+      - id: dummy
+        secret: dummy
+access_control:
+  default_policy: two_factor
+...

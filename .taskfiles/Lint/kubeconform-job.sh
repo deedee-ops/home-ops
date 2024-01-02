@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # validate all helm template with kubeconform
@@ -22,7 +24,7 @@ for helm in ${helm_templates}; do
   fi
 
   sed 's@<path:kubernetes.*>@test@g' "${helm}/values.yaml" > /tmp/kubeconform-values.yaml
-  if ! helm template "${helm}" -f /tmp/kubeconform-values.yaml | kubeconform -schema-location default -schema-location 'https://deedee-ops.github.io/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /dev/null 2>&1; then
+  if ! (helm template "${helm}" -f /tmp/kubeconform-values.yaml 2>/dev/null | kubeconform -schema-location default -schema-location 'https://deedee-ops.github.io/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /dev/null 2>&1); then
     if [ $error == 0 ]; then
       echo "Found helm templates not passing kubeconform test"
     fi

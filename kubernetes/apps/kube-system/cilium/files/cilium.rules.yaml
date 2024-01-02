@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: cilium.rules
+rules:
+  - alert: CiliumBlockingTrafficUsingPolicies
+    expr: |
+      increase(cilium_drop_count_total{reason="Policy denied"}[5m]) > 0
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      description: Something is trying to send disallowed traffic out of the cluster. Check hubble.
+      summary: Policies are blocking traffic.

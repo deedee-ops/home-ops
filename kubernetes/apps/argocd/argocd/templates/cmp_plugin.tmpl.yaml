@@ -1,0 +1,15 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/configmap-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cmp-plugin
+data:
+  avp-kustomize.yaml: |
+{{ .Files.Get "files/avp-kustomize.yaml" | indent 4 }}
+  avp-helm.yaml: |
+{{ .Files.Get "files/avp-helm.yaml" | indent 4 }}
+  avp.yaml: |
+{{ .Files.Get "files/avp.yaml" | indent 4 }}

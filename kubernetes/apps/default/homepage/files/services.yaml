@@ -1,0 +1,8 @@
+---
+# yaml-language-server: disabled
+- Admin: {}
+- Media:
+    - Synology:
+        icon: synology.png
+        href: "https://nas.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        description: Network Attached Storage

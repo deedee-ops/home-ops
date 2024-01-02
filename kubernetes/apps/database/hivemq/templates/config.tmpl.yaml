@@ -1,0 +1,14 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hivemq-secret
+type: Opaque
+stringData:
+  extension-config.xml: |
+{{ .Files.Get "files/extension-config.xml" | indent 4 }}
+  credentials.xml: |
+{{ .Files.Get "files/credentials.xml" | indent 4 }}

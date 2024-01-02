@@ -1,0 +1,59 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: ceph-extra.rules
+rules:
+  - alert: CephOSDHighWriteThroughput
+    expr: sum(rate(ceph_osd_op_w_in_bytes[15m])) > 20971520
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: Ceph OSDs are under high write pressure
+      description: |-
+        Ceph OSDs have a lot of writes. Use
+        increase(container_fs_writes_bytes_total{namespace!~"rook-ceph"}[5m]) > 1048576000
+        metric to find the culprit and investigate.
+  - alert: CephOSDHighWriteIOPS
+    expr: sum(rate(ceph_osd_op_w[15m])) > 40
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      summary: Ceph OSDs use a lot of IOPS
+      description: |-
+        Ceph OSDs have a lot of writes. Use
+        increase(container_fs_writes_bytes_total{namespace!~"rook-ceph"}[5m]) > 1048576000
+        metric to find the culprit and investigate.
+  # This OSD numbers may change between cluster provisions, if you get imbalance alerts, check them first!
+  - alert: CephPGImbalancePersistent
+    annotations:
+      summary: PGs are not balanced across OSDs
+      description: OSD {{ `{{ $labels.ceph_daemon }}` }} on {{ `{{ $labels.hostname }}` }} deviates
+        by more than 30% from average PG count.
+    expr: |
+      abs(
+        ((ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) - on (job) group_left
+        avg(ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) by (job)) /
+        on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[012]"} > 0) by (job)
+      ) * on (ceph_daemon) group_left(hostname) ceph_osd_metadata > 0.30
+    for: 5m
+    labels:
+      oid: 1.3.6.1.4.1.50495.1.2.1.4.5
+      severity: warning
+      type: ceph_default
+  - alert: CephPGImbalanceEphemeral
+    annotations:
+      summary: PGs are not balanced across OSDs
+      description: OSD {{ `{{ $labels.ceph_daemon }}` }} on {{ `{{ $labels.hostname }}` }} deviates
+        by more than 30% from average PG count.
+    expr: |
+      abs(
+        ((ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) - on (job) group_left
+        avg(ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) by (job)) /
+        on (job) group_left avg(ceph_osd_numpg{ceph_daemon=~"osd.[345]"} > 0) by (job)
+      ) * on (ceph_daemon) group_left(hostname) ceph_osd_metadata > 0.30
+    for: 5m
+    labels:
+      oid: 1.3.6.1.4.1.50495.1.2.1.4.5
+      severity: warning
+      type: ceph_default

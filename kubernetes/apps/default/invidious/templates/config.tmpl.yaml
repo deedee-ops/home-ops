@@ -1,0 +1,12 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: invidious-secret
+stringData:
+  config.yml: |
+{{ .Files.Get "files/config.yml" | indent 4 }}

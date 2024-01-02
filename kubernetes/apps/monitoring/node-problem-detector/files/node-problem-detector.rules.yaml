@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: node-problem-detector.rules
+rules:
+  - alert: NodeProblemDetectedViaCounter
+    annotations:
+      summary: Node Problem Detector found problem
+      description: |
+        There is a problem on node {{ $labels.node }} with {{ $labels.reason }}.
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}
+    expr: increase(problem_counter[1m]) > 0
+    for: 0m
+    labels:
+      severity: warning
+  - alert: NodeProblemDetectedViaGauge
+    annotations:
+      summary: Node Problem Detector found problem
+      description: |
+        There is a problem on node {{ $labels.node }} with {{ $labels.reason }}.
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}
+    expr: increase(problem_gauge[1m]) > 0
+    for: 0m
+    labels:
+      severity: warning

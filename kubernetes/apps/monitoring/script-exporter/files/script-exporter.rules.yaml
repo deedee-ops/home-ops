@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: script-exporter.rules
+rules:
+  - alert: KyvernoPoliciesFailed
+    annotations:
+      summary: Kyverno policies failed
+      description: |
+        Some of the resources are failing kyverno security policies
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}
+    expr: kyverno_policies_failed > 0
+    for: 1m
+    labels:
+      severity: warning

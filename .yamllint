@@ -8,6 +8,7 @@ rules:
     max: 120
 
 ignore:
-  - "*.sops.yaml"
+  - "*.sops.y*ml"
+  - "*.tmpl.y*ml"
   - talos/*/clusterconfig/*.yaml
   - talos/*/tal*.yaml

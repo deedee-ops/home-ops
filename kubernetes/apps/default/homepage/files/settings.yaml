@@ -1,0 +1,12 @@
+---
+# yaml-language-server: disabled
+title: "my universe"
+theme: dark
+headerStyle: boxed
+logpath: /tmp
+language: en
+target: _blank
+layout:
+  Admin:
+    style: row
+    columns: 3

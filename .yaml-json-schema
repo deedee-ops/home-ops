@@ -1,0 +1,8 @@
+ignorePaths:
+  - talos/*/clusterconfig/*.yaml
+  - talos/*/tal*.yaml
+
+ignoreNames:
+  - protection.tmpl.yaml
+  - "*.sops.y*ml"
+  - "values.*y*ml"
