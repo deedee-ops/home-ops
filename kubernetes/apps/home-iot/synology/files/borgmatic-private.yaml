@@ -1,0 +1,53 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/borgmatic-collective/borgmatic/main/borgmatic/config/schema.yaml
+# yamllint enable rule:line-length
+
+# location
+source_directories:
+  - /mnt/source/private
+  - /mnt/source/retro/batocera
+  - /mnt/source/media/music/_Mix
+repositories:
+  - path: "<path:kubernetes/data/internal/synology#BORGMATIC_PRIVATE_EU_REPO>"
+    label: private-eu
+  - path: "<path:kubernetes/data/internal/synology#BORGMATIC_PRIVATE_US_REPO>"
+    label: private-us
+exclude_patterns:
+  - '*.nobackup'
+exclude_caches: true
+exclude_if_present:
+  - .nobackup
+borgmatic_source_directory: /config/private/source
+
+# storage
+encryption_passphrase: "<path:kubernetes/data/internal/synology#BORGMATIC_PRIVATE_ENCRYPTION_PASSPHRASE>"
+retries: 5
+compression: auto,zstd
+ssh_command: ssh -i /config/private/ssh.key -o StrictHostKeyChecking=no
+lock_wait: 5
+archive_name_format: 'private-{now:%Y-%m-%d-%H%M%S}'
+temporary_directory: /config/private/tmp
+borg_base_directory: /config/private/borg
+
+# retention
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 3
+
+# consistency
+checks:
+  - name: repository
+    frequency: "2 weeks"
+  - name: archives
+    frequency: always
+check_last: 3
+
+# hooks
+on_error:
+  - echo "`date` - Error while creating a backup."
+before_backup:
+  - echo "`date` - Starting backup."
+after_backup:
+  - echo "`date` - Finished backup."

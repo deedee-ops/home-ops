@@ -14,6 +14,7 @@
     "github>deedee-ops/home-ops//.github/renovate/autoMerge.json5",
     "github>deedee-ops/home-ops//.github/renovate/commitMessage.json5",
     "github>deedee-ops/home-ops//.github/renovate/customManagers.json5",
+    "github>deedee-ops/home-ops//.github/renovate/customVersioning.json5",
     "github>deedee-ops/home-ops//.github/renovate/labels.json5",
     "github>deedee-ops/home-ops//.github/renovate/semanticCommits.json5"
   ],

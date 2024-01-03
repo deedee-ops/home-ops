@@ -1,0 +1,47 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# yamllint enable rule:line-length
+version: "3.8"
+services:
+  acme-sh:
+    command: daemon
+    restart: always
+    container_name: acme-sh
+    environment:
+      AUTO_UPGRADE: "1"
+      LE_CONFIG_HOME: /acme.sh
+      TZ: Europe/Warsaw
+    image: "neilpang/acme.sh:latest"
+    volumes:
+      - /volume2/docker/acme-sh:/acme.sh
+
+  borgmatic:
+    restart: always
+    container_name: borgmatic
+    environment:
+      BACKUP_CRON: "0 3 * * *"
+      TZ: Europe/Warsaw
+    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.5"
+    volumes:
+      - /volume1:/mnt/source:ro
+      - /volume2/docker/borgmatic/config:/config
+      - /volume2/docker/borgmatic/borgmatic.d:/etc/borgmatic.d
+
+  minio:
+    command: "server /data --console-address :9001"
+    restart: always
+    container_name: minio
+    environment:
+      MINIO_BROWSER_REDIRECT_URL: "https://minio.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      MINIO_ROOT_PASSWORD: "<path:kubernetes/data/internal/synology#MINIO_ROOT_PASSWORD>"
+      MINIO_ROOT_USER: "<path:kubernetes/data/internal/synology#MINIO_ROOT_USER>"
+      MINIO_SERVER_URL: "https://s3.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      MINIO_UPDATE: "off"
+      TZ: Europe/Warsaw
+    image: "quay.io/minio/minio:RELEASE.2024-01-01T16-36-33Z"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - /volume1/S3:/data

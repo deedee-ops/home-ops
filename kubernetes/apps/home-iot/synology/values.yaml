@@ -1,0 +1,83 @@
+---
+app-template:
+  defaultPodOptions:
+    labels:
+      route-to/nas: "true"
+    securityContext:
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          command:
+            - /bin/sh
+            - /src/syncer.sh
+          image:
+            repository: public.ecr.aws/docker/library/alpine
+            tag: 3.19.0
+            pullPolicy: IfNotPresent
+
+          env:
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - pgrep
+                    - -f
+                    - sleep
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 8Mi
+            limits:
+              memory: 32Mi
+
+  service:
+    main:
+      enabled: false
+
+  persistence:
+    files:
+      enabled: true
+      type: configMap
+      name: synology-configmap
+      globalMounts:
+        - path: /src
+          readOnly: true
+    synology:
+      enabled: true
+      type: nfs
+      accessMode: ReadWriteMany
+      server: "<path:kubernetes/data/internal/base#IP_NAS>"
+      path: "/volume2/docker"
+      globalMounts:
+        - path: /dest
