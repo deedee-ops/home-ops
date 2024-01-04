@@ -24,6 +24,3 @@ spec:
             # must be regex to override path defined by helm ingress
             path: /(?:v2|service|c)(?:$|/.*)
             pathType: Prefix
-  tls:
-    - hosts:
-        - "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"

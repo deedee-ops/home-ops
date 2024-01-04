@@ -109,13 +109,14 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - "minio.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+        - "s3.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
   name: minio
+  namespace: networking
 specs:
   - endpointSelector:
       matchLabels:

@@ -1,0 +1,104 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: zot
+spec:
+  ports:
+    - name: zot
+      port: 6000
+      protocol: TCP
+      targetPort: 6000
+  clusterIP: None
+  type: ClusterIP
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/endpoints-v1.json
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: zot
+subsets:
+  - addresses:
+      - ip: "<path:kubernetes/data/internal/base#IP_NAS>"
+    ports:
+      - name: zot
+        port: 6000
+        protocol: TCP
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zot
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Admin
+    gethomepage.dev/name: Zot
+    gethomepage.dev/icon: zot.png
+    gethomepage.dev/description: OCI registry
+spec:
+  ingressClassName: internal
+  rules:
+    - host: "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      http:
+        paths:
+          - backend:
+              service:
+                name: zot
+                port:
+                  number: 6000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zot-api
+  annotations:
+    nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - zot"
+    nginx.ingress.kubernetes.io/auth-secret: zot-password
+    nginx.ingress.kubernetes.io/auth-type: basic
+spec:
+  ingressClassName: internal
+  rules:
+    - host: "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      http:
+        paths:
+          - backend:
+              service:
+                name: zot
+                port:
+                  number: 6000
+            path: /v2
+            pathType: Prefix
+  tls:
+    - hosts:
+        - "registry.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: zot
+  namespace: networking
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: ingress-nginx
+    egress:
+      - toPorts:
+          - ports:
+              - port: "6000"
+                protocol: TCP
+        toCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#IP_NAS>/32"
+# yamllint enable rule:line-length

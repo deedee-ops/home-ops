@@ -9,5 +9,5 @@ metadata:
   name: registry-credentials
   namespace: vms
 stringData:
-  accessKeyId: "<path:kubernetes/data/internal/harbor#REGISTRY_USERNAME>"
-  secretKey: "<path:kubernetes/data/internal/harbor#REGISTRY_PASSWORD>"
+  accessKeyId: "<path:kubernetes/data/internal/synology#REGISTRY_USERNAME>"
+  secretKey: "<path:kubernetes/data/internal/synology#REGISTRY_PASSWORD>"

@@ -1,0 +1,11 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: zot-password
+stringData:
+  auth: "<path:kubernetes/data/internal/synology#REGISTRY_USERNAME>:<path:kubernetes/data/internal/synology#REGISTRY_PASSWORD_HTPASSWD>"
