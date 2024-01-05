@@ -6,7 +6,9 @@ metadata:
   name: synology
 spec:
   staticConfigs:
-    - targets:
+    - labels:
+        homelab_node: synology
+      targets:
         - "<path:kubernetes/data/internal/base#IP_NAS>:9100"
   metricsPath: /metrics
 ---
