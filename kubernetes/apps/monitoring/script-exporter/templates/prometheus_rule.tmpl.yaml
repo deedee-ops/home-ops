@@ -6,7 +6,7 @@ metadata:
   name: script-exporter
 spec:
   groups:
-    - {{ index (.Files.Lines "files/script-exporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/script-exporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/script-exporter.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

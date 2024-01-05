@@ -9,7 +9,7 @@ metadata:
   name: ceph-extra
 spec:
   groups:
-    - {{ index (.Files.Lines "files/ceph-extra.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/ceph-extra.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/ceph-extra.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

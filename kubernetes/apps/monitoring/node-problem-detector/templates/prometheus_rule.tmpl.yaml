@@ -6,7 +6,7 @@ metadata:
   name: node-problem-detector
 spec:
   groups:
-    - {{ index (.Files.Lines "files/node-problem-detector.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/node-problem-detector.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/node-problem-detector.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

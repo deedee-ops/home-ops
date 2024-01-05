@@ -6,7 +6,7 @@ metadata:
   name: cilium
 spec:
   groups:
-    - {{ index (.Files.Lines "files/cilium.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/cilium.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/cilium.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

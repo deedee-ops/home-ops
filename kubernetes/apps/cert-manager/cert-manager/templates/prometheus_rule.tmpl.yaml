@@ -6,12 +6,12 @@ metadata:
   name: cert-manager
 spec:
   groups:
-    - {{ index (.Files.Lines "files/cert-manager.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/cert-manager.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/cert-manager.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}
       {{- end }}
-    - {{ index (.Files.Lines "files/certificates.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/certificates.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/certificates.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

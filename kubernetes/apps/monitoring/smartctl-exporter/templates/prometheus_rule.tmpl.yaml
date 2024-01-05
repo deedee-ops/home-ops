@@ -6,7 +6,7 @@ metadata:
   name: smartctl-exporter
 spec:
   groups:
-    - {{ index (.Files.Lines "files/smartctl-exporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/smartctl-exporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/smartctl-exporter.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

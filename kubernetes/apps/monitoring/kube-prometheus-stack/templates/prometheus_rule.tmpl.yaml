@@ -9,7 +9,7 @@ metadata:
   name: nodeexporter
 spec:
   groups:
-    - {{ index (.Files.Lines "files/nodeexporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/nodeexporter.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/nodeexporter.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}

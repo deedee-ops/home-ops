@@ -9,7 +9,7 @@ metadata:
   name: redis-ha
 spec:
   groups:
-    - {{ index (.Files.Lines "files/redis-ha.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/volsync.rules.yaml" }}
+    - {{ index (.Files.Lines "files/redis-ha.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/redis-ha.rules.yaml" }}
       {{- if gt $index 2 }}
       {{ $line }}
       {{- end }}
