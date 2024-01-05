@@ -16,7 +16,7 @@ spec:
         namespace: kube-system
       repoURL: https://github.com/alex1989hu/kubelet-serving-cert-approver.git
       # renovate: datasource=github-tags depName=alex1989hu/kubelet-serving-cert-approver
-      targetRevision: "v0.7.7"
+      targetRevision: "v0.8.0"
     - repoURL: https://github.com/deedee-ops/home-ops.git
       path: kubernetes/apps/kube-system/kubelet-serving-cert-approver/templates
       targetRevision: master
