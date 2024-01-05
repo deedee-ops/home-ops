@@ -151,3 +151,25 @@ rules:
       description: >-
         A pod {{ $labels.namespace }}/{{ $labels.pod }}
         is using a lot of Memory: {{ $value }}
+
+  - alert: TalosSystemDiskLowSpace
+    expr: >-
+      node_filesystem_free_bytes{mountpoint="/var"} / node_filesystem_size_bytes{mountpoint="/var"} < 0.3
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: Talos system disk is running out of space
+      description: >-
+        Talos instance {{ $labels.instance }} disk space is running low.
+
+  - alert: TalosSystemDiskVeryLowSpace
+    expr: >-
+      node_filesystem_free_bytes{mountpoint="/var"} / node_filesystem_size_bytes{mountpoint="/var"} < 0.15
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: Talos system disk is almost full
+      description: >-
+        Talos instance {{ $labels.instance }} system disk is almost full.
