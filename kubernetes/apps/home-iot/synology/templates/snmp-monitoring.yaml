@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: snmp
+spec:
+  staticConfigs:
+    - targets:
+        - "<path:kubernetes/data/internal/base#IP_NAS>:9116"
+  metricsPath: /snmp
+  params:
+    target:
+      - "<path:kubernetes/data/internal/base#IP_NAS>"
+    module:
+      - synology
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: snmp-exporter
+  namespace: monitoring
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prometheus
+    egress:
+      - toPorts:
+          - ports:
+              - port: "9116"
+                protocol: TCP
+        toCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#IP_NAS>/32"

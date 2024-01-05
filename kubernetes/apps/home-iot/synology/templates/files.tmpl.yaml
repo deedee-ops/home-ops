@@ -11,6 +11,8 @@ data:
 {{ .Files.Get "files/borgmatic-homelab.yaml" | indent 4 }}
   borgmatic-private.yaml: |
 {{ .Files.Get "files/borgmatic-private.yaml" | indent 4 }}
+  snmp-exporter-config.yaml: |
+{{ .Files.Get "files/snmp-exporter-config.yaml" | indent 4 }}
   zot-config.json: |
 {{ .Files.Get "files/zot-config.json" | indent 4 }}
   docker-compose.yaml: |

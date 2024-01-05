@@ -10,5 +10,6 @@ rules:
 ignore:
   - "*.sops.y*ml"
   - "*.tmpl.y*ml"
+  - snmp-exporter-config.yaml
   - talos/*/clusterconfig/*.yaml
   - talos/*/tal*.yaml

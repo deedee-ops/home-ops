@@ -46,6 +46,34 @@ services:
     volumes:
       - /volume1/S3:/data
 
+  node-exporter:
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.ignored-mount-points"
+      - "^/(rootfs/)?(dev|etc|host|proc|run|sys|volume1)($$|/)"
+    restart: always
+    privileged: true
+    container_name: node-exporter
+    image: prom/node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+
+  snmp-exporter:
+    command:
+      - "--config.file=/etc/snmp_exporter/snmp.yml"
+    restart: always
+    container_name: snmp-exporter
+    image: prom/snmp-exporter
+    ports:
+      - "9116:9116"
+    volumes:
+      - /volume2/docker/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml
+
   zot:
     restart: always
     container_name: zot

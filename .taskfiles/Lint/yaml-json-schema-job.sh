@@ -26,7 +26,7 @@ for file in $yaml_files; do
     echo "${file}"
   else
     for split in /tmp/test_split_*; do
-      schemaUrl="$(grep '# yaml-language-serve' "${split}" | awk -F= '{print $2}')"
+      schemaUrl="$(grep '# yaml-language-serve' "${split}" | head -n 1 | awk -F= '{print $2}')"
       if [ -z "$schemaUrl" ]; then
         schemaUrl="disabled"
       fi

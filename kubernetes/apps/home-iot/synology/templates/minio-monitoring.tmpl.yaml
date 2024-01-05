@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: minio
+spec:
+  staticConfigs:
+    - targets:
+        - "<path:kubernetes/data/internal/base#IP_NAS>:9000"
+  metricsPath: /minio/v2/metrics/cluster
+  authorization:
+    type: Bearer
+    credentials:
+      key: minio-bearer-token
+      name: synology-secret
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+  name: minio
+spec:
+  groups:
+    - {{ index (.Files.Lines "files/minio.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/minio.rules.yaml" }}
+      {{- if gt $index 2 }}
+      {{ $line }}
+      {{- end }}
+      {{- end }}
