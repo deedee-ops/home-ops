@@ -26,20 +26,22 @@ for file in $yaml_files; do
     echo "${file}"
   else
     for split in /tmp/test_split_*; do
-      schemaUrl="$(grep '# yaml-language-serve' "${split}" | head -n 1 | awk -F= '{print $2}')"
-      if [ -z "$schemaUrl" ]; then
-        schemaUrl="disabled"
-      fi
+      if [ -z "${IGNORE_SCHEMA_FETCH}" ]; then
+        schemaUrl="$(grep '# yaml-language-serve' "${split}" | head -n 1 | awk -F= '{print $2}')"
+        if [ -z "$schemaUrl" ]; then
+          schemaUrl="disabled"
+        fi
 
-      if [ -z "${CURL_CACHE["$schemaUrl"]}" ]; then
-        if ! curl -m 5 -o /dev/null -Ls --fail-with-body "${schemaUrl}"; then
-          if [ $error == 0 ]; then
-            echo "Found YAML files without valid JSON schema manifest links:"
+        if [ -z "${CURL_CACHE["$schemaUrl"]}" ]; then
+          if ! curl -m 5 -o /dev/null -Ls --fail-with-body "${schemaUrl}"; then
+            if [ $error == 0 ]; then
+              echo "Found YAML files without valid JSON schema manifest links:"
+            fi
+            error=1
+            echo "${file}: ${schemaUrl}"
+          else
+            CURL_CACHE["$schemaUrl"]="1"
           fi
-          error=1
-          echo "${file}: ${schemaUrl}"
-        else
-          CURL_CACHE["$schemaUrl"]="1"
         fi
       fi
     done

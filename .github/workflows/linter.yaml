@@ -70,4 +70,6 @@ jobs:
 
       - name: Run task lint:yaml-json-schema
         run: ./.taskfiles/Lint/yaml-json-schema-job.sh
+        env:
+          IGNORE_SCHEMA_FETCH: "1"
 # yamllint enable rule:comments
