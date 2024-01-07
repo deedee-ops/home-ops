@@ -1,0 +1,13 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: airvpn-secret
+stringData:
+  WIREGUARD_PRIVATE_KEY: "<path:kubernetes/data/internal/pod-gateway#WIREGUARD_PRIVATE_KEY>"
+  WIREGUARD_PRESHARED_KEY: "<path:kubernetes/data/internal/pod-gateway#WIREGUARD_PRESHARED_KEY>"
+  WIREGUARD_ADDRESSES: "<path:kubernetes/data/internal/pod-gateway#WIREGUARD_ADDRESSES>"

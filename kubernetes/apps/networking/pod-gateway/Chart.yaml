@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: pod-gateway
+version: 1.0.0
+type: application
+dependencies:
+  - name: pod-gateway
+    version: 6.5.1
+    repository: https://angelnu.github.io/helm-charts
