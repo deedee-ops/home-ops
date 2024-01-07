@@ -69,10 +69,6 @@ kube-prometheus-stack:
             matchers:
               - alertname = CSPAlert
             repeat_interval: 15m
-          - receiver: discord-kyverno
-            matchers:
-              - alertname = KyvernoPolicyFailed
-            repeat_interval: 15m
         group_wait: 1m
         group_interval: 10m
         repeat_interval: 12h
@@ -89,11 +85,6 @@ kube-prometheus-stack:
         - name: "discord-csp"
           discord_configs:
             - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_CSP_WEBHOOK>"
-              message: '{{ template "homelab.discord.message" . }}'
-              title: '{{ template "homelab.discord.title" . }}'
-        - name: "discord-kyverno"
-          discord_configs:
-            - webhook_url: "<path:kubernetes/data/internal/kube-prometheus-stack#DISCORD_KYVERNO_WEBHOOK>"
               message: '{{ template "homelab.discord.message" . }}'
               title: '{{ template "homelab.discord.title" . }}'
         - name: "healthchecks"
