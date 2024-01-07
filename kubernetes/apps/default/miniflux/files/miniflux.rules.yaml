@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/alertmanager-group.json
+name: miniflux.rules
+rules:
+  - alert: MinifluxBrokenFields
+    expr: miniflux_broken_feeds > 0
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      summary: Miniflux has broken RSS feeds.
+  - alert: MinifluxUnreadEntries
+    expr: miniflux_entries{status="unread"} > 0
+    for: 12h
+    labels:
+      severity: warning
+    annotations:
+      summary: There are new entries in miniflux, waiting to be read.
