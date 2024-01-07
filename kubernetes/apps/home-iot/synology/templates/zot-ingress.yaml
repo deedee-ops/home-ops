@@ -37,7 +37,7 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Admin
     gethomepage.dev/name: Zot
-    gethomepage.dev/icon: zot.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/project-zot/project-zot.github.io/docs/assets/images/logo.png
     gethomepage.dev/description: OCI registry
 spec:
   ingressClassName: internal
