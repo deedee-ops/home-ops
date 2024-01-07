@@ -213,7 +213,7 @@ tasks:
     preconditions:
       - kubectl -n {{.namespace}} get pvc {{.claim}}
 
-  'talos:debug':
+  'debug:talos':
     desc: >-
       Run privileged pod, with talos host mounted in /host and host networking enabled
       [node=blossom namespace=kube-system]
