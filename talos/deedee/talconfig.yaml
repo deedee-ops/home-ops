@@ -93,9 +93,12 @@ nodes:
     ipAddress: 10.100.22.10
     schematic:
       customization:
+        extraKernelArgs:
+          - net.ifnames=0
         systemExtensions:
           officialExtensions:
             - siderolabs/i915-ucode
+            - siderolabs/intel-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
       size: "<= 150GB"
@@ -116,7 +119,7 @@ nodes:
             gateway: 10.100.1.1
         bridge:
           interfaces:
-            - enp86s0
+            - eth0
           stp:
             enabled: false
         dhcp: false
@@ -146,9 +149,12 @@ nodes:
     ipAddress: 10.100.22.11
     schematic:
       customization:
+        extraKernelArgs:
+          - net.ifnames=0
         systemExtensions:
           officialExtensions:
             - siderolabs/i915-ucode
+            - siderolabs/intel-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
       size: "<= 150GB"
@@ -169,7 +175,7 @@ nodes:
             gateway: 10.100.1.1
         bridge:
           interfaces:
-            - enp86s0
+            - eth0
           stp:
             enabled: false
         dhcp: false
@@ -197,9 +203,12 @@ nodes:
     ipAddress: 10.100.22.12
     schematic:
       customization:
+        extraKernelArgs:
+          - net.ifnames=0
         systemExtensions:
           officialExtensions:
             - siderolabs/i915-ucode
+            - siderolabs/intel-ucode
             - siderolabs/thunderbolt
     installDiskSelector:
       size: "<= 150GB"
@@ -220,7 +229,7 @@ nodes:
             gateway: 10.100.1.1
         bridge:
           interfaces:
-            - enp86s0
+            - eth0
           stp:
             enabled: false
         dhcp: false
