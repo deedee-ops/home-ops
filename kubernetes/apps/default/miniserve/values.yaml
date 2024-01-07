@@ -13,7 +13,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/miniserve
-            tag: 0.24.0
+            tag: 0.25.0
             pullPolicy: IfNotPresent
 
           env:
