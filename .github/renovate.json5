@@ -3,13 +3,16 @@
   "extends": [
     "config:recommended",
     "docker:enableMajor",
+    ":automergeBranch",
     ":disableRateLimiting",
     ":dependencyDashboard",
     ":semanticCommits",
+    ":skipStatusChecks",
     ":automergeDigest",
-    ":automergeBranch",
     ":automergePatch",
     "helpers:pinGitHubActionDigests",
+    ":timezone(Europe/Warsaw)",
+    ":rebaseStalePrs",
     "github>deedee-ops/home-ops//.github/renovate/allowedVersions.json5",
     "github>deedee-ops/home-ops//.github/renovate/autoMerge.json5",
     "github>deedee-ops/home-ops//.github/renovate/commitMessage.json5",
@@ -18,17 +21,24 @@
     "github>deedee-ops/home-ops//.github/renovate/labels.json5",
     "github>deedee-ops/home-ops//.github/renovate/semanticCommits.json5"
   ],
-  "platform": "github",
   "onboarding": false,
   "requireConfig": "optional",
-  "suppressNotifications": ["prIgnoreNotification"],
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
+  "assigneesFromCodeOwners": true,
+  "reviewersFromCodeOwners": true,
   "ignorePaths": [
-    "schemas/**/*.*",
-    "opentofu/talos_cluster/manifests/*.yaml",
-    "kubernetes/apps/monitoring/kyverno/templates/*.yaml"
+    "**/*.sops.*",
+    "kubernetes/apps/monitoring/kyverno/templates/*.yaml",
+    "kubernetes/apps/**/*.tmpl.*"
   ],
   "helm-values": {
-    "fileMatch": ["(^|/)kubernetes/.+/values.*\\.ya?ml$"]
+    "fileMatch": [
+      "(^|/)kubernetes/.+/values.*\\.ya?ml$"
+    ],
+    "ignorePaths": [
+      "kubernetes/apps/database/hivemq/values.yaml"
+    ]
   },
   "kubernetes": {
     "fileMatch": [
