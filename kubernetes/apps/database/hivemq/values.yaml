@@ -5,7 +5,7 @@ hivemq-platform-operator:
 hivemq-platform:
   image:
     repository: ghcr.io/deedee-ops
-    tag: '4.23.0@sha256:93a1d089123856f77d11217efce070dd46e43af052c1f46923491b1ad35f1c36'
+    tag: '4.23.0'
   nodes:
     replicaCount: 2
   extensions:

@@ -9,8 +9,8 @@
     }, {
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["sig-storage/csi-provisioner"],
-      // 3.6.x introduces "Lost connection to socket" regression
-      "allowedVersions": "!/3\.6\./"
+      // 3.6.2 introduces "Lost connection to socket" regression
+      "allowedVersions": "!/3\.6\.2/"
     }, {
       "matchDatasources": ["helm"],
       "matchPackagePatterns": ["cilium"],
