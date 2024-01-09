@@ -26,9 +26,9 @@ app-template:
                 name: zigbee2mqtt-secret
 
           securityContext:
-            privileged: true
             runAsNonRoot: false
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
@@ -46,9 +46,11 @@ app-template:
 
           resources:
             requests:
+              smarter-devices/ttyUSB0: 1
               cpu: 10m
               memory: 128Mi
             limits:
+              smarter-devices/ttyUSB0: 1
               memory: 512Mi
 
       initContainers:
