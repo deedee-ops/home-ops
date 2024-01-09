@@ -68,7 +68,7 @@ services:
       - "--config.file=/etc/snmp_exporter/snmp.yml"
     restart: always
     container_name: snmp-exporter
-    image: "quay.io/prometheus/node-exporter:v0.25.0"
+    image: "quay.io/prometheus/node-exporter:v1.7.0"
     ports:
       - "9116:9116"
     volumes:
