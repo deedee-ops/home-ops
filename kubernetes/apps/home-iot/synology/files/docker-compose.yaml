@@ -55,7 +55,7 @@ services:
     restart: always
     privileged: true
     container_name: node-exporter
-    image: prom/node-exporter
+    image: "quay.io/prometheus/node-exporter:v1.7.0"
     ports:
       - "9100:9100"
     volumes:
@@ -68,7 +68,7 @@ services:
       - "--config.file=/etc/snmp_exporter/snmp.yml"
     restart: always
     container_name: snmp-exporter
-    image: prom/snmp-exporter
+    image: "quay.io/prometheus/snmp-exporter:v0.25.0"
     ports:
       - "9116:9116"
     volumes:
