@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/argoproj.io/application_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: smart-device-manager
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/deedee-ops/home-ops.git
+      path: kubernetes/apps/kube-system/smart-device-manager
+      targetRevision: master
+      plugin:
+        name: argocd-vault-plugin-helm
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
