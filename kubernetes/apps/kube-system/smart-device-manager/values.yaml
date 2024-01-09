@@ -14,7 +14,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/smarter-project/smarter-device-manager
-            tag: v1.20.11
+            tag: v1.20.12
           resources:
             requests:
               cpu: 10m
