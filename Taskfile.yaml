@@ -33,10 +33,12 @@ tasks:
       - kubectl apply -f https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/master/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml
 
       # apps
+      - helm dependency build kubernetes/apps/kube-system/coredns/
+      - helm template -n kube-system -f talos/{{ .cluster }}/values.bootstrap.yaml coredns kubernetes/apps/kube-system/coredns/ | kubectl apply -n kube-system -f -
+      - kubectl -n kube-system rollout status deployment coredns --timeout=1800s
       - helm dependency build kubernetes/apps/kube-system/cilium/
       - helm template -n kube-system -f talos/{{ .cluster }}/values.bootstrap.yaml cilium kubernetes/apps/kube-system/cilium/ | kubectl apply -n kube-system -f -
       - kubectl -n kube-system rollout status daemonset cilium --timeout=1800s
-      - kubectl -n kube-system rollout status deployment coredns --timeout=1800s
 
       - kubectl apply -f https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/ha-install.yaml
 

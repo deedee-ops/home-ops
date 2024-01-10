@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: coredns
+spec:
+  groups:
+    - {{ index (.Files.Lines "files/coredns.rules.yaml") 2 }}{{ range $index, $line := .Files.Lines "files/coredns.rules.yaml" }}
+      {{- if gt $index 2 }}
+      {{ $line }}
+      {{- end }}
+      {{- end }}
