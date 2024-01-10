@@ -69,16 +69,16 @@ tasks:
   'bootstrap:stage2':
     desc: Install volsync and vault
     cmds:
-      - kubectl create namespace backups
-      - kubectl label --overwrite namespace backups pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged pod-security.kubernetes.io/audit=privileged
-      - helm dependency build kubernetes/apps/backups/volsync/
-      - helm template -n backups -f talos/{{ .cluster }}/values.bootstrap.yaml volsync kubernetes/apps/backups/volsync/ | kubectl apply -n backups -f -
-      - kubectl -n backups rollout status deployment volsync --timeout=1800s
+      - kubectl create namespace workers
+      - kubectl label --overwrite namespace workers pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged pod-security.kubernetes.io/audit=privileged
+      - helm dependency build kubernetes/apps/workers/volsync/
+      - helm template -n workers -f talos/{{ .cluster }}/values.bootstrap.yaml volsync kubernetes/apps/workers/volsync/ | kubectl apply -n workers -f -
+      - kubectl -n workers rollout status deployment volsync --timeout=1800s
 
-      - kubectl label --overwrite namespace vault pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged pod-security.kubernetes.io/audit=privileged
-      - helm dependency build kubernetes/apps/vault/vault/
-      - helm template -n vault -f talos/{{ .cluster }}/values.bootstrap.yaml vault kubernetes/apps/vault/vault/ | kubectl apply -n vault -f -
-      - kubectl -n vault rollout status deployment vault --timeout=1800s
+      - kubectl label --overwrite namespace tools pod-security.kubernetes.io/enforce=privileged pod-security.kubernetes.io/warn=privileged pod-security.kubernetes.io/audit=privileged
+      - helm dependency build kubernetes/apps/tools/vault/
+      - helm template -n tools -f talos/{{ .cluster }}/values.bootstrap.yaml vault kubernetes/apps/tools/vault/ | kubectl apply -n tools -f -
+      - kubectl -n tools rollout status deployment vault --timeout=1800s
 
   'bootstrap:stage3':
     desc: Install rest of the cluster base logic
@@ -128,7 +128,7 @@ tasks:
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application rook-ceph-cluster
       # wait for reapply
       - sleep 2
-      - kubectl apply -f kubernetes/apps/vault/vault/application.yaml
+      - kubectl apply -f kubernetes/apps/tools/vault/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application vault
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application vault
 
@@ -216,11 +216,11 @@ tasks:
   'debug:talos':
     desc: >-
       Run privileged pod, with talos host mounted in /host and host networking enabled
-      [node=blossom namespace=kube-system]
+      [node=blossom namespace=tools]
     interactive: true
     vars:
       node: '{{ or .node (fail "Node name `node` is required") }}'
-      namespace: '{{.namespace | default "kube-system"}}'
+      namespace: '{{.namespace | default "tools"}}'
     # yamllint disable rule:line-length
     cmd: |
       kubectl run -n {{.namespace}} debug-{{.node}} -i --tty --rm --image=null --privileged --overrides='

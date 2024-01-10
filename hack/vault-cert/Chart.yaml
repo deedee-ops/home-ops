@@ -1,0 +1,6 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: vault-cert
+version: 1.0.0
+type: application

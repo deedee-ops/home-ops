@@ -42,7 +42,7 @@ spec:
                 - kube-system
                 - monitoring
                 - rook-ceph
-                - vault
+                - tools
       validate:
         podSecurity:
           level: baseline
