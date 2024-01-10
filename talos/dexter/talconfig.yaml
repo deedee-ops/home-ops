@@ -193,11 +193,21 @@ controlPlane:
         controllerManager:
           extraArgs:
             bind-address: 0.0.0.0
-        proxy:
-          disabled: true
         scheduler:
           extraArgs:
             bind-address: 0.0.0.0
+
+    # kube-proxy configuration
+    - &proxyPatch |-
+      cluster:
+        proxy:
+          disabled: true
+
+    # coredns configuration
+    - |-
+      cluster:
+        coreDNS:
+          disabled: true
 
     # ETCD configuration
     - |-
@@ -205,6 +215,14 @@ controlPlane:
         etcd:
           extraArgs:
             listen-metrics-urls: http://0.0.0.0:2381
+
+    # Custom sysctl settings
+    - &sysctlPatch |-
+      machine:
+        sysctls:
+          # cloudflared post-quantum QUIC requirement: https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
+          net.core.rmem_max: 2500000
+          net.core.wmem_max: 2500000
 
     # Enable K8s Talos API Access
     - |-
@@ -293,6 +311,8 @@ worker:
     - *discoveryPatch
     - *kubePrismPatch
     - *kubeletPatch
+    - *proxyPatch
+    - *sysctlPatch
 
     # udev rules
     - |-

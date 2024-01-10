@@ -308,6 +308,12 @@ controlPlane:
         proxy:
           disabled: true
 
+    # coredns configuration
+    - |-
+      cluster:
+        coreDNS:
+          disabled: true
+
     # ETCD configuration
     - |-
       cluster:

@@ -6,9 +6,7 @@ pod-gateway:
   image:
     repository: ghcr.io/angelnu/pod-gateway
     tag: v1.10.0
-  # DNS: "<path:kubernetes/data/internal/base#IP_GATEWAY>"
   DNS: 172.16.1.1
-  # DNS: 10.128.0.1
   routed_namespaces:
     - default
   settings:
