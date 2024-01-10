@@ -1,0 +1,15 @@
+# yamllint disable rule:line-length
+# {{- $ca := genCA "O=homelab,CN=vault" 36500 -}}
+# {{- $cert := genSignedCert "vault" .Values.ips .Values.domains 36500 $ca }}
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-server-tls
+type: kubernetes.io/tls
+data:
+  tls.ca: "{{ $ca.Cert | b64enc }}"
+  tls.key: "{{ $cert.Key | b64enc }}"
+  tls.crt: "{{ $cert.Cert | b64enc }}"
+# yamllint enable rule:line-length

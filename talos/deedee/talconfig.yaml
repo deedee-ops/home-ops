@@ -361,15 +361,15 @@ controlPlane:
               kind: Namespace
               metadata:
                 labels:
-                  kubernetes.io/metadata.name: vault
-                name: vault
+                  kubernetes.io/metadata.name: tools
+                name: tools
               ---
               apiVersion: v1
               kind: Secret
               type: Opaque
               metadata:
                 name: vault-unseal
-                namespace: vault
+                namespace: tools
               stringData:
                 UNSEAL_KEY: "${vaultUnseal}"
               ---
@@ -377,7 +377,7 @@ controlPlane:
               kind: Secret
               metadata:
                 name: vault-server-tls
-                namespace: vault
+                namespace: tools
               type: kubernetes.io/tls
               data:
                 tls.ca: "${vaultTLSca}"
@@ -388,7 +388,7 @@ controlPlane:
               kind: Secret
               metadata:
                 name: restic-vault-data-vault-0
-                namespace: vault
+                namespace: tools
               type: Opaque
               stringData:
                 AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
@@ -400,7 +400,7 @@ controlPlane:
               kind: Secret
               metadata:
                 name: restic-vault-data-vault-1
-                namespace: vault
+                namespace: tools
               type: Opaque
               stringData:
                 AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"
@@ -412,7 +412,7 @@ controlPlane:
               kind: Secret
               metadata:
                 name: restic-vault-data-vault-2
-                namespace: vault
+                namespace: tools
               type: Opaque
               stringData:
                 AWS_ACCESS_KEY_ID: "${s3AccessKeyID}"

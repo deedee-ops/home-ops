@@ -1,0 +1,14 @@
+---
+reloader:
+  fullnameOverride: reloader
+  reloader:
+    reloadStrategy: annotations
+    podMonitor:
+      enabled: true
+    deployment:
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
