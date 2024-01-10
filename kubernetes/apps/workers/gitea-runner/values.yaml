@@ -1,0 +1,101 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: gitea-runner
+
+  controllers:
+    main:
+      type: statefulset
+      replicas: 2
+      containers:
+        main:
+          command:
+            - sh
+            - -c
+            - >-
+              GITEA_RUNNER_REGISTRATION_TOKEN="$(cat /secrets/token_${POD_NAME})"
+              /usr/bin/supervisord -c /etc/supervisord.conf
+          image:
+            repository: ghcr.io/deedee-ops/gitea-act_runner
+            tag: 0.2.6-dind-rootless
+            pullPolicy: IfNotPresent
+          env:
+            DOCKER_CERT_PATH: /certs/client
+            DOCKER_HOST: tcp://localhost:2376
+            DOCKER_TLS_VERIFY: "1"
+            GITEA_INSTANCE_URL: http://gitea-http.default.svc.cluster.local:3000
+            TZ: Europe/Warsaw
+            POD_NAME:
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
+          securityContext:
+            privileged: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - pgrep
+                    - -f
+                    - act_runner
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 4Gi
+
+      statefulset:
+        volumeClaimTemplates:
+          - name: data
+            globalMounts:
+              - path: /data
+            accessMode: "ReadWriteOnce"
+            size: 1Gi
+            storageClass: ceph-ephemeral-block
+
+  service:
+    main:
+      enabled: false
+
+  persistence:
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: gitea-runner
+    tmpdir:
+      enabled: true
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /tmp

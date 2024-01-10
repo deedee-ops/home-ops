@@ -223,6 +223,7 @@ controlPlane:
           # cloudflared post-quantum QUIC requirement: https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes
           net.core.rmem_max: 2500000
           net.core.wmem_max: 2500000
+          user.max_user_namespaces: 32768
 
     # Enable K8s Talos API Access
     - |-
