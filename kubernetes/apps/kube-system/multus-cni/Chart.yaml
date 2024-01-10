@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: multus-cni
-    version: 1.2.0
+    version: 1.2.1
     repository: https://charts.bitnami.com/bitnami
