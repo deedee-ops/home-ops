@@ -9,8 +9,8 @@
     }, {
       "matchDatasources": ["docker"],
       "matchPackagePatterns": ["sig-storage/csi-provisioner"],
-      // 3.6.2 introduces "Lost connection to socket" regression
-      "allowedVersions": "!/3\.6\.2/"
+      // 4.0 has breaking changes, eventually rook will upgrade it by itself and both forced image and this check could be removed
+      "allowedVersions": "/3\.6\.[0-9]+/"
     }, {
       "matchDatasources": ["helm"],
       "matchPackagePatterns": ["cilium"],
