@@ -110,19 +110,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:61:e0
-        dhcp: false
-      - interface: vbr0
-        addresses:
-          - 10.100.22.10/16
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.100.1.1
-        bridge:
-          interfaces:
-            - eth0
-          stp:
-            enabled: false
-        dhcp: false
+        dhcp: true
       - deviceSelector:
           busPath: 1-1.0
         addresses:
@@ -166,19 +154,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:58:a4
-        dhcp: false
-      - interface: vbr0
-        addresses:
-          - 10.100.22.11/16
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.100.1.1
-        bridge:
-          interfaces:
-            - eth0
-          stp:
-            enabled: false
-        dhcp: false
+        dhcp: true
       - deviceSelector:
           busPath: 0-1.0
         addresses:
@@ -220,19 +196,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:61:c8
-        dhcp: false
-      - interface: vbr0
-        addresses:
-          - 10.100.22.12/16
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.100.1.1
-        bridge:
-          interfaces:
-            - eth0
-          stp:
-            enabled: false
-        dhcp: false
+        dhcp: true
       - deviceSelector:
           busPath: 1-1.0
         addresses:

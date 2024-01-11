@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    io.cilium/lb-ipam-ips: 10.100.210.250
+  name: test
+  namespace: vms
+spec:
+  allocateLoadBalancerNodePorts: true
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: ssh
+      port: 22
+      protocol: TCP
+      targetPort: 22
+    - name: test
+      port: 3333
+      protocol: TCP
+      targetPort: 3333
+  selector:
+    vm.kubevirt.io/name: test
+  type: LoadBalancer
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: test-cloudinit
+  namespace: vms
+stringData:
+  networkdata: |
+    network:
+      version: 2
+      ethernets:
+        enp1s0:
+          dhcp4: true
+          nameservers:
+            addresses:
+              - 10.100.1.1
+  userdata: |
+    #cloud-config
+    users:
+      - default
+      - name: "test"
+        plain_text_passwd: "test"
+        sudo: "ALL=(ALL) ALL"
+        lock_passwd: false
+        ssh_authorized_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDMkInEvCHIfZdshgwmts+p4iyh4xfQSglAkBxoOFlXq git"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/kubevirt.io/virtualmachine_v1.json
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: test
+  namespace: vms
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: disk-test-root
+      spec:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: ceph-ephemeral-block
+        source:
+          registry:
+            secretRef: registry-credentials
+            url: docker://registry.rzegocki.dev/vms/ubuntu-server:22.04
+  runStrategy: Manual
+  template:
+    metadata:
+      labels:
+        # VM without internet is useless for testing...
+        egress/enabled: "true"
+    spec:
+      architecture: amd64
+      domain:
+        cpu:
+          cores: 2
+          model: host-model
+          sockets: 1
+          threads: 2
+        devices:
+          disks:
+            - bootOrder: 2
+              disk:
+                bus: virtio
+              name: cloudinitvolume
+            - bootOrder: 1
+              disk:
+                bus: scsi
+              name: root
+          interfaces:
+            - name: default
+              model: virtio
+              bridge: {}
+        machine:
+          type: q35
+        memory:
+          guest: 4Gi
+        resources: {}
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - cloudInitNoCloud:
+            networkDataSecretRef:
+              name: test-cloudinit
+            secretRef:
+              name: test-cloudinit
+          name: cloudinitvolume
+        - dataVolume:
+            name: disk-test-root
+          name: root

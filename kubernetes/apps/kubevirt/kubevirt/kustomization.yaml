@@ -6,7 +6,6 @@ kind: Kustomization
 resources:
   - https://github.com/kubevirt/kubevirt/releases/download/v1.1.1/kubevirt-operator.yaml
   - https://github.com/kubevirt/kubevirt/releases/download/v1.1.1/kubevirt-cr.yaml
-  - templates/multus.yaml
   - templates/vm_namespace.yaml
   - templates/registry.yaml
   - templates/kyverno.yaml

@@ -8,8 +8,8 @@ metadata:
 spec:
   loadBalancerIPs: true
   interfaces:
-    - ^enp.*
-    - ^vbr.*
+    - ^enp.*  # controlplanes
+    - ^eth.*  # workers
   nodeSelector:
     matchLabels:
       kubernetes.io/os: linux
@@ -22,5 +22,5 @@ metadata:
 spec:
   cidrs:
     - cidr: "<path:kubernetes/data/internal/base#CIDR_LOADBALANCER>"
-    - cidr: "<path:kubernetes/data/internal/base#CIDR_IOT>"
+    - cidr: "<path:kubernetes/data/internal/base#CIDR_SEMITRUSTED>"
 # {{ end }}
