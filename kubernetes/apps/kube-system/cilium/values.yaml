@@ -10,21 +10,17 @@ cilium:
       enabled: true
     masquerade: true
     root: /sys/fs/bpf
-    # less invasive monitoring to lower the CPU
-    monitorAggregation: low
   bgp:
     enabled: false
   cluster:
     name: kubernetes
     id: 1
-  clustermesh:
-    apiserver:
-      service:
-        externalTrafficPolicy: local
   cgroup:
     autoMount:
       enabled: false
     hostRoot: /sys/fs/cgroup
+  containerRuntime:
+    integration: containerd
   dashboards:
     enabled: false
   endpointRoutes:
@@ -116,4 +112,4 @@ cilium:
         - NET_ADMIN
         - SYS_ADMIN
         - SYS_RESOURCE
-  tunnel: disabled
+  routingMode: native
