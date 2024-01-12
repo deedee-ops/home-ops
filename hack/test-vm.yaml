@@ -1,4 +1,6 @@
 ---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
 apiVersion: v1
 kind: Service
 metadata:
@@ -26,9 +28,7 @@ spec:
     vm.kubevirt.io/name: test
   type: LoadBalancer
 ---
-# yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
-# yamllint enable rule:line-length
 apiVersion: v1
 kind: Secret
 type: Opaque
@@ -105,7 +105,7 @@ spec:
           interfaces:
             - name: default
               model: virtio
-              bridge: {}
+              masquerade: {}
         machine:
           type: q35
         memory:
@@ -124,3 +124,4 @@ spec:
         - dataVolume:
             name: disk-test-root
           name: root
+# yamllint enable rule:line-length
