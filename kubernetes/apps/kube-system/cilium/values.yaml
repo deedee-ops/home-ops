@@ -6,23 +6,22 @@ cilium:
     enabled: true
     bbr: true
   bpf:
-    autoMount:
-      enabled: true
     masquerade: true
-    root: /sys/fs/bpf
+    tproxy: true
   bgp:
     enabled: false
-  cluster:
-    name: kubernetes
-    id: 1
   cgroup:
     autoMount:
       enabled: false
     hostRoot: /sys/fs/cgroup
+  cluster:
+    name: kubernetes
+    id: 1
   containerRuntime:
     integration: containerd
   dashboards:
     enabled: false
+  enableRuntimeDeviceDetection: true
   endpointRoutes:
     enabled: true
   hubble:
@@ -81,6 +80,7 @@ cilium:
     mode: dsr
   localRedirectPolicy: true
   operator:
+    enabled: true
     rollOutPods: true
     prometheus:
       enabled: true
@@ -94,6 +94,7 @@ cilium:
       enabled: true
       trustCRDsExist: true
   rollOutCiliumPods: true
+  routingMode: native
   securityContext:
     capabilities:
       ciliumAgent:
@@ -112,4 +113,3 @@ cilium:
         - NET_ADMIN
         - SYS_ADMIN
         - SYS_RESOURCE
-  routingMode: native
