@@ -6,7 +6,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/kubevirt#IP_INTERNAL>"
+    io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/kubevirt#IP_CDI>"
   labels:
     cdi.kubevirt.io: cdi-uploadproxy
   name: cdi-uploadproxy-lb

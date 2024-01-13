@@ -1,0 +1,96 @@
+---
+haproxy:
+  config: |
+    global
+      log stdout format raw local0
+      maxconn 1024
+
+    defaults
+      log global
+      mode tcp
+      option tcplog
+      option tcpka
+
+    frontend gitea_ssh
+      bind :2222
+      default_backend gitea_ssh
+
+    backend gitea_ssh
+      balance leastconn
+      server gitea gitea-ssh.default.svc.cluster.local:2222 check
+
+    frontend teleport_tls
+      bind :443
+      default_backend teleport_tls
+
+    backend teleport_tls
+      server teleport teleport.networking.svc.cluster.local:443 check
+
+    frontend teleport_sshproxy
+      bind :3023
+      default_backend teleport_sshproxy
+
+    backend teleport_sshproxy
+      server teleport teleport.networking.svc.cluster.local:3023 check
+
+    frontend teleport_sshtun
+      bind :3024
+      default_backend teleport_sshtun
+
+    backend teleport_sshtun
+      server teleport teleport.networking.svc.cluster.local:3024 check
+
+  image:
+    repository: ghcr.io/haproxytech/haproxy-docker-alpine
+    tag: 2.9.2
+
+  containerPorts:
+    gitea-ssh: 2222
+    teleport-proxy: 3023
+    teleport-tun: 3024
+
+  service:
+    type: LoadBalancer
+    annotations:
+      io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/kubevirt#IP_HAPROXY>"
+
+  serviceMonitor:
+    enabled: true
+
+  podSecurityContext:
+    sysctls:
+      - name: net.ipv4.ip_unprivileged_port_start
+        value: "0"
+    fsGroup: 65000
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    enabled: true
+    runAsNonRoot: true
+    runAsUser: 65000
+    runAsGroup: 65000
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - NET_BIND_SERVICE
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: In
+                values:
+                  - ""
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: kubernetes.io/hostname
+  tolerations:
+    - effect: NoSchedule
+      operator: Exists
