@@ -1,6 +1,6 @@
 ---
 teleport-cluster:
-  clusterName: "teleport.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+  clusterName: "teleport.xoxo"
   kubeClusterName: deedee
   auth:
     teleportConfig:
@@ -19,7 +19,22 @@ teleport-cluster:
   proxy:
     highAvailability:
       replicaCount: 2
-      requireAntiAffinity: true
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: In
+                  values:
+                    - ""
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: kubernetes.io/hostname
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+
   persistence:
     enabled: true
     existingClaimName: teleport-data
