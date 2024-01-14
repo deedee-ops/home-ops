@@ -1,5 +1,9 @@
 ---
 kyverno:
+  features:
+    # kyverno creates a lot of them, they're useless and they also tend to break kube-api garbage collector
+    admissionReports:
+      enabled: false
   config:
     webhooks:
       - namespaceSelector:
