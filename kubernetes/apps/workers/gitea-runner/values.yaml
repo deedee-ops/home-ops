@@ -1,6 +1,9 @@
 ---
 app-template:
   defaultPodOptions:
+    labels:
+      # fetching docker images and artifacts for builds
+      egress/enabled: "true"
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
