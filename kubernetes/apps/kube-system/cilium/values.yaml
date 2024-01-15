@@ -6,7 +6,7 @@ cilium:
     enabled: true
     bbr: true
   bpf:
-    masquerade: true
+    masquerade: false
   bgp:
     enabled: false
   cgroup:
