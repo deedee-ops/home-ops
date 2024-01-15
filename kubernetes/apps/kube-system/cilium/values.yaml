@@ -1,12 +1,11 @@
 ---
 protectAgainstMissingValues: "cilium"
 cilium:
-  autoDirectNodeRoutes: true
   bandwidthManager:
     enabled: true
     bbr: true
   bpf:
-    masquerade: true
+    masquerade: false
   bgp:
     enabled: false
   cgroup:
@@ -76,7 +75,7 @@ cilium:
     leaseRetryPeriod: 1s
   loadBalancer:
     algorithm: maglev
-    mode: dsr
+    mode: snat
   localRedirectPolicy: true
   operator:
     enabled: true
@@ -93,7 +92,6 @@ cilium:
       enabled: true
       trustCRDsExist: true
   rollOutCiliumPods: true
-  routingMode: native
   securityContext:
     capabilities:
       ciliumAgent:
@@ -112,3 +110,8 @@ cilium:
         - NET_ADMIN
         - SYS_ADMIN
         - SYS_RESOURCE
+
+  # encapsulate packets via tunneling L2 over L3, slower, but more reliable
+  autoDirectNodeRoutes: false  # cannot be true for tunneling
+  routingMode: tunnel
+  tunnelProtocol: vxlan

@@ -10,6 +10,9 @@ haproxy:
       mode tcp
       option tcplog
       option tcpka
+      timeout client 600s
+      timeout connect 600s
+      timeout server 600s
 
     frontend gitea_ssh
       bind :2222
