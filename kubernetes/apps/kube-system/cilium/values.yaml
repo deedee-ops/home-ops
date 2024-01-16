@@ -93,7 +93,8 @@ cilium:
       enabled: true
       trustCRDsExist: true
   rollOutCiliumPods: true
-  routingMode: native
+  routingMode: tunnel
+  tunnelProtocol: geneve
   securityContext:
     capabilities:
       ciliumAgent:
