@@ -1,7 +1,6 @@
 ---
 protectAgainstMissingValues: "cilium"
 cilium:
-  autoDirectNodeRoutes: true
   bandwidthManager:
     enabled: true
     bbr: true
@@ -93,8 +92,6 @@ cilium:
       enabled: true
       trustCRDsExist: true
   rollOutCiliumPods: true
-  routingMode: tunnel
-  tunnelProtocol: geneve
   securityContext:
     capabilities:
       ciliumAgent:
@@ -113,3 +110,8 @@ cilium:
         - NET_ADMIN
         - SYS_ADMIN
         - SYS_RESOURCE
+
+  # encapsulate packets via tunneling L2 over L3, slower, but more reliable
+  autoDirectNodeRoutes: false  # cannot be true for tunneling
+  routingMode: tunnel
+  tunnelProtocol: geneve
