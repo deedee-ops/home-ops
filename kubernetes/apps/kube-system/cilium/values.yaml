@@ -76,6 +76,7 @@ cilium:
   loadBalancer:
     algorithm: maglev
     mode: dsr
+    dsrDispatch: geneve
   localRedirectPolicy: true
   operator:
     enabled: true
