@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: ceph-osd-high-write-iops
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: CephOSDHighWriteIOPS
+      isRegex: false
+    - name: namespace
+      value: vms
+      isRegex: false
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: kubernetes-volume-full-in-four-days
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: KubernetesVolumeFullInFourDays
+      isRegex: false
+    - name: namespace
+      value: vms
+      isRegex: false
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: pod-cpu-high-usage
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: PodCPUHighUsage
+      isRegex: false
+    - name: namespace
+      value: vms
+      isRegex: false
