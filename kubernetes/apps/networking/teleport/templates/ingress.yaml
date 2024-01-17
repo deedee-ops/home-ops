@@ -1,0 +1,22 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+# yamllint enable rule:line-length
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    blackbox/noprobe: "true"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/href: "https://teleport.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    gethomepage.dev/group: Admin
+    gethomepage.dev/name: Teleport
+    gethomepage.dev/icon: teleport.png
+    gethomepage.dev/description: SSH Bastion
+  name: teleport-dummy-ingress
+spec:
+  ingressClassName: internal
+  defaultBackend:
+    resource:
+      kind: Dummy
+      name: dummy
