@@ -9,6 +9,7 @@ resources:
   - templates/vm_namespace.yaml
   - templates/registry.yaml
   - templates/kyverno.yaml
+  - templates/silence.yaml
   # https://github.com/kubevirt/kubevirt/issues/9689
   - templates/hack.yaml
 
