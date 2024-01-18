@@ -42,9 +42,9 @@ thanos:
     extraFlags:
       - --compact.concurrency=4
       - --delete-delay=30m
-    retentionResolutionRaw: 30d
-    retentionResolution5m: 60d
-    retentionResolution1h: 90d
+    retentionResolutionRaw: 7d
+    retentionResolution5m: 21d
+    retentionResolution1h: 0d
     persistence:
       enabled: true
       storageClass: ceph-ephemeral-block
