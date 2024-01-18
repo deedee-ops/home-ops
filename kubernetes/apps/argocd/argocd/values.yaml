@@ -177,8 +177,7 @@ argo-cd:
       - name: avp-helm
         command:
           - /var/run/argocd/argocd-cmp-server
-        # renovate: datasource=docker depName=quay.io/argoproj/argocd
-        image: "quay.io/argoproj/argocd:v2.9.3"
+        image: "quay.io/argoproj/argocd:v2.9.4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -213,8 +212,7 @@ argo-cd:
       # argocd-vault-plugin with Kustomize
       - name: avp-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
-        # renovate: datasource=docker depName=quay.io/argoproj/argocd
-        image: "quay.io/argoproj/argocd:v2.9.3"
+        image: "quay.io/argoproj/argocd:v2.9.4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -249,8 +247,7 @@ argo-cd:
       # argocd-vault-plugin with plain YAML
       - name: avp
         command: [/var/run/argocd/argocd-cmp-server]
-        # renovate: datasource=docker depName=quay.io/argoproj/argocd
-        image: "quay.io/argoproj/argocd:v2.9.3"
+        image: "quay.io/argoproj/argocd:v2.9.4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
