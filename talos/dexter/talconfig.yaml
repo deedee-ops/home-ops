@@ -12,16 +12,16 @@ clusterSvcNets:
 endpoint: https://${clusterEndpointIP}:6443
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.6.1
+talosVersion: v1.6.2
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.29.1
 
-additionalApiServerCertSans:
+additionalApiServerCertSans: &sans
   - ${clusterEndpointIP}
+  - 127.0.0.1  # KubePrism
 
-additionalMachineCertSans:
-  - ${clusterEndpointIP}
+additionalMachineCertSans: *sans
 
 cniConfig:
   name: none
@@ -169,7 +169,7 @@ controlPlane:
             kubernetes:
               disabled: false
             service:
-              disabled: true
+              disabled: false
 
     # Enable KubePrism
     - &kubePrismPatch |-
