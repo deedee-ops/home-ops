@@ -39,7 +39,7 @@ services:
       MINIO_SERVER_URL: "https://s3.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       MINIO_UPDATE: "off"
       TZ: Europe/Warsaw
-    image: "quay.io/minio/minio:RELEASE.2024-01-16T16-07-38Z"
+    image: "quay.io/minio/minio:RELEASE.2024-01-18T22-51-28Z"
     ports:
       - "9000:9000"
       - "9001:9001"
