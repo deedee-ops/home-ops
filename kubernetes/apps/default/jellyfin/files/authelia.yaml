@@ -1,0 +1,25 @@
+---
+# yaml-language-server: disabled
+identity_providers:
+  oidc:
+    clients:
+      - id: jellyfin
+        description: Jellyfin
+        secret: '<path:kubernetes/data/internal/jellyfin#OIDC_SECRET_ENCRYPTED>'
+        sector_identifier: ''
+        consent_mode: 'implicit'
+        public: false
+        authorization_policy: 'two_factor'
+        redirect_uris:
+          - 'https://jellyfin.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/sso/OID/redirect/authelia'
+        scopes:
+          - 'openid'
+          - 'profile'
+          - 'email'
+          - 'groups'
+        grant_types:
+          - 'refresh_token'
+          - 'authorization_code'
+        response_types:
+          - 'code'
+        userinfo_signing_algorithm: none
