@@ -33,22 +33,12 @@ thanos:
       route-to/nas: "true"
     podAnnotations:
       reloader.stakater.com/auto: "true"
+  # disabling compactor DOES NOT affect historical data, they're still stored
+  # compactor only creates new blocks, with data more "squished" making overall size of the bucket
+  # 2-3 times BIGGER
+  # https://thanos.io/tip/components/compact.md/#-downsampling-note-about-resolution-and-retention-
   compactor:
-    enabled: true
-    podLabels:
-      route-to/nas: "true"
-    podAnnotations:
-      reloader.stakater.com/auto: "true"
-    extraFlags:
-      - --compact.concurrency=4
-      - --delete-delay=30m
-    retentionResolutionRaw: 7d
-    retentionResolution5m: 21d
-    retentionResolution1h: 0d
-    persistence:
-      enabled: true
-      storageClass: ceph-ephemeral-block
-      size: 100Gi
+    enabled: false
   storegateway:
     enabled: true
     replicaCount: 2
