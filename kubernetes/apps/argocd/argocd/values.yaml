@@ -60,6 +60,68 @@ argo-cd:
             - profile
             - email
             - groups
+
+    cmp:
+      create: true
+      plugins:
+        argocd-vault-plugin-kustomize:
+          allowConcurrency: true
+          discover:
+            find:
+              command:
+                - find
+                - "."
+                - -name
+                - kustomization.yaml
+          generate:
+            command:
+              - sh
+              - "-c"
+              - "kustomize build . | argocd-vault-plugin generate -"
+          lockRepo: false
+        argocd-vault-plugin-helm:
+          allowConcurrency: true
+          discover:
+            find:
+              command:
+                - sh
+                - "-c"
+                - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+          init:
+            command: [sh, -c]
+            args: ["helm dependency build"]
+          generate:
+            command:
+              - sh
+              - "-c"
+              # a lot of ugly hacking here :(
+              - >-
+                cp values.yaml "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" &&
+                echo 'kind: Value' >> "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" &&
+                argocd-vault-plugin generate "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-in.yaml" >
+                "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-out.yaml" &&
+                helm template -n $ARGOCD_APP_NAMESPACE --name-template $ARGOCD_APP_NAME --include-crds
+                -f "/tmp/${ARGOCD_APP_NAMESPACE}-${ARGOCD_APP_NAME}-values-out.yaml" -a
+                monitoring.coreos.com/v1,monitoring.coreos.com/v1/ServiceMonitor,monitoring.coreos.com/v1/PodMonitor . |
+                argocd-vault-plugin generate -
+          lockRepo: false
+        argocd-vault-plugin:
+          allowConcurrency: true
+          discover:
+            find:
+              command:
+                - sh
+                - "-c"
+                - >-
+                  find . -name '*.yaml' -exec grep -Hoc '<path\\|avp\\.kubernetes\\.io' {} \\; |
+                  grep -v ':0' | sed -E 's@:[^:]*@@g'
+          generate:
+            command:
+              - argocd-vault-plugin
+              - generate
+              - "."
+          lockRepo: false
+
     rbac:
       policy.csv: g, lldap_admin, role:admin
 
@@ -129,7 +191,7 @@ argo-cd:
       # for downloading helm charts from various sources
       egress/enabled: "true"
     podAnnotations:
-      configmap.reloader.stakater.com/reload: cmp-plugin
+      configmap.reloader.stakater.com/reload: argocd-cmp-cm
     autoscaling:
       enabled: false
     metrics:
@@ -140,8 +202,8 @@ argo-cd:
       automountServiceAccountToken: true
     volumes:
       - configMap:
-          name: cmp-plugin
-        name: cmp-plugin
+          name: argocd-cmp-cm
+        name: argocd-cmp-cm
       - name: custom-tools
         emptyDir: {}
       - name: cache
@@ -174,7 +236,7 @@ argo-cd:
           - mountPath: /custom-tools
             name: custom-tools
     extraContainers:
-      - name: avp-helm
+      - name: argocd-vault-plugin-helm
         command:
           - /var/run/argocd/argocd-cmp-server
         image: "quay.io/argoproj/argocd:v2.9.4"
@@ -201,8 +263,8 @@ argo-cd:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp-helm.yaml
-            name: cmp-plugin
+            subPath: argocd-vault-plugin-helm.yaml
+            name: argocd-cmp-cm
 
           # Important: Mount tools into $PATH
           - name: custom-tools
@@ -210,7 +272,7 @@ argo-cd:
             mountPath: /usr/local/bin/argocd-vault-plugin
 
       # argocd-vault-plugin with Kustomize
-      - name: avp-kustomize
+      - name: argocd-vault-plugin-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
         image: "quay.io/argoproj/argocd:v2.9.4"
         envFrom:
@@ -236,8 +298,8 @@ argo-cd:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp-kustomize.yaml
-            name: cmp-plugin
+            subPath: argocd-vault-plugin-kustomize.yaml
+            name: argocd-cmp-cm
 
           # Important: Mount tools into $PATH
           - name: custom-tools
@@ -245,7 +307,7 @@ argo-cd:
             mountPath: /usr/local/bin/argocd-vault-plugin
 
       # argocd-vault-plugin with plain YAML
-      - name: avp
+      - name: argocd-vault-plugin
         command: [/var/run/argocd/argocd-cmp-server]
         image: "quay.io/argoproj/argocd:v2.9.4"
         envFrom:
@@ -271,8 +333,8 @@ argo-cd:
 
           # Register plugins into sidecar
           - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-            subPath: avp.yaml
-            name: cmp-plugin
+            subPath: argocd-vault-plugin.yaml
+            name: argocd-cmp-cm
 
           # Important: Mount tools into $PATH
           - name: custom-tools
