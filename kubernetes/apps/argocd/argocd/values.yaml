@@ -239,7 +239,7 @@ argo-cd:
       - name: argocd-vault-plugin-helm
         command:
           - /var/run/argocd/argocd-cmp-server
-        image: "quay.io/argoproj/argocd:v2.9.4"
+        image: "quay.io/argoproj/argocd:v2.9.5"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -274,7 +274,7 @@ argo-cd:
       # argocd-vault-plugin with Kustomize
       - name: argocd-vault-plugin-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
-        image: "quay.io/argoproj/argocd:v2.9.4"
+        image: "quay.io/argoproj/argocd:v2.9.5"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -309,7 +309,7 @@ argo-cd:
       # argocd-vault-plugin with plain YAML
       - name: argocd-vault-plugin
         command: [/var/run/argocd/argocd-cmp-server]
-        image: "quay.io/argoproj/argocd:v2.9.4"
+        image: "quay.io/argoproj/argocd:v2.9.5"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
