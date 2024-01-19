@@ -21,8 +21,6 @@
     "github>deedee-ops/home-ops//.github/renovate/labels.json5",
     "github>deedee-ops/home-ops//.github/renovate/semanticCommits.json5"
   ],
-  "onboarding": false,
-  "requireConfig": "optional",
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
   "assigneesFromCodeOwners": true,
