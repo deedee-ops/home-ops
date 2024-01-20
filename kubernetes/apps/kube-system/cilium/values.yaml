@@ -114,4 +114,4 @@ cilium:
   # encapsulate packets via tunneling L2 over L3, slower, but more reliable
   autoDirectNodeRoutes: false  # cannot be true for tunneling
   routingMode: tunnel
-  tunnelProtocol: vxlan
+  tunnelProtocol: geneve  # using vxlan here will break VPN pod-gateway

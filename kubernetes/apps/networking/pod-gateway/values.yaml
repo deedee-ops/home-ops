@@ -8,7 +8,7 @@ pod-gateway:
     tag: v1.10.0
   DNS: 172.16.1.1
   routed_namespaces:
-    - default
+    - workers
   settings:
     DNS_LOCAL_CIDRS: "local"
     IPTABLES_NFT: "yes"

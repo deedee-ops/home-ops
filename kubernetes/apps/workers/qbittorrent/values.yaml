@@ -1,0 +1,205 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      type: statefulset
+      pod:
+        labels:
+          # downloading torrents
+          egress/enabled: "true"
+          routeThroughVpn: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/onedr0p/qbittorrent
+            tag: 4.6.3
+            pullPolicy: IfNotPresent
+
+          env:
+            QBITTORRENT__BT_PORT: "17307"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8080
+                timeoutSeconds: 10
+                failureThreshold: 30
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 250Mi
+            limits:
+              memory: 16Gi
+
+        reannounce: &container
+          image:
+            repository: ghcr.io/buroa/qbtools
+            tag: v0.13.0
+          args:
+            - reannounce
+            - --process-seeding
+            - --server
+            - qbittorrent.workers.svc.cluster.local
+            - --port
+            - "8080"
+          env:
+            TZ: Europe/Warsaw
+          resources:
+            requests:
+              cpu: 25m
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+    tagging:
+      type: cronjob
+      cronjob: &cronjob
+        schedule: "@hourly"
+        timeZone: Europe/Warsaw
+        concurrencyPolicy: Forbid
+        successfulJobsHistory: 1
+        failedJobsHistory: 1
+      annotations:
+        configmap.reloader.stakater.com/reload: qbtools-configmap
+      initContainers:
+        tagging:
+          <<: *container
+          args:
+            - tagging
+            - --added-on
+            - --expired
+            - --last-activity
+            - --not-working
+            - --sites
+            - --unregistered
+            - --server
+            - qbittorrent.workers.svc.cluster.local
+            - --port
+            - "8080"
+      containers:
+        expired:
+          <<: *container
+          args:
+            - prune
+            - --exclude-category
+            - manual
+            - --include-tag
+            - added:7d
+            - --server
+            - qbittorrent.workers.svc.cluster.local
+            - --port
+            - "8080"
+      pod:
+        restartPolicy: OnFailure
+        labels:
+          # syncing tags with trackers
+          egress/enabled: "true"
+
+    orphaned:
+      type: cronjob
+      cronjob:
+        <<: *cronjob
+        schedule: "@daily"
+      containers:
+        main:
+          <<: *container
+          args:
+            - orphaned
+            - --exclude-pattern
+            - "*/manual/*"
+            - --server
+            - qbittorrent.workers.svc.cluster.local
+            - --port
+            - "8080"
+      pod:
+        restartPolicy: OnFailure
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8080
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Media
+        gethomepage.dev/name: qBittorrent
+        gethomepage.dev/icon: qbittorrent.png
+        gethomepage.dev/description: Torrent Client
+      hosts:
+        - host: "torrents.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 8080
+      tls:
+        - hosts:
+            - "torrents.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: qbittorrent-config
+      advancedMounts:
+        main:
+          main:
+            - path: "/config"
+    downloads:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: qbittorrent-downloads
+      advancedMounts:
+        main:
+          main:
+            - path: "/data"
+        orphaned:
+          main:
+            - path: "/data"
+    qbconfig:
+      enabled: true
+      type: configMap
+      name: qbtools-configmap
+      advancedMounts:
+        tagging:
+          tagging:
+            - path: /config/config.yaml
+              subPath: config.yaml
+              readOnly: true
