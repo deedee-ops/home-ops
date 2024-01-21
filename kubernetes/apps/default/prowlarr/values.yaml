@@ -1,0 +1,104 @@
+---
+app-template:
+  defaultPodOptions:
+    labels:
+      # download torrent metadata
+      egress/enabled: "true"
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/prowlarr-devel
+            tag: "1.12.2.4211"
+            pullPolicy: IfNotPresent
+
+          env:
+            # Ref: https://github.com/Radarr/Radarr/issues/7030#issuecomment-1039689518
+            # Ref: https://github.com/dotnet/runtime/issues/9336
+            COMPlus_EnableDiagnostics: "0"
+            PROWLARR__ANALYTICS_ENABLED: "False"
+            PROWLARR__AUTHENTICATION_METHOD: External
+            PROWLARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+            PROWLARR__INSTANCE_NAME: Prowlarr
+            PROWLARR__LOG_LEVEL: info
+            PROWLARR__POSTGRES_PORT: "5432"
+            PROWLARR__THEME: dark
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /ping
+                  port: 9696
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 500Mi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 9696
+
+  ingress:
+    main:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Media
+        gethomepage.dev/name: Prowlarr
+        gethomepage.dev/icon: prowlarr.png
+        gethomepage.dev/description: Torrent Tracker Management
+      hosts:
+        - host: "prowlarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: main
+                port: 9696
+      tls:
+        - hosts:
+            - "prowlarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    secrets:
+      enabled: true
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: prowlarr
