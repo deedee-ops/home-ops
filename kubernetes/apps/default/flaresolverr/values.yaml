@@ -1,0 +1,56 @@
+---
+app-template:
+  defaultPodOptions:
+    labels:
+      # for proxying requestes to solve CF captchas
+      egress/enabled: "true"
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/flaresolverr/flaresolverr
+            tag: v3.3.13
+            pullPolicy: IfNotPresent
+
+          env:
+            LOG_LEVEL: info
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 8191
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 1Gi
+
+  service:
+    main:
+      ports:
+        http:
+          port: 8191
