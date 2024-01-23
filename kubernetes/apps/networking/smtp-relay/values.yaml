@@ -27,7 +27,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/maddy
-            tag: 0.7.0
+            tag: 0.7.1
 
           env:
             DEBUG: "false"
