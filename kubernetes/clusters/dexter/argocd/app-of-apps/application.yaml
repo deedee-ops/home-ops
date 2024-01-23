@@ -36,3 +36,8 @@ spec:
       backoff:
         duration: 10s
         factor: 1
+  ignoreDifferences:
+    - group: "argoproj.io"
+      kind: Application
+      jsonPointers:
+        - "/ignoreDifferences"
