@@ -16,7 +16,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/paperless-ngx
-            tag: 2.4.0
+            tag: 2.4.1
             pullPolicy: IfNotPresent
 
           env:
