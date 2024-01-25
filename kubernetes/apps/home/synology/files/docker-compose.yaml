@@ -79,7 +79,7 @@ services:
     container_name: zot
     environment:
       TZ: Europe/Warsaw
-    image: "ghcr.io/project-zot/zot-linux-amd64:v2.0.0"
+    image: "ghcr.io/project-zot/zot-linux-amd64:v2.0.1"
     ports:
       - "6000:6000"
     volumes:
