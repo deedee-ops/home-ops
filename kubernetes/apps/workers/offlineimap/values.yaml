@@ -19,7 +19,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/offlineimap-devel
-            tag: "latest@sha256:4622cf7636b57b98439d605fb5fc49dee9f35db7b55e1e0620392ec143681703"
+            tag: "latest@sha256:f6a6ab0340d5a57269c37f71767505245ef9c4a54c81e43f6573feaffb597fb5"
             pullPolicy: IfNotPresent
 
           securityContext:
