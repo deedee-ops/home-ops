@@ -45,7 +45,7 @@ haproxy:
 
   image:
     repository: ghcr.io/haproxytech/haproxy-docker-alpine
-    tag: 2.9.3
+    tag: 2.9.4
 
   containerPorts:
     gitea-ssh: 2222
