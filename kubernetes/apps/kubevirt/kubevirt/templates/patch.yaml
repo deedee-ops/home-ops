@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/kyverno.io/policy_v1.json
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: kubevirt-set-default-storageclass
+spec:
+  mutateExistingOnPolicyUpdate: true
+  rules:
+    - name: add-annotation
+      match:
+        any:
+          - resources:
+              kinds:
+                - StorageClass
+              names:
+                - ceph-persistent-filesystem
+      mutate:
+        targets:
+          - apiVersion: storage.k8s.io/v1
+            kind: StorageClass
+        patchStrategicMerge:
+          metadata:
+            (name): ceph-persistent-filesystem
+            annotations:
+              +(storageclass.kubevirt.io/is-default-virt-class): "true"
