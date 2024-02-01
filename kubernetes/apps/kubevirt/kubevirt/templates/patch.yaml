@@ -21,7 +21,7 @@ spec:
             kind: StorageClass
             preconditions:
               all:
-                - key: "{{target.metadata.name}}"
+                - key: "{{request.object.metadata.name}}"
                   operator: Equals
                   value: ceph-persistent-filesystem
         patchesJson6902: |-
