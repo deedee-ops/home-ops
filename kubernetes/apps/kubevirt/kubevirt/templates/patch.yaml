@@ -19,12 +19,8 @@ spec:
         targets:
           - apiVersion: storage.k8s.io/v1
             kind: StorageClass
-            preconditions:
-              all:
-                - key: "{{request.object.metadata.name}}"
-                  operator: Equals
-                  value: ceph-persistent-filesystem
-        patchesJson6902: |-
-          - path: "/metadata/annotations/storageclass.kubevirt.io~1is-default-virt-class"
-            op: add
-            value: "true"
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              (name): ceph-persistent-filesystem
+              +(dupa): "true"
