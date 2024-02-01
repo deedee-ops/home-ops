@@ -23,4 +23,4 @@ spec:
           metadata:
             (name): ceph-persistent-filesystem
             annotations:
-              +(dupa): "true"
+              +(storageclass.kubevirt.io/is-default-virt-class): "true"
