@@ -25,6 +25,6 @@ spec:
                   operator: Equals
                   value: ceph-persistent-filesystem
         patchesJson6902: |-
-          - path: "/metadata/annotation/storageclass.kubevirt.io~1is-default-virt-class"
+          - path: "/metadata/annotations/storageclass.kubevirt.io~1is-default-virt-class"
             op: add
             value: "true"
