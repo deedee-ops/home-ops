@@ -21,6 +21,6 @@ spec:
             kind: StorageClass
         patchStrategicMerge:
           metadata:
+            (name): ceph-persistent-filesystem
             annotations:
-              (name): ceph-persistent-filesystem
               +(dupa): "true"
