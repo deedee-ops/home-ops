@@ -1,4 +1,4 @@
-resource "cloudflare_ruleset" "firewall" {
+resource "cloudflare_ruleset" "external_ingress" {
   kind    = "zone"
   name    = "default"
   phase   = "http_request_firewall_custom"
