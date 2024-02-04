@@ -154,7 +154,7 @@ rules:
 
   - alert: TalosSystemDiskLowSpace
     expr: >-
-      node_filesystem_free_bytes{mountpoint="/var"} / node_filesystem_size_bytes{mountpoint="/var"} < 0.3
+      node_filesystem_free_bytes{mountpoint="/var"} < 15*1024*1024*1024
     for: 5m
     labels:
       severity: warning
@@ -165,7 +165,7 @@ rules:
 
   - alert: TalosSystemDiskVeryLowSpace
     expr: >-
-      node_filesystem_free_bytes{mountpoint="/var"} / node_filesystem_size_bytes{mountpoint="/var"} < 0.15
+      node_filesystem_free_bytes{mountpoint="/var"} < 5*1024*1024*1024
     for: 5m
     labels:
       severity: critical
