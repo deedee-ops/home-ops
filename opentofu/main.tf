@@ -15,18 +15,37 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "4.23.0"
     }
+
+    migadu = {
+      source  = "metio/migadu"
+      version = "2024.2.1"
+    }
   }
 
   required_version = ">= 1.6.0"
 }
 
 module "cloudflare" {
-  account_id = var.cloudflare_account_id
-  base_domain = var.base_domain
+  account_id    = var.cloudflare_account_id
+  base_domain   = var.base_domain
   tunnel_secret = var.cloudflare_tunnel_secret
 
   source = "./cloudflare"
   providers = {
     cloudflare = cloudflare
+  }
+}
+
+module "mail" {
+  domain_primary   = var.mail_domain_primary
+  domain_spam      = var.mail_domain_spam
+  domain_aliases   = var.mail_domain_aliases
+  password_primary = var.mail_password_primary
+  sender_name      = var.mail_sender_name
+
+  source = "./mail"
+  providers = {
+    cloudflare = cloudflare
+    migadu     = migadu
   }
 }

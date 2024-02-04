@@ -23,3 +23,26 @@ provider "registry.opentofu.org/cloudflare/cloudflare" {
     "zh:ff150dddcbb0d623ff1948d1359fa956519f0672f832faedb121fc809e9c4c22",
   ]
 }
+
+provider "registry.opentofu.org/metio/migadu" {
+  version     = "2024.2.1"
+  constraints = "2024.2.1"
+  hashes = [
+    "h1:/yH4OOUZf2UCbE83Z5I4TuWJ2aq3FfnTxjKEo9C9rME=",
+    "zh:0aa73e71b1c6f77629064a3e178993e9c3b0d1e28096601e12dc08d45da221c2",
+    "zh:0dd3c76c7d3f901b5c149ecfe1117704f06d8a5ae3330b14c94ec742bc739edc",
+    "zh:202b1e018dee24bff6a1be1c787870561f1e9e3699371713c04cd6289a92bff6",
+    "zh:367a767a5763122545c443259788aa0fa38e1f0cfd07f3e3a31a66c9c08e803b",
+    "zh:42b936c357bcb1ef58fad016cabcfbe3909f078b782a757c6a8816018cac3bac",
+    "zh:480eaf24adaa15eb0e9c96df8cfdafd75d483f83d0e8a7b7fd117a1f57f31fea",
+    "zh:4c10cf218e7224ad9ce3c938ea2b20999239385939df6135cffbf4187256139d",
+    "zh:67a129f05b64628a8f6e6bd04754c877d0c93f9ec5c8ae3a42ea1aa2e06596f6",
+    "zh:86bbf27b191fbf57923347651a27d753c86114c6179254eebccfa20e5147666d",
+    "zh:987fcebe48527a3a7e49ebfdf9c61bffc504da88d1dbcd8e798793754df011ab",
+    "zh:c848e27594eec386927e0d850fa0a3be5081ce7286268c8859133708176f2cd2",
+    "zh:e6f7dc9824b2dbc376ecb33db8dff0bbb2d0cfd55849f449e58b94b951b29f3c",
+    "zh:efcc451cac7e04f0dc6e1731b17fd0bf9aec7e71e047232b9e9d30eec9653613",
+    "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
+    "zh:fcb70e057dac3bf586e4480158e022cf8df13e72b8fbb7dbfbe924aa8d331ee1",
+  ]
+}
