@@ -1,0 +1,132 @@
+---
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    main:
+      type: deployment
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/slusarz/dovecot-fts-flatcurve
+            tag: "v1.0.0"
+            pullPolicy: IfNotPresent
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                tcpSocket:
+                  port: 143
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+    mbsync:
+      type: cronjob
+      cronjob:
+        schedule: "*/30 * * * *"  # every half an hour
+        successfulJobsHistory: 1
+        failedJobsHistory: 5
+
+      containers:
+        main:
+          image:
+            repository: ghcr.io/deedee-ops/mbsync-devel
+            tag: "latest@sha256:74f6e797736f27d4131ed2e98692299fcdfe041411dcdd997ed23e9c82e73671"
+            pullPolicy: IfNotPresent
+          args:
+            - -V
+            - source
+
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65000
+            runAsGroup: 65000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup:
+              enabled: false
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                exec:
+                  command:
+                    - pgrep
+                    - -f
+                    - mbsync
+                initialDelaySeconds: 5
+                periodSeconds: 10
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+
+  service:
+    main:
+      ports:
+        http:
+          enabled: false
+        imap:
+          enabled: true
+          port: 143
+
+  persistence:
+    config:
+      enabled: true
+      type: secret
+      name: mail-archive-secret
+      readOnly: true
+      advancedMounts:
+        main:
+          main:
+            - path: /etc/dovecot/dovecot.conf
+              subPath: dovecot.conf
+            - path: /etc/dovecot/passwd
+              subPath: passwd
+        mbsync:
+          main:
+            - path: /config/mbsyncrc
+              subPath: mbsyncrc
+    data:
+      enabled: true
+      type: persistentVolumeClaim
+      existingClaim: mail-archive-data
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        main:
+          main:
+            - path: /srv/mail
+              subPath: dovecot
+        mbsync:
+          main:
+            - path: /data
+              subPath: mbsync

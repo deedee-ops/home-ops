@@ -1,0 +1,47 @@
+IMAPAccount source
+Host <path:kubernetes/data/internal/mail-archive#SOURCE_HOST>
+Port 993
+User <path:kubernetes/data/internal/mail-archive#SOURCE_USER>
+Pass <path:kubernetes/data/internal/mail-archive#SOURCE_PASS>
+SSLType IMAPS
+SSLVersions TLSv1.2
+
+IMAPAccount destination
+Host mail-archive.workers.svc.cluster.local
+Port 143
+User <path:kubernetes/data/internal/mail-archive#DESTINATION_USER>
+Pass <path:kubernetes/data/internal/mail-archive#DESTINATION_PASS>
+SSLType None
+
+IMAPStore source-remote
+Account source
+
+IMAPStore destination-remote
+Account destination
+
+MaildirStore local
+SubFolders Verbatim
+Path /data/mail/
+Inbox /data/mail/Inbox
+
+Channel source
+Far :source-remote:
+Near :local:
+Patterns *
+Expunge None
+Remove None
+CopyArrivalDate yes
+Sync PullNew
+Create Near
+SyncState /data/state/source/
+
+Channel destination
+Far :destination-remote:
+Near :local:
+Patterns *
+Expunge None
+Remove None
+CopyArrivalDate yes
+Sync Push
+Create Far
+SyncState /data/state/destination/
