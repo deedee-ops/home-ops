@@ -22,7 +22,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/home-assistant
-            tag: 2024.1.6
+            tag: 2024.2.0
             pullPolicy: IfNotPresent
 
           env:
