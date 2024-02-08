@@ -15,6 +15,11 @@ variable "domain_aliases" {
   type        = map(object({ verification_code = string }))
 }
 
+variable "extra_identities" {
+  description = "List of extra identities allowed to send and receive"
+  type        = map(object({ name = string }))
+}
+
 variable "password_primary" {
   description = "Password for primary account"
   type        = string
@@ -24,4 +29,9 @@ variable "password_primary" {
 variable "sender_name" {
   description = "Display name used when sending e-mail"
   type        = string
+}
+
+variable "spam_senders" {
+  description = "List of spammers to reject"
+  type        = list(string)
 }

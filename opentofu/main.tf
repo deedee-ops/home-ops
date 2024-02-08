@@ -40,8 +40,10 @@ module "mail" {
   domain_primary   = var.mail_domain_primary
   domain_spam      = var.mail_domain_spam
   domain_aliases   = var.mail_domain_aliases
+  extra_identities = var.mail_extra_identities
   password_primary = var.mail_password_primary
   sender_name      = var.mail_sender_name
+  spam_senders     = var.mail_spam_senders
 
   source = "./mail"
   providers = {
