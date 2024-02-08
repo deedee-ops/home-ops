@@ -168,11 +168,7 @@ argo-cd:
         gethomepage.dev/icon: argocd.png
         gethomepage.dev/description: CD Platform
       ingressClassName: internal
-      hosts:
-        - "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
-      tls:
-        - hosts:
-            - "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      hostname: "argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
     metrics:
       enabled: true
       serviceMonitor:
