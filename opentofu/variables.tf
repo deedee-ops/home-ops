@@ -50,6 +50,11 @@ variable "mail_domain_aliases" {
   type        = map(object({ verification_code = string }))
 }
 
+variable "mail_extra_identities" {
+  description = "List of extra identities allowed to send and receive"
+  type        = map(object({ name = string }))
+}
+
 variable "mail_password_primary" {
   description = "Password for primary account"
   type        = string

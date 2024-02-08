@@ -37,7 +37,7 @@ app-template:
             LLDAP_LDAP_BASE_DN: "dc=home,dc=arpa"
             LLDAP_LDAP_USER_EMAIL: "<path:kubernetes/data/internal/lldap#LLDAP_LDAP_USER_DN>@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
             LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET: "true"
-            LLDAP_SMTP_OPTIONS__FROM: "lldap@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+            LLDAP_SMTP_OPTIONS__FROM: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
             LLDAP_SMTP_OPTIONS__PORT: "25"
             LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.networking.svc.cluster.local
             LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION: NONE

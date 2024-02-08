@@ -22,3 +22,19 @@ resource "migadu_alias" "ajgon" {
     "igor@${var.domain_primary.name}"
   ]
 }
+
+resource "migadu_identity" "extra" {
+  for_each = var.extra_identities
+
+  domain_name = var.domain_primary.name
+  local_part  = "igor"
+  identity    = each.key
+  password    = var.password_primary
+  name        = each.value.name
+
+  may_access_imap         = false
+  may_access_manage_sieve = false
+  may_access_pop3         = false
+  may_receive             = true
+  may_send                = true
+}

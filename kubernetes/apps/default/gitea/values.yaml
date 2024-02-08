@@ -111,7 +111,7 @@ gitea:
         FORCE_TRUST_SERVER_CERT: true
         SMTP_ADDR: smtp-relay.networking.svc.cluster.local
         SMTP_PORT: 25
-        FROM: "gitea@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
+        FROM: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
         SUBJECT_PREFIX: "[GITEA]"
       queue:
         TYPE: redis
