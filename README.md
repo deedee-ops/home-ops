@@ -78,6 +78,22 @@ This Git repository contains the following directories under [Kubernetes](./kube
 📁 talos              # talhelper scripts to bootstrap Talos
 ```
 
+---
+
+## ☁️ Cloud Dependencies
+
+While most of my infrastructure and workloads are self-hosted I do rely upon the cloud for certain key parts of my setup. This saves me from having to worry about two things. (1) Dealing with chicken/egg scenarios and (2) services I critically need whether my cluster is online or not.
+
+| Service                                   | Use                                                            | Cost           |
+|-------------------------------------------|----------------------------------------------------------------|----------------|
+| [addy.io](https://addy.io/)               | Email address protection                                       | $12/yr         |
+| [BorgBase](https://www.borgbase.com/)     | Backups                                                        | $80/yr         |
+| [Cloudflare](https://www.cloudflare.com/) | Domains and tunnel                                             | Free           |
+| [GitHub](https://github.com/)             | Hosting this repository and continuous integration/deployments | Free           |
+| [Migadu](https://migadu.com/)             | Email hosting                                                  | $19/yr         |
+|                                           |                                                                | Total: ~$10/mo |
+
+---
 
 ## 🔧 Hardware
 
