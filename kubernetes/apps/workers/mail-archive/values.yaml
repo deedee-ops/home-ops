@@ -112,7 +112,7 @@ app-template:
       type: cronjob
       cronjob:
         schedule: "0 * * * *"  # every hour
-        successfulJobsHistory: 1
+        successfulJobsHistory: 0
         failedJobsHistory: 5
         concurrencyPolicy: Forbid
 

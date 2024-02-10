@@ -30,7 +30,7 @@ app-template:
       type: cronjob
       cronjob:
         schedule: "0 1 * * *"   # daily at 1am
-        successfulJobsHistory: 2
+        successfulJobsHistory: 0
         failedJobsHistory: 3
 
       containers:
