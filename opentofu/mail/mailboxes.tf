@@ -28,11 +28,12 @@ resource "migadu_alias" "ajgon" {
 resource "migadu_identity" "extra" {
   for_each = var.extra_identities
 
-  domain_name = var.domain_primary.name
-  local_part  = "igor"
-  identity    = each.key
-  password    = var.password_primary
-  name        = each.value.name
+  domain_name  = var.domain_primary.name
+  local_part   = "igor"
+  identity     = each.key
+  password     = var.password_primary
+  password_use = "none"
+  name         = each.value.name
 
   may_access_imap         = false
   may_access_manage_sieve = false
