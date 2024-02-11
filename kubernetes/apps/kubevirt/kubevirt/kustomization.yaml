@@ -17,6 +17,10 @@ resources:
 patches:
   - patch: |-
       - op: replace
+        path: /spec/configuration/developerConfiguration/featureGates
+        value:
+          - Snapshot
+      - op: replace
         path: /spec/monitorNamespace
         # disable prometheus monitoring of kubevirt until rules are fixed
         # https://github.com/kubevirt/kubevirt/issues/9689

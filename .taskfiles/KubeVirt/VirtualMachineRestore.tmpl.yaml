@@ -1,0 +1,11 @@
+---
+apiVersion: snapshot.kubevirt.io/v1alpha1
+kind: VirtualMachineRestore
+metadata:
+  name: "restore-${snapshot}"
+spec:
+  target:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: "${vm}"
+  virtualMachineSnapshotName: "${snapshot}"

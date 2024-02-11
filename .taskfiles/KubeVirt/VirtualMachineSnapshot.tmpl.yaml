@@ -1,0 +1,10 @@
+---
+apiVersion: snapshot.kubevirt.io/v1alpha1
+kind: VirtualMachineSnapshot
+metadata:
+  name: "${vm}-${tstamp}"
+spec:
+  source:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: "${vm}"
