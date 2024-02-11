@@ -1,0 +1,50 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  virtualMachineRestoreTemplate: "{{.ROOT_DIR}}/.taskfiles/KubeVirt/VirtualMachineRestore.tmpl.yaml"
+  virtualMachineSnapshotTemplate: "{{.ROOT_DIR}}/.taskfiles/KubeVirt/VirtualMachineSnapshot.tmpl.yaml"
+  tstamp: '{{now | date "20060102150405"}}'
+
+tasks:
+
+  list:
+    desc: List all snapshots for a given vm (ex. task kubevirt:list vm=ajgon)
+    silent: true
+    cmds:
+      - kubectl -n vms get virtualmachinesnapshot | grep --color=never -E 'SOURCENAME|{{.vm}}'
+    vars:
+      vm: '{{ or .vm (fail "VM name `vm` is required") }}'
+    env:
+      vm: '{{.vm}}'
+
+  create:
+    desc: Create a snapshot of givem VM (ex. task kubevirt:create vm=ajgon)
+    cmds:
+      - "envsubst < <(cat {{.virtualMachineSnapshotTemplate}}) | kubectl -n vms apply -f -"
+      - kubectl -n vms wait virtualmachinesnapshot {{.vm}}-{{.tstamp}} --for condition=Ready
+    vars:
+      vm: '{{ or .vm (fail "VM name `vm` is required") }}'
+    env:
+      tstamp: '{{.tstamp}}'
+      vm: '{{.vm}}'
+    preconditions:
+      - sh: test -f {{.virtualMachineSnapshotTemplate}}
+  restore:
+    desc: Restore a snapshot of givem VM (ex. task kubevirt:create vm=ajgon [name=<snapshot name, default most recent>])
+    cmds:
+      - "envsubst < <(cat {{.virtualMachineRestoreTemplate}}) | kubectl -n vms apply -f -"
+      - kubectl -n vms wait virtualmachinerestore restore-{{.snapshot}} --for condition=Ready
+      - kubectl -n vms delete virtualmachinerestore restore-{{.snapshot}}
+    vars:
+      vm: '{{ or .vm (fail "VM name `vm` is required") }}'
+      snapshot:
+        sh: |-
+          [ -z "{{.name}}" ] && kubectl -n vms get virtualmachinesnapshot | grep playground | sort | tail -n 1 | awk '{print $1}' || echo "{{.name}}"
+    env:
+      vm: '{{.vm}}'
+      snapshot: "{{.snapshot}}"
+    preconditions:
+      - sh: test -f {{.virtualMachineRestoreTemplate}}
