@@ -52,7 +52,7 @@ variable "mail_domain_aliases" {
 
 variable "mail_extra_identities" {
   description = "List of extra identities allowed to send and receive"
-  type        = map(object({ name = string }))
+  type        = map(object({ name = string, password = optional(string) }))
 }
 
 variable "mail_password_primary" {

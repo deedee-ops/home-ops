@@ -17,7 +17,7 @@ variable "domain_aliases" {
 
 variable "extra_identities" {
   description = "List of extra identities allowed to send and receive"
-  type        = map(object({ name = string }))
+  type        = map(object({ name = string, password = optional(string) }))
 }
 
 variable "password_primary" {

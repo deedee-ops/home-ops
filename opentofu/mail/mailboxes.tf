@@ -31,7 +31,8 @@ resource "migadu_identity" "extra" {
   domain_name  = var.domain_primary.name
   local_part   = "igor"
   identity     = each.key
-  password_use = "none"
+  password_use = each.value.password == null ? "none" : "custom"
+  password     = each.value.password
   name         = each.value.name
 
   may_access_imap         = false
