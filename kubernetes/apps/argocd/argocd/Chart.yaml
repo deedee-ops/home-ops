@@ -6,7 +6,7 @@ version: 1.0.0
 type: application
 dependencies:
   - name: argo-cd
-    version: 6.0.11
+    version: 6.0.12
     repository: https://argoproj.github.io/argo-helm
   - name: argocd-image-updater
     version: 0.9.3
