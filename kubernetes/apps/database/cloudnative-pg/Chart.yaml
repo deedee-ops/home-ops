@@ -9,5 +9,5 @@ dependencies:
     version: 0.20.1
     repository: https://cloudnative-pg.io/charts/
   - name: app-template
-    version: 2.5.0
+    version: 2.6.0
     repository: https://bjw-s.github.io/helm-charts
