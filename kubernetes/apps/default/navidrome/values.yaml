@@ -13,7 +13,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/navidrome
-            tag: 0.51.0
+            tag: 0.51.1
             pullPolicy: IfNotPresent
 
           env:
