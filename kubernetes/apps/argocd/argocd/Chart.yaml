@@ -9,5 +9,5 @@ dependencies:
     version: 6.1.0
     repository: https://argoproj.github.io/argo-helm
   - name: argocd-image-updater
-    version: 0.9.3
+    version: 0.9.4
     repository: https://argoproj.github.io/argo-helm
