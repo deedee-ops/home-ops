@@ -21,7 +21,7 @@ app-template:
           image:
             repository: ghcr.io/deedee-ops/invidious-devel
             pullPolicy: Always
-            tag: 'latest@sha256:cecf4a4d9953f637c4d64a6cc3ea35d8e7331b3bf36987d72576b72d27add234'
+            tag: 'latest@sha256:899c208f0ce5a02c074606d230bed22bdee67a3059bb6950a2c07205e33ca91b'
 
           env:
             ENVDIR_PARANOID: "true"  # hack to remove all k8s set env variables from invidious app context
