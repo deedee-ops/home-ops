@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: kube-stateful-set-update-not-rolled-out
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: KubeStatefulSetUpdateNotRolledOut
+      isRegex: false
+    - name: statefulset
+      value: hivemq
+      isRegex: false
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: kubernetes-statefulset-update-not-rolled-out
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: KubernetesStatefulsetUpdateNotRolledOut
+      isRegex: false
+    - name: statefulset
+      value: hivemq
+      isRegex: false
