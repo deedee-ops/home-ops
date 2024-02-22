@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: rook-ceph
-    version: v1.13.4
+    version: v1.13.5
     repository: https://charts.rook.io/release
