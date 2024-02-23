@@ -19,7 +19,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/miniflux
-            tag: 2.0.51
+            tag: 2.1.0
             pullPolicy: IfNotPresent
 
           env:
