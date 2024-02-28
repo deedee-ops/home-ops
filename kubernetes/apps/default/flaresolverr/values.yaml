@@ -18,7 +18,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/flaresolverr/flaresolverr
-            tag: v3.3.15
+            tag: v3.3.16
             pullPolicy: IfNotPresent
 
           env:
