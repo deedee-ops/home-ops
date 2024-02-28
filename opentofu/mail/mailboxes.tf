@@ -13,7 +13,8 @@ resource "migadu_mailbox" "igor" {
   may_receive             = true
   may_send                = true
 
-  sender_denylist = var.spam_senders
+  sender_denylist    = var.spam_senders
+  recipient_denylist = var.spam_targets
 }
 
 resource "migadu_alias" "ajgon" {

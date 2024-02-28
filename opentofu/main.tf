@@ -44,6 +44,7 @@ module "mail" {
   password_primary = var.mail_password_primary
   sender_name      = var.mail_sender_name
   spam_senders     = var.mail_spam_senders
+  spam_targets     = var.mail_spam_targets
 
   source = "./mail"
   providers = {

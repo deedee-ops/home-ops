@@ -70,3 +70,8 @@ variable "mail_spam_senders" {
   description = "List of spammers to reject"
   type        = list(string)
 }
+
+variable "mail_spam_targets" {
+  description = "List of personal emails user by spammers to reject"
+  type        = list(string)
+}
