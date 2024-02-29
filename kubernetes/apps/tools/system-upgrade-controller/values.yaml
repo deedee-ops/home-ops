@@ -40,7 +40,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/system-upgrade-controller
-            tag: v0.13.2
+            tag: v0.13.3
           env:
             SYSTEM_UPGRADE_CONTROLLER_DEBUG: false
             SYSTEM_UPGRADE_CONTROLLER_THREADS: 2
