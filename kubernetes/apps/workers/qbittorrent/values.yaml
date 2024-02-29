@@ -60,12 +60,12 @@ app-template:
         reannounce: &container
           image:
             repository: ghcr.io/buroa/qbtools
-            tag: v0.14.0
+            tag: v0.15.0
           args:
             - reannounce
             - --process-seeding
             - --server
-            - qbittorrent.workers.svc.cluster.local
+            - 127.0.0.1
             - --port
             - "8080"
           env:
