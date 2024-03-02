@@ -18,7 +18,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/dani-garcia/vaultwarden
-            tag: 1.30.3
+            tag: 1.30.4
             pullPolicy: IfNotPresent
 
           env:
