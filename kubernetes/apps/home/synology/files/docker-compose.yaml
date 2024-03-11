@@ -22,7 +22,7 @@ services:
     environment:
       BACKUP_CRON: "0 3 * * *"
       TZ: Europe/Warsaw
-    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.8"
+    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.9"
     volumes:
       - /volume1:/mnt/source:ro
       - /volume2/docker/borgmatic/config:/config
