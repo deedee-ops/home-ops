@@ -9,10 +9,10 @@ rook-ceph-cluster:
     createPrometheusRules: true
   toolbox:
     enabled: true
-    image: quay.io/ceph/ceph:v18.2.0
+    image: quay.io/ceph/ceph:v18.2.2
   cephClusterSpec:
     cephVersion:
-      image: quay.io/ceph/ceph:v18.2.0
+      image: quay.io/ceph/ceph:v18.2.2
     network:
       provider: host
       connections:
