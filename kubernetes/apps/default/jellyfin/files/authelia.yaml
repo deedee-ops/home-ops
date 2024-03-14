@@ -3,10 +3,9 @@
 identity_providers:
   oidc:
     clients:
-      - id: jellyfin
-        description: Jellyfin
-        secret: '<path:kubernetes/data/internal/jellyfin#OIDC_SECRET_ENCRYPTED>'
-        sector_identifier: ''
+      - client_id: jellyfin
+        client_name: Jellyfin
+        client_secret: '<path:kubernetes/data/internal/jellyfin#OIDC_SECRET_ENCRYPTED>'
         consent_mode: 'implicit'
         public: false
         authorization_policy: 'two_factor'
@@ -18,8 +17,7 @@ identity_providers:
           - 'email'
           - 'groups'
         grant_types:
-          - 'refresh_token'
           - 'authorization_code'
         response_types:
           - 'code'
-        userinfo_signing_algorithm: none
+        userinfo_signed_response_alg: none
