@@ -26,7 +26,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/authelia
-            tag: 4.37.5
+            tag: 4.38.0
 
           env:
 
