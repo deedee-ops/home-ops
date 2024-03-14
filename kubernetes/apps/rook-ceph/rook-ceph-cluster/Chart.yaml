@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: rook-ceph-cluster
-    version: v1.13.6
+    version: v1.13.7
     repository: https://charts.rook.io/release
