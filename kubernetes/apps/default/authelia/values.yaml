@@ -26,7 +26,7 @@ app-template:
         main:
           image:
             repository: ghcr.io/deedee-ops/authelia
-            tag: 4.38.0@sha256:48a63cad652cf76bc195171c80e6c8d7b2cebcbc2479dc1fd2385d799be4736a
+            tag: 4.38.1@sha256:b976c4ddf1e882cc3994db33344c6cf6bfb2799691688d5aadab478914d96870
 
           env:
             AUTHELIA_PORT: "" # @todo - this workaround shouldn't be necessary when authelia turns to version 5
