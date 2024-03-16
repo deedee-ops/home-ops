@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     hostNetwork: true
@@ -7,9 +8,6 @@ app-template:
         operator: Exists
 
   controllers:
-    main:
-      enabled: false
-
     masters:
       type: daemonset
 
@@ -25,7 +23,7 @@ app-template:
                         - ""
 
       containers:
-        main:
+        app:
           args:
             - --smartctl.path=/usr/sbin/smartctl
             - --smartctl.interval=120s
@@ -67,7 +65,7 @@ app-template:
                       values:
                         - ""
       containers:
-        main:
+        app:
           args:
             - --smartctl.path=/usr/sbin/smartctl
             - --smartctl.interval=120s
@@ -102,16 +100,12 @@ app-template:
     name: smartctl-exporter
 
   service:
-    main:
-      enabled: false
     masters:
-      enabled: true
       controller: masters
       ports:
         http:
           port: 9633
     workers:
-      enabled: true
       controller: workers
       ports:
         http:
@@ -119,7 +113,6 @@ app-template:
 
   serviceMonitor:
     masters:
-      enabled: true
       serviceName: smartctl-exporter-masters
       endpoints:
         - port: http
@@ -128,7 +121,6 @@ app-template:
           interval: 1m
           scrapeTimeout: 10s
     workers:
-      enabled: true
       serviceName: smartctl-exporter-workers
       endpoints:
         - port: http
@@ -139,7 +131,6 @@ app-template:
 
   persistence:
     dev:
-      enabled: true
       type: hostPath
       hostPath: /dev
       hostPathType: ""

@@ -24,13 +24,14 @@ for helm in ${helm_templates}; do
   fi
 
   sed 's@<path:kubernetes.*>@test@g' "${helm}/values.yaml" > /tmp/kubeconform-values.yaml
-  if ! (helm template "${helm}" -f /tmp/kubeconform-values.yaml 2>/dev/null | kubeconform -schema-location default -schema-location 'https://deedee-ops.github.io/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /dev/null 2>&1); then
+  if ! (helm template "${helm}" -f /tmp/kubeconform-values.yaml 2>/tmp/kubeconform | kubeconform -schema-location default -schema-location 'https://deedee-ops.github.io/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' -ignore-missing-schemas -strict -exit-on-error -skip CiliumNetworkPolicy,CiliumClusterwideNetworkPolicy > /tmp/kubeconform 2>&1); then
     if [ $error == 0 ]; then
       echo "Found helm templates not passing kubeconform test"
     fi
 
     # shellcheck disable=SC2001
     echo "${helm} (kubeconform)" | sed 's@.*\.\./@@g'
+    cat /tmp/kubeconform
     error=1
   fi
   rm -rf /tmp/kubeconform-values.yaml || true
