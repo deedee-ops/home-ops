@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     nodeSelector:
@@ -10,11 +11,11 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    zigbee2mqtt:
       annotations:
         reloader.stakater.com/auto: "true"
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/koenkk/zigbee2mqtt
             tag: 1.36.0
@@ -74,14 +75,14 @@ app-template:
                 - ALL
 
   service:
-    main:
+    app:
+      controller: zigbee2mqtt
       ports:
         http:
           port: 8080
 
   ingress:
-    main:
-      enabled: true
+    zigbee2mqtt:
       className: internal
       annotations:
         gethomepage.dev/enabled: "true"
@@ -95,7 +96,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8080
       tls:
         - hosts:
@@ -103,16 +104,14 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: zigbee2mqtt-config
       globalMounts:
         - path: /config
     config-file:
-      enabled: true
       type: configMap
       name: zigbee2mqtt-configmap
       advancedMounts:
-        main:
+        zigbee2mqtt:
           01-init-config:
             - path: /tmp/config

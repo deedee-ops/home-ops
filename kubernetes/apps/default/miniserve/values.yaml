@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,9 +9,9 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    miniserve:
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/miniserve
             tag: 0.26.0
@@ -30,6 +31,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -46,14 +48,14 @@ app-template:
               memory: 128Mi
 
   service:
-    main:
+    app:
+      controller: miniserve
       ports:
         http:
           port: 8080
 
   ingress:
-    main:
-      enabled: true
+    miniserve:
       className: internal
       annotations:
         gethomepage.dev/enabled: "true"
@@ -67,7 +69,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8080
       tls:
         - hosts:
@@ -75,10 +77,9 @@ app-template:
 
   persistence:
     data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: miniserve-data
       advancedMounts:
-        main:
-          main:
+        miniserve:
+          app:
             - path: "/data"

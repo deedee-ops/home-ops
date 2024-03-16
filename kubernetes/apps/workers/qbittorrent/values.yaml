@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -10,7 +11,7 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    qbittorrent:
       type: statefulset
       pod:
         labels:
@@ -19,7 +20,7 @@ app-template:
           routeThroughVpn: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/onedr0p/qbittorrent
             tag: 4.6.3
@@ -38,8 +39,6 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
               custom: true
               spec:
@@ -132,7 +131,7 @@ app-template:
         <<: *cronjob
         schedule: "@daily"
       containers:
-        main:
+        app:
           <<: *container
           args:
             - orphaned
@@ -146,14 +145,14 @@ app-template:
         restartPolicy: OnFailure
 
   service:
-    main:
+    app:
+      controller: qbittorrent
       ports:
         http:
           port: 8080
 
   ingress:
-    main:
-      enabled: true
+    qbittorrent:
       className: internal
       annotations:
         gethomepage.dev/enabled: "true"
@@ -167,7 +166,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8080
       tls:
         - hosts:
@@ -175,26 +174,23 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: qbittorrent-config
       advancedMounts:
-        main:
-          main:
+        qbittorrent:
+          app:
             - path: "/config"
     downloads:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: qbittorrent-downloads
       advancedMounts:
-        main:
-          main:
+        qbittorrent:
+          app:
             - path: "/data"
         orphaned:
-          main:
+          app:
             - path: "/data"
     qbconfig:
-      enabled: true
       type: configMap
       name: qbtools-configmap
       advancedMounts:

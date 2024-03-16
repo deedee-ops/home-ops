@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,12 +9,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    obsidian-sync:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: public.ecr.aws/docker/library/couchdb
             tag: 3.3.3
@@ -61,14 +62,14 @@ app-template:
                 - ALL
 
   service:
-    main:
+    app:
+      controller: obsidian-sync
       ports:
         http:
           port: 5984
 
   ingress:
-    main:
-      enabled: true
+    obsidian-sync:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -78,7 +79,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 5984
       tls:
         - hosts:
@@ -86,37 +87,32 @@ app-template:
 
   persistence:
     config-file:
-      enabled: true
       type: configMap
       name: obsidian-sync-configmap
       advancedMounts:
-        main:
+        obsidian-sync:
           01-init-config:
             - path: /tmp/config
     config-default-storage:
-      enabled: true
       type: emptyDir
       medium: Memory
       advancedMounts:
-        main:
-          main:
+        obsidian-sync:
+          app:
             - path: "/opt/couchdb/etc/default.d"
           01-init-config:
             - path: /default.d
     config-local-storage:
-      enabled: true
       type: emptyDir
       medium: Memory
       advancedMounts:
-        main:
-          main:
+        obsidian-sync:
+          app:
             - path: "/opt/couchdb/etc/local.d"
     data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: obsidian-sync-data
-      accessMode: ReadWriteOnce
       advancedMounts:
-        main:
-          main:
+        obsidian-sync:
+          app:
             - path: "/opt/couchdb/data"

@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,12 +9,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    paperless-ngx:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/paperless-ngx
             tag: 2.6.2@sha256:b74ba2448620c862d9a0ccd0bd05d731c6746c02acc880f686065b50140114b6
@@ -51,6 +52,7 @@ app-template:
 
           probes:
             startup: &probes-main
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -118,14 +120,14 @@ app-template:
               memory: 1Gi
 
   service:
-    main:
+    app:
+      controller: paperless-ngx
       ports:
         http:
           port: 8000
 
   ingress:
-    main:
-      enabled: true
+    paperless-ngx:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/configuration-snippet: >-
@@ -144,13 +146,12 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8000
       tls:
         - hosts:
             - "paperless.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
     api:
-      enabled: true
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -160,7 +161,7 @@ app-template:
             - path: /api
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8000
       tls:
         - hosts:
@@ -168,34 +169,27 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-config
-      storageClass: ceph-persistent-block
-      size: 1Gi
-      accessMode: ReadWriteOnce
       advancedMounts:
-        main:
-          main:
+        paperless-ngx:
+          app:
             - path: "/config"
     consume:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-consume
       advancedMounts:
-        main:
-          main:
+        paperless-ngx:
+          app:
             - path: "/data/consume"
     data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-data
       advancedMounts:
-        main:
-          main:
+        paperless-ngx:
+          app:
             - path: "/data/media"
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:

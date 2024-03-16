@@ -1,7 +1,8 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   controllers:
-    main:
+    csp-exporter:
       pod:
         securityContext:
           fsGroup: 65000
@@ -10,7 +11,7 @@ app-template:
             type: RuntimeDefault
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/csp-exporter
             tag: 0.1.0
@@ -39,7 +40,8 @@ app-template:
             liveness: *probes
 
   service:
-    main:
+    app:
+      controller: csp-exporter
       ports:
         http:
           port: 8000
@@ -47,8 +49,7 @@ app-template:
           port: 9477
 
   ingress:
-    main:
-      enabled: true
+    csp-exporter:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -58,7 +59,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8000
       tls:
         - hosts:

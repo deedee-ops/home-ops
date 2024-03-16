@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -32,12 +33,12 @@ app-template:
         effect: NoSchedule
 
   controllers:
-    main:
+    system-upgrade-controller:
       strategy: RollingUpdate
       annotations:
         reloader.stakater.com/auto: "true"
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/system-upgrade-controller
             tag: v0.13.4
@@ -61,6 +62,10 @@ app-template:
             capabilities:
               drop:
                 - ALL
+
+  serviceAccount:
+    name: system-upgrade
+    create: false
 
   persistence:
     etc-ssl:
@@ -88,10 +93,3 @@ app-template:
       type: emptyDir
       globalMounts:
         - path: /tmp
-
-  service:
-    main:
-      enabled: false
-
-  serviceAccount:
-    name: system-upgrade

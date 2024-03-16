@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     labels:
@@ -13,9 +14,9 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    flaresolverr:
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/flaresolverr/flaresolverr
             tag: v3.3.16
@@ -34,6 +35,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -50,7 +52,8 @@ app-template:
               memory: 1Gi
 
   service:
-    main:
+    app:
+      controller: flaresolverr
       ports:
         http:
           port: 8191

@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -10,9 +11,9 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    echo-server:
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/echo-server
             tag: 0.9.2
@@ -38,8 +39,6 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
               custom: true
               spec:
@@ -65,14 +64,14 @@ app-template:
               memory: 50Mi
 
   service:
-    main:
+    app:
+      controller: echo-server
       ports:
         http:
           port: 3000
 
   ingress:
-    main:
-      enabled: true
+    echo-server:
       className: internal
       hosts:
         - host: "echo.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
@@ -80,7 +79,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 3000
       tls:
         - hosts:

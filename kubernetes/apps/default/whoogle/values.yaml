@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,14 +9,14 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    whoogle:
       pod:
         labels:
           # proxying to google
           egress/enabled: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/benbusby/whoogle-search
             tag: 0.8.4
@@ -65,23 +66,15 @@ app-template:
             limits:
               memory: 200Mi
 
-  persistence:
-    config:
-      enabled: true
-      type: emptyDir
-      medium: Memory
-      globalMounts:
-        - path: /whoogle/app/static/build
-
   service:
-    main:
+    app:
+      controller: whoogle
       ports:
         http:
           port: 5000
 
   ingress:
-    main:
-      enabled: true
+    whoogle:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -96,8 +89,15 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 5000
       tls:
         - hosts:
             - "whoogle.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /whoogle/app/static/build

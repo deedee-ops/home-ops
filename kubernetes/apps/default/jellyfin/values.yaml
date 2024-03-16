@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     labels:
@@ -11,13 +12,13 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    jellyfin:
       pod:
         nodeSelector:
           intel.feature.node.kubernetes.io/gpu: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/jellyfin
             tag: 10.8.13
@@ -37,9 +38,8 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -61,7 +61,8 @@ app-template:
               gpu.intel.com/i915: 1
 
   service:
-    main:
+    app:
+      controller: jellyfin
       type: LoadBalancer
       annotations:
         io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/jellyfin#IP_INTERNAL>"
@@ -70,12 +71,17 @@ app-template:
           port: 8096
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: jellyfin
+      endpoints:
+        - port: http
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
 
   ingress:
-    main:
-      enabled: true
+    jellyfin:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -97,7 +103,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8096
       tls:
         - hosts:
@@ -105,23 +111,20 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: jellyfin-config
       advancedMounts:
-        main:
-          main:
+        jellyfin:
+          app:
             - path: "/config"
     transcode:
-      enabled: true
       type: emptyDir
       medium: Memory
     video:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: jellyfin-video
       advancedMounts:
-        main:
-          main:
+        jellyfin:
+          app:
             - path: "/data"
               readOnly: true

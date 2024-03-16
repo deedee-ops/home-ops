@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,11 +9,11 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    firefoxsync:
       annotations:
         reloader.stakater.com/auto: "true"
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/firefoxsync
             tag: 1.9.1
@@ -32,6 +33,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -48,14 +50,14 @@ app-template:
               memory: 256Mi
 
   service:
-    main:
+    app:
+      controller: firefoxsync
       ports:
         http:
           port: 3000
 
   ingress:
-    main:
-      enabled: true
+    firefoxsync:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -65,7 +67,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 3000
       tls:
         - hosts:
@@ -73,7 +75,6 @@ app-template:
 
   persistence:
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:
