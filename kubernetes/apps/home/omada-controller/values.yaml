@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,12 +9,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    omada-controller:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/omada-controller
             tag: 5.13-chromium
@@ -23,9 +24,8 @@ app-template:
             TZ: Europe/Warsaw
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
+              enabled: true
               custom: true
               spec:
                 failureThreshold: 30
@@ -37,12 +37,13 @@ app-template:
             liveness: *probes
 
   service:
-    main:
+    app:
+      controller: omada-controller
       ports:
         http:
           port: 8043
     omada:
-      controller: main
+      controller: omada-controller
       type: LoadBalancer
       annotations:
         io.cilium/lb-ipam-ips: <path:kubernetes/data/internal/omada-controller#IP_INTERNAL>
@@ -73,8 +74,7 @@ app-template:
           protocol: UDP
 
   ingress:
-    main:
-      enabled: true
+    omada-controller:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
@@ -93,7 +93,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8043
       tls:
         - hosts:
@@ -101,13 +101,11 @@ app-template:
 
   persistence:
     data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: omada-controller-data
       globalMounts:
         - path: /opt/tplink/EAPController/data
     logs:
-      enabled: true
       type: emptyDir
       medium: Memory
       globalMounts:

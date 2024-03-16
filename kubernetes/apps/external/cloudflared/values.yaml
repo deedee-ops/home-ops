@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     labels:
@@ -21,13 +22,13 @@ app-template:
             app.kubernetes.io/name: cloudflared
 
   controllers:
-    main:
+    cloudflared:
       replicas: 2
       strategy: RollingUpdate
       annotations:
         reloader.stakater.com/auto: "true"
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/cloudflared
             tag: 2024.2.1
@@ -54,8 +55,6 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
               enabled: true
               custom: true
@@ -76,18 +75,24 @@ app-template:
             limits:
               memory: 256M
   service:
-    main:
+    app:
+      controller: cloudflared
       ports:
         http:
           port: 8080
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: cloudflared
+      endpoints:
+        - port: http
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
 
   persistence:
     config:
-      enabled: true
       type: configMap
       name: cloudflared-configmap
       globalMounts:

@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 intel-device-plugins-gpu:
   name: i915
   sharedDevNum: 10
@@ -15,14 +16,14 @@ app-template:
   global:
     fullnameOverride: intel-gpu-exporter
   controllers:
-    main:
+    intel-gpu-exporter:
       type: daemonset
       pod:
         nodeSelector:
           intel.feature.node.kubernetes.io/gpu: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/onedr0p/intel-gpu-exporter
             tag: rolling@sha256:f324725adc5497510f204aec64d398dddddd15052ce234c3f700606bb3d91a99
@@ -30,6 +31,18 @@ app-template:
           securityContext:
             privileged: true
             readOnlyRootFilesystem: true
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                failureThreshold: 30
+                periodSeconds: 10
+                tcpSocket:
+                  port: 8080
+            readiness: *probes
+            liveness: *probes
 
           resources:
             requests:
@@ -41,14 +54,15 @@ app-template:
               memory: 500Mi
 
   service:
-    main:
+    app:
+      controller: intel-gpu-exporter
       ports:
         http:
           port: 8080
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: intel-gpu-exporter
       endpoints:
         - port: http
           scheme: http

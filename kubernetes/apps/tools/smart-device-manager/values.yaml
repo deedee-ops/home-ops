@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     dnsPolicy: ClusterFirstWithHostNet
@@ -6,12 +7,12 @@ app-template:
     priorityClassName: system-node-critical
 
   controllers:
-    main:
+    smart-device-manager:
       type: daemonset
       annotations:
         reloader.stakater.com/auto: "true"
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/smarter-project/smarter-device-manager
             tag: v1.20.12
@@ -31,7 +32,6 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: configMap
       name: smarter-device-manager-configmap
       globalMounts:
@@ -51,7 +51,3 @@ app-template:
       hostPath: /var/lib/kubelet/device-plugins
       globalMounts:
         - path: /var/lib/kubelet/device-plugins
-
-  service:
-    main:
-      enabled: false

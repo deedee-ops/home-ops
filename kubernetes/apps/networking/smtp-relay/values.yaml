@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -17,14 +18,14 @@ app-template:
             app.kubernetes.io/name: smtp-relay
 
   controllers:
-    main:
+    smtp-relay:
       annotations:
         reloader.stakater.com/auto: "true"
       replicas: 2
       strategy: RollingUpdate
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/maddy
             tag: 0.7.1
@@ -44,6 +45,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -60,17 +62,17 @@ app-template:
               memory: 50Mi
 
   service:
-    main:
+    app:
+      controller: smtp-relay
       ports:
         http:
           port: 25
         metrics:
-          enabled: true
           port: 9749
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: smtp-relay
       endpoints:
         - port: "9749"
           scheme: http
@@ -80,26 +82,22 @@ app-template:
 
   persistence:
     config:
-      enabled: true
-      readOnly: true
       type: configMap
       name: smtp-relay-configmap
       advancedMounts:
-        main:
-          main:
+        smtp-relay:
+          app:
             - path: /config/maddy.conf
               subPath: maddy.conf
+              readOnly: true
     data:
-      enabled: true
       type: emptyDir
       medium: Memory
-      size: 1Gi
       advancedMounts:
-        main:
-          main:
+        smtp-relay:
+          app:
             - path: /dev/shm
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:
