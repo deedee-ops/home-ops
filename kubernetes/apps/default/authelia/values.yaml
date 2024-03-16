@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -15,7 +16,7 @@ app-template:
             app.kubernetes.io/name: authelia
 
   controllers:
-    main:
+    authelia:
       replicas: 2
       strategy: RollingUpdate
 
@@ -23,13 +24,12 @@ app-template:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/authelia
-            tag: 4.38.2@sha256:397aa0029900aa540e88362089abf9af503646d1d2028c3f0e5cd8d6d7318e2f
+            tag: 4.38.2
 
           env:
-            AUTHELIA_PORT: "" # @todo - this workaround shouldn't be necessary when authelia turns to version 5
             TZ: Europe/Warsaw
             X_AUTHELIA_CONFIG_FILTERS: "template"
 
@@ -42,9 +42,8 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -92,8 +91,6 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
               enabled: true
               custom: true
@@ -120,18 +117,17 @@ app-template:
     name: authelia
 
   service:
-    main:
+    app:
+      controller: authelia
       ports:
         http:
-          enabled: true
           port: 9091
         metrics:
-          enabled: true
           port: 9959
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: authelia
       endpoints:
         - port: metrics
           scheme: http
@@ -140,8 +136,7 @@ app-template:
           scrapeTimeout: 10s
 
   ingress:
-    main:
-      enabled: true
+    authelia:
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
       className: internal
@@ -151,7 +146,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 9091
       tls:
         - hosts:
@@ -159,25 +154,20 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: emptyDir
       medium: Memory
       globalMounts:
         - path: /config
     config-file:
-      enabled: true
       type: configMap
       name: authelia-configmap
-      subPath: configuration.yaml
-      mountPath: /config/configuration.yaml
-      readOnly: false
       advancedMounts:
-        main:
-          main:
+        authelia:
+          app:
             - path: /config/configuration.yaml
               subPath: configuration.yaml
+              readOnly: false
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:
