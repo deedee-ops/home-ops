@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -10,7 +11,7 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    home-assistant:
       pod:
         labels:
           # downloading various plugins and connecting to providers
@@ -19,7 +20,7 @@ app-template:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/home-assistant
             tag: 2024.3.1
@@ -38,11 +39,7 @@ app-template:
               drop:
                 - ALL
 
-          probes:
-            startup: &probes
-              enabled: false
-            readiness: *probes
-            liveness: *probes
+          # probes are removed on purpose
 
           resources:
             requests:
@@ -52,7 +49,8 @@ app-template:
               memory: 1Gi
 
   service:
-    main:
+    app:
+      controller: home-assistant
       type: LoadBalancer
       annotations:
         io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/home-assistant#IP_INTERNAL>"
@@ -61,8 +59,7 @@ app-template:
           port: 8123
 
   ingress:
-    main:
-      enabled: true
+    home-assistant:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/configuration-snippet: 'more_clear_headers "Content-Security-Policy";'
@@ -77,7 +74,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8123
       tls:
         - hosts:
@@ -85,7 +82,6 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: home-assistant-config
       globalMounts:

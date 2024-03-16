@@ -1,9 +1,7 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
-    labels:
-      # fetching RSS feeds
-      egress/enabled: "true"
     securityContext:
       runAsUser: 1000
       runAsGroup: 1000
@@ -13,12 +11,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    atuin:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           args:
             - server
             - start
@@ -45,6 +43,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -61,14 +60,14 @@ app-template:
               memory: 512Mi
 
   service:
-    main:
+    app:
+      controller: atuin
       ports:
         http:
           port: 8888
 
   ingress:
-    main:
-      enabled: true
+    app:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -78,7 +77,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8888
       tls:
         - hosts:
@@ -86,7 +85,6 @@ app-template:
 
   persistence:
     tmpdir:
-      enabled: true
       type: emptyDir
       medium: Memory
       globalMounts:

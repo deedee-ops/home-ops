@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     labels:
@@ -11,12 +12,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    miniflux:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/miniflux
             tag: 2.1.1
@@ -43,6 +44,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -59,18 +61,24 @@ app-template:
               memory: 750Mi
 
   service:
-    main:
+    app:
+      controller: miniflux
       ports:
         http:
           port: 3000
 
   serviceMonitor:
-    main:
-      enabled: true
+    app:
+      serviceName: miniflux
+      endpoints:
+        - port: http
+          scheme: http
+          path: /metrics
+          interval: 1m
+          scrapeTimeout: 10s
 
   ingress:
-    main:
-      enabled: true
+    miniflux:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/configuration-snippet: >-
@@ -89,14 +97,13 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 3000
       tls:
         - hosts:
             - "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
     fever:
-      enabled: true
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
@@ -106,7 +113,7 @@ app-template:
             - path: /fever
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 3000
       tls:
         - hosts:
@@ -114,7 +121,6 @@ app-template:
 
   persistence:
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:

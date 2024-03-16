@@ -139,9 +139,11 @@ identity_providers:
       - client_id: dummy
         # dummy secret to silence validator
         client_secret: "$pbkdf2-sha512$310000$Ba.BvSfTLFe13NgdaYAuzQ$8hXUp.8taU1rQ314hWbd9ku..inwUSMhhLnLYJDkkdSL1FXi5rIO7aErr91d7kvp4BLReZWmBFe.8Cg6zsEwLg"
+    # yamllint disable
     jwks:
       - key: {{ secret "/secrets/AUTHELIA_IDENTITY_PROVIDERS_OIDC_JWKS_KEY" | mindent 10 "|" | msquote }}
         certificate_chain: {{ secret "/secrets/AUTHELIA_IDENTITY_PROVIDERS_OIDC_JWKS_CERTIFICATE_CHAIN" | mindent 10 "|" | msquote }}
+    # yamllint enable
     lifespans:
       access_token: 1h
       authorize_code: 1m

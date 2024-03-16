@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     labels:
@@ -20,11 +21,11 @@ app-template:
             app.kubernetes.io/name: gitea-runner
 
   controllers:
-    main:
+    gitea-runner:
       type: statefulset
       replicas: 2
       containers:
-        main:
+        app:
           command:
             - sh
             - -c
@@ -54,9 +55,8 @@ app-template:
                 - ALL
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
+              enabled: true
               custom: true
               spec:
                 exec:
@@ -82,13 +82,8 @@ app-template:
             size: 1Gi
             storageClass: ceph-ephemeral-block
 
-  service:
-    main:
-      enabled: false
-
   persistence:
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:
@@ -97,7 +92,6 @@ app-template:
           volumeAttributes:
             secretProviderClass: gitea-runner
     tmpdir:
-      enabled: true
       type: emptyDir
       medium: Memory
       globalMounts:
