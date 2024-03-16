@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,9 +9,9 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    syncthing:
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/syncthing
             tag: 1.27.4
@@ -29,6 +30,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 failureThreshold: 30
@@ -47,7 +49,8 @@ app-template:
               memory: 256Mi
 
   service:
-    main:
+    app:
+      controller: syncthing
       ports:
         http:
           port: 8384
@@ -55,8 +58,7 @@ app-template:
           port: 22000
 
   ingress:
-    main:
-      enabled: true
+    syncthing:
       className: internal
       annotations:
         gethomepage.dev/enabled: "true"
@@ -70,7 +72,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8384
       tls:
         - hosts:
@@ -78,27 +80,21 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: syncthing-config
-      accessMode: ReadWriteOnce
       globalMounts:
         - path: "/config"
     data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: syncthing-data
-      accessMode: ReadWriteOnce
       globalMounts:
         - path: "/data"
     external-paperless-consume:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-consume
       globalMounts:
         - path: "/external/consume"
     external-paperless-data:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-data
       globalMounts:
@@ -106,7 +102,6 @@ app-template:
           subPath: "documents/archive"
           readOnly: true
     external-obsidian-assets:
-      enabled: true
       type: persistentVolumeClaim
       existingClaim: miniserve-data
       globalMounts:

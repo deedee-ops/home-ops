@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
 app-template:
   defaultPodOptions:
     securityContext:
@@ -8,12 +9,12 @@ app-template:
         type: RuntimeDefault
 
   controllers:
-    main:
+    firefly-iii:
       annotations:
         reloader.stakater.com/auto: "true"
 
       containers:
-        main:
+        app:
           image:
             repository: ghcr.io/deedee-ops/firefly-iii
             tag: '6.0.30'
@@ -50,6 +51,7 @@ app-template:
 
           probes:
             startup: &probes
+              enabled: true
               custom: true
               spec:
                 httpGet:
@@ -82,7 +84,7 @@ app-template:
           seccompProfile:
             type: RuntimeDefault
       containers:
-        main:
+        curl:
           image:
             repository: quay.io/curl/curl
             tag: 8.6.0
@@ -100,8 +102,6 @@ app-template:
           securityContext: *securityContext
 
           probes:
-            startup:
-              enabled: false
             readiness: &probes
               enabled: true
               custom: true
@@ -124,14 +124,14 @@ app-template:
               memory: 50Mi
 
   service:
-    main:
+    app:
+      controller: firefly-iii
       ports:
         http:
           port: 8080
 
   ingress:
-    main:
-      enabled: true
+    firefly-iii:
       className: internal
       annotations:
         gethomepage.dev/enabled: "true"
@@ -145,7 +145,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: main
+                identifier: app
                 port: 8080
       tls:
         - hosts:
@@ -153,14 +153,12 @@ app-template:
 
   persistence:
     config:
-      enabled: true
       type: emptyDir
       medium: Memory
       globalMounts:
         - path: /config
 
     secrets:
-      enabled: true
       type: custom
       volumeSpec:
         csi:
