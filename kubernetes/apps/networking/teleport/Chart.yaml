@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: teleport-cluster
-    version: 15.1.6
+    version: 15.1.7
     repository: https://charts.releases.teleport.dev
