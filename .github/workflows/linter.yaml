@@ -27,7 +27,7 @@ jobs:
           token: "${{ steps.app-token.outputs.token }}"
 
       - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@da3271e0a2f8b8552a91e37cf85d03622c328ab7 # v1.0.2
+        uses: opentofu/setup-opentofu@ae80d4ecaab946d8f5ff18397fbf6d0686c6d46a # v1.0.3
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
