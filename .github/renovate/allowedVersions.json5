@@ -2,16 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["ceph/ceph"],
-      // 18.2.1 has broken prometheus module
-      "allowedVersions": "!/18\.2\.1/"
-    }, {
-      "matchDatasources": ["docker"],
-      "matchPackagePatterns": ["sig-storage/csi-provisioner"],
-      // 4.0 has breaking changes, eventually rook will upgrade it by itself and both forced image and this check could be removed
-      "allowedVersions": "/3\.6\.[0-9]+/"
-    }, {
       "matchDatasources": ["helm"],
       "matchPackagePatterns": ["cilium"],
       // 1.14.4 and above introduces CPU spikes with DNS netpols

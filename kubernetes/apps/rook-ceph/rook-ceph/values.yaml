@@ -6,5 +6,3 @@ rook-ceph:
     enabled: true
   csi:
     cephFSKernelMountOptions: ms_mode=prefer-crc
-    provisioner:
-      image: registry.k8s.io/sig-storage/csi-provisioner:v3.6.3
