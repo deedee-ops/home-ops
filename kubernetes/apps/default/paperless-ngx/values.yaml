@@ -73,7 +73,7 @@ app-template:
         gotenberg:
           image:
             repository: ghcr.io/deedee-ops/gotenberg
-            tag: 8.2.2
+            tag: 8.3.0
             pullPolicy: IfNotPresent
           securityContext:
             <<: *securityContext
