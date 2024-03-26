@@ -6,7 +6,7 @@ hivemq-platform:
   image:
     repository: ghcr.io/deedee-ops
     # renovate: datasource=docker depName=ghcr.io/deedee-ops/hivemq4
-    tag: 4.26.0
+    tag: 4.27.0
   nodes:
     replicaCount: 2
   extensions:
