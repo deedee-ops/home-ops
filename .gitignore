@@ -46,3 +46,7 @@ talos/**/clusterconfig
 talsecret*
 talenv*
 !*.sops.yaml
+
+### direnv ###
+.direnv
+.devenv
