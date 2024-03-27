@@ -34,7 +34,7 @@ app-template:
               /usr/bin/supervisord -c /etc/supervisord.conf
           image:
             repository: ghcr.io/deedee-ops/gitea-act_runner
-            tag: 0.2.7-dind-rootless
+            tag: 0.2.8-dind-rootless
             pullPolicy: IfNotPresent
           env:
             DOCKER_CERT_PATH: /certs/client
