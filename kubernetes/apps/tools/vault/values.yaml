@@ -15,7 +15,7 @@ vault:
     enabled: true
     image:
       repository: public.ecr.aws/hashicorp/vault-csi-provider
-      tag: "1.4.1"
+      tag: "1.4.2"
     daemonSet:
       securityContext:
         container:
