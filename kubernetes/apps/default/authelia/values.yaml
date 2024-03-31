@@ -27,7 +27,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/authelia
-            tag: 4.38.6
+            tag: 4.38.7
 
           env:
             TZ: Europe/Warsaw
