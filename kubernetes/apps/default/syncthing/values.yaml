@@ -89,6 +89,11 @@ app-template:
       existingClaim: syncthing-data
       globalMounts:
         - path: "/data"
+    external-nas:
+      type: persistentVolumeClaim
+      existingClaim: syncthing-nas
+      globalMounts:
+        - path: "/external/nas"
     external-paperless-consume:
       type: persistentVolumeClaim
       existingClaim: paperless-ngx-consume
