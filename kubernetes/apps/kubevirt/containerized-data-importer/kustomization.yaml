@@ -5,8 +5,8 @@ kind: Kustomization
 namespace: kubevirt
 
 resources:
-  - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.58.3/cdi-operator.yaml
-  - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.58.3/cdi-cr.yaml
+  - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.59.0/cdi-operator.yaml
+  - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.59.0/cdi-cr.yaml
   - templates/svc_lb.yaml
   - templates/storage_profile.yaml
   - templates/kyverno.yaml
