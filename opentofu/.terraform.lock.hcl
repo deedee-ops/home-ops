@@ -41,6 +41,7 @@ provider "registry.opentofu.org/metio/migadu" {
   version     = "2024.3.28"
   constraints = "2024.3.28"
   hashes = [
+    "h1:/LQcwUuceQU5EsP03N0UVBUF1HFEm7bybfGHq674x2w=",
     "h1:PkCmS5Q8tYFqKnBREVm1sPrwuWRiLub48ynISzCWTW4=",
     "zh:029873d17bf5f949becfde8667b2eb155b63bdd4cfcd9df8468af2a8982fcb35",
     "zh:02f9104d4b0b2c6cf2b2d11ccfec76638026f1083ee1c6d902f38d0f069ee298",
@@ -57,5 +58,25 @@ provider "registry.opentofu.org/metio/migadu" {
     "zh:e10dd9d36c3d3abf3aefea2cc7c5d052a5f3ab2c2203ac844bdf44b8cb69de38",
     "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
     "zh:f899b8f44ad3512cc4003eaec303d36fe0b38fd898e8bcf1ac09007a79e30712",
+  ]
+}
+
+provider "registry.opentofu.org/ovh/ovh" {
+  version = "0.40.0"
+  hashes = [
+    "h1:0pG9yatX/Y+PLh2B52UMSY122j+W1upMEldvpM2k3L4=",
+    "zh:1625606107931ae396035a3774c656e05258bb8fc03ed713cd16805aa0569aae",
+    "zh:221473b3b7b85a756a4c198b4981fdd821a1f7dbbe2d548096e8fcc695f7d02a",
+    "zh:2e6ababd2eb359f3210466aa5fa2178b8e127b4e1288911d89abd1256f0b0aff",
+    "zh:448603636272862d1efc634f0f0a2791638f6c772423a5d7b4b082635c888832",
+    "zh:4f8f0cbec4dc7dfaa11bdda2b2e77ed4a3b9d0f5ba6f58458595eb73cdabca07",
+    "zh:51b8713036dec20506b2d3c6164e1834f07f85e4ac7263e058f5bc51f22c8ad1",
+    "zh:86a62e9cf09e4c436a12a73a82e69640f6ed85d1287bda3e2fcc4129fe6b810a",
+    "zh:899960ce9243f13782fd662463a50003e213f554c8bb6643a8b2d3c98c47b8be",
+    "zh:8c31aa348d982161e3fd5a8dc25a08da1c1b1a9b711f31df6149714dedff5925",
+    "zh:a4d8d95e0cc5adf3e35f1e3f426c46491a6ee40ed762c984faa43b3a89a3d8ba",
+    "zh:aca067c71c32c0e26bad049a905662e63f2c8e7d12a8a1e3778b257f0f307ba5",
+    "zh:d62d011078ed3a3b513a192a509900d1711e4623240525d9c0b6e05102cf3e1c",
+    "zh:df5f6cdfe1ec841443b64a8e083cce95306e27b4dcbacaba9b2521340daa6ac2",
   ]
 }
