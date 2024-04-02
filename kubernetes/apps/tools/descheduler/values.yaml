@@ -1,0 +1,48 @@
+---
+descheduler:
+  replicas: 2
+  kind: Deployment
+  deschedulerPolicyAPIVersion: descheduler/v1alpha2
+  deschedulerPolicy:
+    profiles:
+      - name: Default
+        pluginConfig:
+          - name: DefaultEvictor
+            args:
+              evictFailedBarePods: true
+              evictLocalStoragePods: true
+              evictSystemCriticalPods: true
+              nodeFit: true
+          - name: RemovePodsViolatingInterPodAntiAffinity
+          - name: RemovePodsViolatingNodeAffinity
+            args:
+              nodeAffinityType:
+                - requiredDuringSchedulingIgnoredDuringExecution
+          - name: RemovePodsViolatingNodeTaints
+          - name: RemovePodsViolatingTopologySpreadConstraint
+            args:
+              constraints:
+                - DoNotSchedule
+                - ScheduleAnyway
+          - name: LowNodeUtilization
+            args:
+              thresholds:
+                pods: 45
+              targetThresholds:
+                pods: 65
+        plugins:
+          balance:
+            enabled:
+              - LowNodeUtilization
+              - RemovePodsViolatingTopologySpreadConstraint
+          deschedule:
+            enabled:
+              - RemovePodsViolatingInterPodAntiAffinity
+              - RemovePodsViolatingNodeAffinity
+              - RemovePodsViolatingNodeTaints
+  service:
+    enabled: true
+  serviceMonitor:
+    enabled: true
+  leaderElection:
+    enabled: true
