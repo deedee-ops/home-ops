@@ -47,6 +47,7 @@ This semi hyper-converged cluster runs [Talos Linux](https://talos.dev), an immu
 
 ### Core Components
 
+- [actions-runner-controller](https://github.com/actions/actions-runner-controller): Self-hosted Github runners.
 - [cilium](https://cilium.io): Internal Kubernetes networking plugin.
 - [cert-manager](https://cert-manager.io): Creates SSL certificates for services in my Kubernetes cluster.
 - [external-dns](https://github.com/kubernetes-sigs/external-dns): Automatically manages DNS records from my cluster in a cloud DNS provider.

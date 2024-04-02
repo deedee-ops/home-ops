@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: action-runner-controller
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/part-of
+          operator: In
+          values:
+            - gha-runner-scale-set
+            - gha-rs-controller
+    egress:
+      - toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+      - toEntities:
+          - world
