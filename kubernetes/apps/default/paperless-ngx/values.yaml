@@ -99,7 +99,7 @@ app-template:
         tika:
           image:
             repository: ghcr.io/deedee-ops/tika
-            tag: 2.9.1
+            tag: 2.9.2
             pullPolicy: IfNotPresent
           securityContext: *securityContext
           probes:
