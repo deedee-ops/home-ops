@@ -1,0 +1,16 @@
+---
+
+gha-runner-scale-set-controller:
+  fullnameOverride: gha-runner-scale-set-controller
+gha-runner-scale-set:
+  nameOverride: gha-runner-scale-set
+  runnerScaleSetName: gha-runner-scale-set
+  githubConfigUrl: https://github.com/deedee-ops
+  githubConfigSecret: github-config-secret
+  minRunners: 1
+  maxRunners: 3
+  containerMode:
+    type: dind
+  controllerServiceAccount:
+    name: gha-runner-scale-set-controller
+    namespace: workers
