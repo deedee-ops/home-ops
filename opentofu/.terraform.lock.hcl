@@ -41,6 +41,7 @@ provider "registry.opentofu.org/metio/migadu" {
   version     = "2024.4.4"
   constraints = "2024.4.4"
   hashes = [
+    "h1:2ZEisptj4Uw5WfjINhcDjARiUKGzFDzaHA0my5vzZOQ=",
     "h1:v7Iz7OqNkYDlH1xAE5mqaadMzgOKgIIuZlm6bMBDf8o=",
     "zh:01cc9b06d110de45455766821426f36e8094fbd5ceb2eecd65714bcc9f7d6ed9",
     "zh:2933f89f8013dfb6d6321128aac3e0fa9a464e810448eef138db2903320cba79",

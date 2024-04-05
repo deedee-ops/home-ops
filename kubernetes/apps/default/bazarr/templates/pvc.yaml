@@ -1,0 +1,17 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bazarr-video
+  annotations:
+    nfs.io/storage-path: video
+spec:
+  storageClassName: nfs-client-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi  # doesn't matter for NFS
+# yamllint enable rule:line-length

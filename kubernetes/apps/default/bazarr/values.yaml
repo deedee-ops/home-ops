@@ -1,0 +1,109 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
+app-template:
+  defaultPodOptions:
+    labels:
+      # download subtitles
+      egress/enabled: "true"
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    bazarr:
+      containers:
+        app:
+          image:
+            repository: ghcr.io/deedee-ops/bazarr
+            tag: "1.4.2@sha256:69a1b177f15ef44917c7964b51027e8af8aaf48b81e64e538e1dc89de3152003"
+            pullPolicy: IfNotPresent
+
+          env:
+            BAZARR__ANALYTICS_ENABLED: "false"
+            BAZARR__POSTGRES_ENABLED: "true"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 6767
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 1000Mi
+
+  service:
+    app:
+      controller: bazarr
+      ports:
+        http:
+          port: 6767
+
+  ingress:
+    bazarr:
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Media
+        gethomepage.dev/name: Bazarr
+        gethomepage.dev/icon: bazarr.png
+        gethomepage.dev/description: Subtitles Management
+      hosts:
+        - host: "bazarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 6767
+      tls:
+        - hosts:
+            - "bazarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      type: persistentVolumeClaim
+      existingClaim: bazarr-config
+      advancedMounts:
+        bazarr:
+          app:
+            - path: "/config"
+    media:
+      type: persistentVolumeClaim
+      existingClaim: bazarr-video
+      advancedMounts:
+        bazarr:
+          app:
+            - path: "/data"
+    secrets:
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: bazarr
