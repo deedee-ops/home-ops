@@ -187,10 +187,10 @@ app-template:
       advancedMounts:
         qbittorrent:
           app:
-            - path: "/data"
+            - path: "/data/torrents"
         orphaned:
           app:
-            - path: "/data"
+            - path: "/data/torrents"
     qbconfig:
       type: configMap
       name: qbtools-configmap
