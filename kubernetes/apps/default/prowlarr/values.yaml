@@ -23,9 +23,6 @@ app-template:
             pullPolicy: IfNotPresent
 
           env:
-            # Ref: https://github.com/Radarr/Radarr/issues/7030#issuecomment-1039689518
-            # Ref: https://github.com/dotnet/runtime/issues/9336
-            COMPlus_EnableDiagnostics: "0"
             PROWLARR__ANALYTICS_ENABLED: "False"
             PROWLARR__AUTHENTICATION_METHOD: External
             PROWLARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
