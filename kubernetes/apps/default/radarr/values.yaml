@@ -1,0 +1,107 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
+app-template:
+  defaultPodOptions:
+    labels:
+      # download movie metadata
+      egress/enabled: "true"
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    radarr:
+      containers:
+        app:
+          image:
+            repository: ghcr.io/deedee-ops/radarr-devel
+            tag: "5.4.4.8688"
+            pullPolicy: IfNotPresent
+
+          env:
+            RADARR__ANALYTICS_ENABLED: "False"
+            RADARR__AUTHENTICATION_METHOD: External
+            RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+            RADARR__INSTANCE_NAME: Radarr
+            RADARR__LOG_LEVEL: info
+            RADARR__POSTGRES_PORT: "5432"
+            RADARR__THEME: dark
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            readiness: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /ping
+                  port: 7878
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 1000Mi
+
+  service:
+    app:
+      controller: radarr
+      ports:
+        http:
+          port: 7878
+
+  ingress:
+    radarr:
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Media
+        gethomepage.dev/name: Radarr
+        gethomepage.dev/icon: radarr.png
+        gethomepage.dev/description: Movies Management
+      hosts:
+        - host: "radarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 7878
+      tls:
+        - hosts:
+            - "radarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    secrets:
+      type: custom
+      volumeSpec:
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: radarr
+    media:
+      type: persistentVolumeClaim
+      existingClaim: radarr-media
+      advancedMounts:
+        radarr:
+          app:
+            - path: "/data"
