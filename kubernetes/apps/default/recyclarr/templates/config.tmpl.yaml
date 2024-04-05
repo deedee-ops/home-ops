@@ -1,0 +1,12 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.7/secret-v1.json
+# yamllint enable rule:line-length
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: recyclarr-secret
+stringData:
+  recyclarr.yml: |-
+{{ .Files.Get "files/recyclarr.yml" | indent 4 }}
