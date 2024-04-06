@@ -1,0 +1,61 @@
+---
+server:
+  port: 8978
+
+file-system:
+  access: true
+  validate-seeding: true
+  leaving-soon-dir: "/data/leaving-soon"
+  from-scratch: true
+  free-space-check-dir: "/data"
+
+application:
+  dry-run: true
+  leaving-soon: 14d
+  exclusion-tag: "permanent"
+
+  media-deletion:
+    enabled: true
+    movie-expiration:
+      5: 15d
+      10: 30d
+      15: 60d
+      20: 90d
+    season-expiration:
+      5: 15d
+      10: 20d
+      15: 60d
+      20: 120d
+
+  tag-based-deletion:
+    enabled: false
+    minimum-free-disk-percent: 100
+    schedules:
+      - tag: 5 - demo
+        expiration: 30d
+      - tag: 10 - demo
+        expiration: 7d
+
+clients:
+  sonarr:
+    enabled: true
+    url: "http://sonarr.default.svc.cluster.local:8989"
+    api-key: "<path:kubernetes/data/internal/sonarr#SONARR__API_KEY>"
+    delete-empty-shows: true
+  radarr:
+    enabled: true
+    url: "http://radarr.default.svc.cluster.local:7878"
+    api-key: "<path:kubernetes/data/internal/radarr#RADARR__API_KEY>"
+  jellyfin:
+    enabled: true
+    url: "http://jellyfin.default.svc.cluster.local:8096"
+    api-key: "<path:kubernetes/data/internal/janitorr#JELLYFIN_API_KEY>"
+    username: "<path:kubernetes/data/internal/janitorr#JELLYFIN_USERNAME>"
+    password: "<path:kubernetes/data/internal/janitorr#JELLYFIN_PASSWORD>"
+    delete: true
+  emby:
+    enabled: false
+  jellyseerr:
+    enabled: false
+  jellystat:
+    enabled: false

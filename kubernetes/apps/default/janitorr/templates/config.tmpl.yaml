@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: janitorr-secret
+stringData:
+  application.yml: |-
+{{ .Files.Get "files/application.yml" | indent 4 }}
+
