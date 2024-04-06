@@ -1,0 +1,109 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
+app-template:
+  defaultPodOptions:
+    securityContext:
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    homebox:
+      containers:
+        app:
+          image:
+            repository: ghcr.io/hay-kot/homebox
+            tag: v0.10.3-rootless
+            pullPolicy: IfNotPresent
+
+          env:
+            # HBOX_AUTH_FORWARD_AUTH_ALLOWED_IPS: "172.30.0.0/15"
+            HBOX_AUTH_FORWARD_AUTH_ALLOWED_IPS: "0.0.0.0/0"
+            HBOX_AUTH_FORWARD_AUTH_AUTO_REGISTER: "false"
+            HBOX_AUTH_FORWARD_AUTH_HEADER: "Remote-Email"
+            HBOX_DEMO: "false"
+            HBOX_MAILER_FROM: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
+            HBOX_MAILER_HOST: smtp-relay.networking.svc.cluster.local
+            HBOX_MAILER_PORT: "25"
+            HBOX_OPTIONS_ALLOW_REGISTRATION: "false"
+            HBOX_OPTIONS_AUTO_INCREMENT_ASSET_ID: "true"
+            HBOX_WEB_MAX_UPLOAD_SIZE: "100"
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /api/v1/status
+                  port: 7745
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 750Mi
+
+  service:
+    app:
+      controller: homebox
+      ports:
+        http:
+          port: 7745
+
+  ingress:
+    homebox:
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy:
+          default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
+          data: mediastream: blob: wss: https://*.rzegocki.dev;
+          connect-src 'self' https://api.unisvg.com;
+          object-src 'none';
+          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/homebox;";
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: Homebox
+        gethomepage.dev/icon: homebox.png
+        gethomepage.dev/description: Home Assets Management
+      hosts:
+        - host: "homebox.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 7745
+      tls:
+        - hosts:
+            - "homebox.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    config:
+      type: persistentVolumeClaim
+      existingClaim: homebox-data
+      advancedMounts:
+        homebox:
+          app:
+            - path: "/data"
+    tmpdir:
+      type: emptyDir
+      medium: Memory
+      globalMounts:
+        - path: /tmp
