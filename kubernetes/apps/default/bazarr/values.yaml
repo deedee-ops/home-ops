@@ -98,7 +98,7 @@ app-template:
       advancedMounts:
         bazarr:
           app:
-            - path: "/data"
+            - path: "/data/video"
     secrets:
       type: custom
       volumeSpec:
