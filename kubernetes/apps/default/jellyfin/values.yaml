@@ -126,5 +126,5 @@ app-template:
       advancedMounts:
         jellyfin:
           app:
-            - path: "/data"
+            - path: "/data/video"
               readOnly: true
