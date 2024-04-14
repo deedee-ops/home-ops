@@ -57,7 +57,7 @@ app-template:
               memory: 1Gi
               gpu.intel.com/i915: 1
             limits:
-              memory: 4Gi
+              memory: 32Gi
               gpu.intel.com/i915: 1
 
   service:
