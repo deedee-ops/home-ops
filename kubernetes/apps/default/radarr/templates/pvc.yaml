@@ -11,5 +11,5 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Mi  # doesn't matter for NFS
+      storage: 7Ti  # use rough size of NAS NFS volume to silence "volume filling up" alerts
 # yamllint enable rule:line-length
