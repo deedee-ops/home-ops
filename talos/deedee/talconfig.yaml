@@ -15,7 +15,7 @@ endpoint: https://${clusterEndpointIP}:6443
 talosVersion: v1.6.7
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.29.4
+kubernetesVersion: v1.30.0
 
 additionalApiServerCertSans: &sans
   - ${clusterEndpointIP}
