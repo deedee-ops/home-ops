@@ -28,7 +28,7 @@ spec:
     pruneIntervalDays: 7
     repository: restic-syncthing-syncthing-config
     volumeSnapshotClassName: ceph-block
-    cacheCapacity: 128Mi
+    cacheCapacity: 1Gi
     cacheStorageClassName: ceph-persistent-block
     cacheAccessModes:
       - ReadWriteOnce
@@ -65,7 +65,7 @@ spec:
     name: init-syncthing-syncthing-config
   resources:
     requests:
-      storage: 128Mi
+      storage: 1Gi
   storageClassName: ceph-persistent-block
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
@@ -85,11 +85,11 @@ spec:
     cacheStorageClassName: ceph-persistent-block
     cacheAccessModes:
       - ReadWriteOnce
-    cacheCapacity: 128Mi
+    cacheCapacity: 1Gi
     storageClassName: ceph-persistent-block
     accessModes:
       - ReadWriteOnce
-    capacity: 128Mi
+    capacity: 1Gi
     moverSecurityContext:
       runAsNonRoot: true
       fsGroup: 65000
