@@ -12,7 +12,7 @@ clusterSvcNets:
 endpoint: https://${clusterEndpointIP}:6443
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.6.7
+talosVersion: v1.7.0
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.29.4
