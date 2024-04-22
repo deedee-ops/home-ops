@@ -30,11 +30,21 @@ spec:
   ignoreDifferences:
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
-      name: prometheus-stack-admission
+      name: kube-prometheus-stack-admission
       jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
         - /webhooks/0/failurePolicy
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
-      name: prometheus-stack-admission
+      name: kube-prometheus-stack-admission
       jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
         - /webhooks/0/failurePolicy
+    - group: batch
+      kind: CronJob
+      jsonPointers:
+        - /spec/jobTemplate/spec/template/spec/containers/0/resources
+    - group: apps
+      kind: DaemonSet
+      jsonPointers:
+        - /spec/template/spec/containers/0/resources

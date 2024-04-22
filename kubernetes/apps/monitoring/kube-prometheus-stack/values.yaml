@@ -186,6 +186,11 @@ kube-prometheus-stack:
       capabilities:
         drop:
           - ALL
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        memory: 32Mi
     metricLabelsAllowlist:
       - 'nodes=[kubevirt.io/schedulable]'
   nodeExporter:

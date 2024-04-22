@@ -30,3 +30,7 @@ spec:
         - "/spec/rules/1/skipBackgroundRequests"
         - "/spec/rules/2/skipBackgroundRequests"
         - "/spec/rules/3/skipBackgroundRequests"
+    - group: batch
+      kind: CronJob
+      jsonPointers:
+        - /spec/jobTemplate/spec/template/spec/containers/0/resources

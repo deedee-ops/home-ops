@@ -2,6 +2,9 @@
 runnerScaleSetName: &runnerScaleSetName gha-runner-scale-set
 gha-runner-scale-set-controller:
   fullnameOverride: gha-runner-scale-set-controller
+  resources:
+    requests:
+      memory: 32Mi
 gha-runner-scale-set:
   nameOverride: gha-runner-scale-set
   runnerScaleSetName: *runnerScaleSetName
