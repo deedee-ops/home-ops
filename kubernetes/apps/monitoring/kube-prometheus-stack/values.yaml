@@ -191,8 +191,6 @@ kube-prometheus-stack:
         memory: 128Mi
       requests:
         memory: 32Mi
-    metricLabelsAllowlist:
-      - 'nodes=[kubevirt.io/schedulable]'
   nodeExporter:
     enabled: true
   prometheus-node-exporter:
