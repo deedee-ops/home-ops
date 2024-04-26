@@ -1,7 +1,0 @@
----
-# yaml-language-server: disabled
-scripts:
-  - name: kyverno-policies-failed
-    command: /config/kyverno-policies-failed.sh
-    timeout:
-      max_timeout: 10
