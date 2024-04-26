@@ -1,0 +1,88 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-systemd-exporter
+  labels:
+    app.kubernetes.io/instance: external-systemd-exporter
+    app.kubernetes.io/name: external-systemd-exporter
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9558
+      targetPort: 9558
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/endpoints-v1.json
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-systemd-exporter
+subsets:
+  - addresses:
+      # {{- range $idx, $host_ip := .Values.systemd.ips }}
+      - ip: "{{ $host_ip }}"
+      # {{- end }}
+    ports:
+      - name: metrics
+        port: 9558
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prometheus-stack
+  name: external-systemd-exporter
+spec:
+  endpoints:
+    - interval: 30s
+      port: metrics
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - "{{ .Release.Namespace }}"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: external-systemd-exporter
+      app.kubernetes.io/name: external-systemd-exporter
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+    release: prometheus-stack
+  name: external-systemd-exporter
+spec:
+  groups:
+    - name: external-systemd.rules
+      rules:
+        - alert: SystemdServiceFailed
+          expr: systemd_unit_state{state="failed"} == 1
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.name }}`}} service is failing"
+            description: "One of the systemd services is failing to execute"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: external-systemd-exporter
+specs:
+  - endpointSelector: {}
+    egress:
+      - toPorts:
+          - ports:
+              - port: "9558"
+                protocol: TCP
+        toCIDRSet:
+          # {{- range $idx, $host_ip := .Values.systemd.ips }}
+          - cidr: "{{ $host_ip }}/32"
+          # {{- end }}

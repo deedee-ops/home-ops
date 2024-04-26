@@ -1,0 +1,10 @@
+---
+nodeexporter:
+  ips:
+    - "<path:kubernetes/data/internal/base#IP_ROUTER>"
+proxmox:
+  ips:
+    - "<path:kubernetes/data/internal/base#IP_ROUTER>"
+systemd:
+  ips:
+    - "<path:kubernetes/data/internal/base#IP_ROUTER>"

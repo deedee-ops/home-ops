@@ -1,0 +1,283 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-nodeexporter
+  labels:
+    app.kubernetes.io/instance: external-nodeexporter
+    app.kubernetes.io/name: external-nodeexporter
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: 9100
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/endpoints-v1.json
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: external-nodeexporter
+subsets:
+  - addresses:
+      # {{- range $idx, $host_ip := .Values.nodeexporter.ips }}
+      - ip: "{{ $host_ip }}"
+      # {{- end }}
+    ports:
+      - name: metrics
+        port: 9100
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prometheus-stack
+  name: external-nodeexporter
+spec:
+  endpoints:
+    - interval: 30s
+      port: metrics
+      path: /metrics
+  namespaceSelector:
+    matchNames:
+      - "{{ .Release.Namespace }}"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: external-nodeexporter
+      app.kubernetes.io/name: external-nodeexporter
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+    release: prometheus-stack
+  name: external-nodeexporter
+spec:
+  groups:
+    - name: external-nodeexporter.rules
+      rules:
+        - alert: CronTasksFailed
+          expr: 2*sum_over_time(supercronic_failed_executions[1m]) > sum_over_time(supercronic_failed_executions[2m])
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cron job is failing"
+            description: "One of the cron jobs is failing to execute"
+        # yamllint disable rule:line-length
+        - alert: HighStorageLoad
+          expr: (node_filesystem_size_bytes{mountpoint="/"}-node_filesystem_avail_bytes{mountpoint="/"})/node_filesystem_size_bytes{mountpoint="/"}*100 > 80
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "Server storage is almost full"
+            description: "Docker host storage usage is {{`{{ humanize $value}}`}}g%"
+
+        - alert: VeryHighStorageLoad
+          expr: (node_filesystem_size_bytes{mountpoint="/"}-node_filesystem_avail_bytes{mountpoint="/"})/node_filesystem_size_bytes{mountpoint="/"}*100 > 90
+          for: 30s
+          labels:
+            severity: critical
+          annotations:
+            summary: "Server storage is barely available"
+            description: "Docker host storage usage is {{`{{ humanize $value}}`}}g%"
+
+        - alert: HostUnusualDiskReadRate
+          expr: (sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50) and on() (max(hc_check_started) == 0)
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual disk read rate"
+            description: "Disk is probably reading too much data (> 50 MB/s)"
+
+        - alert: HostUnusualDiskWriteRate
+          expr: (sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50) and on() (max(hc_check_started) == 0)
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual disk write rate"
+            description: "Disk is probably writing too much data (> 50 MB/s)"
+
+        - alert: HostUnusualDiskReadLatency
+          expr: >
+            (rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1
+            and rate(node_disk_reads_completed_total[1m]) > 0) and on() (max(hc_check_started) == 0)
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual disk read latency"
+            description: "Disk latency is growing (read operations > 100ms)"
+
+        - alert: HostUnusualDiskWriteLatency
+          expr: >
+            (rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1
+            and rate(node_disk_writes_completed_total[1m]) > 0) and on() (max(hc_check_started) == 0)
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual disk write latency"
+            description: "Disk latency is growing (write operations > 100ms)"
+
+        - alert: HostSystemdServiceCrashed
+          expr: node_systemd_unit_state{state="failed"} == 1
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host SystemD service crashed"
+            description: "SystemD service crashed"
+
+        - alert: HighCpuLoad
+          # 100% of "full" load which is basically number of cores
+          expr: node_load5 > 8
+          for: 30s
+          labels:
+            severity: critical
+          annotations:
+            summary: "Server under high load"
+
+        - alert: HighCpuTemp
+          expr: node_hwmon_temp_celsius{chip="platform_coretemp_0"} > 80
+          for: 30s
+          labels:
+            severity: critical
+          annotations:
+            summary: "Core temperature too high"
+            description: "Core temperature is greater than 80C for more than 30 seconds"
+
+        - alert: HostNodeOvertemperatureAlarm
+          expr: node_hwmon_temp_crit_alarm_celsius == 1
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Host node overtemperature alarm"
+            description: "Physical node temperature alarm triggered"
+
+        - alert: HostHighCpuLoad
+          expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host high CPU load"
+            description: "CPU load is > 80%"
+
+        - alert: HostMemoryUnderMemoryPressure
+          expr: rate(node_vmstat_pgmajfault[1m]) > 1000
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host memory under memory pressure"
+            description: "The node is under heavy memory pressure. High rate of major page faults"
+
+        - alert: HostUnusualNetworkThroughputIn
+          expr: sum by (instance) (rate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 50
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual network throughput in"
+            description: "Host network interfaces are probably receiving too much data (> 50 MB/s)"
+
+        - alert: HostUnusualNetworkThroughputOut
+          expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 10
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Host unusual network throughput out"
+            description: "Host network interfaces are probably sending too much data (> 10 MB/s)"
+
+        - alert: SMARTDiskUnhealthy
+          expr: smartmon_device_smart_healthy != 1
+          for: 30s
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) is not healthy"
+        - alert: SMARTReallocatedSectorCt
+          expr: changes(smartmon_reallocated_sector_ct_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTReallocatedEventCount
+          expr: changes(smartmon_reallocated_event_count_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTCurrentPendingSector
+          expr: changes(smartmon_current_pending_sector_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTOfflineUncorrectable
+          expr: changes(smartmon_offline_uncorrectable_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTUdmaCrcErrorCount
+          expr: changes(smartmon_udma_crc_error_count_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTEndToEndError
+          expr: changes(smartmon_end_to_end_error_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTReportedUncorrect
+          expr: changes(smartmon_reported_uncorrect_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+        - alert: SMARTSpinRetryCount
+          expr: changes(smartmon_spin_retry_count_raw_value[5m]) > 0
+          for: 30s
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{`{{ $labels.model_family }}`}} {{`{{ $labels.device_model }}`}} ({{`{{ $labels.disk }}`}}) reports dying disk"
+            # yamllint enable rule:line-length
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: external-nodeexporter
+specs:
+  - endpointSelector: {}
+    egress:
+      - toPorts:
+          - ports:
+              - port: "9100"
+                protocol: TCP
+        toCIDRSet:
+          # {{- range $idx, $host_ip := .Values.nodeexporter.ips }}
+          - cidr: "{{ $host_ip }}/32"
+          # {{- end }}
