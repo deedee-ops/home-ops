@@ -110,6 +110,17 @@ app-template:
               service:
                 identifier: app
                 port: 3000
+            # feishin and other clients talking directly to navidrome API
+            - path: /auth
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
+            - path: /api
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
       tls:
         - hosts:
             - "navidrome.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
