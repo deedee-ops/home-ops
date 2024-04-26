@@ -60,7 +60,6 @@ argo-cd:
             - profile
             - email
             - groups
-
     cmp:
       create: true
       plugins:
@@ -353,26 +352,3 @@ argo-cd:
       enabled: true
       serviceMonitor:
         enabled: true
-
-argocd-image-updater:
-  fullnameOverride: argocd-image-updater
-  replicaCount: 1
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    seccompProfile:
-      type: RuntimeDefault
-  securityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    capabilities:
-      drop:
-        - ALL
