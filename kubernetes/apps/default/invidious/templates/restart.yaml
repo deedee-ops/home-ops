@@ -59,7 +59,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: kubectl
-              image: "public.ecr.aws/bitnami/kubectl:1.29.4"
+              image: "public.ecr.aws/bitnami/kubectl:1.30.0"
               args:
                 - 'rollout'
                 - 'restart'
