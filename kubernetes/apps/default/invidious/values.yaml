@@ -22,7 +22,7 @@ app-template:
           image:
             repository: ghcr.io/deedee-ops/invidious-devel
             pullPolicy: Always
-            tag: 'latest@sha256:39d64839a3a0f5c4c003a73a7ef6b79a1e406ae02616b69eb1b8b8599ace0156'
+            tag: 'latest@sha256:5deb1afe996e3b43068fa1a0e975bac21a51ab7dd59eb5c7abf7e1d723a4586a'
 
           env:
             TZ: Europe/Warsaw
