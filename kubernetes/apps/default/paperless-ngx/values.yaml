@@ -68,7 +68,7 @@ app-template:
               cpu: 100m
               memory: 1Gi
             limits:
-              memory: 5Gi
+              memory: 16Gi
 
         gotenberg:
           image:
