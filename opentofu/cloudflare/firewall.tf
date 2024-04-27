@@ -33,6 +33,20 @@ resource "cloudflare_ruleset" "external_ingress" {
   }
 
   rules {
+    action = "skip"
+    action_parameters {
+      ruleset = "current"
+    }
+    description = "Allow access to external services"
+    enabled     = true
+    expression  = "(http.host eq \"share.${var.base_domain}\" and (not starts_with(http.request.uri.path, \"/admin\"))) and (ip.geoip.country in {\"PL\"} and (not cf.client.bot) and (cf.threat_score lt 15))"
+
+    logging {
+      enabled = true
+    }
+  }
+
+  rules {
     action      = "block"
     description = "Block everything else"
     enabled     = true
