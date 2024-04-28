@@ -69,7 +69,7 @@ spec:
           annotations:
             summary: "{{`{{ $labels.id }}`}} is offline"
         - alert: PVEVMDown
-          expr: pve_up{id=~"qemu/[12]{2}0[12][0-9]"} == 0
+          expr: (pve_guest_info{tags=~".*critical.*"} * on(id) group_left(name) pve_up{}) == 0
           for: 30s
           labels:
             severity: critical
