@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/radarr-devel
-            tag: "5.5.0.8730"
+            tag: "5.5.1.8747"
             pullPolicy: IfNotPresent
 
           env:
