@@ -40,4 +40,4 @@ spec:
     - group: "argoproj.io"
       kind: Application
       jsonPointers:
-        - "/ignoreDifferences"
+        - "/spec/ignoreDifferences"
