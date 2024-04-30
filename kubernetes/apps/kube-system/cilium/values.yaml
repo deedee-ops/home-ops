@@ -6,8 +6,8 @@ cilium:
     bbr: true
   bpf:
     masquerade: false
-  bgp:
-    enabled: false
+  bgpControlPlane:
+    enabled: true
   cgroup:
     autoMount:
       enabled: false
@@ -117,3 +117,7 @@ cilium:
   socketLB:
     hostNamespaceOnly: true
   tunnelProtocol: geneve  # using vxlan here will break VPN pod-gateway
+
+  # when implementing full BGP, remove this encapsulation and try
+  # autoDirectNodeRoutes: true
+  # routingMode: native
