@@ -64,6 +64,11 @@ app-template:
     invidious:
       className: internal
       annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy:
+          default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:
+          https://*.<path:kubernetes/data/internal/base#ROOT_DOMAIN> https://*.googlevideo.com; object-src 'none';
+          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/invidious;";
         # api endpoints are mess, so it's easier to open everything
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
         gethomepage.dev/enabled: "true"

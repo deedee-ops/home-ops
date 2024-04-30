@@ -13,7 +13,7 @@ host_binding: 0.0.0.0
 domain: "invidious.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 https_only: true
 hsts: true
-disable_proxy: false
+disable_proxy: true
 pool_size: 100
 use_quic: false
 output: STDOUT
@@ -78,7 +78,7 @@ default_user_preferences:
   notifications_only: false
   unseen_only: false
   sort: published
-  local: true
+  local: false
   show_nick: true
   automatic_instance_redirect: false
   extend_desc: false
