@@ -120,7 +120,7 @@ notifier:
   smtp:
     address: "smtp://smtp-relay.networking.svc.cluster.local:25"
     timeout: 5s
-    sender: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
+    sender: "<path:kubernetes/data/internal/base#MAIL_FROM_CLUSTER>"
     identifier: "<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
     subject: '[Authelia] {title}'
     startup_check_address: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"

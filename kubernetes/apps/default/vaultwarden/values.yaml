@@ -32,7 +32,7 @@ app-template:
             ROCKET_PORT: "3000"
             SHOW_PASSWORD_HINT: "false"
             SIGNUPS_ALLOWED: "false"
-            SMTP_FROM: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
+            SMTP_FROM: "<path:kubernetes/data/internal/base#MAIL_FROM_CLUSTER>"
             SMTP_HOST: smtp-relay.networking.svc.cluster.local
             SMTP_PORT: "25"
             SMTP_SECURITY: "off"

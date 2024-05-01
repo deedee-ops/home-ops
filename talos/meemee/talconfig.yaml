@@ -2,7 +2,7 @@
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 # yamllint enable rule:line-length
-clusterName: &cluster dexter
+clusterName: &cluster meemee
 
 clusterPodNets:
   - 172.30.0.0/16

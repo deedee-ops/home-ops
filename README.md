@@ -74,7 +74,7 @@ This Git repository contains the following directories under [Kubernetes](./kube
 ├── 📁 apps           # applications
 └── 📁 clusters       # clusters
     ├── 📁 deedee     # main cluster
-    └── 📁 dexter     # development cluster, deployed on VMs
+    └── 📁 meemee     # development cluster, deployed on VMs
 📁 opentofu           # opentofu scripts for external services (cloudflare)
 📁 talos              # talhelper scripts to bootstrap Talos
 ```

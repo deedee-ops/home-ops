@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   sources:
-    - path: kubernetes/clusters/dexter
+    - path: kubernetes/clusters/meemee
       repoURL: https://github.com/deedee-ops/home-ops.git
       targetRevision: master
       directory:
@@ -40,4 +40,4 @@ spec:
     - group: "argoproj.io"
       kind: Application
       jsonPointers:
-        - "/ignoreDifferences"
+        - "/spec/ignoreDifferences"

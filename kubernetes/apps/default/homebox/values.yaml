@@ -25,7 +25,7 @@ app-template:
             HBOX_AUTH_FORWARD_AUTH_AUTO_REGISTER: "false"
             HBOX_AUTH_FORWARD_AUTH_HEADER: "Remote-Email"
             HBOX_DEMO: "false"
-            HBOX_MAILER_FROM: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
+            HBOX_MAILER_FROM: "<path:kubernetes/data/internal/base#MAIL_FROM_CLUSTER>"
             HBOX_MAILER_HOST: smtp-relay.networking.svc.cluster.local
             HBOX_MAILER_PORT: "25"
             HBOX_OPTIONS_ALLOW_REGISTRATION: "false"

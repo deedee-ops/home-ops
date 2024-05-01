@@ -39,6 +39,6 @@ resource "migadu_identity" "extra" {
   may_access_imap         = false
   may_access_manage_sieve = false
   may_access_pop3         = false
-  may_receive             = true
-  may_send                = true
+  may_receive             = each.value.may_receive == null ? true : each.value.may_receive
+  may_send                = each.value.may_send == null ? true : each.value.may_send
 }
