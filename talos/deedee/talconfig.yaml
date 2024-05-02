@@ -29,9 +29,13 @@ cniConfig:
 nodes:
   - hostname: huey
     ipAddress: 10.100.21.10
-    installDisk: /dev/sda
+    installDisk: /dev/disk/by-id/ata-SK_hynix_SC311_SATA_128GB_MJ83N642311003O19
     controlPlane: true
     disableSearchDomain: true
+    schematic:
+      customization:
+        extraKernelArgs:
+          - net.ifnames=0
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 70:b5:e8:7c:e3:b1
@@ -51,9 +55,13 @@ nodes:
 
   - hostname: dewey
     ipAddress: 10.100.21.11
-    installDisk: /dev/sda
+    installDisk: /dev/disk/by-id/ata-SK_hynix_SC311_SATA_128GB_MJ83N642311003O11
     controlPlane: true
     disableSearchDomain: true
+    schematic:
+      customization:
+        extraKernelArgs:
+          - net.ifnames=0
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 70:b5:e8:7c:e3:88
@@ -71,9 +79,13 @@ nodes:
 
   - hostname: louie
     ipAddress: 10.100.21.12
-    installDisk: /dev/sda
+    installDisk: /dev/disk/by-id/ata-SK_hynix_SC300_M.2_2280_128GB_FJ62N588512203251
     controlPlane: true
     disableSearchDomain: true
+    schematic:
+      customization:
+        extraKernelArgs:
+          - net.ifnames=0
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 70:b5:e8:7c:e3:f6
@@ -90,7 +102,8 @@ nodes:
     nodeLabels: *masterLabels
 
   - hostname: blossom
-    ipAddress: 10.100.22.10
+    ipAddress: 10.100.21.20
+    installDisk: /dev/disk/by-id/ata-TS128GMTS430S_H854361188
     schematic:
       customization:
         extraKernelArgs:
@@ -100,8 +113,6 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/intel-ucode
             - siderolabs/thunderbolt
-    installDiskSelector:
-      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
@@ -110,21 +121,26 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:61:e0
-        dhcp: true
+        addresses:
+          - 10.100.21.20/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
       - deviceSelector:
           busPath: 1-1.0
         addresses:
-          - 10.254.22.10/32
+          - 10.254.21.20/32
         routes:
-          - network: 10.254.22.11/32
+          - network: 10.254.21.21/32
             gateway: ""
         dhcp: false
       - deviceSelector:
           busPath: 0-1.0
         addresses:
-          - 10.254.22.10/32
+          - 10.254.21.20/32
         routes:
-          - network: 10.254.22.12/32
+          - network: 10.254.21.22/32
             gateway: ""
         dhcp: false
     nameservers:
@@ -134,7 +150,8 @@ nodes:
       topology.kubernetes.io/zone: worker
 
   - hostname: bubbles
-    ipAddress: 10.100.22.11
+    ipAddress: 10.100.21.21
+    installDisk: /dev/disk/by-id/ata-TS128GMTS430S_H854360676
     schematic:
       customization:
         extraKernelArgs:
@@ -144,8 +161,6 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/intel-ucode
             - siderolabs/thunderbolt
-    installDiskSelector:
-      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
@@ -154,21 +169,26 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:58:a4
-        dhcp: true
+        addresses:
+          - 10.100.21.21/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
       - deviceSelector:
           busPath: 0-1.0
         addresses:
-          - 10.254.22.11/32
+          - 10.254.21.21/32
         routes:
-          - network: 10.254.22.10/32
+          - network: 10.254.21.20/32
             gateway: ""
         dhcp: false
       - deviceSelector:
           busPath: 1-1.0
         addresses:
-          - 10.254.22.11/32
+          - 10.254.21.21/32
         routes:
-          - network: 10.254.22.12/32
+          - network: 10.254.21.22/32
             gateway: ""
         dhcp: false
     nameservers:
@@ -176,7 +196,8 @@ nodes:
     nodeLabels: *workerLabels
 
   - hostname: buttercup
-    ipAddress: 10.100.22.12
+    ipAddress: 10.100.21.22
+    installDisk: /dev/disk/by-id/ata-TS128GMTS430S_H854361145
     schematic:
       customization:
         extraKernelArgs:
@@ -186,8 +207,6 @@ nodes:
             - siderolabs/i915-ucode
             - siderolabs/intel-ucode
             - siderolabs/thunderbolt
-    installDiskSelector:
-      size: "<= 150GB"
     controlPlane: false
     kernelModules:
       - name: thunderbolt
@@ -196,21 +215,26 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: 48:21:0b:51:61:c8
-        dhcp: true
+        addresses:
+          - 10.100.21.22/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+        dhcp: false
       - deviceSelector:
           busPath: 1-1.0
         addresses:
-          - 10.254.22.12/32
+          - 10.254.21.22/32
         routes:
-          - network: 10.254.22.10/32
+          - network: 10.254.21.20/32
             gateway: ""
         dhcp: false
       - deviceSelector:
           busPath: 0-1.0
         addresses:
-          - 10.254.22.12/32
+          - 10.254.21.22/32
         routes:
-          - network: 10.254.22.11/32
+          - network: 10.254.21.21/32
             gateway: ""
         dhcp: false
     nameservers:

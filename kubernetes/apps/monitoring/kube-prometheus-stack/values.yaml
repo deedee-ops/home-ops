@@ -129,7 +129,7 @@ kube-prometheus-stack:
       storage:
         volumeClaimTemplate:
           spec:
-            storageClassName: ceph-ephemeral-block
+            storageClassName: ceph-persistent-block  # @todo democratic-csi local-hostpath named local-ephemeral
             accessModes:
               - ReadWriteOnce
             resources:
@@ -261,7 +261,7 @@ kube-prometheus-stack:
       storageSpec:
         volumeClaimTemplate:
           spec:
-            storageClassName: ceph-ephemeral-block
+            storageClassName: ceph-persistent-block  # @todo democratic-csi local-hostpath named local-ephemeral
             accessModes:
               - ReadWriteOnce
             resources:

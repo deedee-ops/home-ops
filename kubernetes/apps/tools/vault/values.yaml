@@ -105,7 +105,7 @@ vault:
 
     auditStorage:
       enabled: true
-      storageClass: ceph-ephemeral-block
+      storageClass: ceph-persistent-block
 
     dataStorage:
       enabled: true

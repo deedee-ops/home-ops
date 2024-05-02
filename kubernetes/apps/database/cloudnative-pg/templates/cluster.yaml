@@ -25,7 +25,7 @@ spec:
     name: cloudnative-pg-secret
   bootstrap:
     recovery:
-      source: &previousCluster postgres-v2
+      source: &previousCluster postgres-v3
   postgresql:
     parameters:
       max_connections: "600"
@@ -40,7 +40,7 @@ spec:
         maxParallel: 8
       destinationPath: "s3://<path:kubernetes/data/internal/base#S3_BUCKET>/cloudnative-pg/"
       endpointURL: "<path:kubernetes/data/internal/base#S3_URL>"
-      serverName: &currentCluster postgres-v3
+      serverName: &currentCluster postgres-v4
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret

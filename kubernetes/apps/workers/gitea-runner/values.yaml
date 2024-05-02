@@ -80,7 +80,7 @@ app-template:
               - path: /data
             accessMode: "ReadWriteOnce"
             size: 1Gi
-            storageClass: ceph-ephemeral-block
+            storageClass: ceph-persistent-block  # @todo democratic-csi local-hostpath named local-ephemeral
 
   persistence:
     secrets:

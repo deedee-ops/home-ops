@@ -101,7 +101,7 @@ app-template:
 
     data:
       type: persistentVolumeClaim
-      storageClass: ceph-ephemeral-block
+      storageClass: ceph-persistent-block  # @todo democratic-csi local-hostpath named local-ephemeral
       size: 1Gi
       accessMode: ReadWriteOnce
       advancedMounts:

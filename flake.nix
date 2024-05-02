@@ -2,8 +2,9 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    talhelper.url = "github:budimanjojo/talhelper";
   };
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, talhelper, flake-utils }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -21,6 +22,7 @@
               pkgs.lefthook
               pkgs.opentofu
               pkgs.sops
+              talhelper.packages.${system}.default
               pkgs.yq-go
 
               # linters

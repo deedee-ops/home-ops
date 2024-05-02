@@ -35,15 +35,3 @@ spec:
     - name: alertname
       value: CephNodeDiskspaceWarning
       isRegex: false
----
-# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
-apiVersion: monitoring.giantswarm.io/v1alpha1
-kind: Silence
-metadata:
-  name: ceph-pg-imbalance
-spec:
-  targetTags: []
-  matchers:
-    - name: alertname
-      value: CephPGImbalance
-      isRegex: false

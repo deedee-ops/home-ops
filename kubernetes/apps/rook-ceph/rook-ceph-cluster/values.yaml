@@ -1,6 +1,7 @@
 ---
 protectAgainstMissingValues: "rook-ceph-cluster"
 skipNetworkPolicy: false
+skipAuthelia: false
 
 rook-ceph-cluster:
   operatorNamespace: rook-ceph
@@ -64,37 +65,11 @@ rook-ceph-cluster:
     isDefault: true
     deletionPolicy: Delete
   cephBlockPools:
-    - name: ceph-ephemeral-block
-      spec:
-        failureDomain: host
-        replicated:
-          size: 2
-        crushRoot: ephemeral
-      storageClass:
-        enabled: true
-        name: ceph-ephemeral-block
-        isDefault: true
-        reclaimPolicy: Delete
-        allowVolumeExpansion: true
-        volumeBindingMode: "Immediate"
-        mountOptions:
-          - discard
-        parameters:
-          imageFormat: "2"
-          imageFeatures: layering
-          csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
-          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
-          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
-          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
-          csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
-          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
-          csi.storage.k8s.io/fstype: ext4
     - name: ceph-persistent-block
       spec:
         failureDomain: host
         replicated:
           size: 3
-        crushRoot: persistent
       storageClass:
         enabled: true
         name: ceph-persistent-block
@@ -120,13 +95,11 @@ rook-ceph-cluster:
         metadataPool:
           replicated:
             size: 3
-          crushRoot: persistent
         dataPools:
           - failureDomain: host
             replicated:
               size: 3
             name: data0
-            crushRoot: persistent
         metadataServer:
           activeCount: 1
           activeStandby: true

@@ -2,6 +2,7 @@
 skipCiliumExternals: true
 skipNetworkPolicy: true
 skipVolsyncSecrets: true
+skipAuthelia: true
 
 argo-cd:
   global:
@@ -60,27 +61,15 @@ rook-ceph-cluster:
         - name: naruto
           devices:
             - name: /dev/vdb
-              config:
-                crushRoot: ephemeral
             - name: /dev/vdc
-              config:
-                crushRoot: persistent
         - name: sakura
           devices:
             - name: /dev/vdb
-              config:
-                crushRoot: ephemeral
             - name: /dev/vdc
-              config:
-                crushRoot: persistent
         - name: sasuke
           devices:
             - name: /dev/vdb
-              config:
-                crushRoot: ephemeral
             - name: /dev/vdc
-              config:
-                crushRoot: persistent
 
   configOverride: |
     [global]
@@ -95,9 +84,6 @@ rook-ceph-cluster:
 
     [mon]
     mon_data_avail_warn = 15
-
-    [osd]
-    osd crush update on start = false
 
   ingress:
     dashboard:

@@ -7,7 +7,7 @@ kind: Job
 metadata:
   generateName: authelia-init-db-
   annotations:
-    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:

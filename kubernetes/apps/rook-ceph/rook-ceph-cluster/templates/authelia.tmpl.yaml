@@ -1,4 +1,5 @@
 ---
+# {{ if not .Values.skipAuthelia }}
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/configmap-v1.json
 # yamllint enable rule:line-length
@@ -11,3 +12,4 @@ metadata:
 data:
   argocd.yaml: |
 {{ .Files.Get "files/authelia.yaml" | indent 4 }}
+# {{ end }}
