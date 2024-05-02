@@ -7,7 +7,7 @@ terraform {
 
     migadu = {
       source  = "metio/migadu"
-      version = "2024.4.25"
+      version = "2024.5.2"
     }
   }
 
