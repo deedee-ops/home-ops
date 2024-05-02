@@ -19,7 +19,7 @@ gha-runner-scale-set:
       containers:
         - name: runner
           # renovate: datasource=docker depName=ghcr.io/actions/actions-runner
-          image: "ghcr.io/actions/actions-runner:2.316.0"
+          image: "ghcr.io/actions/actions-runner:2.316.1"
           command: ["/home/runner/run.sh"]
   controllerServiceAccount:
     name: gha-runner-scale-set-controller
