@@ -67,6 +67,8 @@ tasks:
       - kubectl -n {{.namespace}} patch replicationsources backup-{{.rsrc}}-{{.claim}} --type merge -p '{"spec":{"trigger":{"manual":"{{.ts}}"}}}'
       - bash {{.waitForJobScript}} volsync-src-backup-{{.rsrc}}-{{.claim}} {{.namespace}}
       - kubectl -n {{.namespace}} wait job/volsync-src-backup-{{.rsrc}}-{{.claim}} --for condition=complete --timeout=120m
+      - >-
+        kubectl -n {{.namespace}} patch replicationsources backup-{{.rsrc}}-{{.claim}} --type json -p '[{"op": "remove", "path": "/spec/trigger/manual"}]'
       # TODO: Find a way to output logs
       # Error from server (NotFound): jobs.batch "volsync-src-zzztest" not found
       # - kubectl -n {{.namespace}} logs job/volsync-src-{{.rsrc}}
