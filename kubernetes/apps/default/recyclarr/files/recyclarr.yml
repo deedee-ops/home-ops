@@ -204,7 +204,7 @@ radarr:
 sonarr:
   sonarr:
     base_url: http://sonarr.default.svc.cluster.local:8989
-    api_key: "<path:kubernetes/data/internal/sonarr#SONARR__API_KEY>"
+    api_key: "<path:kubernetes/data/internal/sonarr#SONARR__AUTH__APIKEY>"
 
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
