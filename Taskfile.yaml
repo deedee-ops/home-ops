@@ -59,6 +59,8 @@ tasks:
       - helm dependency build kubernetes/apps/rook-ceph/rook-ceph/
       - helm template -n rook-ceph rook-ceph kubernetes/apps/rook-ceph/rook-ceph/ | kubectl apply -n rook-ceph -f -
       - kubectl -n rook-ceph rollout status deployment rook-ceph-operator --timeout=1800s
+      # wait for discover pods to spawn
+      - sleep 10
       - kubectl -n rook-ceph rollout status daemonset rook-discover --timeout=1800s
       - helm dependency build kubernetes/apps/rook-ceph/rook-ceph-cluster/
       - helm template -n rook-ceph -f talos/{{ .cluster }}/values.bootstrap.yaml rook-ceph-cluster kubernetes/apps/rook-ceph/rook-ceph-cluster/ | kubectl apply -n rook-ceph -f -
@@ -92,8 +94,13 @@ tasks:
       - kubectl apply -f kubernetes/apps/tools/system-upgrade-controller/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application system-upgrade-controller
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application system-upgrade-controller
-      - echo -e '\\n\\nWAIT FOR SYSTEM-UPGRADE-CONTROLLER TO DO THE INITIAL SELF-REFRESH UPGRADE OF TALOS\\n'
+      - sleep 10
+      - kubectl -n tools wait --for=condition=Complete --timeout=3600s plan talos
+      - kubectl -n tools wait --for=condition=Complete --timeout=3600s plan kubernetes
+      - kubectl wait --for=condition=Ready nodes --all --timeout=3600s
+      - echo -e '\\n\\nENSURE SYSTEM-UPGRADE-CONTROLLER DID THE INITIAL SELF-REFRESH UPGRADE\\n - all nodes should have plan.upgrade.cattle.io/talos and control-plane nodes should have plan.upgrade.cattle.io/kubernetes annotations\\n- ensure all pods are running\\n'
       - read test
+
       - kubectl apply -f kubernetes/apps/tools/spegel/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application spegel
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application spegel

@@ -59,7 +59,7 @@ gitea:
         gitea,gitea-init,gitea-inline-config,gitea-ldap,gitea-registry,gitea-secret
   persistence:
     enabled: true
-    storageClass: ceph-persistent-filesystem
+    storageClass: ceph-filesystem
     size: 20Gi
     accessModes:
       - ReadWriteMany

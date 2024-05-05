@@ -29,10 +29,10 @@ spec:
     repository: restic-home-assistant-home-assistant-config
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 5Gi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -66,7 +66,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: ceph-persistent-block
+  storageClassName: ceph-block
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -82,11 +82,11 @@ spec:
     repository: restic-home-assistant-home-assistant-config
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-block
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 5Gi
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     capacity: 5Gi

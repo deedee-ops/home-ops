@@ -5,6 +5,19 @@ skipAuthelia: false
 
 rook-ceph-cluster:
   operatorNamespace: rook-ceph
+  configOverride: |
+    [global]
+    bdev_enable_discard = true
+    bdev_async_discard = true
+    osd_class_update_on_start = false
+
+    public network = 10.254.21.0/24
+    cluster network = 10.254.21.0/24
+    public addr = ""
+    cluster addr = ""
+
+    [mon]
+    mon_data_avail_warn = 15
   monitoring:
     enabled: true
     createPrometheusRules: true
@@ -39,6 +52,16 @@ rook-ceph-cluster:
     storage:
       useAllNodes: false
       useAllDevices: false
+      nodes:
+        - name: blossom
+          devices:
+            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B768689347B
+        - name: bubbles
+          devices:
+            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B768689354D
+        - name: buttercup
+          devices:
+            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B7686893567
 
     resources:
       mgr:
@@ -65,14 +88,14 @@ rook-ceph-cluster:
     isDefault: true
     deletionPolicy: Delete
   cephBlockPools:
-    - name: ceph-persistent-block
+    - name: ceph-block
       spec:
         failureDomain: host
         replicated:
           size: 3
       storageClass:
         enabled: true
-        name: ceph-persistent-block
+        name: ceph-block
         isDefault: false
         reclaimPolicy: Delete
         allowVolumeExpansion: true
@@ -90,7 +113,7 @@ rook-ceph-cluster:
           csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
           csi.storage.k8s.io/fstype: ext4
   cephFileSystems:
-    - name: ceph-persistent-filesystem
+    - name: ceph-filesystem
       spec:
         metadataPool:
           replicated:
@@ -112,7 +135,7 @@ rook-ceph-cluster:
       storageClass:
         enabled: true
         isDefault: false
-        name: ceph-persistent-filesystem
+        name: ceph-filesystem
         pool: data0
         reclaimPolicy: Delete
         allowVolumeExpansion: true

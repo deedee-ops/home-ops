@@ -43,10 +43,10 @@ spec:
     repository: restic-mail-archive-mail-archive-config
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 256Mi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -78,10 +78,10 @@ spec:
     repository: restic-mail-archive-mail-archive-data
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 60Gi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -115,7 +115,7 @@ spec:
   resources:
     requests:
       storage: 256Mi
-  storageClassName: ceph-persistent-block
+  storageClassName: ceph-block
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
 apiVersion: v1
@@ -134,7 +134,7 @@ spec:
   resources:
     requests:
       storage: 60Gi
-  storageClassName: ceph-persistent-block
+  storageClassName: ceph-block
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -150,11 +150,11 @@ spec:
     repository: restic-mail-archive-mail-archive-config
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-block
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 60Gi
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     capacity: 256Mi
@@ -180,11 +180,11 @@ spec:
     repository: restic-mail-archive-mail-archive-data
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-block
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 60Gi
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     capacity: 60Gi

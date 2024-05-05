@@ -29,10 +29,10 @@ spec:
     repository: restic-jellystat-jellystat-backups
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 1Gi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -59,41 +59,41 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  # dataSourceRef:
-  #   kind: ReplicationDestination
-  #   apiGroup: volsync.backube
-  #   name: init-jellystat-jellystat-backups
+  dataSourceRef:
+    kind: ReplicationDestination
+    apiGroup: volsync.backube
+    name: init-jellystat-jellystat-backups
   resources:
     requests:
       storage: 1Gi
-  storageClassName: ceph-persistent-block
-# ---
-# # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
-# apiVersion: volsync.backube/v1alpha1
-# kind: ReplicationDestination
-# metadata:
-#   name: init-jellystat-jellystat-backups
-#   annotations:
-#     argocd.argoproj.io/sync-wave: "-1"
-# spec:
-#   trigger:
-#     manual: restore-init
-#   restic:
-#     repository: restic-jellystat-jellystat-backups
-#     copyMethod: Snapshot
-#     volumeSnapshotClassName: ceph-block
-#     cacheStorageClassName: ceph-persistent-block
-#     cacheAccessModes:
-#       - ReadWriteOnce
-#     cacheCapacity: 1Gi
-#     storageClassName: ceph-persistent-block
-#     accessModes:
-#       - ReadWriteOnce
-#     capacity: 1Gi
-#     moverSecurityContext:
-#       runAsNonRoot: true
-#       fsGroup: 65000
-#       runAsUser: 65000
-#       runAsGroup: 65000
-#       seccompProfile:
-#         type: RuntimeDefault
+  storageClassName: ceph-block
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: init-jellystat-jellystat-backups
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  trigger:
+    manual: restore-init
+  restic:
+    repository: restic-jellystat-jellystat-backups
+    copyMethod: Snapshot
+    volumeSnapshotClassName: ceph-block
+    cacheStorageClassName: ceph-block
+    cacheAccessModes:
+      - ReadWriteOnce
+    cacheCapacity: 1Gi
+    storageClassName: ceph-block
+    accessModes:
+      - ReadWriteOnce
+    capacity: 1Gi
+    moverSecurityContext:
+      runAsNonRoot: true
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      seccompProfile:
+        type: RuntimeDefault

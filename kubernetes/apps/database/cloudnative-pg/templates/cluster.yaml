@@ -20,12 +20,12 @@ spec:
   primaryUpdateStrategy: unsupervised
   storage:
     size: 20Gi
-    storageClass: ceph-persistent-block
+    storageClass: ceph-block
   superuserSecret:
     name: cloudnative-pg-secret
   bootstrap:
     recovery:
-      source: &previousCluster postgres-v3
+      source: &previousCluster postgres-v4
   postgresql:
     parameters:
       max_connections: "600"
@@ -40,7 +40,7 @@ spec:
         maxParallel: 8
       destinationPath: "s3://<path:kubernetes/data/internal/base#S3_BUCKET>/cloudnative-pg/"
       endpointURL: "<path:kubernetes/data/internal/base#S3_URL>"
-      serverName: &currentCluster postgres-v4
+      serverName: &currentCluster postgres-v5
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
