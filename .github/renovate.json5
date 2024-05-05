@@ -23,8 +23,6 @@
   ],
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"],
-  "assigneesFromCodeOwners": true,
-  "reviewersFromCodeOwners": true,
   "ignorePaths": [
     "**/*.sops.*",
     "kubernetes/apps/monitoring/kyverno/templates/*.yaml",
