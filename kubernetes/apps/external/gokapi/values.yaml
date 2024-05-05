@@ -101,7 +101,7 @@ app-template:
 
     data:
       type: persistentVolumeClaim
-      storageClass: ceph-block
+      storageClass: local-path
       size: 1Gi
       accessMode: ReadWriteOnce
       advancedMounts:

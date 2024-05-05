@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: democratic-csi-local-path
+version: 1.0.0
+type: application
+dependencies:
+  - name: democratic-csi
+    version: 0.14.6
+    repository: https://democratic-csi.github.io/charts/
