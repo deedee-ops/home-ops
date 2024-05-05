@@ -106,7 +106,7 @@ rules:
 
   - alert: KubernetesPersistentvolumeclaimPending
     expr: 'kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1'
-    for: 2m
+    for: 10m
     labels:
       severity: warning
     annotations:
