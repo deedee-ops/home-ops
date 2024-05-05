@@ -29,10 +29,10 @@ spec:
     repository: restic-homebox-homebox-data
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 10Gi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -66,7 +66,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: ceph-persistent-block
+  storageClassName: ceph-block
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -82,11 +82,11 @@ spec:
     repository: restic-homebox-homebox-data
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-block
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 10Gi
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     capacity: 10Gi

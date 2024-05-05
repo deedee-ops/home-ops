@@ -55,36 +55,6 @@ coredns:
         - name: loadbalance
 
 rook-ceph-cluster:
-  cephClusterSpec:
-    storage:
-      nodes:
-        - name: blossom
-          devices:
-            - name: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R456109
-            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B768689347B
-        - name: bubbles
-          devices:
-            - name: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R490212
-            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B768689354D
-        - name: buttercup
-          devices:
-            - name: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R470205
-            - name: /dev/disk/by-id/ata-KINGSTON_SEDC600M960G_50026B7686893567
-
-  configOverride: |
-    [global]
-    bdev_enable_discard = true
-    bdev_async_discard = true
-    osd_class_update_on_start = false
-
-    public network = 10.254.21.0/24
-    cluster network = 10.254.21.0/24
-    public addr = ""
-    cluster addr = ""
-
-    [mon]
-    mon_data_avail_warn = 15
-
   ingress:
     dashboard:
       host: false

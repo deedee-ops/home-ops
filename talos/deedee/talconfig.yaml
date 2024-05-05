@@ -117,6 +117,10 @@ nodes:
     kernelModules:
       - name: thunderbolt
       - name: thunderbolt_net
+    machineDisks:
+      - device: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R456109
+        partitions:
+          - mountpoint: /var/local-disk
     disableSearchDomain: true
     networkInterfaces:
       - deviceSelector:
@@ -165,6 +169,10 @@ nodes:
     kernelModules:
       - name: thunderbolt
       - name: thunderbolt_net
+    machineDisks:
+      - device: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R490212
+        partitions:
+          - mountpoint: /var/local-disk
     disableSearchDomain: true
     networkInterfaces:
       - deviceSelector:
@@ -211,6 +219,10 @@ nodes:
     kernelModules:
       - name: thunderbolt
       - name: thunderbolt_net
+    machineDisks:
+      - device: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R470205
+        partitions:
+          - mountpoint: /var/local-disk
     disableSearchDomain: true
     networkInterfaces:
       - deviceSelector:
@@ -359,6 +371,9 @@ controlPlane:
               metadata:
                 labels:
                   kubernetes.io/metadata.name: tools
+                  pod-security.kubernetes.io/audit: privileged
+                  pod-security.kubernetes.io/enforce: privileged
+                  pod-security.kubernetes.io/warn: privileged
                 name: tools
               ---
               apiVersion: v1

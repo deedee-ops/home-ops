@@ -105,11 +105,11 @@ vault:
 
     auditStorage:
       enabled: true
-      storageClass: ceph-persistent-block
+      storageClass: ceph-block
 
     dataStorage:
       enabled: true
-      storageClass: ceph-persistent-block
+      storageClass: ceph-block
 
     standalone:
       enabled: false

@@ -29,10 +29,10 @@ spec:
     repository: restic-paperless-ngx-paperless-ngx-config
     volumeSnapshotClassName: ceph-block
     cacheCapacity: 1Gi
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     retain:
@@ -66,7 +66,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: ceph-persistent-block
+  storageClassName: ceph-block
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -82,11 +82,11 @@ spec:
     repository: restic-paperless-ngx-paperless-ngx-config
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-block
-    cacheStorageClassName: ceph-persistent-block
+    cacheStorageClassName: ceph-block
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 1Gi
-    storageClassName: ceph-persistent-block
+    storageClassName: ceph-block
     accessModes:
       - ReadWriteOnce
     capacity: 1Gi
@@ -127,10 +127,10 @@ spec:
     repository: restic-paperless-ngx-paperless-ngx-data
     volumeSnapshotClassName: ceph-filesystem
     cacheCapacity: 20Gi
-    cacheStorageClassName: ceph-persistent-filesystem
+    cacheStorageClassName: ceph-filesystem
     cacheAccessModes:
       - ReadWriteOnce
-    storageClassName: ceph-persistent-filesystem
+    storageClassName: ceph-filesystem
     accessModes:
       - ReadWriteOnce
     retain:
@@ -164,7 +164,7 @@ spec:
   resources:
     requests:
       storage: 20Gi
-  storageClassName: ceph-persistent-filesystem
+  storageClassName: ceph-filesystem
 ---
 # yaml-language-server: $schema=https://deedee-ops.github.io/schemas/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
@@ -180,11 +180,11 @@ spec:
     repository: restic-paperless-ngx-paperless-ngx-data
     copyMethod: Snapshot
     volumeSnapshotClassName: ceph-filesystem
-    cacheStorageClassName: ceph-persistent-filesystem
+    cacheStorageClassName: ceph-filesystem
     cacheAccessModes:
       - ReadWriteOnce
     cacheCapacity: 20Gi
-    storageClassName: ceph-persistent-filesystem
+    storageClassName: ceph-filesystem
     accessModes:
       - ReadWriteOnce
     capacity: 20Gi
