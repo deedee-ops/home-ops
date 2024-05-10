@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: init-db
-          image: ghcr.io/deedee-ops/postgres-init:16.2
+          image: ghcr.io/deedee-ops/postgres-init:16.3
           volumeMounts:
             - mountPath: /secrets
               name: secrets
