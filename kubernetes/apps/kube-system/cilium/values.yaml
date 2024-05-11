@@ -107,14 +107,5 @@ cilium:
         - NET_ADMIN
         - SYS_ADMIN
         - SYS_RESOURCE
-
-  # encapsulate packets via tunneling L2 over L3, slower, but more reliable
-  autoDirectNodeRoutes: false  # cannot be true for tunneling
-  routingMode: tunnel
-  socketLB:
-    hostNamespaceOnly: true
-  tunnelProtocol: geneve  # using vxlan here will break VPN pod-gateway
-
-  # when implementing full BGP, remove this encapsulation and try
-  # autoDirectNodeRoutes: true
-  # routingMode: native
+  autoDirectNodeRoutes: true
+  routingMode: native
