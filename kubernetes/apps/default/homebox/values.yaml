@@ -70,13 +70,7 @@ app-template:
     homebox:
       className: internal
       annotations:
-        nginx.ingress.kubernetes.io/configuration-snippet: >-
-          more_set_headers "Content-Security-Policy:
-          default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
-          data: mediastream: blob: wss: https://*.rzegocki.dev;
-          connect-src 'self' https://api.unisvg.com;
-          object-src 'none';
-          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/homebox;";
+        nginx.ingress.kubernetes.io/configuration-snippet: 'more_clear_headers "Content-Security-Policy";'
         gethomepage.dev/enabled: "true"
         gethomepage.dev/group: Apps
         gethomepage.dev/name: Homebox
