@@ -14,6 +14,7 @@ app-template:
     zigbee2mqtt:
       annotations:
         reloader.stakater.com/auto: "true"
+      replicas: 0  # disable temporary
       containers:
         app:
           image:
