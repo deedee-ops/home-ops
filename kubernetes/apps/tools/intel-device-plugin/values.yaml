@@ -6,6 +6,7 @@ intel-device-plugins-gpu:
   nodeFeatureRule: false
   image:
     hub: ghcr.io/deedee-ops
+  tolerations: []  # without it, gpu plugin manifest defaults to `tolerations: null` which is against schema
 
 intel-device-plugins-operator:
   manager:
