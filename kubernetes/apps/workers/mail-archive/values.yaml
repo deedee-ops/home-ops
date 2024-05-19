@@ -81,7 +81,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/roundcube
-            tag: 1.6.6
+            tag: 1.6.7
             pullPolicy: IfNotPresent
 
           probes:
