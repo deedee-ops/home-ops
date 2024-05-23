@@ -1,0 +1,56 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# yamllint enable rule:line-length
+version: "3.8"
+services:
+  nginx-proxy-manager:
+    restart: always
+    container_name: nginx-proxy-manager
+    image: ghcr.io/deedee-ops/nginx-proxy-manager:2.11.2
+    networks:
+      - dexter
+    ports:
+      - "80:80"
+      - "8181:81"
+      - "443:443"
+    environment:
+      DISABLE_IPV6: "true"
+      TZ: "Europe/Warsaw"
+    volumes:
+      - /data/nginx-proxy-manager/data:/data
+      - /data/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+  omada-controller:
+    restart: always
+    container_name: omada-controller
+    image: ghcr.io/deedee-ops/omada-controller:5.13-chromium
+    # network_mode: host
+    networks:
+      dexter:
+      mgmt:
+        ipv4_address: 192.168.0.50
+    ports:
+      - "27001:27001/udp"
+      - "29810:29810/udp"
+      - "29811:29811/tcp"
+      - "29812:29812/tcp"
+      - "29813:29813/tcp"
+      - "29814:29814/tcp"
+      - "29815:29815/tcp"
+    environment:
+      TZ: "Europe/Warsaw"
+    volumes:
+      - /data/omada/data:/opt/tplink/EAPController/data
+      - /data/omada/logs:/opt/tplink/EAPController/logs
+networks:
+  dexter:
+    name: dexter
+    external: true
+  mgmt:
+    driver: macvlan
+    driver_opts:
+      parent: enp3s0
+    ipam:
+      config:
+        - subnet: "192.168.0.0/24"
+          ip_range: "192.168.0.48/28"
