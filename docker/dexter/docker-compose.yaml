@@ -2,17 +2,43 @@
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # yamllint enable rule:line-length
-version: "3.8"
 services:
+  wg-easy:
+    restart: always
+    container_name: wg-easy
+    image: ghcr.io/wg-easy/wg-easy:13
+    networks:
+      dexter:
+    environment:
+      LANG: en
+      PASSWORD: ${WG_EASY_PASSWORD}
+      PORT: 50000
+      UI_CHART_TYPE: 2
+      UI_TRAFFIC_STATS: "true"
+      WG_ALLOWED_IPS: "10.100.0.0/16, 10.200.0.0/16"
+      WG_DEFAULT_ADDRESS: 10.150.1.x
+      WG_DEFAULT_DNS: 10.100.1.1
+      WG_HOST: "homelab.${ROOT_DOMAIN}"
+      WG_PERSISTENT_KEEPALIVE: 25
+      WG_PORT: ${WG_EASY_WG_PORT}
+    ports:
+      - "${WG_EASY_WG_PORT}:${WG_EASY_WG_PORT}/udp"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    volumes:
+      - /data/wg-easy/etc:/etc/wireguard
   nginx-proxy-manager:
     restart: always
     container_name: nginx-proxy-manager
     image: ghcr.io/deedee-ops/nginx-proxy-manager:2.11.2
     networks:
-      - dexter
+      dexter:
     ports:
       - "80:80"
-      - "8181:81"
       - "443:443"
     environment:
       DISABLE_IPV6: "true"
@@ -27,15 +53,10 @@ services:
     networks:
       dexter:
       mgmt:
-        ipv4_address: 192.168.0.50
-    ports:
-      - "27001:27001/udp"
-      - "29810:29810/udp"
-      - "29811:29811/tcp"
-      - "29812:29812/tcp"
-      - "29813:29813/tcp"
-      - "29814:29814/tcp"
-      - "29815:29815/tcp"
+        ipv4_address: 10.42.2.1
+      # uncomment when bootstrapping omada switch from scratch
+      # bootstrap:
+      #   ipv4_address: 192.168.0.130
     environment:
       TZ: "Europe/Warsaw"
     volumes:
@@ -45,11 +66,20 @@ networks:
   dexter:
     name: dexter
     external: true
+  # uncomment when bootstrapping omada switch from scratch
+  # bootstrap:
+  #   driver: macvlan
+  #   driver_opts:
+  #     parent: enp3s0
+  #   ipam:
+  #     config:
+  #       - subnet: 192.168.0.0/24
+  #         ip_range: 192.168.0.128/25
   mgmt:
     driver: macvlan
     driver_opts:
-      parent: enp3s0
+      parent: enp6s18
     ipam:
       config:
-        - subnet: "192.168.0.0/24"
-          ip_range: "192.168.0.48/28"
+        - subnet: 10.42.0.0/16
+          ip_range: 10.42.0.0/16
