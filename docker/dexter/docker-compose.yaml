@@ -75,7 +75,7 @@ networks:
   omada:
     driver: macvlan
     driver_opts:
-      parent: enp6s18
+      parent: enp6s18.42
     ipam:
       config:
         - subnet: 10.42.2.0/24
