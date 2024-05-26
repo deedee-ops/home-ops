@@ -9,9 +9,6 @@ services:
     image: ghcr.io/wg-easy/wg-easy:13
     networks:
       dexter:
-      trusted:
-        priority: 1000
-        ipv4_address: 10.100.150.1
     environment:
       LANG: en
       PASSWORD: ${WG_EASY_PASSWORD}
@@ -39,7 +36,7 @@ services:
     container_name: nginx-proxy-manager
     image: ghcr.io/deedee-ops/nginx-proxy-manager:2.11.2
     networks:
-      - dexter
+      dexter:
     ports:
       - "80:80"
       - "443:443"
@@ -82,11 +79,3 @@ networks:
       config:
         - subnet: 10.42.0.0/16
           ip_range: 10.42.0.0/16
-  trusted:
-    driver: macvlan
-    driver_opts:
-      parent: enp1s0f0
-    ipam:
-      config:
-        - subnet: 10.100.0.0/16
-          ip_range: 10.100.0.0/16
