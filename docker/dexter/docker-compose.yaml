@@ -62,6 +62,7 @@ services:
       - "29813:29813/tcp"
       - "29814:29814/tcp"
       - "29815:29815/tcp"
+      - "29816:29816/tcp"
     environment:
       TZ: "Europe/Warsaw"
     volumes:
