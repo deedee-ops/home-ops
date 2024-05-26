@@ -52,7 +52,7 @@ services:
     image: ghcr.io/deedee-ops/omada-controller:5.13-chromium
     networks:
       dexter:
-      mgmt:
+      omada:
         ipv4_address: 10.42.2.1
     ports:
       - "27001:27001/udp"
@@ -72,11 +72,11 @@ networks:
   dexter:
     name: dexter
     external: true
-  mgmt:
+  omada:
     driver: macvlan
     driver_opts:
       parent: enp6s18
     ipam:
       config:
-        - subnet: 10.42.0.0/16
-          ip_range: 10.42.0.0/16
+        - subnet: 10.42.2.0/24
+          ip_range: 10.42.2.0/24
