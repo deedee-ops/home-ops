@@ -49,7 +49,7 @@ services:
   omada-controller:
     restart: always
     container_name: omada-controller
-    image: ghcr.io/deedee-ops/omada-controller@sha256:f69ed24b334cba494477b9514e826c828ccc276513ed37c24ea2eb6c50fe29be
+    image: ghcr.io/deedee-ops/omada-controller
     networks:
       dexter:
       mgmt:
