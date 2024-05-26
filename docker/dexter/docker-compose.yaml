@@ -50,19 +50,20 @@ services:
     restart: always
     container_name: omada-controller
     image: ghcr.io/deedee-ops/omada-controller:5.13-chromium
-    networks:
-      dexter:
-      omada:
-        ipv4_address: 10.42.2.10
-    ports:
-      - "27001:27001/udp"
-      - "29810:29810/udp"
-      - "29811:29811/tcp"
-      - "29812:29812/tcp"
-      - "29813:29813/tcp"
-      - "29814:29814/tcp"
-      - "29815:29815/tcp"
-      - "29816:29816/tcp"
+    network_mode: host
+    #networks:
+      #dexter:
+      #omada:
+        #ipv4_address: 10.42.2.10
+    #ports:
+      #- "27001:27001/udp"
+      #- "29810:29810/udp"
+      #- "29811:29811/tcp"
+      #- "29812:29812/tcp"
+      #- "29813:29813/tcp"
+      #- "29814:29814/tcp"
+      #- "29815:29815/tcp"
+      #- "29816:29816/tcp"
     environment:
       TZ: "Europe/Warsaw"
     volumes:
@@ -72,11 +73,11 @@ networks:
   dexter:
     name: dexter
     external: true
-  omada:
-    driver: macvlan
-    driver_opts:
-      parent: enp6s18.42
-    ipam:
-      config:
-        - subnet: 10.42.2.0/24
-          ip_range: 10.42.2.0/24
+  #omada:
+    #driver: macvlan
+    #driver_opts:
+      #parent: enp6s18.42
+    #ipam:
+      #config:
+        #- subnet: 10.42.2.0/24
+          #ip_range: 10.42.2.0/24
