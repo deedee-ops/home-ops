@@ -53,7 +53,7 @@ services:
     networks:
       dexter:
       omada:
-        ipv4_address: 10.42.2.1
+        ipv4_address: 10.42.2.10
     ports:
       - "27001:27001/udp"
       - "29810:29810/udp"
