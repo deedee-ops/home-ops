@@ -2,14 +2,16 @@
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 # yamllint enable rule:line-length
-version: "3.8"
 services:
   wg-easy:
     restart: always
     container_name: wg-easy
     image: ghcr.io/wg-easy/wg-easy:13
     networks:
-      - dexter
+      dexter:
+      trusted:
+        priority: 1000
+        ipv4_address: 10.100.150.1
     environment:
       LANG: en
       PASSWORD: ${WG_EASY_PASSWORD}
@@ -80,3 +82,11 @@ networks:
       config:
         - subnet: 10.42.0.0/16
           ip_range: 10.42.0.0/16
+  trusted:
+    driver: macvlan
+    driver_opts:
+      parent: enp1s0f0
+    ipam:
+      config:
+        - subnet: 10.100.0.0/16
+          ip_range: 10.100.0.0/16
