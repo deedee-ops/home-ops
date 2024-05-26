@@ -28,7 +28,7 @@ services:
     networks:
       dexter:
       mgmt:
-        ipv4_address: 192.168.0.50
+        ipv4_address: 10.42.2.1
     ports:
       - "27001:27001/udp"
       - "29810:29810/udp"
@@ -49,8 +49,8 @@ networks:
   mgmt:
     driver: macvlan
     driver_opts:
-      parent: enp3s0
+      parent: enp6s18
     ipam:
       config:
-        - subnet: "192.168.0.0/24"
-          ip_range: "192.168.0.48/28"
+        - subnet: 10.42.0.0/16
+          ip_range: 10.42.0.0/16
