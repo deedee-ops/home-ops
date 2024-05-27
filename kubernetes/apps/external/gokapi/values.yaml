@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/gokapi
-            tag: 1.8.2
+            tag: 1.8.3
 
           env:
             TZ: Europe/Warsaw
