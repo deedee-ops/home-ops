@@ -21,7 +21,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/jellyfin
-            tag: 10.9.3
+            tag: 10.9.4
             pullPolicy: IfNotPresent
 
           env:
