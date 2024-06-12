@@ -18,8 +18,8 @@ name: "Renovate"
         description: Renovate version
         default: latest
         required: false
-  schedule:
-    - cron: "0 * * * *"  # Every hour
+  # schedule:
+  #   - cron: "0 * * * *"  # Every hour
   push:
     branches:
       - master
