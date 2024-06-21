@@ -50,3 +50,6 @@ talenv*
 ### direnv ###
 .direnv
 .devenv
+
+# nix
+result
