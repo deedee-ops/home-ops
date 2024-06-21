@@ -8,11 +8,18 @@
 
   outputs = { self, nixpkgs, sops-nix, ... }@inputs:
   {
-    # Please replace my-nixos with your hostname
     nixosConfigurations.router = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./machines/router
+
+        sops-nix.nixosModules.sops
+      ];
+    };
+    nixosConfigurations.supervisor = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./machines/supervisor
 
         sops-nix.nixosModules.sops
       ];

@@ -3,6 +3,9 @@
   # nixos fw messes up custom nftables config
   networking.firewall.enable = false;
 
+  # enable NAT
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+
   networking.nftables = {
     enable = true;
     flushRuleset = true;
