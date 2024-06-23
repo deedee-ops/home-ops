@@ -2,7 +2,6 @@
 {
   systemd.network = {
     enable = true;
-    wait-online.anyInterface = true;
     links = {
       "1-wan" = {
         matchConfig.PermanentMACAddress = "00:19:99:ed:37:04";
@@ -33,21 +32,28 @@
       };
       "42-management" = {
         matchConfig.Name = "mgmt0";
+        linkConfig = {
+          RequiredForOnline = "routable";
+        };
         address = [
           "10.42.1.1/16"
         ];
       };
       "100-trusted" = {
         matchConfig.Name = "trst0";
+        linkConfig = {
+          RequiredForOnline = "routable";
+          MTUBytes = "9000";
+        };
         address = [
           "10.100.1.1/16"
         ];
-        linkConfig = {
-          MTUBytes = "9000";
-        };
       };
       "200-untrusted" = {
         matchConfig.Name = "untrst0";
+        linkConfig = {
+          RequiredForOnline = "routable";
+        };
         address = [
           "10.200.1.1/16"
         ];

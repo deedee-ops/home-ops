@@ -31,9 +31,17 @@
       }
 
       table ip nat {
+        chain PREROUTING {
+          type nat hook prerouting priority dstnat; policy accept;
+          tcp dport 10000 dnat to 192.168.100.1:80
+          tcp dport 10001 dnat to 10.100.1.10:5000
+        }
+
         chain POSTROUTING {
           type nat hook postrouting priority srcnat; policy accept;
           oifname "wan0" masquerade
+          ip daddr 192.168.100.1 masquerade
+          ip daddr 10.100.1.10 masquerade
         };
       };
     '';

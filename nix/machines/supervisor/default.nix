@@ -10,6 +10,8 @@
       ../../modules/ssh.nix
       ../../modules/users.nix
       ../../modules/vm.nix
+
+      (import ./modules/docker.nix { inherit pkgs; })
     ];
 
   # sops
