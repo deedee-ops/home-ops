@@ -107,7 +107,7 @@
               }
               {
                 name = "domain-name-servers";
-                data = "10.42.1.1";
+                data = "10.42.1.2";
               }
             ];
           }
@@ -122,14 +122,14 @@
             ];
             reservations = [
               {
+                # supervisor
+                "hw-address" = "00:00:0a:64:01:02";
+                "ip-address" = "10.100.1.2";
+              }
+              {
                 # mandark / NAS / 10gbe
                 "hw-address" = "e4:1d:53:37:56:41";
                 "ip-address" = "10.100.10.1";
-              }
-              {
-                # mandark / NAS
-                "hw-address" = "90:09:d0:1f:68:35";
-                "ip-address" = "10.100.10.2";
               }
             ];
             "option-data" = [
@@ -139,7 +139,7 @@
               }
               {
                 name = "domain-name-servers";
-                data = "10.100.1.1";
+                data = "10.100.1.2";
               }
             ];
           }
@@ -152,6 +152,13 @@
                 pool = "10.200.100.100 - 10.200.100.200";
               }
             ];
+            reservations = [
+              {
+                # supervisor
+                "hw-address" = "00:00:0a:c8:01:02";
+                "ip-address" = "10.200.1.2";
+              }
+            ];
             "option-data" = [
               {
                 name = "routers";
@@ -159,7 +166,7 @@
               }
               {
                 name = "domain-name-servers";
-                data = "10.200.1.1";
+                data = "10.200.1.2";
               }
             ];
           }

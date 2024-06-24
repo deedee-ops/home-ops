@@ -269,6 +269,7 @@ in
 
         router               IN  A   10.42.1.1
         supervisor           IN  A   10.42.1.2
+        dexter               IN  A   10.42.1.10
       '';
     };
 
