@@ -1,6 +1,7 @@
 { config, pkgs, lib, root_domain, ... }:
 let
   serial = lib.readFile "${pkgs.runCommand "timestamp" { env.when = builtins.currentTime; } "echo -n `date -d @$when +%s` > $out"}";
+  allowedNetworks = [ "10.42.0.0/16" "10.100.0.0/16" "10.200.0.0/16" ];
 in
 {
   sops = {
@@ -20,9 +21,15 @@ in
       chown named:named /etc/bind /etc/bind/zones || chown 995:994 /etc/bind /etc/bind/zones
       chmod 510 /etc/bind
       chmod 750 /etc/bind/zones
+      ${pkgs.bind}/sbin/rndc freeze home.arpa
+      ${pkgs.bind}/sbin/rndc freeze 100.10.in-addr.arpa
+      ${pkgs.bind}/sbin/rndc freeze 200.10.in-addr.arpa
     '';
     # "restart-bind" is alphabetically after "etc" script
     restart-bind.text = ''
+      ${pkgs.bind}/sbin/rndc thaw home.arpa
+      ${pkgs.bind}/sbin/rndc thaw 100.10.in-addr.arpa
+      ${pkgs.bind}/sbin/rndc thaw 200.10.in-addr.arpa
       ${pkgs.bind}/sbin/rndc sync
       ${pkgs.systemd}/bin/systemctl restart bind
     '';
@@ -32,117 +39,56 @@ in
     enable = true;
     forwarders = [];
     ipv4Only = true;
-    cacheNetworks = [ "10.42.0.0/16" "10.100.0.0/16" "10.200.0.0/16" ];
+    cacheNetworks = allowedNetworks;
     extraOptions = ''
       recursion yes;
       allow-recursion { any; };
       allow-transfer { none; };
     '';
-    extraConfig = ''
-      include "/etc/bind/acl.conf";
-      include "${config.sops.secrets."bind/dhcp_bind_key".path}";
-
-      view "base" {
-        match-clients { none; };
-
-        zone "home.arpa" {
-          type master;
-          file "/etc/bind/zones/home.arpa.zone";
+    zones = {
+      "home.arpa" = {
+        master = true;
+        file = "/etc/bind/zones/home.arpa.zone";
+        extraConfig = ''
           update-policy {
             grant dhcp-bind wildcard *.home.arpa A DHCID;
           };
-        };
+        '';
+        allowQuery = allowedNetworks;
       };
-
-      view "management-view" {
-        match-clients { management; };
-
-        include "/etc/bind/default-zones.conf";
-
-        zone "home.arpa" {
-          in-view "base";
-        };
-
-        zone "${root_domain}" {
-          type master;
-          file "/etc/bind/zones/management.${root_domain}.zone";
-        };
+      "${root_domain}" = {
+        master = true;
+        file = "/etc/bind/zones/${root_domain}.zone";
+        allowQuery = allowedNetworks;
       };
-
-      view "trusted-view" {
-        match-clients { trusted; };
-
-        include "/etc/bind/default-zones.conf";
-
-        zone "${root_domain}" {
-          type master;
-          file "/etc/bind/zones/trusted.${root_domain}.zone";
-        };
-
-        zone "home.arpa" {
-          in-view "base";
-        };
-
-        zone "100.10.in-addr.arpa" {
-          type master;
-          file "/etc/bind/zones/100.10.in-addr.arpa.zone";
+      "100.10.in-addr.arpa" = {
+        master = true;
+        file = "/etc/bind/zones/100.10.in-addr.arpa.zone";
+        extraConfig = ''
           update-policy {
             grant dhcp-bind wildcard *.100.10.in-addr.arpa PTR DHCID;
           };
-        };
+        '';
+        allowQuery = allowedNetworks;
       };
-
-      view "untrusted-view" {
-        match-clients { untrusted; };
-
-        include "/etc/bind/default-zones.conf";
-
-        zone "${root_domain}" {
-          type master;
-          file "/etc/bind/zones/untrusted.${root_domain}.zone";
-        };
-
-        zone "home.arpa" {
-          in-view "base";
-        };
-
-        zone "200.10.in-addr.arpa" {
-          type master;
-          file "/etc/bind/zones/200.10.in-addr.arpa.zone";
+      "200.10.in-addr.arpa" = {
+        master = true;
+        file = "/etc/bind/zones/200.10.in-addr.arpa.zone";
+        extraConfig = ''
           update-policy {
             grant dhcp-bind wildcard *.200.10.in-addr.arpa PTR DHCID;
           };
-        };
+        '';
+        allowQuery = allowedNetworks;
       };
-
-      view "default" {
-        match-clients { any; };
-        include "/etc/bind/default-zones.conf";
-      };
+    };
+    extraConfig = ''
+      include "${config.sops.secrets."bind/dhcp_bind_key".path}";
+      include "/etc/bind/default-zones.conf";
     '';
   };
 
   environment.etc = {
-    "bind/acl.conf" = {
-      enable = true;
-      user = "named";
-      group = "named";
-      mode = "0400";
-      text = ''
-        acl management {
-          10.42.0.0/16;
-        };
-
-        acl trusted {
-          10.100.0.0/16;
-        };
-
-        acl untrusted {
-          10.200.0.0/16;
-        };
-      '';
-    };
-
     "bind/default-zones.conf" = {
       enable = true;
       user = "named";
@@ -268,7 +214,7 @@ in
       '';
     };
 
-    "bind/zones/management.${root_domain}.zone" = {
+    "bind/zones/${root_domain}.zone" = {
       enable = true;
       user = "named";
       group = "named";
@@ -285,59 +231,18 @@ in
 
         @                    IN  NS  ns.${root_domain}.
         ns                   IN  A   10.42.1.1
-
-        supervisor           IN  A   10.42.1.2
-        dexter               IN  A   10.42.1.2
-        nas                  IN  A   10.42.1.2
-        netia                IN  A   10.42.1.2
-        omada                IN  A   10.42.1.2
-      '';
-    };
-
-    "bind/zones/trusted.${root_domain}.zone" = {
-      enable = true;
-      user = "named";
-      group = "named";
-      mode = "0400";
-      text = ''
-        $TTL  21600
-        @ IN SOA ns.${root_domain}. admin.${root_domain}. (
-            ${serial}    ; Serial
-                 21600    ; Refresh
-                  3600    ; Retry
-               2592000    ; Expire
-                172800 )  ; Negative Cache TTL
-        ;
-
-        @                    IN  NS  ns.${root_domain}.
         ns                   IN  A   10.100.1.1
-
-        nas                  IN  A   10.100.10.1
-
-        *                    IN  A   10.99.20.10
-      '';
-    };
-
-    "bind/zones/untrusted.${root_domain}.zone" = {
-      enable = true;
-      user = "named";
-      group = "named";
-      mode = "0400";
-      text = ''
-        $TTL  21600
-        @ IN SOA ns.${root_domain}. admin.${root_domain}. (
-            ${serial}    ; Serial
-                 21600    ; Refresh
-                  3600    ; Retry
-               2592000    ; Expire
-                172800 )  ; Negative Cache TTL
-        ;
-
-        @                    IN  NS  ns.${root_domain}.
         ns                   IN  A   10.200.1.1
 
-        jellyfin             IN  A   10.200.20.10
-        atuin                IN  A   10.200.20.11
+        ; management
+        supervisor           IN  A   10.42.1.2
+        dexter               IN  A   10.42.1.2
+        netia                IN  A   10.42.1.2
+        omada                IN  A   10.42.1.2
+
+        ; trusted
+        nas                  IN  A   10.100.10.1
+        *                    IN  A   10.99.20.10
       '';
     };
 
