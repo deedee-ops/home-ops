@@ -236,6 +236,7 @@ in
 
         ; management
         supervisor           IN  A   10.42.1.2
+        adguard              IN  A   10.42.1.2
         dexter               IN  A   10.42.1.2
         netia                IN  A   10.42.1.2
         omada                IN  A   10.42.1.2

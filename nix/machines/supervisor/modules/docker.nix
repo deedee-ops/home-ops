@@ -7,6 +7,7 @@
         supervisor = {
           settings = {
             imports = [
+              ./arion-adguard-home.nix
               ./arion-nginx-proxy-manager.nix
               ./arion-omada-controller.nix
             ];
