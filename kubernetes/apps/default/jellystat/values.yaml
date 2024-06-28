@@ -16,7 +16,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/jellystat-devel
-            tag: latest@sha256:ef66465e3558cc82f35fbf92ddd4fe9a781b66ed11b779a1664dee32c9e3e71a
+            tag: latest@sha256:81fe4e215bb37cc859d13f62a127b29107a8517ea8ca976ce3ea4d0ff6699f11
             pullPolicy: IfNotPresent
 
           env:
