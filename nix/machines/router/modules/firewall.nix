@@ -19,11 +19,12 @@
           type filter hook input priority filter; policy accept;
         }
         chain FORWARD {
-          type filter hook forward priority filter; policy accept;
+          type filter hook forward priority filter; policy drop;
           ct state related,established accept
           iifname "mgmt0" oifname "wan0" accept
           iifname "trst0" oifname "wan0" accept
           iifname "untrst0" oifname "wan0" accept
+          ip daddr 10.99.0.0/16 iifname "trst0" accept
         }
         chain OUTPUT {
           type filter hook output priority filter; policy accept;
