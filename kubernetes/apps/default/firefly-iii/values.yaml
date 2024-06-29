@@ -87,7 +87,7 @@ app-template:
         curl:
           image:
             repository: quay.io/curl/curl
-            tag: 8.7.1
+            tag: 8.8.0
             pullPolicy: IfNotPresent
           command:
             - sh
