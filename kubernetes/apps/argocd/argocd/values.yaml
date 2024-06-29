@@ -48,6 +48,19 @@ argo-cd:
           - CiliumIdentity
           clusters:
           - "*"
+        - apiGroups:
+          - actions.github.com
+          kinds:
+          - AutoscalingListener
+          clusters:
+          - "*"
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          kinds:
+          - Role
+          - RoleBinding
+          clusters:
+          - "*"
       url: "https://argocd.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       oidc.config: |
           name: Authelia
