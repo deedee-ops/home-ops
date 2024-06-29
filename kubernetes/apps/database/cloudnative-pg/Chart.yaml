@@ -6,7 +6,7 @@ version: 1.0.0
 type: application
 dependencies:
   - name: cloudnative-pg
-    version: 0.21.4
+    version: 0.21.5
     repository: https://cloudnative-pg.io/charts/
   - name: app-template
     version: 3.1.0
