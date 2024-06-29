@@ -19,17 +19,18 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/prowlarr-devel
-            tag: "1.17.2.4511"
+            tag: "1.19.0.4568"
             pullPolicy: IfNotPresent
 
           env:
-            PROWLARR__ANALYTICS_ENABLED: "False"
-            PROWLARR__AUTHENTICATION_METHOD: External
-            PROWLARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
-            PROWLARR__INSTANCE_NAME: Prowlarr
-            PROWLARR__LOG_LEVEL: info
-            PROWLARR__POSTGRES_PORT: "5432"
-            PROWLARR__THEME: dark
+            PROWLARR__APP__INSTANCENAME: "Prowlarr"
+            PROWLARR__APP__THEME: "dark"
+            PROWLARR__AUTH__METHOD: External
+            PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+            PROWLARR__LOG__ANALYTICSENABLED: "False"
+            PROWLARR__LOG__DBENABLED: "False"
+            PROWLARR__LOG__LEVEL: info
+            PROWLARR__UPDATE__BRANCH: develop
             TZ: Europe/Warsaw
 
           securityContext:
