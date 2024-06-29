@@ -103,8 +103,8 @@ While most of my infrastructure and workloads are self-hosted I do rely upon the
 | Dell Wyse 5070              | 3     | 128GB SSD    | -                                          | 8GB  | Talos Linux        | Kubernetes Masters  |
 | Intel NUC12WSHi5            | 3     | 128GB SSD    | 512GB NVMe & 1TB PLP SSD(rook-ceph)        | 64GB | Talos Linux        | Kubernetes Workers  |
 | Synology DS1621+            | 1     | 256GB SSD    | 4x4TB HDD (mirrored)                       | 32GB | Synology DSM       | NFS + Backup Server |
-| Protectli F4WB              | 1     | 256GB SSD    | -                                          | 8GB  | OpnSense (FreeBSD) | Router              |
-| MikroTik CSS326-24G-2S+RM   | 1     | -            | -                                          | -    | SwitchOS           | 1Gb Core Switch     |
+| Minisforum MS-01            | 1     | 1TB SSD      | -                                          | 48GB | Proxmox PVE        | Router + VMs        |
+| TP-LINK SG3428X-M2          | 1     | -            | -                                          | -    | -                  | 2.5Gb Core Switch   |
 
 ---
 
