@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: coredns
-    version: 1.29.0
+    version: 1.31.0
     repository: https://coredns.github.io/helm
