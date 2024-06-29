@@ -9,5 +9,5 @@ dependencies:
     version: 0.2.6
     repository: https://hivemq.github.io/helm-charts
   - name: hivemq-platform
-    version: 0.2.16
+    version: 0.2.18
     repository: https://hivemq.github.io/helm-charts
