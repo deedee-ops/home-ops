@@ -3,7 +3,7 @@
 radarr:
   radarr:
     base_url: http://radarr.default.svc.cluster.local:7878
-    api_key: "<path:kubernetes/data/internal/radarr#RADARR__API_KEY>"
+    api_key: "<path:kubernetes/data/internal/radarr#RADARR__AUTH__APIKEY>"
 
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
