@@ -23,7 +23,7 @@ app-template:
 
           image:
             repository: ghcr.io/atuinsh/atuin
-            tag: 18.2.0
+            tag: 18.3.0
             pullPolicy: IfNotPresent
 
           env:
