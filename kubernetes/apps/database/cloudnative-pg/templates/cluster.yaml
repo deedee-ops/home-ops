@@ -11,7 +11,7 @@ spec:
   instances: 2
   # yamllint disable rule:line-length
   # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=redhat
-  imageName: "ghcr.io/cloudnative-pg/postgresql:16.3-4"
+  imageName: "ghcr.io/cloudnative-pg/postgresql:17"
   # yamllint enable rule:line-length
   enableSuperuserAccess: true
   inheritedMetadata:
