@@ -1,5 +1,7 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nixpkgs-unstable, ... }:
 {
+  nixpkgs.overlays = [ (final: prev: { kea = nixpkgs-unstable.legacyPackages."x86_64-linux".kea; }) ];
+
   sops = {
     secrets = {
       "kea/dhcp_bind_key" = {
@@ -18,7 +20,7 @@
     description = "KEA daemon user";
     isSystemUser = true;
   };
-  users.groups.kea = {};
+  users.groups.kea = { };
 
   services.kea = {
     dhcp4 = {
@@ -140,6 +142,12 @@
               {
                 name = "domain-name-servers";
                 data = "10.100.1.2";
+              }
+              # static routes
+              {
+                code = 121;
+                name = "classless-static-route";
+                data = "10.99.0.0/16 - 10.100.1.1";
               }
             ];
           }

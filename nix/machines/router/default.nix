@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs-unstable, ... }:
 let
   root_domain = "rzegocki.dev";
 in
@@ -17,7 +17,7 @@ in
       ./modules/firewall.nix
       (import ./modules/bind.nix { inherit config pkgs lib root_domain; })
       (import ./modules/ddclient.nix { inherit config root_domain; })
-      (import ./modules/kea.nix { inherit config pkgs; })
+      (import ./modules/kea.nix { inherit config pkgs nixpkgs-unstable; })
       ./modules/frr.nix
     ];
 
