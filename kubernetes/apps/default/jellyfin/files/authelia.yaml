@@ -9,15 +9,13 @@ identity_providers:
         consent_mode: 'implicit'
         public: false
         authorization_policy: 'two_factor'
+        require_pkce: true
+        pkce_challenge_method: 'S256'
         redirect_uris:
           - 'https://jellyfin.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/sso/OID/redirect/authelia'
         scopes:
           - 'openid'
           - 'profile'
-          - 'email'
           - 'groups'
-        grant_types:
-          - 'authorization_code'
-        response_types:
-          - 'code'
-        userinfo_signed_response_alg: none
+        userinfo_signed_response_alg: 'none'
+        token_endpoint_auth_method: 'client_secret_post'

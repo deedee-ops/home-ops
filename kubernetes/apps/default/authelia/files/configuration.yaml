@@ -8,8 +8,8 @@ server:
   headers:
     csp_template: ''
   buffers:
-    read: 4096
-    write: 4096
+    read: 8192
+    write: 8192
   timeouts:
     read: 6s
     write: 6s
