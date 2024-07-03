@@ -5,6 +5,7 @@
       ./hardware-configuration.nix
       ./networking.nix
 
+      ../../modules/comin.nix
       ../../modules/locales.nix
       ../../modules/os.nix
       ../../modules/ssh.nix

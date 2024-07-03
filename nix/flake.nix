@@ -7,9 +7,13 @@
 
     arion.url = "github:hercules-ci/arion";
     sops-nix.url = "github:Mic92/sops-nix";
+    comin = {
+      url = "github:ajgon/comin/feat/git-subdirs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, arion, sops-nix, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, arion, comin, sops-nix, ... }@inputs:
   {
     nixosConfigurations.router = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
@@ -17,6 +21,7 @@
       modules = [
         ./machines/router
 
+        comin.nixosModules.comin
         sops-nix.nixosModules.sops
       ];
     };
@@ -26,6 +31,7 @@
         ./machines/supervisor
 
         arion.nixosModules.arion
+        comin.nixosModules.comin
         sops-nix.nixosModules.sops
       ];
     };
