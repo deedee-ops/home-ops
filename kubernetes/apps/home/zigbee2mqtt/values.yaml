@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/koenkk/zigbee2mqtt
-            tag: 1.38.0
+            tag: 1.39.0
           env:
             TZ: Europe/Warsaw
             ZIGBEE2MQTT_DATA: /config
