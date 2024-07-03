@@ -1,6 +1,5 @@
-{ config, pkgs, lib, root_domain, ... }:
+{ config, pkgs, root_domain, ... }:
 let
-  serial = lib.readFile "${pkgs.runCommand "timestamp" { env.when = builtins.currentTime; } "echo -n `date -d @$when +%s` > $out"}";
   allowedNetworks = [ "10.42.0.0/16" "10.100.0.0/16" "10.200.0.0/16" ];
 in
 {
@@ -27,6 +26,7 @@ in
     '';
     # "restart-bind" is alphabetically after "etc" script
     restart-bind.text = ''
+      for zone in /etc/bind/zones/*.zone; do ${pkgs.gnused}/bin/sed -i"" "s@1000000099@$(date +%s)@g" $zone; done
       ${pkgs.bind}/sbin/rndc thaw home.arpa
       ${pkgs.bind}/sbin/rndc thaw 100.10.in-addr.arpa
       ${pkgs.bind}/sbin/rndc thaw 200.10.in-addr.arpa
@@ -138,7 +138,7 @@ in
         ;
         $TTL	604800
         @	IN	SOA	localhost. root.localhost. (
-                    2		; Serial
+           1000000099   ; Serial
                604800		; Refresh
                 86400		; Retry
               2419200		; Expire
@@ -161,7 +161,7 @@ in
         ;
         $TTL	604800
         @	IN	SOA	localhost. root.localhost. (
-                    1		; Serial
+           1000000099   ; Serial
                604800		; Refresh
                 86400		; Retry
               2419200		; Expire
@@ -183,7 +183,7 @@ in
         ;
         $TTL	604800
         @	IN	SOA	localhost. root.localhost. (
-                    1		; Serial
+           1000000099   ; Serial
                604800		; Refresh
                 86400		; Retry
               2419200		; Expire
@@ -204,7 +204,7 @@ in
         ;
         $TTL	604800
         @	IN	SOA	localhost. root.localhost. (
-                    1		; Serial
+           1000000099   ; Serial
                604800		; Refresh
                 86400		; Retry
               2419200		; Expire
@@ -222,7 +222,7 @@ in
       text = ''
         $TTL  21600
         @ IN SOA ns.${root_domain}. admin.${root_domain}. (
-            ${serial}    ; Serial
+            1000000099    ; Serial
                  21600    ; Refresh
                   3600    ; Retry
                2592000    ; Expire
@@ -255,7 +255,7 @@ in
       text = ''
         $TTL  21600
         @ IN SOA ns.home.arpa. admin.home.arpa. (
-            ${serial}    ; Serial
+            1000000099    ; Serial
                  21600    ; Refresh
                   3600    ; Retry
                2592000    ; Expire
@@ -281,7 +281,7 @@ in
       text = ''
         $TTL  21600
         @ IN SOA ns.home.arpa. admin.home.arpa. (
-            ${serial}    ; Serial
+            1000000099    ; Serial
                  21600    ; Refresh
                   3600    ; Retry
                2592000    ; Expire
@@ -300,7 +300,7 @@ in
       text = ''
         $TTL  21600
         @ IN SOA ns.home.arpa. admin.home.arpa. (
-            ${serial}    ; Serial
+            1000000099    ; Serial
                  21600    ; Refresh
                   3600    ; Retry
                2592000    ; Expire

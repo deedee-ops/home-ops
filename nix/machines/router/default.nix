@@ -16,7 +16,7 @@ in
       ../../modules/vm.nix
 
       ./modules/firewall.nix
-      (import ./modules/bind.nix { inherit config pkgs lib root_domain; })
+      (import ./modules/bind.nix { inherit config pkgs root_domain; })
       (import ./modules/ddclient.nix { inherit config root_domain; })
       (import ./modules/kea.nix { inherit config pkgs nixpkgs-unstable; })
       ./modules/frr.nix
