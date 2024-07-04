@@ -35,6 +35,16 @@
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver-coerced"
-    }
+    }, {
+      "description": "Arion docker image",
+      "fileMatch": [
+        "(^|/)nix/.+\\.nix$"
+      ],
+      "matchStrings": [
+        "image *= *\"(?<depName>[^:]+):(?<currentValue>[^\"@]+)(?:@sha256:(?<currentDigest>[0-9a-f]+))?\";"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "semver-coerced"
+    },
   ]
 }

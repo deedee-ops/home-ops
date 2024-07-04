@@ -46,5 +46,11 @@
     "fileMatch": [
       "(^|/)opentofu/.+\\.tf$"
     ]
+  },
+  "nix": {
+    "enabled": true,
+    "fileMatch": [
+      "flake\\.nix$"
+    ],
   }
 }
