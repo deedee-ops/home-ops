@@ -8,7 +8,7 @@
         # by default DNS is set to adguard in docker which causes internal loopback and resolving problems
         # that's why we need to force it to actual gateway
         dns = [ "10.42.1.1" ];
-        image = "ghcr.io/deedee-ops/nginx-proxy-manager:2.11.2";
+        image = "ghcr.io/deedee-ops/nginx-proxy-manager:2.11.3";
         ports = [
           "80:80"
           "443:443"
