@@ -16,7 +16,7 @@
         linkConfig.Name = "trst0";
       };
       "200-untrusted" = {
-        matchConfig.PermanentMACAddress = "58:47:ca:76:66:36";
+        matchConfig.PermanentMACAddress = "58:47:ca:76:66:34";
         linkConfig.Name = "untrst0";
       };
     };

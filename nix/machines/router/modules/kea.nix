@@ -133,6 +133,11 @@
                 "hw-address" = "e4:1d:53:37:56:41";
                 "ip-address" = "10.100.10.1";
               }
+              {
+                # Proxmox Backup Server VM
+                "hw-address" = "00:00:0a:64:0a:02";
+                "ip-address" = "10.100.10.2";
+              }
             ];
             "option-data" = [
               {
