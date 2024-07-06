@@ -24,8 +24,8 @@ spec:
             values:
               - ignore
       neighbors:
-        - peerAddress: "<path:kubernetes/data/internal/base#IP_GATEWAY>/32"
-          peerASN: <path:kubernetes/data/internal/base#ASN_GATEWAY>
+        - peerAddress: "<path:kubernetes/data/internal/base#IP_ROUTER>/32"
+          peerASN: <path:kubernetes/data/internal/base#ASN_ROUTER>
           eBGPMultihopTTL: 10
           connectRetryTimeSeconds: 120
           holdTimeSeconds: 90

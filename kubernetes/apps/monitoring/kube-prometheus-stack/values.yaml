@@ -64,8 +64,9 @@ kube-prometheus-stack:
           - receiver: discord-csp
             matchers:
               - alertname = CSPAlert
-          - receiver: email-gateway
+          - receiver: email-hypervisor
             matchers:
+              - instance =~ "<path:kubernetes/data/internal/base#IP_HYPERVISOR>:[0-9]+"
               - instance =~ "<path:kubernetes/data/internal/base#IP_ROUTER>:[0-9]+"
           - receiver: email-nas
             matchers:
@@ -75,9 +76,9 @@ kube-prometheus-stack:
         repeat_interval: 12h
       receivers:
         - name: "null"
-        - name: "email-gateway"
+        - name: "email-hypervisor"
           email_configs:
-            - from: "<path:kubernetes/data/internal/base#MAIL_FROM_GATEWAY>"
+            - from: "<path:kubernetes/data/internal/base#MAIL_FROM_HYPERVISOR>"
               to: "<path:kubernetes/data/internal/smtp-relay#INGRESS_MAINTENANCE_EMAIL>"
         - name: "email-cluster"
           email_configs:

@@ -1,3 +1,4 @@
+# {{ if .Values.nodeexporter.ips }}
 ---
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
@@ -191,3 +192,4 @@ specs:
           # {{- range $idx, $host_ip := .Values.nodeexporter.ips }}
           - cidr: "{{ $host_ip }}/32"
           # {{- end }}
+# {{- end }}

@@ -36,7 +36,7 @@ coredns:
             fallthrough in-addr.arpa ip6.arpa
             ttl 30
         - name: forward
-          parameters: ". <path:kubernetes/data/internal/base#IP_GATEWAY> tls://9.9.9.9 tls://149.112.112.112"
+          parameters: ". <path:kubernetes/data/internal/base#IP_ROUTER> tls://9.9.9.9 tls://149.112.112.112"
           configBlock: |-
             tls_servername dns.quad9.net
             policy sequential
