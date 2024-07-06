@@ -1,3 +1,4 @@
+# {{ if .Values.proxmox.ips }}
 ---
 # yamllint disable rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/service-v1.json
@@ -110,3 +111,4 @@ specs:
           # {{- range $idx, $host_ip := .Values.proxmox.ips }}
           - cidr: "{{ $host_ip }}/32"
           # {{- end }}
+# {{- end }}
