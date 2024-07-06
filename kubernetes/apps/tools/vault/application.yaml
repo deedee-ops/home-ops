@@ -18,7 +18,6 @@ spec:
         name: argocd-vault-plugin-helm
   syncPolicy:
     automated:
-      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
