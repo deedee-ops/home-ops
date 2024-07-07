@@ -42,7 +42,7 @@ thanos:
   storegateway:
     enabled: true
     replicaCount: 2
-    resourcesPreset: small
+    resourcesPreset: medium
     podLabels:
       route-to/nas: "true"
     podAnnotations:
