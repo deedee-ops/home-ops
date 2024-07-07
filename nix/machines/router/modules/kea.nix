@@ -129,6 +129,11 @@
                 "ip-address" = "10.100.1.2";
               }
               {
+                # HAOS VM
+                "hw-address" = "00:00:0a:64:01:03";
+                "ip-address" = "10.100.1.3";
+              }
+              {
                 # mandark / NAS / 10gbe
                 "hw-address" = "e4:1d:53:37:56:41";
                 "ip-address" = "10.100.10.1";
