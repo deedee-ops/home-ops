@@ -84,6 +84,12 @@ app-template:
             - "dashboard.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
   persistence:
+    docker-ssl:
+      type: secret
+      name: docker-supervisor-secret
+      defaultMode: 0440
+      globalMounts:
+        - path: /app/config/tls/supervisor
     secrets:
       type: secret
       name: homepage-secret

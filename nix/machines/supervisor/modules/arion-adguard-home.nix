@@ -20,6 +20,13 @@
           "/data/adguard-home/conf:/opt/adguardhome/conf"
           "/data/adguard-home/work:/opt/adguardhome/work"
         ];
+        labels = {
+          "homepage.group" = "External";
+          "homepage.name" = "AdguardHome";
+          "homepage.icon" = "adguard-home.png";
+          "homepage.href" = "https://adguard.rzegocki.dev/";
+          "homepage.description" = "AD Blocker";
+        };
       };
     };
   };

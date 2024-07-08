@@ -26,6 +26,13 @@
           "/data/omada-controller/data:/opt/tplink/EAPController/data"
           "/data/omada-controller/logs:/opt/tplink/EAPController/logs"
         ];
+        labels = {
+          "homepage.group" = "External";
+          "homepage.name" = "Omada";
+          "homepage.icon" = "omada.png";
+          "homepage.href" = "https://omada.rzegocki.dev/";
+          "homepage.description" = "Omada Controller";
+        };
       };
     };
   };

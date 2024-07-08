@@ -21,6 +21,13 @@
           "/data/nginx-proxy-manager/data:/data"
           "/data/nginx-proxy-manager/letsencrypt:/etc/letsencrypt"
         ];
+        labels = {
+          "homepage.group" = "External";
+          "homepage.name" = "Supervisor";
+          "homepage.icon" = "nginx-proxy-manager.png";
+          "homepage.href" = "https://supervisor.rzegocki.dev/";
+          "homepage.description" = "Nginx Proxy Manager for external services";
+        };
       };
     };
   };

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -12,7 +12,7 @@
       ../../modules/users.nix
       ../../modules/vm.nix
 
-      (import ./modules/docker.nix { inherit pkgs; })
+      (import ./modules/docker.nix { inherit config pkgs; })
     ];
 
   # sops

@@ -1,2 +1,9 @@
 ---
 # yaml-language-server: disabled
+supervisor:
+  host: "<path:kubernetes/data/internal/base#IP_SUPERVISOR>"
+  port: 2376
+  tls:
+    keyFile: tls/supervisor/tls.key
+    caFile: tls/supervisor/tls.ca
+    certFile: tls/supervisor/tls.crt

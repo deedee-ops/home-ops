@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: homepage
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: homepage
+    egress:
+      - toPorts:
+          - ports:
+              # docker
+              - port: "2376"
+                protocol: TCP
+        toCIDRSet:
+          - cidr: "<path:kubernetes/data/internal/base#IP_SUPERVISOR>/32"
