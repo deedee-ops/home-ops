@@ -73,15 +73,3 @@ services:
       - "9116:9116"
     volumes:
       - /volume2/docker/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml
-
-  zot:
-    restart: always
-    container_name: zot
-    environment:
-      TZ: Europe/Warsaw
-    image: "ghcr.io/project-zot/zot-linux-amd64:v2.0.4"
-    ports:
-      - "6000:6000"
-    volumes:
-      - /volume2/docker/zot/config/config.json:/etc/zot/config.json
-      - /volume2/docker/zot/registry:/var/lib/registry

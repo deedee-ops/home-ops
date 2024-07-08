@@ -8,6 +8,7 @@ source_directories:
   - /mnt/source/private
   - /mnt/source/retro/batocera
   - /mnt/source/media/music/_Mix
+  - /mnt/source/backups/pbs/highprio
 repositories:
   - path: "<path:kubernetes/data/internal/synology#BORGMATIC_PRIVATE_EU_REPO>"
     label: private-eu

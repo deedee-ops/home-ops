@@ -244,6 +244,8 @@ in
         ; trusted
         nas                  IN  A   10.100.10.1
         home                 IN  A   10.100.1.2
+        minio                IN  A   10.100.1.2
+        s3                   IN  A   10.100.1.2
         *                    IN  A   10.99.20.1
       '';
     };
