@@ -52,6 +52,13 @@
             ];
           }
           {
+            # living root switch
+            "hw-address" = "98:25:4a:47:66:f8";
+            "client-classes" = [
+              "DROP"
+            ];
+          }
+          {
             # EAP660HD
             "hw-address" = "3c:52:a1:7e:10:50";
             "client-classes" = [

@@ -14,6 +14,7 @@
           # bootstrap = {
           #   ipv4_address = "192.168.0.130";
           # };
+          # this one should be always uncommented
           mgmt = {
             ipv4_address = "10.42.2.1";
           };
@@ -41,7 +42,7 @@
     # bootstrap = {
     #   driver = "macvlan";
     #   driver_opts = {
-    #     parent = "enp6s18";
+    #     parent = "enp6s20";
     #   };
     #   ipam = {
     #     config = [{
@@ -50,6 +51,7 @@
     #     }];
     #   };
     # };
+    # this one should be always uncommented
     mgmt = {
       driver = "macvlan";
       driver_opts = {
