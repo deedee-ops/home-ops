@@ -44,7 +44,7 @@
         "image *= *\"(?<depName>[^:]+):(?<currentValue>[^\"@]+)(?:@(?<currentDigest>sha256:[0-9a-f]+))?\";"
       ],
       "datasourceTemplate": "docker",
-      "versioningTemplate": "semver-coerced"
+      "versioningTemplate": "docker"
     },
   ]
 }
