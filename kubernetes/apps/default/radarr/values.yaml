@@ -91,6 +91,15 @@ app-template:
             - "radarr.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
   persistence:
+    config:
+      type: persistentVolumeClaim
+      storageClass: local-path
+      size: 1Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        radarr:
+          app:
+            - path: /config
     secrets:
       type: custom
       volumeSpec:
