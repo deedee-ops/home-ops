@@ -13,7 +13,7 @@ host_binding: 0.0.0.0
 domain: "invidious.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 https_only: true
 hsts: true
-disable_proxy: true
+disable_proxy: false
 pool_size: 100
 use_quic: false
 output: STDOUT
@@ -69,7 +69,7 @@ default_user_preferences:
   listen: false
   video_loop: false
   quality: dash
-  quality_dash: 720p
+  quality_dash: 1080p
   speed: 1.0
   volume: 100
   vr_mode: false
