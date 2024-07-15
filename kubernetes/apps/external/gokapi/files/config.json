@@ -20,12 +20,14 @@
   "ServerUrl": "https://share.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/",
   "RedirectUrl": "https://www.rzegocki.pl/",
   "PublicName": "File share",
-  "ConfigVersion": 18,
-  "LengthId": 15,
   "DataDir": "/data",
-  "MaxMemory": 40,
-  "UseSsl": false,
+  "DatabaseUrl": "sqlite:///data/gokapi.sqlite",
+  "ConfigVersion": 21,
+  "LengthId": 15,
   "MaxFileSizeMB": 102400,
+  "MaxMemory": 50,
+  "ChunkSize": 45,
+  "MaxParallelUploads": 4,
   "Encryption": {
     "Level": 0,
     "Cipher": null,
@@ -33,6 +35,8 @@
     "Checksum": "",
     "ChecksumSalt": ""
   },
+  "UseSsl": false,
   "PicturesAlwaysLocal": false,
-  "SaveIp": true
+  "SaveIp": true,
+  "IncludeFilename": false
 }

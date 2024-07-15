@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/gokapi
-            tag: 1.8.4
+            tag: 1.9.0
 
           env:
             TZ: Europe/Warsaw
@@ -81,6 +81,7 @@ app-template:
         gethomepage.dev/name: Gokapi
         gethomepage.dev/icon: firefox-send.png
         gethomepage.dev/description: File sharing
+        gethomepage.dev/href: "https://share.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/admin"
       hosts:
         - host: "share.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
           paths:
