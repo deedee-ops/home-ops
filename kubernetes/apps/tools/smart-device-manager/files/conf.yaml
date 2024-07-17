@@ -1,4 +1,0 @@
----
-# yaml-language-server: disabled
-- devicematch: ^ttyUSB[0-9]+$
-  nummaxdevices: 10
