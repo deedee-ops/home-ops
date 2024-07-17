@@ -219,7 +219,7 @@ kube-prometheus-stack:
       enabled: true
       ingressClassName: internal
       annotations:
-        gethomepage.dev/enabled: "false"
+        gethomepage.dev/enabled: "true"
         gethomepage.dev/group: Monitoring
         gethomepage.dev/name: Prometheus
         gethomepage.dev/icon: prometheus.png
@@ -230,12 +230,8 @@ kube-prometheus-stack:
         - hosts:
             - "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       path: /
-    thanosService:
-      enabled: true
-    thanosServiceMonitor:
-      enabled: true
     prometheusSpec:
-      replicas: 2
+      replicas: 1
       podMetadata:
         labels:
           route-to/nas: "true"
@@ -253,12 +249,6 @@ kube-prometheus-stack:
         - new-service-discovery-manager
       retention: 7d
       retentionSize: 15GB
-      thanos:
-        image: quay.io/thanos/thanos:v0.35.1
-        objectStorageConfig:
-          existingSecret:
-            name: thanos-objstore-secret
-            key: objstore.yml
       storageSpec:
         volumeClaimTemplate:
           spec:

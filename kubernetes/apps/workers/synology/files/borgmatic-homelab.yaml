@@ -13,7 +13,6 @@ repositories:
     label: homelab-us
 exclude_patterns:
   - '*.nobackup'
-  - 'sh:**/thanos'
   - 'sh:**/cloudnative-pg/postgres-v*'
 exclude_caches: true
 exclude_if_present:

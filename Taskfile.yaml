@@ -177,9 +177,6 @@ tasks:
       - kubectl apply -f kubernetes/apps/networking/smtp-relay/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application smtp-relay
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application smtp-relay
-      - kubectl apply -f kubernetes/apps/monitoring/thanos/application.yaml
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application thanos
-      - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application thanos
       - kubectl apply -f kubernetes/apps/monitoring/kube-prometheus-stack/application.yaml
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.sync.status}=Synced' application kube-prometheus-stack
       - kubectl -n argocd wait --timeout=1800s --for=jsonpath='{.status.health.status}=Healthy' application kube-prometheus-stack

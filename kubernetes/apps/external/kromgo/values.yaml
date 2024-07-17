@@ -29,7 +29,7 @@ app-template:
             tag: 0.3.1
 
           env:
-            PROMETHEUS_URL: http://thanos-query-frontend.monitoring.svc.cluster.local:9090
+            PROMETHEUS_URL: http://prometheus-operated.monitoring.svc.cluster.local:9090
             TZ: Europe/Warsaw
 
           securityContext:
