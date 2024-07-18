@@ -5,10 +5,10 @@
 
 # location
 source_directories:
-  - /mnt/source/private
-  - /mnt/source/retro/batocera
-  - /mnt/source/media/music/_Mix
-  - /mnt/source/backups/pbs/highprio
+  - /mnt/volume1/private
+  - /mnt/volume1/retro/batocera
+  - /mnt/volume1/media/music/_Mix
+  - /mnt/volume2/backup/pbs/highprio
 repositories:
   - path: "<path:kubernetes/data/internal/synology#BORGMATIC_PRIVATE_EU_REPO>"
     label: private-eu

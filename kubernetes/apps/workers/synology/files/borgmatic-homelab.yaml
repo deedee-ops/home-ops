@@ -5,7 +5,7 @@
 
 # location
 source_directories:
-  - /mnt/source/S3
+  - /mnt/volume2/minio
 repositories:
   - path: "<path:kubernetes/data/internal/synology#BORGMATIC_HOMELAB_EU_REPO>"
     label: homelab-eu

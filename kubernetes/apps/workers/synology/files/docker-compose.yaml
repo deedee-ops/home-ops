@@ -24,7 +24,8 @@ services:
       TZ: Europe/Warsaw
     image: "ghcr.io/borgmatic-collective/borgmatic:1.8.13"
     volumes:
-      - /volume1:/mnt/source:ro
+      - /volume1:/mnt/volume1:ro
+      - /volume2:/mnt/volume2:ro
       - /volume2/docker/borgmatic/config:/config
       - /volume2/docker/borgmatic/borgmatic.d:/etc/borgmatic.d
 
@@ -44,7 +45,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - /volume1/S3:/data
+      - /volume2/minio:/data
 
   node-exporter:
     command:
