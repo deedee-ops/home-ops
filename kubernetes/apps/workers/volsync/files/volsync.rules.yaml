@@ -33,3 +33,17 @@ rules:
       description: |-
           VALUE = {{ $value }}
           LABELS = {{ $labels }}
+  - alert: VolsyncMissingSync
+    expr: >-
+      volsync_missed_intervals_total + on (obj_name) group_left()
+      (sum by (obj_name) (increase(volsync_sync_duration_seconds_sum{obj_name=~"backup-.*"}[1d])))
+      == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: >-
+        Volsync sync was not performed last day (backup {{ $labels.obj_namespace }}/{{ $labels.obj_name }})
+      description: |-
+          VALUE = {{ $value }}
+          LABELS = {{ $labels }}
