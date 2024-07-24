@@ -34,7 +34,9 @@ app-template:
             LLDAP_HTTP_URL: "http://lldap.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
             # passing LLDAP_KEY directly won't work, still filepath needs to be provided
             LLDAP_KEY_FILE: "/secrets/LLDAP_KEY"
-            LLDAP_LDAPS_OPTIONS__ENABLED: "false"
+            LLDAP_LDAPS_OPTIONS__ENABLED: "true"
+            LLDAP_LDAPS_OPTIONS__CERT_FILE: "/tls/tls.crt"
+            LLDAP_LDAPS_OPTIONS__KEY_FILE: "/tls/tls.key"
             LLDAP_LDAP_BASE_DN: "dc=home,dc=arpa"
             LLDAP_LDAP_USER_EMAIL: "<path:kubernetes/data/internal/lldap#LLDAP_LDAP_USER_DN>@<path:kubernetes/data/internal/smtp-relay#INGRESS_DOMAIN>"
             LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET: "true"
@@ -80,6 +82,9 @@ app-template:
         ldap:
           port: 389
           targetPort: 3890
+        ldaps:
+          port: 636
+          targetPort: 6360
 
   ingress:
     lldap:
@@ -104,6 +109,12 @@ app-template:
             - "lldap.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
   persistence:
+    ssl:
+      type: secret
+      name: lldap-tls
+      defaultMode: 0440
+      globalMounts:
+        - path: /tls
     secrets:
       type: custom
       volumeSpec:
