@@ -15,6 +15,8 @@ identity_providers:
     clients:
       - client_id: argocd
         client_name: Argo CD
+        # docker run authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512
+        # --random --random.length 72 --random.charset rfc3986
         client_secret: '<path:kubernetes/data/internal/argocd#OIDC_SECRET_ENCRYPTED>'
         consent_mode: 'implicit'
         public: false

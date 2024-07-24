@@ -5,6 +5,8 @@ identity_providers:
     clients:
       - client_id: jellyfin
         client_name: Jellyfin
+        # docker run authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512
+        # --random --random.length 72 --random.charset rfc3986
         client_secret: '<path:kubernetes/data/internal/jellyfin#OIDC_SECRET_ENCRYPTED>'
         consent_mode: 'implicit'
         public: false
