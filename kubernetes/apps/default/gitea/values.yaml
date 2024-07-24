@@ -73,9 +73,10 @@ gitea:
   gitea:
     ldap:
       - name: lldap
-        securityProtocol: unencrypted
+        securityProtocol: LDAPS
         host: lldap.default.svc.cluster.local
-        port: "389"
+        port: "636"
+        skipTlsVerify: true
         userSearchBase: ou=people,dc=home,dc=arpa
         userFilter: (&(objectClass=person)(|(uid=%[1]s)(mail=%[1]s)))
         adminFilter: (memberof=cn=lldap_admin,ou=groups,dc=home,dc=arpa)

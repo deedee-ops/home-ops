@@ -60,7 +60,9 @@ authentication_backend:
     custom_url: ''
   ldap:
     implementation: custom
-    address: "ldap://lldap.default.svc.cluster.local:389"
+    address: "ldaps://lldap.default.svc.cluster.local:636"
+    tls:
+      skip_verify: true
     timeout: 5s
     start_tls: false
     base_dn: "dc=home,dc=arpa"

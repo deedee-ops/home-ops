@@ -106,6 +106,7 @@ While most of my infrastructure and workloads are self-hosted I do rely upon the
 | Synology DS1621+            | 1     | 256GB SSD    | 4x4TB HDD (mirrored)                       | 32GB | Synology DSM       | NFS + Backup Server |
 | Minisforum MS-01            | 1     | 1TB SSD      | -                                          | 48GB | Proxmox PVE        | Router + VMs        |
 | TP-LINK SG3428X-M2          | 1     | -            | -                                          | -    | -                  | 2.5Gb Core Switch   |
+| TP-LINK SG2005P-PD          | 1     | -            | -                                          | -    | -                  | 1Gb PoE Switch      |
 
 ---
 
