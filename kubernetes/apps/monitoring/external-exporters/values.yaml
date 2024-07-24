@@ -1,4 +1,8 @@
 ---
+homeassistant:
+  ips:
+    - "<path:kubernetes/data/internal/home-assistant#IP_INTERNAL>"
+  api_key: "<path:kubernetes/data/internal/home-assistant#API_TOKEN>"
 nodeexporter:
   ips: []
 proxmox:

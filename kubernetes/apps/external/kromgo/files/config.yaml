@@ -48,3 +48,11 @@ metrics:
       - {color: "green", min: 0, max: 180}
       - {color: "orange", min: 181, max: 360}
       - {color: "red", min: 361, max: 9999}
+
+  - name: cluster_power_usage
+    query: round(sum(hass_sensor_power_w{entity=~".*(deedee|dexter|mandark|switch).*"}), 0.1)
+    suffix: "W"
+    colors:
+      - {color: "green", min: 0, max: 200}
+      - {color: "orange", min: 201, max: 500}
+      - {color: "red", min: 501, max: 9999}

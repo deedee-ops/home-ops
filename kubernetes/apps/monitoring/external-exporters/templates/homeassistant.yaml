@@ -1,0 +1,79 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: homeassistant
+  namespace: monitoring
+spec:
+  staticConfigs:
+    - targets:
+        # {{- range $idx, $host_ip := .Values.homeassistant.ips }}
+        - "{{ $host_ip }}:8123"
+        # {{- end }}
+  metricsPath: /api/prometheus
+  authorization:
+    credentials:
+      key: api-key
+      name: homeassistant
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: homeassistant
+stringData:
+  api-key: "{{ .Values.homeassistant.api_key }}"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: homeassistant
+  namespace: monitoring
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prometheus
+    egress:
+      - toPorts:
+          - ports:
+              - port: "8123"
+                protocol: TCP
+        toCIDRSet:
+          # {{- range $idx, $host_ip := .Values.homeassistant.ips }}
+          - cidr: "{{ $host_ip }}/32"
+          # {{- end }}
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+    release: prometheus-stack
+  name: homeassistant
+spec:
+  groups:
+    - name: homeassistant.rules
+      rules:
+        - alert: ServerRackTooMuchPower
+          expr: sum(hass_sensor_power_w{entity=~".*(deedee|dexter|mandark|switch).*"}) > 300
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Server rack uses too much power"
+            description: "Server rack uses {{ `{{ $value }}` }}W of power"
+        - alert: ServerRackTooHot
+          expr: hass_sensor_temperature_celsius{entity="sensor.server_cabinet_temperature"} > 45
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Server rack cabinet interior is too hot"
+            description: "Temperature in server cabinet is {{ `{{ $value }}` }}°C"
