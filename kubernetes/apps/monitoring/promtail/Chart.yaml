@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: promtail
+version: 1.0.0
+type: application
+dependencies:
+  - name: promtail
+    version: 6.16.4
+    repository: https://grafana.github.io/helm-charts
