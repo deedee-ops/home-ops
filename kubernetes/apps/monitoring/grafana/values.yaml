@@ -167,6 +167,13 @@ grafana:
       node-feature-discovery:
         url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
         datasource: Prometheus
+      omada-exporter:
+        # renovate: depName="Omada Overview"
+        gnetId: 16343
+        revision: 2
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       prometheus:
         # renovate: depName="Prometheus"
         gnetId: 19105
