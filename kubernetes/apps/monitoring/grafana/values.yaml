@@ -247,6 +247,9 @@ grafana:
     ingressClassName: internal
     hosts:
       - "grafana.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    tls:
+      - hosts:
+          - "loki.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
   persistence:
     enabled: false
   testFramework:

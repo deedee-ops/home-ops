@@ -46,3 +46,13 @@ loki:
     enabled: false
   test:
     enabled: false
+  ingress:
+    enabled: true
+    annotations:
+      nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    ingressClassName: internal
+    hosts:
+      - "loki.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    tls:
+      - hosts:
+          - "loki.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
