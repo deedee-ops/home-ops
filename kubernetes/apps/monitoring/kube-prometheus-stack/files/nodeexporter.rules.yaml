@@ -43,7 +43,7 @@ rules:
       description: "Disk latency is growing (write operations > 100ms)"
 
   - alert: VeryHighCpuTemp
-    expr: avg by (instance) (node_hwmon_temp_celsius) > 80
+    expr: avg by (instance) (node_hwmon_temp_celsius{chip!~"[0-9]+.*"}) > 80  # exclude fake vm chips
     for: 30s
     labels:
       severity: critical
@@ -52,7 +52,7 @@ rules:
       description: "Core temperature is greater than 80C for more than 30 seconds"
 
   - alert: HighCpuTemp
-    expr: avg by (instance) (node_hwmon_temp_celsius) > 70
+    expr: avg by (instance) (node_hwmon_temp_celsius{chip!~"[0-9]+.*"}) > 70  # exclude fake vm chips
     for: 2m
     labels:
       severity: warning

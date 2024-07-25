@@ -101,7 +101,9 @@ kind: CiliumNetworkPolicy
 metadata:
   name: external-proxmox-exporter
 specs:
-  - endpointSelector: {}
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prometheus
     egress:
       - toPorts:
           - ports:

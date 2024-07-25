@@ -182,7 +182,9 @@ kind: CiliumNetworkPolicy
 metadata:
   name: external-nodeexporter
 specs:
-  - endpointSelector: {}
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prometheus
     egress:
       - toPorts:
           - ports:
