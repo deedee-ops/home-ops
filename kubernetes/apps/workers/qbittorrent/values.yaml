@@ -26,6 +26,12 @@ app-template:
             tag: 4.6.5
             pullPolicy: IfNotPresent
 
+          command:
+            # ensure vxlan0 (vpn) interface is there, otherwise crash
+            - sh
+            - -c
+            - "ip l show vxlan0 && /usr/bin/catatonit -- /entrypoint.sh"
+
           env:
             QBITTORRENT__BT_PORT: "17307"
             TZ: Europe/Warsaw
