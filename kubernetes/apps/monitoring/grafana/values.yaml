@@ -76,6 +76,11 @@ grafana:
             path: /var/lib/grafana/dashboards/default
   dashboards:
     default:
+      adguard:
+        url: https://raw.githubusercontent.com/henrywhitaker3/adguard-exporter/main/grafana/dashboard.json
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       ceph-cluster:
         # renovate: depName="Ceph Cluster"
         gnetId: 2842
