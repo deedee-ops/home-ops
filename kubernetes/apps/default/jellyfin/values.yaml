@@ -65,7 +65,7 @@ app-template:
       controller: jellyfin
       type: LoadBalancer
       annotations:
-        io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/jellyfin#IP_INTERNAL>,<path:kubernetes/data/internal/jellyfin#IP_IOT>"
+        io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/jellyfin#IP_IOT>"
       ports:
         http:
           port: 8096
