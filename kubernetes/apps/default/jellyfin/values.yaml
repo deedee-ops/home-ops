@@ -26,7 +26,7 @@ app-template:
 
           env:
             DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
-            JELLYFIN_PublishedServerUrl: "<path:kubernetes/data/internal/jellyfin#IP_INTERNAL>"
+            JELLYFIN_PublishedServerUrl: "<path:kubernetes/data/internal/jellyfin#IP_IOT>"
             TZ: Europe/Warsaw
 
           securityContext:
@@ -65,7 +65,7 @@ app-template:
       controller: jellyfin
       type: LoadBalancer
       annotations:
-        io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/jellyfin#IP_INTERNAL>,<path:kubernetes/data/internal/jellyfin#IP_IOT>"
+        io.cilium/lb-ipam-ips: "<path:kubernetes/data/internal/jellyfin#IP_IOT>"
       ports:
         http:
           port: 8096
