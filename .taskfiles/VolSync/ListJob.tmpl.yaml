@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: list
-          image: ghcr.io/restic/restic:0.16.5
+          image: ghcr.io/restic/restic:0.17.0
           args: ["snapshots"]
           envFrom:
             - secretRef:
