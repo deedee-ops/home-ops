@@ -1,5 +1,16 @@
 # yamllint disable rule:line-length
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/backups-json-schema/master/master-standalone/storageclass.json
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client-backups
+parameters:
+  archiveOnDelete: "false"
+  onDelete: retain
+  pathPattern: "${.PVC.annotations.nfs.io/storage-path}"
+provisioner: home.arpa/nfs-client-backups
+---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/storageclass.json
 apiVersion: storage.k8s.io/v1
 kind: StorageClass

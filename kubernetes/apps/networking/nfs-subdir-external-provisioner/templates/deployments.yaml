@@ -1,5 +1,46 @@
 # yamllint disable rule:line-length
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/backups-json-schema/master/master-standalone/deployment.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nfs-client-backups
+  name: nfs-client-backups
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-backups
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-backups
+    spec:
+      containers:
+        - env:
+            - name: NFS_SERVER
+              value: "<path:kubernetes/data/internal/base#IP_NAS>"
+            - name: NFS_PATH
+              value: /volume2/backup
+            - name: PROVISIONER_NAME
+              value: home.arpa/nfs-client-backups
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          name: nfs-client-backups
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /persistentvolumes
+              name: nfs-client-backups
+      serviceAccountName: nfs-client-provisioner
+      volumes:
+        - name: nfs-client-backups
+          nfs:
+            path: /volume2/backup
+            server: "<path:kubernetes/data/internal/base#IP_NAS>"
+---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/deployment.json
 apiVersion: apps/v1
 kind: Deployment

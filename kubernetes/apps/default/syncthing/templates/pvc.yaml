@@ -4,6 +4,21 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
+  name: backups-android
+  annotations:
+    nfs.io/storage-path: android
+spec:
+  storageClassName: nfs-client-backups
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 7Ti  # use rough size of NAS NFS volume to silence "volume filling up" alerts
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
   name: syncthing-nas
   annotations:
     nfs.io/storage-path: syncthing

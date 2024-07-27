@@ -79,6 +79,11 @@ app-template:
             - "syncthing.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
 
   persistence:
+    backups-android:
+      type: persistentVolumeClaim
+      existingClaim: backups-android
+      globalMounts:
+        - path: "/backups/android"
     config:
       type: persistentVolumeClaim
       existingClaim: syncthing-config
