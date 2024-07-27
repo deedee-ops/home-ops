@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/monitoring.giantswarm.io/silence_v1alpha1.json
+apiVersion: monitoring.giantswarm.io/v1alpha1
+kind: Silence
+metadata:
+  name: node-exporter-pbs
+spec:
+  targetTags: []
+  matchers:
+    - name: alertname
+      value: '(HostHighCpuLoad|HighCpuLoad)'
+      isRegex: true
+    - name: instance
+      value: "<path:kubernetes/data/internal/base#IP_PBS>:9100"
+      isRegex: false
