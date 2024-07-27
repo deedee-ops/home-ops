@@ -91,26 +91,11 @@ app-template:
         gethomepage.dev/name: Miniflux
         gethomepage.dev/icon: miniflux.png
         gethomepage.dev/description: RSS Client
-      hosts:
-        - host: "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: app
-                port: 3000
-      tls:
-        - hosts:
-            - "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
-
-    fever:
-      className: internal
-      annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
       hosts:
         - host: "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
           paths:
-            - path: /fever
+            - path: /
               pathType: Prefix
               service:
                 identifier: app
