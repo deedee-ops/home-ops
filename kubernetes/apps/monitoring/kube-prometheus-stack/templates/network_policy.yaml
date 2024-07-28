@@ -17,5 +17,6 @@ specs:
               dns:
                 - matchPattern: "*"
       - toFQDNs:
+          - matchName: "api.pushover.net"
           - matchName: "discord.com"
           - matchName: "<path:kubernetes/data/internal/kube-prometheus-stack#EXTERNAL_PING_HOST>"

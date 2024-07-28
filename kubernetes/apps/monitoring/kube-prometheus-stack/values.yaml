@@ -51,7 +51,8 @@ kube-prometheus-stack:
       route:
         receiver: email-cluster
         group_by:
-          - namespace
+          - alertname
+          - job
         continue: false
         routes:
           - receiver: "null"
@@ -61,6 +62,9 @@ kube-prometheus-stack:
             matchers:
               - alertname = Watchdog
             repeat_interval: 15m
+          - receiver: pushover
+            matchers:
+              - severity = "critical"
           - receiver: discord-csp
             matchers:
               - alertname = CSPAlert
@@ -68,9 +72,11 @@ kube-prometheus-stack:
             matchers:
               - instance =~ "<path:kubernetes/data/internal/base#IP_HYPERVISOR>:[0-9]+"
               - instance =~ "<path:kubernetes/data/internal/base#IP_ROUTER>:[0-9]+"
+              - instance =~ "<path:kubernetes/data/internal/base#IP_SUPERVISOR>:[0-9]+"
           - receiver: email-nas
             matchers:
               - instance =~ "<path:kubernetes/data/internal/base#IP_NAS>:[0-9]+"
+              - instance =~ "<path:kubernetes/data/internal/base#IP_PBS>:[0-9]+"
         group_wait: 1m
         group_interval: 10m
         repeat_interval: 12h
@@ -99,10 +105,18 @@ kube-prometheus-stack:
               url: "<path:kubernetes/data/internal/kube-prometheus-stack#EXTERNAL_PING_URL>"
               http_config:
                 follow_redirects: true
+        - name: "pushover"
+          pushover_configs:
+            - html: true
+              message: '{{ template "homelab.pushover.message" . }}'
+              priority: 1
+              title: '{{ template "homelab.pushover.title" . }}'
+              token: "<path:kubernetes/data/internal/kube-prometheus-stack#ALERTMANAGER_PUSHOVER_TOKEN>"
+              url_title: View in Alertmanager
+              user_key: "<path:kubernetes/data/internal/kube-prometheus-stack#PUSHOVER_USER_KEY>"
       templates:
         - '/etc/alertmanager/config/*.tmpl'
     templateFiles:
-      # https://github.com/prometheus/alertmanager/issues/3310
       discord_msg.tmpl: |-
         {{ define "homelab.discord.title" }}
             Fire! {{ .GroupLabels.SortedPairs.Values | join " " }}
@@ -120,6 +134,31 @@ kube-prometheus-stack:
             {{ if gt (len .Alerts.Resolved) 0 }}
                 Also {{ .Alerts.Resolved | len }} resolved alerts.
             {{ end }}
+        {{ end }}
+      pushover_msg.tmpl: |-
+        {{ define "homelab.pushover.title" }}
+          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]
+          {{ .CommonLabels.alertname }}
+        {{ end }}
+        {{ define "homelab.pushover.message" }}
+            {{- range .Alerts }}
+              {{- if ne .Annotations.description "" }}
+                {{ .Annotations.description }}
+              {{- else if ne .Annotations.summary "" }}
+                {{ .Annotations.summary }}
+              {{- else if ne .Annotations.message "" }}
+                {{ .Annotations.message }}
+              {{- else }}
+                Alert description not available
+              {{- end }}
+              {{- if gt (len .Labels.SortedPairs) 0 }}
+                <small>
+                {{- range .Labels.SortedPairs }}
+                  <b>{{ .Name }}:</b> {{ .Value }}
+                {{- end }}
+                </small>
+              {{- end }}
+            {{- end }}
         {{ end }}
     alertmanagerSpec:
       replicas: 2

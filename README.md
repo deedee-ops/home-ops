@@ -93,6 +93,7 @@ While most of my infrastructure and workloads are self-hosted I do rely upon the
 | [Cloudflare](https://www.cloudflare.com/) | Domains and tunnel                                             | Free           |
 | [GitHub](https://github.com/)             | Hosting this repository and continuous integration/deployments | Free           |
 | [Migadu](https://migadu.com/)             | Email hosting                                                  | $19/yr         |
+| [Pushover](https://pushover.net/)         | Kubernetes Alerts and application notifications                | $5 (one time)  |
 |                                           |                                                                | Total: ~$10/mo |
 
 ---
