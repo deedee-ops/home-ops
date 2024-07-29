@@ -161,7 +161,7 @@ radarr:
           - c20f169ef63c5f40c2def54abaf4438e  # Web Tier 01
           - 403816d65392c79236dcb6dd591aeda4  # Web Tier 02
           - af94e0fe497124d1f9ce732069ec8c3b  # Web Tier 03
-        quality_profiles:
+        assign_scores_to:
           - name: HD - 720p
           - name: HD - 720p/1080p
           - name: HD - 720p/1080p/4K
@@ -197,7 +197,7 @@ radarr:
           - d4e5e842fad129a3c097bdb2d20d31a0  # v4
           - 60f6d50cbd3cfc3e9a8c00e3a30c3114  # VRV
           - 064af5f084a0a24458cc8ecd3220f93f  # Uncensored
-        quality_profiles:
+        assign_scores_to:
           - name: Anime - 720p/1080p
           - name: Anime - 720p/1080p/4K
 
@@ -373,7 +373,7 @@ sonarr:
           - 58790d4e2fdcd9733aa7ae68ba2bb503  # WEB Tier 02
           - d84935abd3f8556dcd51d4f27e22d0a6  # WEB Tier 03
           - d0c516558625b04b363fa6c5c2c7cfd4  # WEB Scene
-        quality_profiles:
+        assign_scores_to:
           - name: HD - 720p
           - name: HD - 720p/1080p
           - name: HD - 720p/1080p/4K
@@ -414,6 +414,6 @@ sonarr:
           - 29c2a13d091144f63307e4a8ce963a39  # Anime Web Tier 05 (FanSubs)
           - dc262f88d74c651b12e9d90b39f6c753  # Anime Web Tier 06 (FanSubs)
 
-        quality_profiles:
+        assign_scores_to:
           - name: Anime - 720p/1080p
           - name: Anime - 720p/1080p/4K
