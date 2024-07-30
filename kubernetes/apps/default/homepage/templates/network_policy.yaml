@@ -11,6 +11,11 @@ specs:
     egress:
       - toPorts:
           - ports:
+              # nginx
+              - port: "80"
+                protocol: TCP
+              - port: "443"
+                protocol: TCP
               # docker
               - port: "2376"
                 protocol: TCP
