@@ -12,5 +12,5 @@ dependencies:
     version: 0.30.0
     repository: https://intel.github.io/helm-charts/
   - name: app-template
-    version: 3.3.0
+    version: 3.3.1
     repository: https://bjw-s.github.io/helm-charts
