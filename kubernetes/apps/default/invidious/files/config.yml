@@ -47,8 +47,6 @@ default_user_preferences:
   locale: en-US
   region: PL
   captions:
-    - Polish
-    - English
     - ""
   dark_mode: true
   thin_mode: false
