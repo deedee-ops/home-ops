@@ -18,7 +18,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/charlie-haley/omada_exporter
-            tag: 0.13.0
+            tag: 0.13.1
             pullPolicy: IfNotPresent
 
           envFrom:
