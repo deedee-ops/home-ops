@@ -18,10 +18,10 @@ metadata:
 spec:
   nodeSelector:
     matchExpressions:
-      - key: topology.kubernetes.io/zone
-        operator: In
+      - key: io.cilium/bgp-announce
+        operator: NotIn
         values:
-          - worker
+          - ignore
   bgpInstances:
     - name: "deedee"
       localASN: <path:kubernetes/data/internal/base#ASN_CLUSTER>
