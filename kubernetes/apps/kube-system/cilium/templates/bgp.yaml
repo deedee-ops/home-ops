@@ -6,71 +6,31 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: pool
 spec:
-  blocks:
+  cidrs:
     - cidr: "<path:kubernetes/data/internal/base#CIDR_LOADBALANCER>"
 ---
-# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumbgpclusterconfig_v2alpha1.json
 apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPClusterConfig
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumbgppeeringpolicy_v2alpha1.json
+kind: CiliumBGPPeeringPolicy
 metadata:
-  name: cilium-bgp
-  namespace: kube-system
+  name: bgp-peering-policy
 spec:
-  nodeSelector:
-    matchExpressions:
-      - key: io.cilium/bgp-announce
-        operator: NotIn
-        values:
-          - ignore
-  bgpInstances:
-    - name: "deedee"
-      localASN: <path:kubernetes/data/internal/base#ASN_CLUSTER>
-      peers:
-        - name: "dexter"
-          peerASN: <path:kubernetes/data/internal/base#ASN_ROUTER>
-          peerAddress: "<path:kubernetes/data/internal/base#IP_ROUTER>"
-          peerConfigRef:
-            name: "cilium-peer"
----
-# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumbgppeerconfig_v2alpha1.json
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPPeerConfig
-metadata:
-  name: cilium-peer
-  namespace: kube-system
-spec:
-  families:
-    - afi: ipv4
-      safi: unicast
-      advertisements:
-        matchLabels:
-          advertise: "bgp"
-  gracefulRestart:
-    enabled: true
-    restartTimeSeconds: 30
-  timers:
-    connectRetryTimeSeconds: 12
-    holdTimeSeconds: 9
-    keepAliveTimeSeconds: 3
----
-# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumbgpadvertisement_v2alpha1.json
-apiVersion: cilium.io/v2alpha1
-kind: CiliumBGPAdvertisement
-metadata:
-  name: cilium-advert
-  namespace: kube-system
-  labels:
-    advertise: bgp
-spec:
-  advertisements:
-    - advertisementType: "Service"
-      service:
-        addresses:
-          - LoadBalancerIP
-      selector:
+  virtualRouters:
+    - localASN: <path:kubernetes/data/internal/base#ASN_CLUSTER>
+      serviceSelector:
         matchExpressions:
-          - key: io.cilium/bgp-announce
+          - key: "io.cilium/bgp-announce"
             operator: NotIn
             values:
               - ignore
+      neighbors:
+        - peerAddress: "<path:kubernetes/data/internal/base#IP_ROUTER>/32"
+          peerASN: <path:kubernetes/data/internal/base#ASN_ROUTER>
+          eBGPMultihopTTL: 10
+          connectRetryTimeSeconds: 120
+          holdTimeSeconds: 90
+          keepAliveTimeSeconds: 30
+          gracefulRestart:
+            enabled: true
+            restartTimeSeconds: 120
 # {{ end }}
