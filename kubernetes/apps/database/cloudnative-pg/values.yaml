@@ -38,7 +38,7 @@ app-template:
         backup:
           image:
             repository: ghcr.io/deedee-ops/postgres-logical-backup
-            tag: "16.3"
+            tag: "16.4"
 
           env:
             DELETE_OLDER_THAN: "14 days ago"
