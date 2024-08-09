@@ -32,7 +32,7 @@ pod-gateway:
       gluetun:
         image:
           repository: ghcr.io/deedee-ops/gluetun
-          tag: v3.38.1
+          tag: v3.39.0
       env:
         - name: VPN_SERVICE_PROVIDER
           value: airvpn
