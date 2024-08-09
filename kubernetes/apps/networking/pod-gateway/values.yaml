@@ -32,7 +32,7 @@ pod-gateway:
       gluetun:
         image:
           repository: ghcr.io/deedee-ops/gluetun
-          tag: v3.38.1
+          tag: v3.39.0
       env:
         - name: VPN_SERVICE_PROVIDER
           value: airvpn
@@ -40,7 +40,7 @@ pod-gateway:
           value: wireguard
         - name: VPN_INTERFACE
           value: wg0
-        - name: FIREWALL
+        - name: FIREWALL_ENABLED_DISABLING_IT_SHOOTS_YOU_IN_YOUR_FOOT
           value: "off"
         - name: DOT
           value: "off"
