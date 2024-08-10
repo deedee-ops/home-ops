@@ -46,7 +46,7 @@ app-template:
               cpu: 10m
               memory: 32Mi
             limits:
-              memory: 1Gi
+              memory: 2Gi
 
   service:
     app:
