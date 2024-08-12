@@ -1,3 +1,5 @@
+# INSTALL
+
 ## Prepare
 
 ### Zap disks for CEPH

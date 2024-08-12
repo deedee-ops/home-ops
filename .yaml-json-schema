@@ -3,6 +3,8 @@ ignorePaths:
   - talos/*/tal*.yaml
 
 ignoreNames:
+  - .markdownlint.yaml
+  - .pre-commit-config.yaml
   - protection.tmpl.yaml
   - "*.sops.y*ml"
   - "values.*y*ml"

@@ -1,6 +1,6 @@
 # yamllint disable rule:line-length
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/backups-json-schema/master/master-standalone/storageclass.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/storageclass.json
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:

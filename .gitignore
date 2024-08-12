@@ -53,3 +53,4 @@ talenv*
 
 # nix
 result
+.pre-commit-config.yaml

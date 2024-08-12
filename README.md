@@ -1,5 +1,6 @@
+<!-- markdownlint-disable MD013 MD033 MD041 -->
 <div align="center">
-  <img src="docs/img/k8shappy.png">
+  <img src="docs/img/k8shappy.png" alt="kubepepe">
   <br>
   <sup><sup>
     Art by <a href="https://twitter.com/SkeletalGadget">@SkeletalGadget</a>
@@ -31,12 +32,16 @@ _... automated via [ArgoCD](https://argoproj.github.io/cd/), [Renovate](https://
 [![Power-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.rzegocki.dev%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_power_usage&style=flat-square&label=Power)](https://github.com/kashalls/kromgo/)
 
 </div>
+<!-- markdownlint-enable MD013 MD033 -->
 
 ---
 
 ## 📖 Overview
 
-This is a repository for my home infrastructure and Kubernetes cluster. I try to adhere to Infrastructure as Code (IaC) and GitOps practices using tools like [OpenTofu](https://opentofu.org/), [Kubernetes](https://kubernetes.io), [ArgoCD](https://argoproj.github.io/cd/), [Renovate](https://github.com/renovatebot/renovate) and [GitHub Actions](https://github.com/features/actions).
+This is a repository for my home infrastructure and Kubernetes cluster.
+I try to adhere to Infrastructure as Code (IaC) and GitOps practices using tools like [OpenTofu](https://opentofu.org/),
+[Kubernetes](https://kubernetes.io), [ArgoCD](https://argoproj.github.io/cd/), [Renovate](https://github.com/renovatebot/renovate)
+and [GitHub Actions](https://github.com/features/actions).
 
 ---
 
@@ -44,15 +49,20 @@ This is a repository for my home infrastructure and Kubernetes cluster. I try to
 
 ### Installation
 
-This semi hyper-converged cluster runs [Talos Linux](https://talos.dev), an immutable and ephemeral Linux distribution built for [Kubernetes](https://kubernetes.io), deployed on bare-metal [Intel NUCs](https://www.intel.com/content/www/us/en/products/details/nuc.html). [Rook](https://rook.io) then provides my workloads with persistent block, and file storage; while a seperate server provides file storage for my media.
+This semi hyper-converged cluster runs [Talos Linux](https://talos.dev), an immutable and ephemeral Linux distribution
+built for [Kubernetes](https://kubernetes.io), deployed on bare-metal [Intel NUCs](https://www.intel.com/content/www/us/en/products/details/nuc.html).
+[Rook](https://rook.io) then provides my workloads with persistent block, and file storage;
+while a seperate server provides file storage for my media.
 
 ### Core Components
 
 - [actions-runner-controller](https://github.com/actions/actions-runner-controller): Self-hosted Github runners.
 - [cilium](https://cilium.io): Internal Kubernetes networking plugin.
 - [cert-manager](https://cert-manager.io): Creates SSL certificates for services in my Kubernetes cluster.
-- [external-dns](https://github.com/kubernetes-sigs/external-dns): Automatically manages DNS records from my cluster in a cloud DNS provider.
-- [ingress-nginx](https://github.com/kubernetes/ingress-nginx): Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer.
+- [external-dns](https://github.com/kubernetes-sigs/external-dns): Automatically manages DNS records from my cluster
+  in a cloud DNS provider.
+- [ingress-nginx](https://github.com/kubernetes/ingress-nginx): Ingress controller for Kubernetes using NGINX as
+  a reverse proxy and load balancer.
 - [rook](https://rook.io): Distributed block storage for peristent storage.
 - [spegel](https://github.com/XenitAB/spegel): Stateless cluster local OCI registry mirror.
 - [vault](https://www.vaultproject.io/): Safe and encrypted storage for all Kubernetes secrets.
@@ -60,11 +70,15 @@ This semi hyper-converged cluster runs [Talos Linux](https://talos.dev), an immu
 
 ### GitOps
 
-[ArgoCD](https://argoproj.github.io/cd/) watches the clusters in my [kubernetes](./kubernetes/) folder (see Directories below) and makes the changes to my clusters based on the state of my Git repository.
+[ArgoCD](https://argoproj.github.io/cd/) watches the clusters in my [kubernetes](./kubernetes/) folder
+(see Directories below), and makes the changes to my clusters based on the state of my Git repository.
 
-The way ArgoCD works for me here is it will recursively search the `kubernetes/clusters/${cluster}` folder and deploys all `application.yaml` manifests. I follow "app of apps" pattern, so cluster apps can include other apps, which can be shared between clusters, and which live under `kubernetes/apps` directory.
+The way ArgoCD works for me here is it will recursively search the `kubernetes/clusters/${cluster}` folder,
+and deploys all `application.yaml` manifests. I follow "app of apps" pattern, so cluster apps can include other apps,
+which can be shared between clusters, and which live under `kubernetes/apps` directory.
 
-[Renovate](https://github.com/renovatebot/renovate) watches my **entire** repository looking for dependency updates, when they are found a PR is automatically created. When some PRs are merged Flux applies the changes to my cluster.
+[Renovate](https://github.com/renovatebot/renovate) watches my **entire** repository looking for dependency updates.
+When they are found a PR is automatically created. When some PRs are merged ArgoCD applies the changes to my cluster.
 
 ### Directories
 
@@ -84,7 +98,9 @@ This Git repository contains the following directories under [Kubernetes](./kube
 
 ## ☁️ Cloud Dependencies
 
-While most of my infrastructure and workloads are self-hosted I do rely upon the cloud for certain key parts of my setup. This saves me from having to worry about two things. (1) Dealing with chicken/egg scenarios and (2) services I critically need whether my cluster is online or not.
+While most of my infrastructure and workloads are self-hosted I do rely upon the cloud for certain key parts of my setup.
+This saves me from having to worry about two things. (1) Dealing with chicken/egg scenarios and (2) services I critically
+need whether my cluster is online or not.
 
 | Service                                   | Use                                                            | Cost           |
 |-------------------------------------------|----------------------------------------------------------------|----------------|
@@ -113,6 +129,7 @@ While most of my infrastructure and workloads are self-hosted I do rely upon the
 
 ## ⭐ Stargazers
 
+<!-- markdownlint-disable MD013 MD033 -->
 <div align="center">
 
 <a href="https://star-history.com/#deedee-ops/home-ops&Date">
@@ -124,12 +141,15 @@ While most of my infrastructure and workloads are self-hosted I do rely upon the
 </a>
 
 </div>
+<!-- markdownlint-enable MD013 MD033 -->
 
 ---
 
 ## 🤝 Gratitude and Thanks
 
-Thanks to all the people who donate their time to the [Home Operations](https://discord.gg/home-operations) Discord community. Be sure to check out [kubesearch.dev](https://kubesearch.dev/) for ideas on how to deploy applications or get ideas on what you may deploy.
+Thanks to all the people who donate their time to the [Home Operations](https://discord.gg/home-operations) Discord community.
+Be sure to check out [kubesearch.dev](https://kubesearch.dev/) for ideas on how to deploy applications
+or get ideas on what you may deploy.
 
 ---
 

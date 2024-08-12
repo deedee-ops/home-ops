@@ -26,11 +26,18 @@ jobs:
         with:
           token: "${{ steps.app-token.outputs.token }}"
 
-      - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@ae80d4ecaab946d8f5ff18397fbf6d0686c6d46a # v1.0.3
+      - name: Install nix
+        uses: cachix/install-nix-action@ba0dd844c9180cbf77aa72a116d6fbc515d0e87b # v27
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            access-tokens = github.com=${{ steps.app-token.outputs.token }}
 
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4.0.0
+      - name: Enable develop shell
+        uses: nicknovitski/nix-develop@a2060d116a50b36dfab02280af558e73ab52427d # v1.1.0
+
+      - name: Run linters
+        run: pre-commit run --all-files
 
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
@@ -38,28 +45,6 @@ jobs:
       - name: Setup kubeconform and helm
         shell: bash
         run: brew install helm kubeconform yq
-
-      - name: Init TFLint
-        run: tflint --init
-        env:
-          GITHUB_TOKEN: "${{ steps.app-token.outputs.token }}"
-
-      - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
-
-      - name: Run tofu formatter
-        run: tofu fmt -check -diff -recursive tofu/
-
-      - name: Run tofu lint
-        run: tflint -f compact
-
-      - name: Run yamllint
-        uses: karancode/yamllint-github-action@fdef6bc189425ecc84cc4543b2674566c0827053 # v2.1.1
-        with:
-          yamllint_strict: true
-          yamllint_comment: true
-        env:
-          GITHUB_ACCESS_TOKEN: "${{ steps.app-token.outputs.token }}"
 
       - name: Run task lint:egress-comment
         run: ./.taskfiles/Lint/egress-comment-job.sh
