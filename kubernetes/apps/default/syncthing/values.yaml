@@ -14,7 +14,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/syncthing
-            tag: 1.27.9
+            tag: 1.27.10
             pullPolicy: IfNotPresent
 
           env:
