@@ -27,7 +27,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/lldap
-            tag: 0.5.0
+            tag: 2024-08-08
 
           env:
             LLDAP_DATABASE_DRIVER: "postgres"
@@ -44,7 +44,7 @@ app-template:
             LLDAP_SMTP_OPTIONS__PORT: "25"
             LLDAP_SMTP_OPTIONS__SERVER: smtp-relay.networking.svc.cluster.local
             LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION: NONE
-            LLDAP_VERBOSE: "true"
+            LLDAP_VERBOSE: "false"
             TZ: Europe/Warsaw
 
           securityContext:
