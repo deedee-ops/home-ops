@@ -38,3 +38,13 @@ spec:
       name: hubble-server-certs
       jsonPointers:
         - "/data"
+    - kind: DaemonSet
+      group: apps
+      name: cilium
+      jsonPointers:
+        - "/spec/template/spec/containers/0/volumeMounts/0/readOnly"
+    - kind: DaemonSet
+      group: apps
+      name: cilium-envoy
+      jsonPointers:
+        - "/spec/template/spec/containers/0/volumeMounts/0/readOnly"
