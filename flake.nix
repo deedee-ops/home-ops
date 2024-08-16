@@ -1,25 +1,74 @@
 {
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
-    talhelper.url = "github:budimanjojo/talhelper";
+  description = "homelab";
+
+  nixConfig = {
+    substituters = [
+      "https://cache.nixos.org"
+      "https://attic.rzegocki.dev/homelab"
+    ];
+
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "homelab:kwqUnjVjjHr+9sNlHHOx5KgLUBrwzvG7+ibw2Z/g8uQ="
+    ];
   };
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    arion = {
+      url = "github:hercules-ci/arion";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    attic = {
+      url = "github:zhaofengli/attic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    comin = {
+      url = "github:nlewo/comin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    talhelper = {
+      url = "github:budimanjojo/talhelper";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
   outputs =
     {
       self,
-      nixpkgs,
-      talhelper,
+      arion,
+      attic,
+      comin,
       flake-utils,
+      nixpkgs,
+      nixpkgs-unstable,
       pre-commit-hooks,
-    }:
+      sops-nix,
+      talhelper,
+    }@inputs:
+    let
+      upkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
+    in
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
       in
       {
-
         checks.pre-commit-check = pre-commit-hooks.lib.${system}.run {
           src = ./.;
           hooks = {
@@ -48,7 +97,10 @@
             };
 
             deadnix.enable = true;
-            flake-checker.enable = true;
+            flake-checker = {
+              enable = true;
+              package = upkgs.flake-checker;
+            };
             statix.enable = true;
             nixfmt = {
               enable = true;
@@ -81,5 +133,35 @@
             '';
         };
       }
-    );
+    )
+    // {
+      nixosConfigurations = {
+        router = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {
+            inherit inputs upkgs;
+          };
+          modules = [
+            ./nix/machines/router
+
+            comin.nixosModules.comin
+            sops-nix.nixosModules.sops
+          ];
+        };
+        supervisor = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {
+            inherit inputs upkgs;
+          };
+          modules = [
+            ./nix/machines/supervisor
+
+            arion.nixosModules.arion
+            attic.nixosModules.atticd
+            comin.nixosModules.comin
+            sops-nix.nixosModules.sops
+          ];
+        };
+      };
+    };
 }
