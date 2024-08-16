@@ -26,10 +26,12 @@ app-template:
         app:
           image:
             repository: ghcr.io/kashalls/kromgo
-            tag: 0.3.1
+            tag: v0.4.0
 
           env:
             PROMETHEUS_URL: http://prometheus-operated.monitoring.svc.cluster.local:9090
+            SERVER_HOST: 0.0.0.0
+            HEALTH_HOST: 0.0.0.0
             TZ: Europe/Warsaw
 
           securityContext:
@@ -41,16 +43,20 @@ app-template:
                 - ALL
 
           probes:
-            startup: &probes
+            readiness:
               enabled: true
               custom: true
               spec:
-                failureThreshold: 30
-                periodSeconds: 10
-                tcpSocket:
-                  port: 8080
-            readiness: *probes
-            liveness: *probes
+                httpGet:
+                  path: /-/ready
+                  port: 8888
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /-/health
+                  port: 8888
 
           resources:
             requests:
