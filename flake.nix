@@ -9,7 +9,7 @@
 
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "homelab:kwqUnjVjjHr+9sNlHHOx5KgLUBrwzvG7+ibw2Z/g8uQ="
+      "homelab:4QC5tI8xexADyKayaRCRJzZDwFx7Vt56kLz+cVkXQoo="
     ];
   };
 
