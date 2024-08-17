@@ -162,6 +162,17 @@
             sops-nix.nixosModules.sops
           ];
         };
+        rustdesk = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {
+            inherit inputs upkgs;
+          };
+          modules = [
+            ./nix/machines/rustdesk
+
+            comin.nixosModules.comin
+          ];
+        };
       };
     };
 }

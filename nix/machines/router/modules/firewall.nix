@@ -43,8 +43,12 @@ _: {
           iifname "untrst0" oifname "wan0" accept
           ip daddr 10.99.0.0/16 iifname "trst0" accept
 
-          # allow only wireguard connections from Internet
+          # allow wireguard connections from Internet
           udp dport 53201 iifname "wan0" accept
+
+          # allow rustdesk connections from Internet
+          tcp dport 21115-21117 iifname "wan0" accept
+          udp dport 21116 iifname "wan0" accept
         }
         chain OUTPUT {
           type filter hook output priority filter; policy accept;
@@ -60,6 +64,12 @@ _: {
 
           # port forward to wireguard daemon
           udp dport 53201 dnat to 10.42.1.2:53201
+
+          # port forward to rustdesk
+          tcp dport 21115 dnat to 10.200.1.4:21115
+          tcp dport 21116 dnat to 10.200.1.4:21116
+          tcp dport 21117 dnat to 10.200.1.4:21117
+          udp dport 21116 dnat to 10.200.1.4:21116
         }
 
         chain POSTROUTING {
@@ -73,8 +83,14 @@ _: {
           # port forward to main router
           ip daddr 192.168.100.1 masquerade
 
-          # port forward to wireguard daemon
-          udp dport 53201 masquerade
+          # port forward from wireguard daemon
+          udp sport 53201 masquerade
+
+          # port forward from rustdesk
+          tcp sport 21115 masquerade
+          tcp sport 21116 masquerade
+          tcp sport 21117 masquerade
+          udp sport 21116 masquerade
         };
       };
     '';

@@ -259,6 +259,9 @@ in
         omada                IN  A   10.100.1.2
         s3                   IN  A   10.100.1.2
         *                    IN  A   10.99.20.1
+
+        ; untrusted
+        relay                IN  A   10.200.1.4
       '';
     };
 
@@ -288,6 +291,7 @@ in
         nas                  IN  A   10.100.10.1
         pbs                  IN  A   10.100.10.2
         piecyk               IN  A   10.100.100.10
+        rustdesk             IN  A   10.200.1.4
 
         ; extras
         $INCLUDE ${config.sops.secrets."bind/home_arpa_zone".path}

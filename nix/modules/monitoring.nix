@@ -1,8 +1,14 @@
 { config, ... }:
 {
   services.prometheus.exporters = {
-    node.enable = true;
-    systemd.enable = true;
+    node = {
+      enable = true;
+      openFirewall = true;
+    };
+    systemd = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 
   services.promtail = {

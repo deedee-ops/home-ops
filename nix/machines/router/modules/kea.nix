@@ -205,6 +205,11 @@
                 "hw-address" = "02:00:0a:c8:01:02";
                 "ip-address" = "10.200.1.2";
               }
+              {
+                # rustdesk VM
+                "hw-address" = "02:00:0a:c8:01:04";
+                "ip-address" = "10.200.1.4";
+              }
             ];
             "option-data" = [
               {
