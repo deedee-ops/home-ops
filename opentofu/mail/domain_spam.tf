@@ -1,7 +1,7 @@
 resource "cloudflare_record" "spam_mx_primary" {
   zone_id  = data.cloudflare_zone.domain_spam.id
   name     = "@"
-  value    = "mail.anonaddy.me."
+  content  = "mail.anonaddy.me."
   type     = "MX"
   priority = "10"
 }
@@ -9,7 +9,7 @@ resource "cloudflare_record" "spam_mx_primary" {
 resource "cloudflare_record" "spam_mx_secondary" {
   zone_id  = data.cloudflare_zone.domain_spam.id
   name     = "@"
-  value    = "mail2.anonaddy.me."
+  content  = "mail2.anonaddy.me."
   type     = "MX"
   priority = "20"
 }
@@ -17,7 +17,7 @@ resource "cloudflare_record" "spam_mx_secondary" {
 resource "cloudflare_record" "spam_mx_dkim_a" {
   zone_id = data.cloudflare_zone.domain_spam.id
   name    = "dk1._domainkey"
-  value   = "dk1._domainkey.anonaddy.me."
+  content = "dk1._domainkey.anonaddy.me."
   proxied = false
   type    = "CNAME"
 }
@@ -25,7 +25,7 @@ resource "cloudflare_record" "spam_mx_dkim_a" {
 resource "cloudflare_record" "spam_mx_dkim_b" {
   zone_id = data.cloudflare_zone.domain_spam.id
   name    = "dk2._domainkey"
-  value   = "dk2._domainkey.anonaddy.me."
+  content = "dk2._domainkey.anonaddy.me."
   proxied = false
   type    = "CNAME"
 }
@@ -33,13 +33,13 @@ resource "cloudflare_record" "spam_mx_dkim_b" {
 resource "cloudflare_record" "spam_spf" {
   zone_id = data.cloudflare_zone.domain_spam.id
   name    = "@"
-  value   = "v=spf1 include:spf.anonaddy.me -all"
+  content = "v=spf1 include:spf.anonaddy.me -all"
   type    = "TXT"
 }
 
 resource "cloudflare_record" "spam_dmarc" {
   zone_id = data.cloudflare_zone.domain_spam.id
   name    = "_dmarc"
-  value   = "v=DMARC1; p=quarantine; adkim=s"
+  content = "v=DMARC1; p=quarantine; adkim=s"
   type    = "TXT"
 }
