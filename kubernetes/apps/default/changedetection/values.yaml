@@ -1,0 +1,134 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
+app-template:
+  defaultPodOptions:
+    labels:
+      # fetching websites for detecting changes
+      egress/enabled: "true"
+    securityContext:
+      fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    changedetection:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        app:
+          image:
+            repository: ghcr.io/dgtlmoon/changedetection.io
+            tag: 0.46.03
+            pullPolicy: IfNotPresent
+
+          env:
+            BASE_URL: "https://changedetection.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+            PLAYWRIGHT_DRIVER_URL: ws://localhost:3000
+            USE_X_SETTINGS: 1
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 5000
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+
+        playwright:
+          image:
+            repository: dgtlmoon/sockpuppetbrowser
+            tag: latest@sha256:9d6779b5a1e918860f70eecc3101b090d91903ee10afe8ef7107833767c30ffb
+            pullPolicy: IfNotPresent
+
+          env:
+            SCREEN_WIDTH: 1920
+            SCREEN_HEIGHT: 1024
+            SCREEN_DEPTH: 16
+            MAX_CONCURRENT_CHROME_PROCESSES: 10
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /
+                  port: 5000
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+
+  service:
+    app:
+      controller: changedetection
+      ports:
+        http:
+          port: 5000
+
+  ingress:
+    changedetection:
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: changedetection
+        gethomepage.dev/icon: changedetection-io.png
+        gethomepage.dev/description: Website changes detector
+      hosts:
+        - host: "changedetection.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 5000
+      tls:
+        - hosts:
+            - "changedetection.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    data:
+      type: persistentVolumeClaim
+      existingClaim: changedetection-data
+      advancedMounts:
+        changedetection:
+          app:
+            - path: "/datastore"
