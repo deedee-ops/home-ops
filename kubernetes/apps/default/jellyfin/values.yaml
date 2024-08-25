@@ -57,7 +57,7 @@ app-template:
               memory: 1Gi
               gpu.intel.com/i915: 1
             limits:
-              memory: 32Gi
+              memory: 16Gi
               gpu.intel.com/i915: 1
 
   service:
@@ -118,8 +118,14 @@ app-template:
           app:
             - path: "/config"
     transcode:
-      type: emptyDir
-      medium: Memory
+      type: persistentVolumeClaim
+      storageClass: local-path
+      size: 60Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        jellyfin:
+          app:
+            - path: /transcode
     video:
       type: persistentVolumeClaim
       existingClaim: jellyfin-video
