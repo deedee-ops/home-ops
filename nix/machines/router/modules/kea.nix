@@ -100,16 +100,16 @@
                 "hw-address" = "02:00:0a:2a:01:02";
                 "ip-address" = "10.42.1.2";
               }
-              # {
-              #   # piecyk NIC 1
-              #   "hw-address" = "c8:7f:54:8f:e7:34";
-              #   "ip-address" = "10.42.100.10";
-              # }
               {
-                # piecyk NIC 2
-                "hw-address" = "24:4b:fe:07:0a:65";
+                # piecyk NIC 1
+                "hw-address" = "c8:7f:54:8f:e7:34";
                 "ip-address" = "10.42.100.10";
               }
+              # {
+              #   # piecyk NIC 2
+              #   "hw-address" = "24:4b:fe:07:0a:65";
+              #   "ip-address" = "10.42.100.10";
+              # }
             ];
             "option-data" = [
               {
@@ -148,16 +148,16 @@
                 "hw-address" = "02:00:0a:64:0a:02";
                 "ip-address" = "10.100.10.2";
               }
-              # {
-              #   # piecyk NIC 1
-              #   "hw-address" = "c8:7f:54:8f:e7:34";
-              #   "ip-address" = "10.100.100.10";
-              # }
               {
-                # piecyk NIC 2
-                "hw-address" = "24:4b:fe:07:0a:65";
+                # piecyk NIC 1
+                "hw-address" = "c8:7f:54:8f:e7:34";
                 "ip-address" = "10.100.100.10";
               }
+              # {
+              #   # piecyk NIC 2
+              #   "hw-address" = "24:4b:fe:07:0a:65";
+              #   "ip-address" = "10.100.100.10";
+              # }
               {
                 # VM
                 "hw-address" = "02:00:0a:64:c8:02";
