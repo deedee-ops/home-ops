@@ -28,6 +28,9 @@ _: {
           # allow icmp
           icmp type echo-request accept
 
+          # dockerd
+          tcp dport 2376 accept
+
           # node-exporter
           tcp dport 9100 accept
 
