@@ -17,6 +17,11 @@
     settings = {
       use-xdg-base-directories = true;
     };
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 7d";
+    };
   };
 
   # save power
