@@ -21,3 +21,5 @@ specs:
                 protocol: TCP
         toCIDRSet:
           - cidr: "<path:kubernetes/data/internal/base#IP_SUPERVISOR>/32"
+      - toFQDNs:
+          - matchName: api.github.com  # for releases
