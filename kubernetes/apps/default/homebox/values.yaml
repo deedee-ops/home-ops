@@ -15,15 +15,11 @@ app-template:
       containers:
         app:
           image:
-            repository: ghcr.io/hay-kot/homebox
-            tag: v0.10.3-rootless
+            repository: ghcr.io/sysadminsmedia/homebox
+            tag: 0.13.0-rootless
             pullPolicy: IfNotPresent
 
           env:
-            # HBOX_AUTH_FORWARD_AUTH_ALLOWED_IPS: "172.30.0.0/15"
-            HBOX_AUTH_FORWARD_AUTH_ALLOWED_IPS: "0.0.0.0/0"
-            HBOX_AUTH_FORWARD_AUTH_AUTO_REGISTER: "false"
-            HBOX_AUTH_FORWARD_AUTH_HEADER: "Remote-Email"
             HBOX_DEMO: "false"
             HBOX_MAILER_FROM: "<path:kubernetes/data/internal/base#MAIL_FROM_CLUSTER>"
             HBOX_MAILER_HOST: smtp-relay.networking.svc.cluster.local
