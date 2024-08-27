@@ -158,6 +158,7 @@ rook-ceph-cluster:
         gethomepage.dev/name: Rook-Ceph
         gethomepage.dev/icon: rook.png
         gethomepage.dev/description: CEPH Storage
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name in ( ceph-mgr )"
       host:
         name: "rook.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
         path: /

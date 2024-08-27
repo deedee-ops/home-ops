@@ -3,9 +3,9 @@
 app-template:
   defaultPodOptions:
     securityContext:
-      fsGroup: 65000
-      runAsUser: 65000
-      runAsGroup: 65000
+      fsGroup: 1000
+      runAsUser: 1000
+      runAsGroup: 1000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
@@ -26,7 +26,7 @@ app-template:
 
           securityContext:
             runAsNonRoot: true
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false  # next.js writes ton of weird files
             allowPrivilegeEscalation: false
             capabilities:
               drop:

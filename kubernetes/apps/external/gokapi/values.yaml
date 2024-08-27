@@ -82,6 +82,7 @@ app-template:
         gethomepage.dev/icon: firefox-send.png
         gethomepage.dev/description: File sharing
         gethomepage.dev/href: "https://share.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/admin"
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name in ( gokapi )"
       hosts:
         - host: "share.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
           paths:

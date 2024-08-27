@@ -15,6 +15,7 @@ kube-prometheus-stack:
         gethomepage.dev/name: Alertmanager
         gethomepage.dev/icon: alertmanager.png
         gethomepage.dev/description: Alerts Management
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name in ( alertmanager )"
       hosts:
         - "alertmanager.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       tls:
@@ -268,6 +269,7 @@ kube-prometheus-stack:
         gethomepage.dev/name: Prometheus
         gethomepage.dev/icon: prometheus.png
         gethomepage.dev/description: Metrics Collector
+        gethomepage.dev/pod-selector: "app.kubernetes.io/name in ( prometheus )"
       hosts:
         - "prometheus.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
       tls:
