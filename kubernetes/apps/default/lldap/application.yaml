@@ -19,7 +19,6 @@ spec:
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
     syncOptions:
       - CreateNamespace=true
     managedNamespaceMetadata:
@@ -27,3 +26,9 @@ spec:
         pod-security.kubernetes.io/enforce: restricted
         pod-security.kubernetes.io/audit: restricted
         pod-security.kubernetes.io/warn: restricted
+  ignoreDifferences:
+    - kind: Secret
+      group: ""
+      name: lldap-tls
+      jsonPointers:
+        - "/data"
