@@ -63,6 +63,7 @@ kube-prometheus-stack:
               - alertname = Watchdog
             repeat_interval: 15m
           - receiver: pushover
+            continue: true
             matchers:
               - severity = "critical"
           - receiver: discord-csp
