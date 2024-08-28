@@ -102,7 +102,7 @@ app-template:
       tls:
         - hosts:
             - "miniflux.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
-    miniflux-api:
+    api:
       className: internal
       annotations:
         nginx.ingress.kubernetes.io/enable-global-auth: "false"
