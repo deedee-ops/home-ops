@@ -1,0 +1,25 @@
+---
+# yaml-language-server: disabled
+identity_providers:
+  oidc:
+    clients:
+      - client_id: audiobookshelf
+        client_name: Audiobookshelf
+        # docker run authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512
+        # --random --random.length 72 --random.charset rfc3986
+        client_secret: '<path:kubernetes/data/internal/audiobookshelf#OIDC_SECRET_ENCRYPTED>'
+        consent_mode: 'implicit'
+        public: false
+        authorization_policy: 'two_factor'
+        require_pkce: true
+        pkce_challenge_method: 'S256'
+        redirect_uris:
+          - 'https://audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/auth/openid/callback'
+          - 'https://audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/auth/openid/mobile-redirect'
+        scopes:
+          - 'email'
+          - 'openid'
+          - 'profile'
+          - 'groups'
+        userinfo_signed_response_alg: 'none'
+        token_endpoint_auth_method: 'client_secret_basic'

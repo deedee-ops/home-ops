@@ -1,0 +1,147 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/custom/bjw-s-apptemplate.json
+app-template:
+  defaultPodOptions:
+    labels:
+      # fetching podcasts and metadata
+      egress/enabled: "true"
+    securityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  controllers:
+    audiobookshelf:
+      annotations:
+        reloader.stakater.com/auto: "true"
+
+      containers:
+        app:
+          image:
+            repository: ghcr.io/advplyr/audiobookshelf
+            tag: 2.11.0  # regression in 2.12.x => https://github.com/advplyr/audiobookshelf/issues/3266
+            pullPolicy: IfNotPresent
+
+          env:
+            PORT: 3000
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /healthcheck
+                  port: 3000
+            readiness: *probes
+            liveness: *probes
+
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+            limits:
+              memory: 750Mi
+
+  service:
+    app:
+      controller: audiobookshelf
+      ports:
+        http:
+          port: 3000
+
+  ingress:
+    audiobookshelf:
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/configuration-snippet: >-
+          more_set_headers "Content-Security-Policy:
+          default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:
+          https://*.<path:kubernetes/data/internal/base#ROOT_DOMAIN>; object-src 'none';
+          img-src 'self' data: blob: https:;
+          report-uri https://csp.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/report/csp/audiobookshelf;";
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Apps
+        gethomepage.dev/name: audiobookshelf
+        gethomepage.dev/icon: audiobookshelf.png
+        gethomepage.dev/description: Audiobook and Podcasts Streamer
+      hosts:
+        - host: "audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
+      tls:
+        - hosts:
+            - "audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+    api:
+      className: internal
+      annotations:
+        nginx.ingress.kubernetes.io/enable-global-auth: "false"
+      hosts:
+        - host: "audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+          paths:
+            - path: /api
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
+            - path: /login
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
+            - path: /status
+              pathType: Prefix
+              service:
+                identifier: app
+                port: 3000
+      tls:
+        - hosts:
+            - "audiobookshelf.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+
+  persistence:
+    audiobooks:
+      type: persistentVolumeClaim
+      existingClaim: audiobookshelf-audiobooks
+      advancedMounts:
+        audiobookshelf:
+          app:
+            - path: "/audiobooks"
+    podcasts:
+      type: persistentVolumeClaim
+      existingClaim: audiobookshelf-podcasts
+      advancedMounts:
+        audiobookshelf:
+          app:
+            - path: "/podcasts"
+    config:
+      type: persistentVolumeClaim
+      existingClaim: audiobookshelf-config
+      advancedMounts:
+        audiobookshelf:
+          app:
+            - path: "/config"
+    metadata:
+      type: persistentVolumeClaim
+      storageClass: local-path
+      size: 10Gi
+      accessMode: ReadWriteOnce
+      advancedMounts:
+        audiobookshelf:
+          app:
+            - path: "/metadata"

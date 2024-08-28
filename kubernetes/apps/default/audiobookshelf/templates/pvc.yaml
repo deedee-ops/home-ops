@@ -1,0 +1,32 @@
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: audiobookshelf-audiobooks
+  annotations:
+    nfs.io/storage-path: audiobooks
+spec:
+  storageClassName: nfs-client-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 7Ti  # use rough size of NAS NFS volume to silence "volume filling up" alerts
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/persistentvolumeclaim.json
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: audiobookshelf-podcasts
+  annotations:
+    nfs.io/storage-path: podcasts
+spec:
+  storageClassName: nfs-client-media
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 7Ti  # use rough size of NAS NFS volume to silence "volume filling up" alerts
+# yamllint enable rule:line-length
