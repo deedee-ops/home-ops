@@ -1,0 +1,27 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/ingress.json
+# yamllint enable rule:line-length
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/enable-global-auth: "false"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+  name: vault-api
+spec:
+  ingressClassName: internal
+  rules:
+    - host: "vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+      http:
+        paths:
+          - backend:
+              service:
+                name: vault-active
+                port:
+                  number: 8200
+            path: /v1
+            pathType: Prefix
+  tls:
+    - hosts:
+        - "vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"

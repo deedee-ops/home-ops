@@ -10,6 +10,6 @@ metadata:
   labels:
     authelia.com/enabled: "true"
 data:
-  argocd.yaml: |
+  rook-ceph.yaml: |
 {{ .Files.Get "files/authelia.yaml" | indent 4 }}
 # {{ end }}

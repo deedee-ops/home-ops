@@ -23,23 +23,7 @@ identity_providers:
         authorization_policy: 'two_factor'
         redirect_uris:
           - 'https://vault.<path:kubernetes/data/internal/base#ROOT_DOMAIN>/ui/vault/auth/oidc/oidc/callback'
-        scopes:
-          - 'openid'
-          - 'groups'
-          - 'email'
-          - 'profile'
-        grant_types:
-          - 'authorization_code'
-        response_types:
-          - 'code'
-        userinfo_signed_response_alg: none
-      - client_id: vault-cli
-        client_name: Vault (CLI)
-        consent_mode: 'implicit'
-        public: true
-        authorization_policy: 'two_factor'
-        redirect_uris:
-          - 'http://localhost:8200/oidc/callback'
+          - 'http://localhost:8250/oidc/callback'
         scopes:
           - 'openid'
           - 'groups'

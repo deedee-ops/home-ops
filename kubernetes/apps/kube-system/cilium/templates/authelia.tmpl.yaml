@@ -9,5 +9,5 @@ metadata:
   labels:
     authelia.com/enabled: "true"
 data:
-  argocd.yaml: |
+  cilium.yaml: |
 {{ .Files.Get "files/authelia.yaml" | indent 4 }}
