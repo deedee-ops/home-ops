@@ -22,7 +22,7 @@ services:
     environment:
       BACKUP_CRON: "0 3 * * *"
       TZ: Europe/Warsaw
-    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.13"
+    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.14"
     volumes:
       - /volume1:/mnt/volume1:ro
       - /volume2:/mnt/volume2:ro
