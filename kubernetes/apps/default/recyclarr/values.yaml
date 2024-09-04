@@ -21,7 +21,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/recyclarr/recyclarr
-            tag: "7.2.2"
+            tag: "7.2.3"
             pullPolicy: IfNotPresent
           args:
             - sync
