@@ -22,7 +22,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/dgtlmoon/changedetection.io
-            tag: 0.46.03
+            tag: 0.46.04
             pullPolicy: IfNotPresent
 
           env:
