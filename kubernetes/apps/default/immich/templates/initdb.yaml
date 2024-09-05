@@ -1,0 +1,46 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/master-standalone/job.json
+# yamllint enable
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: immich-init-db-
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: init-db
+          image: ghcr.io/deedee-ops/postgres-init:16.4
+          volumeMounts:
+            - mountPath: /secrets
+              name: secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: immich
+          name: secrets
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
+# @todo, automate:
+# ALTER DATABASE immich SET search_path TO "$user", public, vectors;
+# CREATE EXTENSION IF NOT EXISTS vectors;
+# CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
+# ALTER SCHEMA vectors OWNER TO pg_database_owner;

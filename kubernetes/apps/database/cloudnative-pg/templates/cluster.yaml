@@ -11,7 +11,7 @@ spec:
   instances: 2
   # yamllint disable rule:line-length
   # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=redhat
-  imageName: "ghcr.io/cloudnative-pg/postgresql:16.4-5"
+  imageName: "ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.4-v0.3.0"
   # yamllint enable rule:line-length
   enableSuperuserAccess: true
   inheritedMetadata:
@@ -27,6 +27,8 @@ spec:
     recovery:
       source: &previousCluster postgres-v4
   postgresql:
+    shared_preload_libraries:
+      - "vectors.so"
     parameters:
       max_connections: "600"
       shared_buffers: 512MB
