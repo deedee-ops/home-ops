@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: immich
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: immich
+        app.kubernetes.io/component: machine-learning
+    egress:
+      - toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"
+      - toFQDNs:
+          - matchName: huggingface.co
+          - matchPattern: "*.huggingface.co"
