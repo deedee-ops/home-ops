@@ -24,7 +24,7 @@ app-template:
             - /src/syncer.sh
           image:
             repository: public.ecr.aws/docker/library/alpine
-            tag: 3.20.2
+            tag: 3.20.3
             pullPolicy: IfNotPresent
 
           env:
