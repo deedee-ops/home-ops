@@ -22,7 +22,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/advplyr/audiobookshelf
-            tag: 2.11.0  # regression in 2.12.x => https://github.com/advplyr/audiobookshelf/issues/3266
+            tag: 2.13.3
             pullPolicy: IfNotPresent
 
           env:
