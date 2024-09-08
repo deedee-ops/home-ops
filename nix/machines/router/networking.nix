@@ -41,7 +41,7 @@
         matchConfig.Name = "trst0";
         linkConfig = {
           RequiredForOnline = "routable";
-          MTUBytes = "9000";
+          # MTUBytes = "9000";
         };
         address = [ "10.100.1.1/16" ];
       };
