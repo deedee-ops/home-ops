@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: plex
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/created-by: volsync
+    egress:
+      - toPorts:
+          - ports:
+              # minio
+              - port: "1900"
+                protocol: UDP
+        toCIDRSet:
+          - cidr: "239.255.255.250/32"
