@@ -99,9 +99,8 @@
               package = upkgs.flake-checker;
             };
             statix.enable = true;
-            nixfmt = {
+            nixfmt-rfc-style = {
               enable = true;
-              package = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
               excludes = [ ".direnv" ];
             };
           };
