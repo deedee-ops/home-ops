@@ -17,7 +17,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/wakapi
-            tag: 2.11.2@sha256:e0daf5ce77159931df9c5bc239959e06067e7d68860dca932dbd13acc77b67ed
+            tag: 2.12.0@sha256:9229a2f6a7bd7139e6aa9c611b0d25ec3fca63a84cb1a61dddfd19ac51fec385
             pullPolicy: IfNotPresent
 
           env:
@@ -38,8 +38,7 @@ app-template:
             WAKAPI_INVITE_CODES: "false"
             WAKAPI_DISABLE_FRONTPAGE: "true"
             WAKAPI_EXPOSE_METRICS: "false"
-            # disabled for now, @see https://github.com/muety/wakapi/issues/665
-            WAKAPI_TRUSTED_HEADER_AUTH: "false"
+            WAKAPI_TRUSTED_HEADER_AUTH: "true"
             WAKAPI_TRUSTED_HEADER_AUTH_KEY: "Remote-User"
             WAKAPI_TRUST_REVERSE_PROXY_IPS: "172.16.0.0/12"
             # ---
