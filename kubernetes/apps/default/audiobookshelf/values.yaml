@@ -22,7 +22,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/advplyr/audiobookshelf
-            tag: 2.13.3
+            tag: 2.13.4
             pullPolicy: IfNotPresent
 
           env:
