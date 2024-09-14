@@ -16,7 +16,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/sysadminsmedia/homebox
-            tag: 0.14.1-rootless
+            tag: 0.14.2-rootless@sha256:c398d635ed223e639d136ef13f963f995cd55dfe821831f3ff8357b933071d4a
             pullPolicy: IfNotPresent
 
           env:
