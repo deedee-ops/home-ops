@@ -19,6 +19,7 @@
     "github>deedee-ops/home-ops//.github/renovate/customManagers.json5",
     "github>deedee-ops/home-ops//.github/renovate/customVersioning.json5",
     "github>deedee-ops/home-ops//.github/renovate/grafanaDashboards.json5",
+    "github>deedee-ops/home-ops//.github/renovate/groups.json5",
     "github>deedee-ops/home-ops//.github/renovate/labels.json5",
     "github>deedee-ops/home-ops//.github/renovate/semanticCommits.json5"
   ],
