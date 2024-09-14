@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended",
     "docker:enableMajor",
+    "docker:pinDigests",
     ":automergeBranch",
     ":disableRateLimiting",
     ":dependencyDashboard",
