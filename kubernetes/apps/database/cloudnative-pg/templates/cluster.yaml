@@ -10,7 +10,7 @@ metadata:
 spec:
   instances: 2
   # yamllint disable rule:line-length
-  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=redhat
+  # renovate: datasource=docker depName=ghcr.io/tensorchord/cloudnative-pgvecto.rs versioning=redhat
   imageName: "ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.4-v0.3.0"
   # yamllint enable rule:line-length
   enableSuperuserAccess: true
