@@ -31,7 +31,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/cloudflared
-            tag: 2024.9.1
+            tag: 2024.9.1@sha256:56536ec4876a25aba52e75cc8bc72ca4fb416caafa6b8ab056a97c20b26785a2
           args:
             - tunnel
             - --config

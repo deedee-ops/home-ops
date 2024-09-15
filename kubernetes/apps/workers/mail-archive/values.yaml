@@ -17,7 +17,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/slusarz/dovecot-fts-flatcurve
-            tag: "v1.0.4"
+            tag: "v1.0.4@sha256:6392a6bd61b29c6ed722f5e972fbe695d90c6393f33a2ad4aa33b61f370c6f0d"
             pullPolicy: IfNotPresent
 
           probes:
@@ -44,7 +44,7 @@ app-template:
         tika:
           image:
             repository: ghcr.io/deedee-ops/tika
-            tag: 2.9.2
+            tag: 2.9.2@sha256:b56d5a88ea693adfc605b8772adb47fce5fba1fec21da8fefcc9678b7734bae0
             pullPolicy: IfNotPresent
           securityContext: &securityContext
             runAsNonRoot: true
@@ -81,7 +81,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/roundcube
-            tag: 1.6.9
+            tag: 1.6.9@sha256:8921131e646d2bd86a22a22311747c63b2cd6f770fcc2a86bf63a1c308b9e763
             pullPolicy: IfNotPresent
 
           probes:
@@ -117,7 +117,7 @@ app-template:
         sync:
           image:
             repository: ghcr.io/deedee-ops/imapsync
-            tag: "2.288"
+            tag: "2.288@sha256:58b3bdb1e893b10d75ca796225a508e13b7fff18a939bbbd426b3173fd697f40"
             pullPolicy: IfNotPresent
           command:
             - imapsync

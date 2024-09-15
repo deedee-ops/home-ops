@@ -41,14 +41,14 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/system-upgrade-controller
-            tag: v0.13.4
+            tag: v0.13.4@sha256:68823f2952933c6856b21e502fb670a321cae8d1f45191d367c5d643b463403e
           env:
             SYSTEM_UPGRADE_CONTROLLER_DEBUG: false
             SYSTEM_UPGRADE_CONTROLLER_THREADS: 2
             SYSTEM_UPGRADE_JOB_ACTIVE_DEADLINE_SECONDS: 900
             SYSTEM_UPGRADE_JOB_BACKOFF_LIMIT: 99
             SYSTEM_UPGRADE_JOB_IMAGE_PULL_POLICY: IfNotPresent
-            SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: public.ecr.aws/bitnami/kubectl:1.31.1
+            SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: public.ecr.aws/bitnami/kubectl:1.31.1@sha256:1d9600f42aebd7b18692d0bbcaa2ab5b12bca246bffb05c3b865806e5bcd5cc0
             SYSTEM_UPGRADE_JOB_PRIVILEGED: true
             SYSTEM_UPGRADE_JOB_TTL_SECONDS_AFTER_FINISH: 900
             SYSTEM_UPGRADE_PLAN_POLLING_INTERVAL: 15m

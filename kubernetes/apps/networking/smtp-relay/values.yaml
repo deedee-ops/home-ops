@@ -28,7 +28,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/maddy
-            tag: 0.7.1
+            tag: 0.7.1@sha256:cce74133726ac36ce8f8862c5563438cee04aaa4223bc908495daeacaebd6072
 
           env:
             DEBUG: "false"

@@ -15,7 +15,7 @@ vault:
     enabled: true
     image:
       repository: public.ecr.aws/hashicorp/vault-csi-provider
-      tag: "1.5.0"
+      tag: "1.5.0@sha256:1d27e109f69f410e6db0f2681c8367e3939ba6f103c4f9206e56209e37dba6aa"
     daemonSet:
       securityContext:
         container:
@@ -39,7 +39,7 @@ vault:
           readOnlyRootFilesystem: true
     image:
       repository: public.ecr.aws/hashicorp/vault
-      tag: "1.17.5"
+      tag: "1.17.5@sha256:dabbf3fd2ef0858795848a61c6b6865305eec16b144e03dfc6a550a13b0211e6"
 
     updateStrategyType: "RollingUpdate"
 

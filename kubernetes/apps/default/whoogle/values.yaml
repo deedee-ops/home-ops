@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/benbusby/whoogle-search
-            tag: 0.8.4
+            tag: 0.8.4@sha256:93977c3aec8a039df94745a6e960d1b590a897e451b874c90ce484fbdbc3630f
             pullPolicy: IfNotPresent
 
           command:  # disable tor

@@ -14,7 +14,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/syncthing
-            tag: 1.27.12
+            tag: 1.27.12@sha256:7c4374e7af5e18fbdea49ea2ecc059cbfd668bc858697271490420222e12dfda
             pullPolicy: IfNotPresent
 
           env:

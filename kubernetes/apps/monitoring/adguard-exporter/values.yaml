@@ -18,7 +18,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/henrywhitaker3/adguard-exporter
-            tag: v1.1.16
+            tag: v1.1.16@sha256:f72d4f2cf53f0c56039f20c91bb2f11b751fb0a5c2cdea8375dabdff5abee4f7
             pullPolicy: IfNotPresent
 
           envFrom:

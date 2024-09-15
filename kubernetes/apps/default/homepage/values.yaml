@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/gethomepage/homepage
-            tag: v0.9.9
+            tag: v0.9.9@sha256:5c264918d2d18a753da8657fee7e0579c8b11581b19275d9a93fde76a8267f3c
             pullPolicy: IfNotPresent
           env:
             TZ: Europe/Warsaw
