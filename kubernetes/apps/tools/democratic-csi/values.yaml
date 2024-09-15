@@ -39,7 +39,7 @@ democratic-csi:
         - --node-deployment=true
   node:
     driver:
-      image: ghcr.io/democratic-csi/democratic-csi:v1.9.3
+      image: ghcr.io/democratic-csi/democratic-csi:v1.9.3@sha256:8ce65ce5bd9b9cdd79ace0e94b6652a233cfbfb26af177fb7912c1217a3f2c19
       extraVolumeMounts:
         - name: local-hostpath
           mountPath: &path /var/local-disk

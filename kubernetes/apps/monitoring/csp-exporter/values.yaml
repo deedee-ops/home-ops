@@ -14,7 +14,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/csp-exporter
-            tag: 0.1.0
+            tag: 0.1.0@sha256:7c0d8de1a9a362be87b4b3ee40cc6e3f05c32338e7fa4d2ec2aa82700919cb67
             pullPolicy: IfNotPresent
 
           env:

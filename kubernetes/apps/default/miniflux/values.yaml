@@ -20,7 +20,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/miniflux
-            tag: 2.2.0
+            tag: 2.2.0@sha256:e90589c0d3f065c566cbaa5533b7f7556ab866bb7ef59186ff6e1ba9c8528675
             pullPolicy: IfNotPresent
 
           env:

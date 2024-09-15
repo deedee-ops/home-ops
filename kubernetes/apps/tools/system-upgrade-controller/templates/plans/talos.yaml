@@ -36,7 +36,7 @@ spec:
       operator: Exists
       effect: NoSchedule
   prepare:
-    image: ghcr.io/deedee-ops/talosctl:1.7.6
+    image: ghcr.io/deedee-ops/talosctl:1.7.6@sha256:1cc8c9d5c02a7e06641cb40c6beec7e2d539e633786e916d8015d1cc57da696d
     envs: &envs
       - name: TALOS_NODE_IP
         valueFrom:
@@ -47,7 +47,7 @@ spec:
       - health
       - --server=false
   upgrade:
-    image: ghcr.io/deedee-ops/talosctl:1.7.6
+    image: ghcr.io/deedee-ops/talosctl:1.7.6@sha256:1cc8c9d5c02a7e06641cb40c6beec7e2d539e633786e916d8015d1cc57da696d
     envs: *envs
     args:
       - --nodes=$(TALOS_NODE_IP)

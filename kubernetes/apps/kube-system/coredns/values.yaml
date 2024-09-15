@@ -5,7 +5,7 @@ coredns:
   k8sAppLabelOverride: kube-dns
   image:
     repository: registry.k8s.io/coredns/coredns
-    tag: v1.11.3
+    tag: v1.11.3@sha256:9caabbf6238b189a65d0d6e6ac138de60d6a1c419e5a341fbbb7c78382559c6e
   service:
     name: kube-dns
     clusterIP: 172.31.0.10

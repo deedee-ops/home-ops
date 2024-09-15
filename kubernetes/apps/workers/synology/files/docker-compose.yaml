@@ -12,7 +12,7 @@ services:
       AUTO_UPGRADE: "1"
       LE_CONFIG_HOME: /acme.sh
       TZ: Europe/Warsaw
-    image: "neilpang/acme.sh:latest"
+    image: "neilpang/acme.sh:latest@sha256:e38d27aa2185dd2ab49d8749c11a2dbab69b707867902b0525950e870262da63"
     volumes:
       - /volume2/docker/acme-sh:/acme.sh
 
@@ -22,7 +22,7 @@ services:
     environment:
       BACKUP_CRON: "0 3 * * *"
       TZ: Europe/Warsaw
-    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.14"
+    image: "ghcr.io/borgmatic-collective/borgmatic:1.8.14@sha256:cfe95cb946642154f9385395c84ea28c84a106954a583d707808c5304de35a09"
     volumes:
       - /volume1:/mnt/volume1:ro
       - /volume2:/mnt/volume2:ro
@@ -56,7 +56,7 @@ services:
     restart: always
     privileged: true
     container_name: node-exporter
-    image: "quay.io/prometheus/node-exporter:v1.8.2"
+    image: "quay.io/prometheus/node-exporter:v1.8.2@sha256:4032c6d5bfd752342c3e631c2f1de93ba6b86c41db6b167b9a35372c139e7706"
     ports:
       - "9100:9100"
     volumes:
@@ -69,7 +69,7 @@ services:
       - "--config.file=/etc/snmp_exporter/snmp.yml"
     restart: always
     container_name: snmp-exporter
-    image: "quay.io/prometheus/snmp-exporter:v0.26.0"
+    image: "quay.io/prometheus/snmp-exporter:v0.26.0@sha256:7ae8ae635e5ff445d3cae1bc1dd646262e25145fdbf9e2d3ae69e455ae1b9ee0"
     ports:
       - "9116:9116"
     volumes:

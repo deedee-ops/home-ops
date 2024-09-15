@@ -27,7 +27,7 @@ spec:
               value: /volume2/backup
             - name: PROVISIONER_NAME
               value: home.arpa/nfs-client-backups
-          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2@sha256:63d5e04551ec8b5aae83b6f35938ca5ddc50a88d85492d9731810c31591fa4c9
           name: nfs-client-backups
           securityContext:
             readOnlyRootFilesystem: true
@@ -68,7 +68,7 @@ spec:
               value: /volume1/kubernetes
             - name: PROVISIONER_NAME
               value: home.arpa/nfs-client-kubernetes
-          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2@sha256:63d5e04551ec8b5aae83b6f35938ca5ddc50a88d85492d9731810c31591fa4c9
           name: nfs-client-kubernetes
           securityContext:
             readOnlyRootFilesystem: true
@@ -109,7 +109,7 @@ spec:
               value: /volume1/media
             - name: PROVISIONER_NAME
               value: home.arpa/nfs-client-media
-          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2@sha256:63d5e04551ec8b5aae83b6f35938ca5ddc50a88d85492d9731810c31591fa4c9
           name: nfs-client-media
           securityContext:
             readOnlyRootFilesystem: true

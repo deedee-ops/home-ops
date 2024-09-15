@@ -73,7 +73,7 @@ app-template:
         gotenberg:
           image:
             repository: ghcr.io/deedee-ops/gotenberg
-            tag: 8.9.2
+            tag: 8.9.2@sha256:0c3176a196abf7d25ac65e6b8a0f5e84b0e89aa38aa0e01dec089d68cdaeb2dc
             pullPolicy: IfNotPresent
           securityContext:
             <<: *securityContext
@@ -99,7 +99,7 @@ app-template:
         tika:
           image:
             repository: ghcr.io/deedee-ops/tika
-            tag: 2.9.2
+            tag: 2.9.2@sha256:b56d5a88ea693adfc605b8772adb47fce5fba1fec21da8fefcc9678b7734bae0
             pullPolicy: IfNotPresent
           securityContext: *securityContext
           probes:

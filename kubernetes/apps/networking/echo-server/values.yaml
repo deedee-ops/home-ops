@@ -16,7 +16,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/echo-server
-            tag: 0.9.2
+            tag: 0.9.2@sha256:437acc58aa0e4a5d2d7c3acfc6d312988f79f6838e1cf09c873d1eab4de4bc6d
             pullPolicy: IfNotPresent
 
           env:

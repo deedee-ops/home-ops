@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/dani-garcia/vaultwarden
-            tag: 1.32.0
+            tag: 1.32.0@sha256:71668d20d4208d70919cf8cb3caf3071d41ed4b7d95afe71125ccad8408b040d
             pullPolicy: IfNotPresent
 
           env:

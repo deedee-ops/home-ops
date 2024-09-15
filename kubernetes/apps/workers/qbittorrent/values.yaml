@@ -23,7 +23,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/onedr0p/qbittorrent
-            tag: 4.6.6
+            tag: 4.6.6@sha256:2fd0eba46205055c3f758411a79d5fa175df324f707dab9ad9a3a5be2ab92071
             pullPolicy: IfNotPresent
 
           command:
@@ -66,7 +66,7 @@ app-template:
         reannounce: &container
           image:
             repository: ghcr.io/buroa/qbtools
-            tag: v0.16.10
+            tag: v0.16.10@sha256:fec06dd13ec90694110ca912eb9003d3a46d29be83944538599b35fc78dcbf18
           args:
             - reannounce
             - --process-seeding

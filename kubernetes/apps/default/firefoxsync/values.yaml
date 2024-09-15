@@ -16,7 +16,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/firefoxsync
-            tag: 1.9.1
+            tag: 1.9.1@sha256:ef3e08625e4191e321a7f0ab6e7b10f69af0d304ae1d4c78242ce23fa4f8d1dc
             pullPolicy: IfNotPresent
 
           env:

@@ -2,7 +2,7 @@
 redis-ha:
   image:
     repository: public.ecr.aws/docker/library/redis
-    tag: 7.4.0-alpine
+    tag: 7.4.0-alpine@sha256:c35af3bbcef51a62c8bae5a9a563c6f1b60d7ebaea4cb5a3ccbcc157580ae098
 
   replicas: 2
 
@@ -27,8 +27,6 @@ redis-ha:
 
   exporter:
     enabled: true
-    image: quay.io/oliver006/redis_exporter
-    tag: v1.55.0-alpine
     extraArgs:
       include-system-metrics: true
     serviceMonitor:

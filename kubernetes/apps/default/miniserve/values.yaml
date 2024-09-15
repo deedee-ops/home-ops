@@ -14,7 +14,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/miniserve
-            tag: 0.28.0
+            tag: 0.28.0@sha256:26dff577da1b64506e45bf3bb66cdcd312bd1ec0edf654384497b771711ccf02
             pullPolicy: IfNotPresent
 
           env:
