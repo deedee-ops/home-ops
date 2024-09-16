@@ -20,6 +20,10 @@ spec:
           volumeMounts:
             - mountPath: /secrets
               name: secrets
+            - mountPath: /config/immich.sql
+              name: config
+              readOnly: true
+              subPath: immich.sql
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -34,13 +38,11 @@ spec:
             volumeAttributes:
               secretProviderClass: immich
           name: secrets
+        - configMap:
+            defaultMode: 420
+            name: immich-configmap
+          name: config
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
-
-# @todo, automate:
-# ALTER DATABASE immich SET search_path TO "$user", public, vectors;
-# CREATE EXTENSION IF NOT EXISTS vectors;
-# CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-# ALTER SCHEMA vectors OWNER TO pg_database_owner;
