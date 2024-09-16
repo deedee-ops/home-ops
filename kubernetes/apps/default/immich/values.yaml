@@ -201,7 +201,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/salvoxia/immich-folder-album-creator
-            tag: 0.10.0@sha256:ea2174a7a45981dcb82ac1dde1d53b9800fbcc3ef8047ddf085aa75957e0007c
+            tag: 0.11.0@sha256:e0a53b6ebead86d652c6418a277c2b740b896b218085766f861317fded8f2439
             pullPolicy: IfNotPresent
           command:
             - /script/immich_auto_album.sh
