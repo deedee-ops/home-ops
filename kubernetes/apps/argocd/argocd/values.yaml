@@ -240,7 +240,7 @@ argo-cd:
       - name: argocd-vault-plugin-helm
         command:
           - /var/run/argocd/argocd-cmp-server
-        image: "quay.io/argoproj/argocd:v2.12.3@sha256:68894064bc381c19ea951029510aa614bd26bf46c2ec65ea445c7d8d095a9417"
+        image: "quay.io/argoproj/argocd:v2.13.0@sha256:a1e170ed6b97ec693d4a0112937b8327cb85f7a82e47816fd48386bfbce70ec4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -275,7 +275,7 @@ argo-cd:
       # argocd-vault-plugin with Kustomize
       - name: argocd-vault-plugin-kustomize
         command: [/var/run/argocd/argocd-cmp-server]
-        image: "quay.io/argoproj/argocd:v2.12.3@sha256:68894064bc381c19ea951029510aa614bd26bf46c2ec65ea445c7d8d095a9417"
+        image: "quay.io/argoproj/argocd:v2.13.0@sha256:a1e170ed6b97ec693d4a0112937b8327cb85f7a82e47816fd48386bfbce70ec4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
@@ -310,7 +310,7 @@ argo-cd:
       # argocd-vault-plugin with plain YAML
       - name: argocd-vault-plugin
         command: [/var/run/argocd/argocd-cmp-server]
-        image: "quay.io/argoproj/argocd:v2.12.3@sha256:68894064bc381c19ea951029510aa614bd26bf46c2ec65ea445c7d8d095a9417"
+        image: "quay.io/argoproj/argocd:v2.13.0@sha256:a1e170ed6b97ec693d4a0112937b8327cb85f7a82e47816fd48386bfbce70ec4"
         envFrom:
           - secretRef:
               name: argocd-vault-plugin-config
