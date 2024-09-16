@@ -111,6 +111,7 @@
             pkgs.age
             pkgs.go-task
             pkgs.kubernetes-helm
+            pkgs.kustomize
             pkgs.jq
             pkgs.lefthook
             pkgs.opentofu
