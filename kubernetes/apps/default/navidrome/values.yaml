@@ -14,7 +14,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/navidrome
-            tag: 0.52.5@sha256:46de64e8ac8f9d79415d851a3fcc0cdf2a2c4d46583884b18fc0fecba560aca2
+            tag: 0.53.0@sha256:311e6bee5d6425db6ff9f4d94153606207de83498805398d19e7381878056346
             pullPolicy: IfNotPresent
 
           env:
