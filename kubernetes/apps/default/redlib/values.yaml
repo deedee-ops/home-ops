@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: quay.io/redlib/redlib
-            tag: 'latest@sha256:5643d3158dd6cf90f7710388a03fc1711ca94d8d212f6f4a7fd4986d4542b932'
+            tag: 'latest@sha256:67b026748fa9d84b93681f6419218e03b7cf50ede164f34345cad17ecf57949f'
             pullPolicy: IfNotPresent
 
           env:
