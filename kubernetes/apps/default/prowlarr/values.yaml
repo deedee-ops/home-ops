@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/prowlarr-devel
-            tag: "1.24.0.4721@sha256:671a1193d59b5c8173c493acc90f2565e7701c95e95d920ce0f603b9cfe12be4"
+            tag: "1.24.0.4721@sha256:bc6c568264ab6c549153986b55c565ff71f814ff51dc2999738812f7e284f2c1"
             pullPolicy: IfNotPresent
 
           env:
