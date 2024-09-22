@@ -27,7 +27,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/authelia
-            tag: 4.38.11@sha256:9ee4af72306190c84d4ab57c2cdc0402370dd3ee7b8d393e2f959c526766a173
+            tag: 4.38.12@sha256:556b61049d0bebe193635f45822ab214a0c8f1f00a1ffdded6dffaf0962ce842
 
           env:
             TZ: Europe/Warsaw
