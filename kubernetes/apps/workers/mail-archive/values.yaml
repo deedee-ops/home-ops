@@ -17,7 +17,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/slusarz/dovecot-fts-flatcurve
-            tag: "v1.0.4@sha256:6392a6bd61b29c6ed722f5e972fbe695d90c6393f33a2ad4aa33b61f370c6f0d"
+            tag: "v1.0.5@sha256:3a11df7028e476e2c0b971907cb48a525d37276961bcc44bfb7360f49950236c"
             pullPolicy: IfNotPresent
 
           probes:
