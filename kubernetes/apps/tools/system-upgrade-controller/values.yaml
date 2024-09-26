@@ -41,7 +41,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/system-upgrade-controller
-            tag: v0.13.4@sha256:68823f2952933c6856b21e502fb670a321cae8d1f45191d367c5d643b463403e
+            tag: v0.14.0@sha256:805a24a728d54ee71e011b8f11ab9fdc4e8b676f15eb36fe63c1766d8a569d28
           env:
             SYSTEM_UPGRADE_CONTROLLER_DEBUG: false
             SYSTEM_UPGRADE_CONTROLLER_THREADS: 2
@@ -49,6 +49,7 @@ app-template:
             SYSTEM_UPGRADE_JOB_BACKOFF_LIMIT: 99
             SYSTEM_UPGRADE_JOB_IMAGE_PULL_POLICY: IfNotPresent
             SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: public.ecr.aws/bitnami/kubectl:1.31.1@sha256:fbfd1c50c718260e12f6bb4cd2592b90e09efb6715a8d8eb7dcddf54e576eaf3
+            SYSTEM_UPGRADE_JOB_POD_REPLACEMENT_POLICY: Failed  # Required for Talos
             SYSTEM_UPGRADE_JOB_PRIVILEGED: true
             SYSTEM_UPGRADE_JOB_TTL_SECONDS_AFTER_FINISH: 900
             SYSTEM_UPGRADE_PLAN_POLLING_INTERVAL: 15m
