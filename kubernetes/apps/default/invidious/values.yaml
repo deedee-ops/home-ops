@@ -4,6 +4,8 @@ app-template:
   defaultPodOptions:
     securityContext:
       fsGroup: 65000
+      runAsUser: 65000
+      runAsGroup: 65000
       runAsNonRoot: true
       seccompProfile:
         type: RuntimeDefault
@@ -52,6 +54,35 @@ app-template:
               memory: 128Mi
             limits:
               memory: 4096Mi
+
+        sighelper:
+          image:
+            repository: quay.io/invidious/inv-sig-helper
+            pullPolicy: Always
+            tag: 'latest@sha256:c59df5204ff8ce70694b9f3568aa14a7d9e9a7bb2caedefb8c253a23aa474b0f'
+
+          # args:
+          #   - '--tcp'
+          #   - '0.0.0.0:12999'
+
+          env:
+            RUST_LOG: info
+            TZ: Europe/Warsaw
+
+          securityContext:
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
 
   service:
     app:
