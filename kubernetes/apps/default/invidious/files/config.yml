@@ -11,6 +11,9 @@ port: 3000
 external_port: 443
 host_binding: 0.0.0.0
 domain: "invidious.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
+signature_server: localhost:12999
+visitor_data: "<path:kubernetes/data/internal/invidious#VISITOR_DATA>"
+po_token: "<path:kubernetes/data/internal/invidious#PO_TOKEN>"
 https_only: true
 hsts: true
 disable_proxy: false
