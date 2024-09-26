@@ -24,7 +24,7 @@ app-template:
           image:
             repository: ghcr.io/deedee-ops/invidious-devel
             pullPolicy: Always
-            tag: 'latest@sha256:d8b94ff0833f20e30a223e697433e9b48fb7787ea503bbd1537442bfbb58fdde'
+            tag: 'latest@sha256:d34b665c12d8a5be68cddb6135e17740a6ece076d72b61cd09f0bdb0c926493b'
 
           env:
             TZ: Europe/Warsaw
@@ -61,9 +61,9 @@ app-template:
             pullPolicy: Always
             tag: 'latest@sha256:c59df5204ff8ce70694b9f3568aa14a7d9e9a7bb2caedefb8c253a23aa474b0f'
 
-          # args:
-          #   - '--tcp'
-          #   - '0.0.0.0:12999'
+          args:
+            - "--tcp"
+            - "0.0.0.0:12999"
 
           env:
             RUST_LOG: info
@@ -76,6 +76,18 @@ app-template:
             capabilities:
               drop:
                 - ALL
+
+          probes:
+            startup: &probes
+              enabled: true
+              custom: true
+              spec:
+                failureThreshold: 30
+                periodSeconds: 10
+                tcpSocket:
+                  port: 12999
+            readiness: *probes
+            liveness: *probes
 
           resources:
             requests:
