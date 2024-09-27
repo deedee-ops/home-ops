@@ -283,11 +283,16 @@ kube-prometheus-stack:
           route-to/nas: "true"
       podAntiAffinity: hard
       replicaExternalLabelName: __replica__
-      ruleSelectorNilUsesHelmValues: false
-      serviceMonitorSelectorNilUsesHelmValues: false
-      podMonitorSelectorNilUsesHelmValues: false
-      probeSelectorNilUsesHelmValues: false
-      scrapeConfigSelectorNilUsesHelmValues: false
+      ruleSelector:
+        matchLabels: null
+      serviceMonitorSelector:
+        matchLabels: null
+      podMonitorSelector:
+        matchLabels: null
+      probeSelector:
+        matchLabels: null
+      scrapeConfigSelector:
+        matchLabels: null
       walCompression: true
       enableFeaturs:
         - auto-gomaxprocs
