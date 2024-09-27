@@ -8,7 +8,7 @@
         # by default DNS is set to adguard in docker which causes internal loopback and resolving problems
         # that's why we need to force it to actual gateway
         dns = [ "10.42.1.1" ];
-        image = "public.ecr.aws/docker/library/postgres:16.4@sha256:026d0ab72b34310b68160ab9299aa1add5544e4dc3243456b94f83cb1c119c2c";
+        image = "public.ecr.aws/docker/library/postgres:16.4@sha256:9a2f3b8137068178039fcf7769a760b700a4c09460c502bcd18cae8a7484af65";
         ports = [ "5432:5432" ];
         environment = {
           POSTGRES_PASSWORD_FILE = "/run/passwd";
