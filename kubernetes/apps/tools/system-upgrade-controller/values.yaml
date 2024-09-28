@@ -41,7 +41,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/system-upgrade-controller
-            tag: v0.14.0@sha256:805a24a728d54ee71e011b8f11ab9fdc4e8b676f15eb36fe63c1766d8a569d28
+            tag: v0.14.1@sha256:8a8b5fd365c04b8800577cf9e3c7ca4f9aa15e4efd5b48ff8b485be7e05c8659
           env:
             SYSTEM_UPGRADE_CONTROLLER_DEBUG: false
             SYSTEM_UPGRADE_CONTROLLER_THREADS: 2
