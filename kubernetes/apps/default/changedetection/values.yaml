@@ -60,7 +60,7 @@ app-template:
         playwright:
           image:
             repository: dgtlmoon/sockpuppetbrowser
-            tag: latest@sha256:e6a6dd41714d40026c81c4fbd4fe73718d7160960b41d02dd2d33d6185d64520
+            tag: latest@sha256:c022d98b81d508cc19431521033e1d7242be1f13180ae104063cfc2476d646cf
             pullPolicy: IfNotPresent
 
           env:
