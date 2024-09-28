@@ -17,7 +17,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/firefly-iii
-            tag: '6.1.19@sha256:8a4ac703e68e8e679d3c7e496cfa9168e1a16680a8ae61911fca2041cf3829f0'
+            tag: '6.1.20@sha256:8251bbb85e69ab84d5cadfc42801aa74e76507436651617f007115163308b0a0'
             pullPolicy: IfNotPresent
           env:
             APP_URL: "https://firefly.<path:kubernetes/data/internal/base#ROOT_DOMAIN>"
