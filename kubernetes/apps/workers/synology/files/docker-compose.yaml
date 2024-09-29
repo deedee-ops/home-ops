@@ -12,7 +12,7 @@ services:
       AUTO_UPGRADE: "1"
       LE_CONFIG_HOME: /acme.sh
       TZ: Europe/Warsaw
-    image: "neilpang/acme.sh:latest@sha256:08b5cc7466c1847d2e997c2157cd82ee50b47f158da28e3ee040f7123808d354"
+    image: "neilpang/acme.sh:latest@sha256:8011172c2823fceec2a729bffbf2e02eadab230949e914652f8d7e941d458689"
     volumes:
       - /volume2/docker/acme-sh:/acme.sh
 
