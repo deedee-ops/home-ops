@@ -38,7 +38,7 @@ pod-gateway:
       gluetun:
         image:
           repository: ghcr.io/deedee-ops/gluetun
-          tag: v3.39.0@sha256:d00ae7a96c00562b963659e6f0812cef72a43432858c4363c0dd549ad2373349
+          tag: v3.39.1@sha256:06cf71edecd205d8fa071f4948015e60017d1820f12b2b6a11ef9cec797b912c
       env:
         - name: VPN_SERVICE_PROVIDER
           value: airvpn
