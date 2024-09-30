@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/gokapi
-            tag: 1.9.1@sha256:6161ff6b4603e1abb396d785c0128cd400fa09ae6c9073710b22596dd7a29e0c
+            tag: 1.9.2@sha256:20a74080a22f393c768ac79a5dd01b1bb33d6d15f215079bd0d3a71ad47b5a39
 
           env:
             TZ: Europe/Warsaw
