@@ -8,7 +8,7 @@
         # by default DNS is set to adguard in docker which causes internal loopback and resolving problems
         # that's why we need to force it to actual gateway
         dns = [ "10.42.1.1" ];
-        image = "ghcr.io/deedee-ops/adguardhome:v0.107.52@sha256:755c513b878bba45454624e477d9eb0d11d1738e03fb86220ca85ba21451ca45";
+        image = "ghcr.io/deedee-ops/adguardhome:v0.107.53@sha256:5150fa781a10fe7e99c4b715b94e64a66f6f30ee712b0d4d11c6f9215ca11e37";
         ports = [
           "53:53/tcp"
           "53:53/udp"
