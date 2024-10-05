@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/radarr-devel
-            tag: "5.12.0.9255@sha256:f029781b6c85e3542d4918a15e5d2a39fabaee7c13ca778c73416bf634b01652"
+            tag: "5.12.0.9255@sha256:1bb8ca190547f8c4da2bdce161bc1f90335c6529349b3922759eddaf30a2b3ce"
             pullPolicy: IfNotPresent
 
           env:
