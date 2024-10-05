@@ -23,6 +23,9 @@ app-template:
       annotations:
         reloader.stakater.com/auto: "true"
 
+      serviceAccount:
+        name: authelia
+
       containers:
         app:
           image:
@@ -111,10 +114,6 @@ app-template:
               memory: 100Mi
             limits:
               memory: 200Mi
-
-  serviceAccount:
-    create: false
-    name: authelia
 
   service:
     app:

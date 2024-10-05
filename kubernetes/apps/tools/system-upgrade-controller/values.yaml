@@ -37,6 +37,8 @@ app-template:
       strategy: RollingUpdate
       annotations:
         reloader.stakater.com/auto: "true"
+      serviceAccount:
+        name: system-upgrade
       containers:
         app:
           image:
@@ -63,10 +65,6 @@ app-template:
             capabilities:
               drop:
                 - ALL
-
-  serviceAccount:
-    name: system-upgrade
-    create: false
 
   persistence:
     etc-ssl:
