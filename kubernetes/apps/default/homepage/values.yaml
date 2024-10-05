@@ -15,6 +15,9 @@ app-template:
       annotations:
         reloader.stakater.com/auto: "true"
 
+      serviceAccount:
+        name: homepage
+
       containers:
         app:
           image:
