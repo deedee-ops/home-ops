@@ -88,55 +88,14 @@ app-template:
               drop:
                 - ALL
 
-    tagging:
+    orphaned:
       type: cronjob
-      cronjob: &cronjob
-        schedule: "@hourly"
+      cronjob:
+        schedule: "@daily"
         timeZone: Europe/Warsaw
         concurrencyPolicy: Forbid
         successfulJobsHistory: 0
         failedJobsHistory: 1
-      annotations:
-        configmap.reloader.stakater.com/reload: qbtools-configmap
-      initContainers:
-        tagging:
-          <<: *container
-          args:
-            - tagging
-            - --added-on
-            - --expired
-            - --last-activity
-            - --not-working
-            - --sites
-            - --unregistered
-            - --server
-            - qbittorrent.workers.svc.cluster.local
-            - --port
-            - "8080"
-      containers:
-        expired:
-          <<: *container
-          args:
-            - prune
-            - --exclude-category
-            - manual
-            - --include-tag
-            - added:7d
-            - --server
-            - qbittorrent.workers.svc.cluster.local
-            - --port
-            - "8080"
-      pod:
-        restartPolicy: OnFailure
-        labels:
-          # syncing tags with trackers
-          egress/enabled: "true"
-
-    orphaned:
-      type: cronjob
-      cronjob:
-        <<: *cronjob
-        schedule: "@daily"
       containers:
         app:
           <<: *container
@@ -197,12 +156,3 @@ app-template:
         orphaned:
           app:
             - path: "/data/torrents"
-    qbconfig:
-      type: configMap
-      name: qbtools-configmap
-      advancedMounts:
-        tagging:
-          tagging:
-            - path: /config/config.yaml
-              subPath: config.yaml
-              readOnly: true
