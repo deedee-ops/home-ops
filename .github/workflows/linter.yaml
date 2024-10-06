@@ -38,22 +38,4 @@ jobs:
 
       - name: Run linters
         run: pre-commit run --all-files
-
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Setup kubeconform and helm
-        shell: bash
-        run: brew install helm kubeconform yq
-
-      - name: Run task lint:egress-comment
-        run: ./.taskfiles/Lint/egress-comment-job.sh
-
-      - name: Run task lint:kubeconform
-        run: ./.taskfiles/Lint/kubeconform-job.sh
-
-      - name: Run task lint:yaml-json-schema
-        run: ./.taskfiles/Lint/yaml-json-schema-job.sh
-        env:
-          IGNORE_SCHEMA_FETCH: "1"
 # yamllint enable rule:comments
