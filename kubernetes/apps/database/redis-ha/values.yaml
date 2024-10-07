@@ -2,7 +2,7 @@
 redis-ha:
   image:
     repository: public.ecr.aws/docker/library/redis
-    tag: 7.4.1-alpine@sha256:69ffdec65a1a91fee5e30530c559f0531efae1fd4ddbd93c6d84ffac821c02c7
+    tag: 7.4.1-alpine@sha256:de13e74e14b98eb96bdf886791ae47686c3c5d29f9d5f85ea55206843e3fce26
 
   replicas: 2
 
