@@ -66,7 +66,7 @@ app-template:
         reannounce: &container
           image:
             repository: ghcr.io/buroa/qbtools
-            tag: v0.17.7@sha256:9f58b7f3f35066ca970951692475d788d328e703840b7fca0f0c2ed8c3102f7d
+            tag: v0.17.8@sha256:46b7ac79ba934482d04880e8a84abb9447051a3f60692e9c914052e3be0d3360
           args:
             - reannounce
             - --process-seeding
