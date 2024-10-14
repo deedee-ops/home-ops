@@ -17,7 +17,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/wakapi
-            tag: 2.12.0@sha256:9229a2f6a7bd7139e6aa9c611b0d25ec3fca63a84cb1a61dddfd19ac51fec385
+            tag: 2.12.1@sha256:09a313bbd3ce38c0a1de490b818d68bc856044d88634abb160d7c19898716fd1
             pullPolicy: IfNotPresent
 
           env:
