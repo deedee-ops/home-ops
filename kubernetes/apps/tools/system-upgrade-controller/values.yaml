@@ -50,7 +50,7 @@ app-template:
             SYSTEM_UPGRADE_JOB_ACTIVE_DEADLINE_SECONDS: 900
             SYSTEM_UPGRADE_JOB_BACKOFF_LIMIT: 99
             SYSTEM_UPGRADE_JOB_IMAGE_PULL_POLICY: IfNotPresent
-            SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: public.ecr.aws/bitnami/kubectl:1.31.2@sha256:cb43138ca91b16e5fcc99e7901affe5cea28d0aba6ddfb0ab07a4d606cffa96e
+            SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: public.ecr.aws/bitnami/kubectl:1.31.2@sha256:5a76389b1a84edf043b4bb518e961f1c5926933f04dc556b5e87b09637a77bed
             SYSTEM_UPGRADE_JOB_POD_REPLACEMENT_POLICY: Failed  # Required for Talos
             SYSTEM_UPGRADE_JOB_PRIVILEGED: true
             SYSTEM_UPGRADE_JOB_TTL_SECONDS_AFTER_FINISH: 900
