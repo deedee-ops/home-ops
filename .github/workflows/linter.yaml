@@ -34,7 +34,7 @@ jobs:
             access-tokens = github.com=${{ steps.app-token.outputs.token }}
 
       - name: Enable develop shell
-        uses: nicknovitski/nix-develop@a2060d116a50b36dfab02280af558e73ab52427d # v1.1.0
+        uses: nicknovitski/nix-develop@8b263330c8f0999d6ce564372b099f00af6f8e8a # v1.1.1
 
       - name: Run linters
         run: pre-commit run --all-files
