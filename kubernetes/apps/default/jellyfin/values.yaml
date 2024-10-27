@@ -21,7 +21,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/jellyfin
-            tag: 10.9.10@sha256:c61c22f3cbc19704e2b7b3c33995cc383c4c0e8c54e86df72e952cd971bf6dff
+            tag: 10.10.0@sha256:ff066c8f56f971d6e6ba7ac864c649bcb774e5c6ca860fccd475cab1c0623a68
             pullPolicy: IfNotPresent
 
           env:
