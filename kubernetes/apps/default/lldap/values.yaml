@@ -27,7 +27,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/lldap
-            tag: 2024.10.26@sha256:bd54050dfc66da3d43f813adcd61c0009b4e3b6128a7eda3e3e87ee4d68bd866
+            tag: 2024.10.28@sha256:ed6c596972a85fd85afe543f9bf446a39335c91055c740afe6e2b261795d3017
 
           env:
             LLDAP_DATABASE_DRIVER: "postgres"
