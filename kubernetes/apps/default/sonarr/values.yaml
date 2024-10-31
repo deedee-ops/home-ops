@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/sonarr-devel
-            tag: "4.0.10.2579@sha256:b0302b34ba80546e4c221d0e440c0019ba6de97cdcc2f140930a03f1018a2491"
+            tag: "4.0.10.2579@sha256:362583fefb598585bf2c85000fb89dada7f5bd176fd7b1af75d8b05c8090849a"
             pullPolicy: IfNotPresent
 
           env:
