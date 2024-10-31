@@ -19,7 +19,7 @@ app-template:
         app:
           image:
             repository: ghcr.io/deedee-ops/bazarr
-            tag: "1.4.5@sha256:aae77336494b9b8eeab5a7dc7dec0990b166afbab987cabddf2c4598351f6f2f"
+            tag: "1.4.5@sha256:c44c68d995c92cd17fb2debb2b0cbd41582b84137d0afacd6bcd427367b2a359"
             pullPolicy: IfNotPresent
 
           env:
