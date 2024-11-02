@@ -8,7 +8,7 @@
         # by default DNS is set to adguard in docker which causes internal loopback and resolving problems
         # that's why we need to force it to actual gateway
         dns = [ "10.42.1.1" ];
-        image = "ghcr.io/deedee-ops/omada-controller:5.13.30.8-chromium@sha256:6500871cc6bae3ca008e64a8d24069407bcfffe7ac6beec146be0f3f083b2621";
+        image = "ghcr.io/deedee-ops/omada-controller:5.14.32.3-chromium@sha256:b29e569ed6e5a42f3f73689b462c9e79068f11661791963a2b1277d59e95695e";
         networks = {
           # uncomment when bootstrapping omada switch from scratch
           # bootstrap = {
