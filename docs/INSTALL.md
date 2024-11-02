@@ -25,6 +25,12 @@ partprobe $DISK
 ### Stage 0: talos
 
 - Refer to corresponding cluster README: [meemee](../talos/meemee/README.md) or [deedee](../talos/deedee/README.md)
+- Wait until talos starts complaining about CSRs not being approved.
+
+    ```bash
+    kubectl get csr | grep Pending | awk '{ print $1 }' | xargs kubectl certificate approve
+    ```
+
 - Nodes will be in `NotReady` state with networking errors - this is expected, as there is no CNI at this moment.
 
 ### Stage 1: kubernetes
