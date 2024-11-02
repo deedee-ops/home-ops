@@ -117,7 +117,7 @@ app-template:
         sync:
           image:
             repository: ghcr.io/deedee-ops/imapsync
-            tag: "2.288@sha256:58b3bdb1e893b10d75ca796225a508e13b7fff18a939bbbd426b3173fd697f40"
+            tag: "2.295@sha256:13dcd36d10793f4dd687275752f8a69697291ef7928f5fe57e7c1606e74ec0b6"
             pullPolicy: IfNotPresent
           command:
             - imapsync
