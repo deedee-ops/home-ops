@@ -1,7 +1,0 @@
----
-# yaml-language-server: disabled
-devices:
-  - name: tun
-    groups:
-      - paths:
-          - path: /dev/net/tun

@@ -1,6 +1,0 @@
----
-# yaml-language-server: disabled
-changelog:
-  exclude:
-    authors:
-      - robodexo2000

@@ -1,6 +1,0 @@
----
-kubelet-csr-approver:
-  providerRegex: ".*"
-  bypassDnsResolution: true
-  replicas: 1
-  tolerations: []
