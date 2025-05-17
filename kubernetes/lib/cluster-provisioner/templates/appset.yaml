@@ -55,6 +55,13 @@ spec:
           {{- range $syncOption := .syncOptions }}
           - "{{ $syncOption }}"
           {{- end }}
+        {{- with .retries }}
+        retry:
+          limit: {{ . }}
+          backoff:
+            duration: 10s
+            factor: 1
+        {{- end }}
         {{- with .psp }}
         managedNamespaceMetadata:
           labels:

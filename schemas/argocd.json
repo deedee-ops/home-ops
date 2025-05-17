@@ -27,6 +27,10 @@
       ],
       "type": "string"
     },
+    "retries": {
+      "description": "Number of retries, before giving up. Set to -1 for indefinite.",
+      "type": "integer"
+    },
     "ignoreDifferences": {
       "description": "IgnoreDifferences is a list of resources and their fields which should be ignored during comparison. Will be passed directly to application.",
       "type": "string"
