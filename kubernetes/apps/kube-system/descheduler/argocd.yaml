@@ -1,0 +1,4 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: descheduler
+namespace: kube-system

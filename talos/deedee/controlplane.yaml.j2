@@ -226,7 +226,7 @@ cluster:
                 defaultConstraints:
                   - maxSkew: 1
                     topologyKey: kubernetes.io/hostname
-                    whenUnsatisfiable: DoNotSchedule
+                    whenUnsatisfiable: ScheduleAnyway
   etcd:
     ca:
       crt: "{{ ENV.TALCONFIG_CLUSTER_ETCD_CA_CRT }}"
