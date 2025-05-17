@@ -36,6 +36,12 @@
       "type": "object",
       "additionalProperties": false,
       "$ref": "https://raw.githubusercontent.com/sigstore/helm-charts/refs/heads/main/charts/policy-controller/values.schema.json"
+    },
+    "reloader": {
+      "type": "object",
+      "additionalProperties": false,
+      "x-renovate": "datasource=github-releases depName=stakater/Reloader",
+      "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.2/deployments/kubernetes/chart/reloader/values.schema.json"
     }
   }
 }

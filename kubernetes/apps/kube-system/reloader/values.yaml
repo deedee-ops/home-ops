@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=../../../../schemas/values.json
+reloader:
+  fullnameOverride: reloader
+  reloader:
+    autoReloadAll: true
+    enableHA: true
+    deployment:
+      replicas: 1
+    readOnlyRootFileSystem: true
+    podMonitor:
+      enabled: true
+      namespace: "{{ .Release.Namespace }}"
