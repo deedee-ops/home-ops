@@ -1,0 +1,36 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      description: "Auto-merge GitHub Actions",
+      matchManagers: ["github-actions"],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      minimumReleaseAge: "3 days",
+      ignoreTests: true,
+    },
+    {
+      description: "Auto-merge trusted GitHub Actions",
+      matchManagers: ["github-actions"],
+      matchPackageNames: ["/^actions\\//"],
+      automerge: true,
+      automergeType: "branch",
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      minimumReleaseAge: "1 minute",
+      ignoreTests: true,
+    },
+    {
+      description: "Do not automerge critical apps",
+      matchPackageNames: [
+        "/siderolabs/",
+        "/kube-apiserver/",
+        "/kube-controller-manager/",
+        "/kube-scheduler/",
+      ],
+      automerge: false,
+      ignoreTests: false,
+      matchUpdateTypes: ["major", "minor", "patch", "pin", "digest"],
+    },
+  ],
+}

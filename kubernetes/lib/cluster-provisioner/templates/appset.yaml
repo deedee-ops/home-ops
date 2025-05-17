@@ -1,0 +1,69 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/argoproj.io/applicationset_v1alpha1.json
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: '{{ required "clusterName is required!" .Values.clusterName }}'
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=invalid"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/deedee-ops/k8s-gitops.git
+              revision: master
+              files:
+                # {{- range $disabledApp := .Values.disabledApps }}
+                - path: "kubernetes/apps/{{ $disabledApp }}/argocd.yaml"
+                  exclude: true
+                # {{- end }}
+                - path: "kubernetes/apps/*/*/argocd.yaml"
+              pathParamPrefix: app
+          - git:
+              repoURL: https://github.com/deedee-ops/k8s-gitops.git
+              revision: master
+              files:
+                - path: "kubernetes/clusters/{{ .Values.clusterName }}/values.yaml"
+              pathParamPrefix: cluster
+# {{`
+  template:
+    metadata:
+      name: '{{ .name }}'
+      namespace: argocd
+    spec:
+      destination:
+        namespace: '{{ .namespace }}'
+        server: https://kubernetes.default.svc
+      project: default
+      sources:
+        - repoURL: https://github.com/deedee-ops/k8s-gitops.git
+          targetRevision: master
+          path: 'kubernetes/apps/{{ .namespace }}/{{ .name }}'
+          helm:
+            valueFiles:
+# `}}
+              - "../../../clusters/{{ .Values.clusterName }}/values.yaml"
+# {{`
+  templatePatch: |
+    spec:
+      syncPolicy:
+        automated:
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          {{- range $syncOption := .syncOptions }}
+          - "{{ $syncOption }}"
+          {{- end }}
+        {{- with .psp }}
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: "{{ . }}"
+            pod-security.kubernetes.io/audit: "{{ . }}"
+            pod-security.kubernetes.io/warn: "{{ . }}"
+        {{- end }}
+      {{- if .ignoreDifferences }}
+      ignoreDifferences:
+        {{- .ignoreDifferences | nindent 4 }}
+      {{- end }}
+# `}}

@@ -1,0 +1,5 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: external-dns-cloudflare
+namespace: external
+psp: restricted

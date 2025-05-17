@@ -1,0 +1,14 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json
+default: true
+
+MD013:
+  line_length: 120
+  code_block_line_length: 120
+  code_blocks: false
+  tables: false
+
+MD033:
+  allowed_elements:
+    - img

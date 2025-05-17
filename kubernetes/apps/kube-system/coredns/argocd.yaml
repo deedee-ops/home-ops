@@ -1,0 +1,5 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: coredns
+namespace: kube-system
+psp: privileged

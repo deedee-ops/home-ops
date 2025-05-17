@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=../../../../schemas/values.json
+app-template:
+  controllers:
+    main:
+      type: daemonset
+      containers:
+        app:
+          image:
+            repository: ghcr.io/home-operations/irqbalance
+            tag: 1.9.4@sha256:d3c5a0221dc688593e78b14e10beb971d9717cc9381d4b1e065b8982f424fadb
+          env:
+            IRQBALANCE_BANNED_CPULIST: 8-15  # 8-15 are E-cores
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            privileged: true
+  defaultPodOptions:
+    automountServiceAccountToken: false
+    hostIPC: true
+    hostPID: true
+  persistence:
+    run:
+      type: emptyDir
+      globalMounts:
+        - path: /run/irqbalance

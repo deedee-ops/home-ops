@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "homelab-values",
+  "type": "object",
+  "properties": {
+    "app-template": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
+    },
+    "cert-manager": {
+      "type": "object",
+      "additionalProperties": false,
+      "x-renovate": "datasource=github-releases depName=cert-manager/cert-manager",
+      "$ref": "https://raw.githubusercontent.com/cert-manager/cert-manager/refs/tags/v1.17.2/deploy/charts/cert-manager/values.schema.json"
+    },
+    "cilium": {
+      "type": "object",
+      "additionalProperties": false,
+      "x-renovate": "datasource=github-releases depName=cilium/cilium",
+      "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.4/install/kubernetes/cilium/values.schema.json"
+    },
+    "external-dns": {
+      "type": "object",
+      "additionalProperties": false,
+      "x-renovate": "datasource=github-releases depName=kubernetes-sigs/external-dns",
+      "$ref": "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.16.1/charts/external-dns/values.schema.json"
+    },
+    "external-secrets": {
+      "type": "object",
+      "additionalProperties": false,
+      "x-renovate": "datasource=github-releases depName=external-secrets/external-secrets",
+      "$ref": "https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v0.17.0/deploy/charts/external-secrets/values.schema.json"
+    },
+    "policy-controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/sigstore/helm-charts/refs/heads/main/charts/policy-controller/values.schema.json"
+    }
+  }
+}

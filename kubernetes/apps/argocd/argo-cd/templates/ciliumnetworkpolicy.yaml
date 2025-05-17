@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: argo-cd
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: argo-cd-repo-server
+    egress:
+      - toFQDNs:
+          # gitops repo
+          - matchName: github.com
+          # helm charts
+          - matchName: ghcr.io
+          - matchName: pkg-containers.githubusercontent.com
+          - matchName: quay.io
+          - matchPattern: "cdn*.quay.io"
+        toPorts:
+          - ports:
+              - port: "443"

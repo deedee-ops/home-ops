@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: external-dns-cloudflare
+version: 1.0.0
+type: application
+dependencies:
+  - name: external-dns
+    version: 1.16.1
+    repository: oci://ghcr.io/home-operations/charts-mirror
+    alias: external-dns-cloudflare

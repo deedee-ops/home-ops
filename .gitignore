@@ -1,0 +1,14 @@
+.current-cluster
+.direnv
+.pre-commit-config.yaml
+kubeconfig
+talosconfig
+
+.terraform
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+charts
+Chart.lock

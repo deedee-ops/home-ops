@@ -1,0 +1,24 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.10.2/pkg/machinery/config/schemas/config.schema.json
+# yamllint enable rule:line-length
+
+version: v1alpha1
+
+machine:
+  network:
+    hostname: edd
+    interfaces:
+      - addresses:
+          - 10.100.31.8/16
+
+  disks:
+    - device: /dev/sdb
+      partitions:
+        - mountpoint: /var/mnt/extra
+
+  install:
+    disk: /dev/sda
+
+# vim:ft=yaml

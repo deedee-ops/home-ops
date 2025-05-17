@@ -1,0 +1,85 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/derailed/popeye/refs/heads/master/pkg/config/json/schemas/spinach.json
+
+popeye:
+  excludes:
+    global:
+      codes:
+        # unpredictable metrics
+        - "109"
+        - "110"
+        - "503"
+        - "505"
+
+        # default service account are fine for apps
+        - "300"
+
+        # single endpoints are pretty common in homelab :-)
+        - "1109"
+
+        # cilium is managing network policies, which is not detected by popeye
+        - "1204"
+    linters:
+      ciliumidentities:
+        instances:
+          - fqns: ["rx:.*"]
+      clusterrolebindings:
+        instances:
+          - fqns: ["rx:^system\\:"]
+      daemonsets:
+        instances:
+          # init containers
+          - fqns: ["rx:^kube-system/cilium$"]
+            codes: [106, 107]
+      pods:
+        instances:
+          # init containers
+          - fqns: ["rx:^kube-system/cilium-"]
+            codes: [106, 107]
+          # system kube pods, should be excluded from all lints
+          - fqns: ["rx:^kube-system/kube-(?:apiserver|controller-manager|scheduler)-"]
+          # cilium, irqbalance and spegel pods are expected to be ran as root
+          # https://github.com/spegel-org/spegel/issues/662
+          - fqns: ["rx:^kube-system/(?:cilium-|irqbalance-|spegel-)"]
+            codes: [302, 306]
+          # these pods are expected to automount APIServer credentials
+          - fqns:
+              - "rx:^argocd/"
+              - "rx:^cert-manager/cert-manager"
+              - "rx:^external-secrets/external-secrets-"
+              - "rx:^kube-system/cilium-"
+              - "rx:^kube-system/hubble-ui-"
+            codes: [301]
+          # no probes set in chart
+          - fqns:
+              - "rx:^cert-manager/cert-manager-"
+              - "rx:^external-secrets/external-secrets-"
+              - "rx:^kube-system/irqbalance-"
+              # https://github.com/cilium/hubble-ui/issues/853
+              - "rx:^kube-system/hubble-ui-"
+            codes: [102, 103, 104]
+          # no liveness probes set in chart
+          - fqns:
+              - "rx:^argocd/argo-cd-application-controller-"
+              - "rx:^kube-system/spegel-"
+            codes: [103]
+      serviceaccounts:
+        instances:
+          # these services are expected to automount APIServer credentials
+          - fqns:
+              - "rx:^argocd/"
+              - "rx:^cert-manager/cert-manager"
+            codes: [303]
+      services:
+        instances:
+          # these services doesn't need multiple replicas
+          - fqns: ["rx:^argocd/argo-cd-redis"]
+            codes: [1109]
+
+  registries:
+    - ghcr.io
+    - mirror.gcr.io
+    - public.ecr.aws
+    - quay.io
+    - registry.k8s.io

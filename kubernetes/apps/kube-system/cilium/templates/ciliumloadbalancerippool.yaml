@@ -1,0 +1,16 @@
+---
+# {{ if (and (not .Values.initialize) .Values.cilium.custom.pools) }}
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumloadbalancerippool_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: pool
+spec:
+  allowFirstLastIPs: "No"
+  blocks:
+# yamllint disable rule:comments-indentation
+# {{ range .Values.cilium.custom.pools }}
+    - cidr: "{{.}}"
+# {{ end }}
+# yamllint enable rule:comments-indentation
+# {{ end }}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "homelab-labels",
+  "type": "array",
+  "items": {
+    "anyOf": [
+      {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Name of the label.",
+            "type": "string"
+          },
+          "color": {
+            "description": "Color of the label.",
+            "type": "string",
+            "pattern": "^[0-9a-f]{6}$"
+          }
+        },
+        "required": ["name", "color"]
+      }
+    ],
+    "required": []
+  }
+}

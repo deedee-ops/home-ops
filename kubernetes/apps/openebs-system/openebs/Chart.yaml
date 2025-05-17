@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: openebs
+version: 1.0.0
+type: application
+dependencies:
+  - name: openebs
+    version: 4.2.0
+    repository: oci://ghcr.io/home-operations/charts-mirror

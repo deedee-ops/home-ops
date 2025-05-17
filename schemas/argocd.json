@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "homelab-values",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Name of the application.",
+      "maxLength": 31,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "The namespace to which application will be deployed.",
+      "maxLength": 63,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "psp": {
+      "description": "Pod security policy for given namespace.",
+      "enum": [
+        "restricted",
+        "baseline",
+        "privileged"
+      ],
+      "type": "string"
+    },
+    "ignoreDifferences": {
+      "description": "IgnoreDifferences is a list of resources and their fields which should be ignored during comparison. Will be passed directly to application.",
+      "type": "string"
+    },
+    "syncOptions": {
+      "description": "Options allow you to specify whole app sync-options. 'CreateNamespace=true' is passed by default.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "namespace"
+  ]
+}

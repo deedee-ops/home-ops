@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: external-secrets
+version: 1.0.0
+type: application
+dependencies:
+  - name: external-secrets
+    version: 0.17.0
+    repository: oci://ghcr.io/external-secrets/charts

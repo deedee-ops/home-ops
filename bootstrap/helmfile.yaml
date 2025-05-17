@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    atomic: true
+    chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/cilium'
+    values:
+      - cilium:
+          hubble:
+            enabled: false
+            relay:
+              enabled: false
+            ui:
+              enabled: false
+          autoDirectNodeRoutes: false
+          loadBalancer:
+            mode: snat
+          routingMode: tunnel
+          tunnelProtocol: geneve
+        initialize: true
+    hooks:
+      # Wait for cilium CRDs to be available
+      - events: ["postsync"]
+        command: bash
+        args:
+          - -c
+          - >-
+            until kubectl get crd ciliumbgpadvertisements.cilium.io ciliumbgppeerconfigs.cilium.io
+            ciliumbgpclusterconfigs.cilium.io ciliuml2announcementpolicies.cilium.io ciliumloadbalancerippools.cilium.io
+            ciliumclusterwidenetworkpolicies.cilium.io &>/dev/null;
+            do sleep 5; done
+        showlogs: true
+
+  - name: coredns
+    namespace: kube-system
+    atomic: true
+    chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/coredns'
+    needs: ["kube-system/cilium"]
+
+  - name: spegel
+    namespace: kube-system
+    atomic: true
+    chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/spegel'
+    needs: ["kube-system/coredns"]
+
+  # TODO: waiting for: https://github.com/sigstore/policy-controller/pull/1725 to be released
+  # # - name: policy-controller
+  # #   namespace: cosign-system
+  # #   atomic: true
+  # #   chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/cosign-system/policy-controller'
+  # #   needs: ['kube-system/spegel']
+  # #   hooks:
+  # #     # Wait for policy-controller CRDs to be available
+  # #     - events: ['postsync']
+  # #       command: bash
+  # #       args:
+  # #         - -c
+  # #         - >-
+  # #           until kubectl get crd clusterimagepolicies.policy.sigstore.dev &>/dev/null;
+  # #           do sleep 5; done
+  # #       showlogs: true
+  #
+  - name: external-secrets
+    namespace: external-secrets
+    atomic: true
+    chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/external-secrets/external-secrets'
+    # TODO: waiting for: https://github.com/sigstore/policy-controller/pull/1725 to be released
+    # needs: ['cosign-system/policy-controller']
+    needs: ["kube-system/spegel"]
+    values:
+      - installSecretStore: false
+    hooks:
+      - events: ["postsync"]
+        command: bash
+        args:
+          - -c
+          - >-
+            sed 's@{{`{{ .Release.Namespace }}`}}@{{ .Release.Namespace }}@g'
+            ../kubernetes/apps/external-secrets/external-secrets/templates/clustersecretstore.yaml |
+            kubectl apply --namespace={{ .Release.Namespace }} --server-side --field-manager=kube-controller-manager
+            --filename - --wait=true
+        showlogs: true
+
+  - name: argo-cd
+    namespace: argocd
+    atomic: true
+    chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/argocd/argo-cd'
+    needs: ['external-secrets/external-secrets']
+    values:
+      - argo-cd:
+          server:
+            ingress:
+              enabled: false

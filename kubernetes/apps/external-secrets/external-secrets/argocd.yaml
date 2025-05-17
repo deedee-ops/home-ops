@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: external-secrets
+namespace: external-secrets
+psp: restricted
+ignoreDifferences: |
+  - group: ""
+    kind: Secret
+    name: bitwarden-tls-certs
+    jsonPointers:
+      - "/data"

@@ -1,0 +1,18 @@
+---
+spegel:
+  grafanaDashboard:
+    enabled: false  # @todo
+  securityContext:
+    # NOTE: https://github.com/spegel-org/spegel/issues/863
+    # readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  service:
+    registry:
+      hostPort: 29999
+  serviceMonitor:
+    enabled: true
+  spegel:
+    containerdSock: /run/containerd/containerd.sock
+    containerdRegistryConfigPath: /etc/cri/conf.d/hosts

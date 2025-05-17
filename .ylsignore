@@ -1,0 +1,8 @@
+kubernetes/apps/argocd/argo-cd/values.yaml
+kubernetes/apps/kube-system/coredns/values.yaml
+kubernetes/apps/kube-system/metrics-server/values.yaml
+kubernetes/apps/kube-system/spegel/values.yaml
+kubernetes/apps/openebs-system/openebs/values.yaml
+kubernetes/clusters/*/values.yaml
+kubernetes/lib/cluster-provisioner/values.yaml
+*.tmpl.yaml

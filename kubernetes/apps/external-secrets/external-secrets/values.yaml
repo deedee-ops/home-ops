@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=../../../../schemas/values.json
+installSecretStore: true
+
+external-secrets:
+  certController:
+    image:
+      repository: ghcr.io/external-secrets/external-secrets
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    serviceMonitor:
+      enabled: true
+      interval: 1m
+  grafanaDashboard:
+    enabled: false  # TODO: grafana
+  image:
+    repository: ghcr.io/external-secrets/external-secrets
+  installCRDs: true
+  leaderElect: true
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      memory: "1Gi"
+  serviceMonitor:
+    enabled: true
+    interval: 1m
+  webhook:
+    image:
+      repository: ghcr.io/external-secrets/external-secrets
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    serviceMonitor:
+      enabled: true
+      interval: 1m
+
+  bitwarden-sdk-server:
+    enabled: true
+
+    podSecurityContext:
+      runAsUser: 65000
+      runAsGroup: 65000
+      fsGroup: 65000
+      seccompProfile:
+        type: RuntimeDefault
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "32Mi"
+      limits:
+        memory: "1Gi"
+    securityContext:
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+
+bitwarden-sdk-server:
+  enabled: true

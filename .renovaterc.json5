@@ -1,0 +1,36 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:recommended",
+    "docker:enableMajor",
+    "helpers:pinGitHubActionDigests",
+    ":automergeBranch",
+    ":automergeDigest",
+    ":automergePatch",
+    ":dependencyDashboard",
+    ":disableRateLimiting",
+    ":rebaseStalePrs",
+    ":semanticCommits",
+    ":timezone(Europe/Warsaw)",
+    "github>deedee-ops/k8s-gitops//.renovate/autoMerge.json5",
+    "github>deedee-ops/k8s-gitops//.renovate/customManagers.json5",
+    "github>deedee-ops/k8s-gitops//.renovate/groups.json5",
+    "github>deedee-ops/k8s-gitops//.renovate/labels.json5",
+    "github>deedee-ops/k8s-gitops//.renovate/semanticCommits.json5",
+  ],
+  dependencyDashboardTitle: "Renovate Dashboard 🤖",
+  suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
+  ignorePaths: ["kubernetes/**/*.tmpl.*"],
+  "helm-values": {
+    managerFilePatterns: ["(^|/)kubernetes/.+/values.*\\.ya?ml$"],
+  },
+  kubernetes: {
+    managerFilePatterns: ["(^|/)kubernetes/.+\\.ya?ml$"],
+  },
+  packageRules: [
+    {
+      matchDatasources: ["terraform-provider", "terraform-module"],
+      registryUrls: ["https://registry.opentofu.org"],
+    },
+  ],
+}

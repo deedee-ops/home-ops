@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: coredns
+spec:
+  groups:
+# {{`
+    - name: coredns.rules
+      rules:
+        - alert: CorednsPanicCount
+          expr: increase(coredns_panics_total[1m]) > 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: CoreDNS Panic Count (instance {{ $labels.instance }})
+            description: |-
+              Number of CoreDNS panics encountered
+                VALUE = {{ $value }}
+                LABELS = {{ $labels }}
+# `}}

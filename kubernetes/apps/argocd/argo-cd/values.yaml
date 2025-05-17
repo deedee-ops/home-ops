@@ -1,0 +1,139 @@
+---
+argo-cd:
+  applicationSet:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "32Mi"
+      limits:
+        memory: "1Gi"
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  configs:
+    params:
+      # by default argocd handles SSL termination on its own, which breaks TLS termination on nginx,
+      # causing infinite loop
+      "server.insecure": true
+    repositories:
+      deedee-ops-k8s-gitops:
+        name: k8s-gitops
+        type: git
+        url: https://github.com/deedee-ops/k8s-gitops.git
+    cm:
+      # this customization make sync-waves work properly
+      resource.customizations: |
+        argoproj.io/Application:
+          health.lua: |
+            hs = {}
+            hs.status = "Progressing"
+            hs.message = ""
+            if obj.status ~= nil then
+              if obj.status.health ~= nil then
+                hs.status = obj.status.health.status
+                if obj.status.health.message ~= nil then
+                  hs.message = obj.status.health.message
+                end
+              end
+            end
+            return hs
+      resource.exclusions: |
+        - apiGroups:
+          - cilium.io
+          kinds:
+          - CiliumIdentity
+          clusters:
+          - "*"
+    rbac:
+      policy.csv: g, lldap_admin, role:admin
+    secret:
+      githubSecret: "$webhook-github-secret:webhook.github.secret"
+  controller:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "256Mi"
+      limits:
+        memory: "4Gi"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  dex:
+    enabled: false
+  global:
+    deploymentStrategy:
+      type: RollingUpdate
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+      seccompProfile:
+        type: RuntimeDefault
+  nameOverride: argo-cd
+  notifications:
+    enabled: false
+  redis:
+    enabled: true
+    serviceAccount:
+      create: true
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "32Mi"
+      limits:
+        memory: "1Gi"
+    exporter:
+      enabled: true
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "32Mi"
+        limits:
+          memory: "1Gi"
+      livenessProbe:
+        enabled: true
+      readinessProbe:
+        enabled: true
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  repoServer:
+    dnsConfig:
+      # ensure FQDNs are not expanded with search domains, so cilium can apply policies correctly
+      options:
+        - name: ndots
+          value: "1"
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  server:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    ingress:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true

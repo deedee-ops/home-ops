@@ -1,0 +1,31 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Process annotated dependencies",
+      fileMatch: [
+        "(^|/).*\\.env$",
+        "(^|/).+\\.sh$",
+        "(^|/).+\\.json(?:\\.j2)?$",
+        "(^|/).+\\.ya?ml(?:\\.j2)?$",
+      ],
+      matchStrings: [
+        // # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+        // KUBERNETES_VERSION=v1.32.4
+        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( repository=(?<registryUrl>\\S+))?\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?(?<currentValue>\\S+)",
+
+        // # renovate: datasource=docker depName=ghcr.io/prometheus-operator/prometheus-operator
+        // https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.80.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
+        //
+        // "x-renovate": "datasource=github-releases depName=cilium/cilium",
+        // "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.2/install/kubernetes/cilium/values.schema.json"
+        //
+        // # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+        // # yaml-language-server: $schema=https://www.talos.dev/v1.10/schemas/v1alpha1_config.schema.json
+        'datasource=(?<datasource>\\S+) depName=(?<depName>[0-9a-zA-Z/.-]+)[",]*\\n[^\\n]+?/(?<currentValue>(v|\\d)[\\d.][^/]+)',
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+    },
+  ],
+}

@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+# TODO: naively disabled for now, do it properly with files exclude as described here:
+# https://argo-cd.readthedocs.io/en/latest/operator-manual/applicationset/Generators-Git/#exclude-files
+# when it lands in argocd
+name: policy-controller
+namespace: cosign-system
+psp: restricted
+
+# vim:ft=yaml

@@ -1,0 +1,20 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/configmap-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflare-tunnel-configmap
+data:
+  config.yaml: |
+    ---
+    originRequest:
+      originServerName: "external.{{ .Values.global.rootDomain }}"
+
+    ingress:
+      - hostname: "{{ .Values.global.rootDomain }}"
+        service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
+      - hostname: "*.{{ .Values.global.rootDomain }}"
+        service: *svc
+      - service: http_status:404

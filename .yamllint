@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
+extends: default
+
+rules:
+  comments:
+    ignore: |
+      .github/workflows/*.yaml
+
+  comments-indentation:
+    ignore:
+      - "**/prometheusrule.yaml"
+      - "kubernetes/lib/cluster-provisioner/templates/appset.yaml"
+  line-length:
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+    max: 120
+
+ignore:
+  - ".pre-commit-config.yaml"
+  - "*.tmpl.y*ml"
+  - "**/charts/**/*.y*ml"
+
+# vim:ft=yaml

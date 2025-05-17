@@ -1,0 +1,41 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.10.2/pkg/machinery/config/schemas/config.schema.json
+# yamllint enable rule:line-length
+
+version: v1alpha1
+
+machine:
+  network:
+    hostname: buttercup
+
+    interfaces:
+      - deviceSelector:
+          busPath: 1-1.0  # blossom
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 169.254.20.13/32
+        routes:
+          - network: 169.254.20.11/32
+            metric: 2048
+      - deviceSelector:
+          busPath: 0-1.0  # bubbles
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 169.254.20.13/32
+        routes:
+          - network: 169.254.20.12/32
+            metric: 2048
+
+  disks:
+    - device: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R470205
+      partitions:
+        - mountpoint: /var/mnt/extra
+
+  install:
+    disk: /dev/disk/by-id/ata-TS128GMTS430S_H854361145
+
+# vim:ft=yaml

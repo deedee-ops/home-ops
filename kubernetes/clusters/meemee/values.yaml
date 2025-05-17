@@ -1,0 +1,23 @@
+---
+global:
+  rootDomain: &rootDomain "meemee.casa"
+
+cilium:
+  cluster:
+    name: meemee
+    loadBalancer:
+      mode: snat
+    routingMode: tunnel
+    tunnelProtocol: geneve
+  custom:
+    pools:
+      - 10.100.31.0/24
+
+external-dns-unifi:
+  domainFilters:
+    - *rootDomain
+
+external-secrets:
+  bitwarden:
+    organizationID: 6d56fa67-67e1-4697-9d7f-b2ad00d31d5d
+    projectID: ecbaa211-ce8b-49e7-ba23-b2ad00d36ae1

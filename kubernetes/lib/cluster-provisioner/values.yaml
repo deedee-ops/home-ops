@@ -1,0 +1,6 @@
+---
+# clusterName: required
+
+# format: namespace/name, matching path in `kubernetes/apps` directory
+# for example: argocd/argo-cd
+disabledApps: []

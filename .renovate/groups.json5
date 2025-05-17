@@ -1,0 +1,32 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      description: "Cilium Group",
+      groupName: "Cilium",
+      matchDatasources: ["docker", "github-releases"],
+      matchPackageNames: ["/cilium/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "External DNS Group",
+      groupName: "External DNS",
+      matchDatasources: ["docker", "github-releases"],
+      matchPackageNames: ["/external-dns/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "External Secrets Operator Group",
+      groupName: "External Secrets Operator",
+      matchDatasources: ["docker", "github-releases"],
+      matchPackageNames: ["/external-secrets/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+  ],
+}
