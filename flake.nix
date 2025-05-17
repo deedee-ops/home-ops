@@ -153,19 +153,24 @@
             self.checks.${system}.pre-commit-check.shellHook
             + ''
               export ROOT_DIR="$(git rev-parse --show-toplevel)"
-              source .env
 
               if [[ ! -e "$ROOT_DIR/.current-cluster" || ! -s "$ROOT_DIR/.current-cluster" ]]; then
-                echo "MISSING '.current-cluster' file, some features may not work properly."
+                source "$ROOT_DIR/scripts/_lib.sh"
+                echo -e "\e[31mWorking cluster not set.\e[0m"
+                local clusters=($(ls -1 --color=never "$ROOT_DIR/kubernetes/clusters"))
+                CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
+                echo -n "$CURRENT_CLUSTER" > "$ROOT_DIR/.current-cluster"
               else
-                export CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
-                export BWS_ACCESS_TOKEN="$(${pkgs.lib.getExe pkgs.rbw} get "BWS_ACCESS_TOKEN_''${CURRENT_CLUSTER^^}")"
-
-                bws secret list | jq -r '.[] | select(.key == "TALCONFIG_TALOSCONFIG") | .value' > "$ROOT_DIR/talosconfig"
-                bws secret list | jq -r '.[] | select(.key == "TOFU_TFVARS") | .value' > "$ROOT_DIR/opentofu/terraform.tfvars"
-                export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
-                export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
+                CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
               fi
+
+              source .env
+              export BWS_ACCESS_TOKEN="$(${pkgs.lib.getExe pkgs.rbw} get "BWS_ACCESS_TOKEN_''${CURRENT_CLUSTER^^}")"
+
+              bws secret list | jq -r '.[] | select(.key == "TALCONFIG_TALOSCONFIG") | .value' > "$ROOT_DIR/talosconfig"
+              bws secret list | jq -r '.[] | select(.key == "TOFU_TFVARS") | .value' > "$ROOT_DIR/opentofu/terraform.tfvars"
+              export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
+              export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
             '';
         };
       }

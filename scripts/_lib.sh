@@ -118,3 +118,32 @@ function render_template() {
 
     echo "${output}"
 }
+
+# Prompts the user to select a valid option from a list of arguments and returns the selected value.
+function choose_option() {
+    local options=("$@")
+    local choice
+
+    # Function to check if input is valid
+    is_valid_option() {
+        for opt in "${options[@]}"; do
+            if [[ "$1" == "$opt" ]]; then
+                return 0
+            fi
+        done
+        return 1
+    }
+
+    # Loop until a valid option is chosen
+    while true; do
+        echo "Please choose one of the following options: ${options[*]}" >&2
+        read -rp "Your choice: " choice
+
+        if is_valid_option "$choice"; then
+            echo "$choice"
+            return 0
+        else
+            echo "Invalid option. Please try again." >&2
+        fi
+    done
+}
