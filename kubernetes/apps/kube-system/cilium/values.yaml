@@ -120,6 +120,9 @@ cilium:
       limits:
         memory: "1Gi"
     rollOutPods: true
+    # mitigation for multiple `ContainerStatusUnknown` after restart
+    # https://github.com/cilium/cilium/issues/28549
+    tolerations: []
   prometheus:
     enabled: true
     serviceMonitor:
