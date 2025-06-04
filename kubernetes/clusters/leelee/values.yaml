@@ -1,10 +1,10 @@
 ---
 global:
-  rootDomain: &rootDomain "meemee.casa"
+  rootDomain: &rootDomain "leelee.casa"
 
 cilium:
   cluster:
-    name: meemee
+    name: leelee
     loadBalancer:
       mode: snat
     routingMode: tunnel

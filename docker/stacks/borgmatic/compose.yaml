@@ -1,0 +1,32 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  borgmatic:
+    image: "ghcr.io/borgmatic-collective/borgmatic:2.0.6@sha256:26a353844a4ea2bc890c0099c74b4b52f8142c425322def8dc3de0b3d73d8e9a"
+    container_name: borgmatic
+    restart: always
+    env_file:
+      - compose.env
+      - .env
+    configs:
+      - source: homelab
+        target: /etc/borgmatic.d/homelab.yaml
+      - source: legacy
+        target: /etc/borgmatic.d/legacy.yaml
+      - source: nas
+        target: /etc/borgmatic.d/nas.yaml
+    volumes:
+      - /volume1:/mnt/volume1:ro
+      - /volume2:/mnt/volume2:ro
+      - /volume3:/mnt/volume3:ro
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/borgmatic/config:/config"
+      - "/volumeUSB1/usbshare:/mnt/target"
+
+configs:
+  homelab:
+    file: ./config/homelab.yaml
+  legacy:
+    file: ./config/legacy.yaml
+  nas:
+    file: ./config/nas.yaml

@@ -1,0 +1,19 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  komodo-periphery:
+    image: ghcr.io/moghtech/komodo-periphery:1.17.5@sha256:0031d923676f8b57c35336e9f5550e188e8d9bde83360714e7a40c2d8768309e
+    container_name: komodo-periphery
+    labels:
+      komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    logging:
+      driver: local
+    env_file:
+      - ./compose.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/proc
+      - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets"

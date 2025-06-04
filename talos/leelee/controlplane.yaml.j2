@@ -81,7 +81,7 @@ machine:
       forwardKubeDNSToHost: false
 
   nodeLabels:
-    topology.kubernetes.io/region: meemee
+    topology.kubernetes.io/region: leelee
     topology.kubernetes.io/zone: m
 
   files:
@@ -104,7 +104,7 @@ cluster:
   secret: "{{ ENV.TALCONFIG_CLUSTER_SECRET }}"
   controlPlane:
     endpoint: https://10.100.31.5:6443
-  clusterName: meemee
+  clusterName: leelee
   network:
     dnsDomain: cluster.local
     podSubnets:
