@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   komodo-ferretdb:
-    image: ghcr.io/ferretdb/ferretdb:1.24.1@sha256:401f0e05eced6bb07088b79db702ee0d898fdfaf28edb99b4cbe1e006733bf69
+    image: ghcr.io/ferretdb/ferretdb:1.24.2@sha256:78497e6209865382781ff4d113ae61353f34c5cf2b49359dbd960748437c9c46
     container_name: komodo
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
