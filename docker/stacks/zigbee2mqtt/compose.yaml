@@ -1,0 +1,61 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  zigbee2mqtt-bottomfloor:
+    image: ghcr.io/koenkk/zigbee2mqtt:2.3.0@sha256:42de8c55dc578a8404a18c43aeb2b7c75be7988179abe9a8195d99a9e7ebb917
+    container_name: zigbee2mqtt-bottomfloor
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file:
+      - compose.env
+      - bottomfloor.env
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/zigbee2mqtt/bottomfloor/config:/config"
+      - "/run/udev:/run/udev:ro"
+    networks:
+      - caddy
+      - mosquitto
+    labels:
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.1_@z2m-bottom: "host z2m-bottom.${ROOT_DOMAIN}"
+      caddy.1_handle: "@z2m-bottom"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  zigbee2mqtt-topfloor:
+    image: ghcr.io/koenkk/zigbee2mqtt:2.3.0@sha256:42de8c55dc578a8404a18c43aeb2b7c75be7988179abe9a8195d99a9e7ebb917
+    container_name: zigbee2mqtt-topfloor
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file:
+      - compose.env
+      - topfloor.env
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/zigbee2mqtt/topfloor/config:/config"
+      - "/run/udev:/run/udev:ro"
+    networks:
+      - caddy
+      - mosquitto
+    labels:
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.1_@z2m-top: "host z2m-top.${ROOT_DOMAIN}"
+      caddy.1_handle: "@z2m-top"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  caddy:
+    external: true
+  mosquitto:
+    external: true

@@ -16,7 +16,7 @@ spec:
       targetRevision: master
       helm:
         valuesObject:
-          clusterName: meemee
+          clusterName: leelee
     - path: kubernetes/apps
       repoURL: https://github.com/deedee-ops/k8s-gitops.git
       targetRevision: master

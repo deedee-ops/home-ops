@@ -1,0 +1,13 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  komodo-core:
+    environment:
+      KOMODO_HOST: http://10.100.10.1:9120
+      KOMODO_DISABLE_USER_REGISTRATION: "false"
+      KOMODO_ENABLE_NEW_USERS: "true"
+  komodo-periphery:
+    environment:
+      PERIPHERY_ROOT_DIRECTORY: /volume1/docker/containers
+      ROOT_DOMAIN: rzegocki.dev

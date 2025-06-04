@@ -1,0 +1,28 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  snmp-exporter:
+    image: prom/snmp-exporter:v0.29.0@sha256:272ff087c314fb1e384b7ba7e555f020cc0c072fb23f0dc1d1cb51b48067efdc
+    container_name: snmp-exporter
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+      - '--config.expand-environment-variables'
+    configs:
+      - source: config
+        target: /etc/snmp_exporter/snmp.yml
+    ports:
+      - '9116:9116'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  config:
+    file: ./config/snmp.yml
