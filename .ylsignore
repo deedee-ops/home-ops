@@ -1,3 +1,4 @@
+docker/stacks/snmp-exporter/config/*.yml
 kubernetes/apps/argocd/argo-cd/values.yaml
 kubernetes/apps/kube-system/coredns/values.yaml
 kubernetes/apps/kube-system/descheduler/values.yaml

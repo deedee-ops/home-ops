@@ -1,0 +1,51 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  caddy:
+    image: homeall/caddy-reverse-proxy-cloudflare:2025.05.20@sha256:490e02448944faf750a4f824f521e9867fcf2b491d857d6ce7dd989190b4f6f5
+    container_name: caddy-docker-proxy
+    restart: unless-stopped
+    user: "1000:0"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - caddy-data:/data
+    networks:
+      - caddy
+    labels:
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.log: "out"
+      caddy.tls.dns: "cloudflare $CF_API_TOKEN"
+      caddy.tls.resolvers: "1.1.1.1 1.0.0.1"
+      caddy.1_@nas: "host nas.${ROOT_DOMAIN}"
+      caddy.1_handle: "@nas"
+      caddy.1_handle.reverse_proxy: "10.100.10.1:5000"
+      caddy.2_@obsidian: "host obsidian.${ROOT_DOMAIN}"
+      caddy.2_handle: "@obsidian"
+      caddy.2_handle.reverse_proxy: "10.100.10.1:9000"
+      caddy.2_handle.rewrite: "/assets/obsidian{uri}"
+      caddy.2_handle.redir: "/ /index.html"
+    # security
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_SETGID
+      - CAP_SETUID
+      - CAP_SYS_CHROOT
+      - CAP_NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  caddy-data: {}
