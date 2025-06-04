@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   music-assistant:
-    image: ghcr.io/music-assistant/server:2.5.2@sha256:623b9869388e3a25ab8b3ed696b58217ee19e1f483b9a39ac36c5af6187e1352
+    image: ghcr.io/music-assistant/server:2.5.4@sha256:d6fd6085583e6df9490874cf626ca43cb06e381f6a47b7361d03719bb32c4e46
     container_name: music-assistant
     user: "1000:1000"
     restart: unless-stopped
