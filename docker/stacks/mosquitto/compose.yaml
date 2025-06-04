@@ -1,0 +1,32 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  mosquitto:
+    image: public.ecr.aws/docker/library/eclipse-mosquitto:2.0.21@sha256:94f5a3d7deafa59fa3440d227ddad558f59d293c612138de841eec61bfa4d353
+    container_name: mosquitto
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file:
+      - compose.env
+    configs:
+      - source: mosquitto
+        target: /mosquitto/config/mosquitto.conf
+    networks:
+      - mosquitto
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/mosquitto/data:/data"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  mosquitto:
+    file: ./config/mosquitto.conf
+
+networks:
+  mosquitto:
+    external: true

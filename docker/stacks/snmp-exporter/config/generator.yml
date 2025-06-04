@@ -1,0 +1,373 @@
+---
+auths:
+  synology:
+    version: 3
+    security_level: authPriv
+    auth_protocol: SHA
+    username: "${SNMP_AUTH_USERNAME}"
+    password: "${SNMP_AUTH_PASSWORD}"
+    priv_protocol: AES
+    priv_password: "${SNMP_PRIV_PASSWORD}"
+
+modules:
+  synology:
+    walk:
+      - 1.3.6.1.2.1.2             # network statistics
+      - 1.3.6.1.2.1.25.1          # host system statistics
+      - 1.3.6.1.2.1.31.1.1        # The total number received/transmitted of the interface
+      - 1.3.6.1.4.1.2021.4        # RAM statistics
+      - 1.3.6.1.4.1.2021.10.1.2   # 1,5 and 15 minute names
+      - 1.3.6.1.4.1.2021.10.1.5   # The 1,5 and 15 minute load averages
+      - 1.3.6.1.4.1.2021.11       # CPU statistics
+      # - 1.3.6.1.4.1.2021.13.15.1  # HDD statistics
+      - 1.3.6.1.4.1.6574.1        # displays all system statuses
+      - 1.3.6.1.4.1.6574.2        # information regarding hard drives e.g Temperature
+      - 1.3.6.1.4.1.6574.3        # monitoring RAID status
+      - 1.3.6.1.4.1.6574.6        # the number of users logging in
+    lookups:
+      - source_indexes:
+          - ifIndex
+        lookup: ifDescr
+      - source_indexes:
+          - ifIndex
+        lookup: ifMtu
+      - source_indexes:
+          - ifIndex
+        lookup: ifSpeed
+      - source_indexes:
+          - ifIndex
+        lookup: ifPhysAddress
+      - source_indexes:
+          - ifIndex
+        lookup: ifAdminStatus
+      - source_indexes:
+          - ifIndex
+        lookup: ifOperStatus
+      - source_indexes:
+          - ifIndex
+        lookup: ifLastChange
+      - source_indexes:
+          - ifIndex
+        lookup: ifInOctets
+      - source_indexes:
+          - ifIndex
+        lookup: ifInUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifInNUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifInDiscards
+      - source_indexes:
+          - ifIndex
+        lookup: ifInErrors
+      - source_indexes:
+          - ifIndex
+        lookup: ifInUnknownProtos
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutOctets
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutNUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutDiscards
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutErrors
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutQLen
+      - source_indexes:
+          - ifIndex
+        lookup: ifSpecific
+      - source_indexes:
+          - ifIndex
+        lookup: ifName
+      - source_indexes:
+          - ifIndex
+        lookup: ifInMulticastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifInBroadcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutMulticastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifOutBroadcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCInOctets
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCInUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCInMulticastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCInBroadcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCOutOctets
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCOutUcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCOutMulticastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifHCOutBroadcastPkts
+      - source_indexes:
+          - ifIndex
+        lookup: ifLinkUpDownTrapEnable
+      - source_indexes:
+          - ifIndex
+        lookup: ifHighSpeed
+      - source_indexes:
+          - ifIndex
+        lookup: ifPromiscuousMode
+      - source_indexes:
+          - ifIndex
+        lookup: ifConnectorPresent
+      - source_indexes:
+          - ifIndex
+        lookup: ifAlias
+      - source_indexes:
+          - ifIndex
+        lookup: ifCounterDiscontinuityTime
+      - source_indexes:
+          - diskIndex
+        lookup: diskID
+      - source_indexes:
+          - diskIndex
+        lookup: diskModel
+      - source_indexes:
+          - diskIndex
+        lookup: diskType
+      - source_indexes:
+          - diskIndex
+        lookup: diskStatus
+      - source_indexes:
+          - diskIndex
+        lookup: diskTemperature
+      - source_indexes:
+          - raidIndex
+        lookup: raidName
+      - source_indexes:
+          - raidIndex
+        lookup: raidStatus
+      - source_indexes:
+          - raidIndex
+        lookup: raidFreeSize
+      - source_indexes:
+          - raidIndex
+        lookup: raidTotalSize
+      - source_indexes:
+          - serviceInfoIndex
+        lookup: serviceName
+      - source_indexes:
+          - serviceInfoIndex
+        lookup: serviceUsers
+      - source_indexes:
+          - laIndex
+        lookup: laNames
+      - source_indexes:
+          - laIndex
+        lookup: laLoadInt
+    #   - source_indexes:
+    #       - diskIOIndex
+    #     lookup: diskI0Device
+    #   - source_indexes:
+    #       - diskIOIndex
+    #     lookup: diskIONReadX
+    #   - source_indexes:
+    #       - diskIOIndex
+    #     lookup: diskIONWrittenX
+    #   - source_indexes:
+    #       - diskIOIndex
+    #     lookup: diskIOReads
+    #   - source_indexes:
+    #       - diskIOIndex
+    #     lookup: diskIOWrites
+    overrides:
+      controllerNumber:
+        type: gauge
+      cpuFanStatus:
+        type: gauge
+      # diskI0Device:
+      #   type: DisplayString
+      diskID:
+        type: DisplayString
+      # diskIONReadX:
+      #   type: gauge
+      # diskIONWrittenX:
+      #   type: gauge
+      # diskIOReads:
+      #   type: gauge
+      # diskIOWrites:
+      #   type: gauge
+      diskIndex:
+        type: gauge
+      diskModel:
+        type: DisplayString
+      diskSMARTAttrName:
+        type: DisplayString
+      diskSMARTAttrStatus:
+        type: DisplayString
+      diskSMARTInfoDevName:
+        type: DisplayString
+      diskStatus:
+        type: gauge
+      diskTemperature:
+        type: gauge
+      diskType:
+        type: DisplayString
+      hrSystemUptime:
+        type: gauge
+      ifAdminStatus:
+        type: gauge
+      ifAlias:
+        type: DisplayString
+      ifConnectorPresent:
+        type: gauge
+      ifCounterDiscontinuityTime:
+        type: gauge
+      ifDescr:
+        type: DisplayString
+      ifHCInBroadcastPkts:
+        type: counter
+      ifHCInMulticastPkts:
+        type: counter
+      ifHCInOctets:
+        type: counter
+      ifHCInUcastPkts:
+        type: counter
+      ifHCOutBroadcastPkts:
+        type: counter
+      ifHCOutMulticastPkts:
+        type: counter
+      ifHCOutOctets:
+        type: counter
+      ifHCOutUcastPkts:
+        type: counter
+      ifHighSpeed:
+        type: gauge
+      ifInBroadcastPkts:
+        type: counter
+      ifInDiscards:
+        type: counter
+      ifInErrors:
+        type: counter
+      ifInMulticastPkts:
+        type: counter
+      ifInNUcastPkts:
+        type: counter
+      ifInOctets:
+        type: counter
+      ifInUcastPkts:
+        type: counter
+      ifInUnknownProtos:
+        type: counter
+      ifIndex:
+        type: gauge
+      ifLastChange:
+        type: gauge
+      ifLinkUpDownTrapEnable:
+        type: gauge
+      ifMtu:
+        type: gauge
+      ifName:
+        type: DisplayString
+      ifNumber:
+        type: gauge
+      ifOperStatus:
+        type: gauge
+      ifOutBroadcastPkts:
+        type: counter
+      ifOutDiscards:
+        type: counter
+      ifOutErrors:
+        type: counter
+      ifOutMulticastPkts:
+        type: counter
+      ifOutNUcastPkts:
+        type: counter
+      ifOutOctets:
+        type: counter
+      ifOutQLen:
+        type: gauge
+      ifOutUcastPkts:
+        type: counter
+      ifPhysAddress:
+        type: PhysAddress48
+      ifPromiscuousMode:
+        type: gauge
+      ifSpecific:
+        type: OctetString
+      ifSpeed:
+        type: gauge
+      laLoadInt:
+        type: gauge
+      laNames:
+        type: DisplayString
+      memAvailReal:
+        type: gauge
+      memAvailSwap:
+        type: gauge
+      memBuffer:
+        type: gauge
+      memCached:
+        type: gauge
+      memShared:
+        type: gauge
+      memTotalFree:
+        type: gauge
+      memTotalReal:
+        type: gauge
+      memTotalSwap:
+        type: gauge
+      modelName:
+        type: DisplayString
+      powerStatus:
+        type: gauge
+      raidFreeSize:
+        type: gauge
+      raidIndex:
+        type: gauge
+      raidName:
+        type: DisplayString
+      raidStatus:
+        type: gauge
+      raidTotalSize:
+        type: gauge
+      serialNumber:
+        type: DisplayString
+      serviceInfoIndex:
+        type: gauge
+      serviceName:
+        type: DisplayString
+      serviceUsers:
+        type: gauge
+      ssCpuIdle:
+        type: gauge
+      ssCpuSystem:
+        type: gauge
+      ssCpuUser:
+        type: gauge
+      systemFanStatus:
+        type: gauge
+      systemStatus:
+        type: gauge
+      temperature:
+        type: gauge
+      upgradeAvailable:
+        type: gauge
+      version:
+        type: DisplayString

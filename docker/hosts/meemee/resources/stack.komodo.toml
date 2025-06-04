@@ -1,0 +1,19 @@
+# komodo cannot manage itself yet
+[[stack]]
+name = "_komodo"
+[stack.config]
+server = "meemee"
+project_name = "meemee"
+auto_update = true
+repo = "deedee-ops/k8s-gitops"
+branch = "master"
+reclone = true
+webhook_enabled = false
+run_directory = "docker/stacks/komodo"
+environment = """
+KOMODO_HOST="http://10.100.10.1:9120"
+KOMODO_DISABLE_USER_REGISTRATION:="false"
+KOMODO_ENABLE_NEW_USERS="true"
+"""
+
+# vim:ft=toml

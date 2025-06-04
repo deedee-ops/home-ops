@@ -1,0 +1,15 @@
+[[stack]]
+name = "snmp-exporter"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/k8s-gitops"
+branch = "master"
+reclone = true
+webhook_enabled = false
+run_directory = "docker/stacks/snmp-exporter"
+environment = """
+SNMP_AUTH_USERNAME="[[SNMP_AUTH_USERNAME]]"
+SNMP_AUTH_PASSWORD="[[SNMP_AUTH_PASSWORD]]"
+SNMP_PRIV_PASSWORD="[[SNMP_PRIV_PASSWORD]]"
+"""
