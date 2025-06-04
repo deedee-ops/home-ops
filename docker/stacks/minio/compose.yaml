@@ -1,0 +1,36 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  minio:
+    image: "quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z@sha256:3f97c5651cb6662b880c787a232b6b34fec8d8922e08d6617b25d241a21164bb"
+    container_name: minio
+    user: "1000:1000"
+    command: "server /data --console-address :9001"
+    restart: unless-stopped
+    env_file:
+      - compose.env
+      - .env
+    networks:
+      - default
+      - caddy
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/minio/data:/data"
+    labels:
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.1_@minio: "host minio.${ROOT_DOMAIN}"
+      caddy.1_handle: "@minio"
+      caddy.1_handle.reverse_proxy: "{{upstreams 9001}}"
+      caddy.2_@s3: "host s3.${ROOT_DOMAIN}"
+      caddy.2_handle: "@s3"
+      caddy.2_handle.reverse_proxy: "{{upstreams 9000}}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  caddy:
+    external: true

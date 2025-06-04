@@ -1,0 +1,47 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  komodo-ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:1.24.1@sha256:401f0e05eced6bb07088b79db702ee0d898fdfaf28edb99b4cbe1e006733bf69
+    container_name: komodo
+    labels:
+      komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    logging:
+      driver: local
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/state:/state"
+    environment:
+      - FERRETDB_HANDLER=sqlite
+
+  komodo-core:
+    image: ghcr.io/moghtech/komodo-core:1.17.5@sha256:6471d9838695f68381c84fe4b8b9c7b303666093450158065688d9417be669eb
+    labels:
+      komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.1_@komodo: "host komodo.${ROOT_DOMAIN}"
+      caddy.1_handle: "@komodo"
+      caddy.1_handle.reverse_proxy: "{{upstreams 9120}}"
+    restart: unless-stopped
+    depends_on:
+      - komodo-ferretdb
+    logging:
+      driver: local
+    env_file:
+      - compose.env
+    networks:
+      - default
+      - caddy
+    volumes:
+      - repo-cache:/repo-cache
+      - syncs:/syncs
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets"
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  repo-cache:
+  syncs:
