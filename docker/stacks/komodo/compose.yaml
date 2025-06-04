@@ -16,7 +16,7 @@ services:
       - FERRETDB_HANDLER=sqlite
 
   komodo-core:
-    image: ghcr.io/moghtech/komodo-core:1.17.5@sha256:6471d9838695f68381c84fe4b8b9c7b303666093450158065688d9417be669eb
+    image: ghcr.io/moghtech/komodo-core:1.17.5@sha256:3294c9317492c65799b45120ccde4def8a054281f91d70293f694b14579b726f
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
       caddy: "*.${ROOT_DOMAIN}"
