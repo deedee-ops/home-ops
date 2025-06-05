@@ -2,21 +2,68 @@
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
-  komodo-ferretdb:
-    image: ghcr.io/ferretdb/ferretdb:1.24.2@sha256:78497e6209865382781ff4d113ae61353f34c5cf2b49359dbd960748437c9c46
-    container_name: komodo
+  komodo-backup:
+    image: public.ecr.aws/docker/library/alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+    container_name: komodo-backup
+    command:
+      - sh
+      - -c
+      - |-
+          apk add --no-cache curl jq
+
+          cat <<EOF> /root/run-backup
+            curl -sL -H 'Content-Type: application/json' \
+                 -H "X-Api-Key: $(cat /secrets/KOMODO_BACKUPS_API_KEY)" \
+                 -H "X-Api-Secret: $(cat /secrets/KOMODO_BACKUPS_API_SECRET)" \
+                 --data '{"type":"ExportAllResourcesToToml","params":{"include_variables":true}}' \
+                 http://komodo-core:9120/read | jq -r .toml > /backup/komodo-backup.toml
+          EOF
+          chmod +x /root/run-backup
+
+          echo -e '0 * * * * /root/run-backup\n\n' > /etc/crontabs/root
+
+          crond -f
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
-    logging:
-      driver: local
     volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets:ro"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/backup:/backup"
+
+  komodo-postgres:
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.103.0@sha256:c2bd151a4ba2227d2f2a4c50406a104def04aef8780495505e6e1fcf6b8b2d8e
+    container_name: komodo-postgres
+    labels:
+      komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER_FILE: "/secrets/KOMODO_DATABASE_USERNAME"
+      POSTGRES_PASSWORD_FILE: "/secrets/KOMODO_DATABASE_PASSWORD"
+      POSTGRES_DB: postgres  # Do not change
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets:ro"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/pgdata:/var/lib/postgresql/data"
+
+  komodo-ferretdb:
+    image: ghcr.io/ferretdb/ferretdb:2.2.0@sha256:ca5efea245b752866cf8c86182703f470f388bf919e50bddc6b1174ca0deefb1
+    container_name: komodo-ferretdb
+    user: "1000:1000"
+    labels:
+      komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    depends_on:
+      - komodo-postgres
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets:ro"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/state:/state"
     environment:
-      - FERRETDB_HANDLER=sqlite
+      FERRETDB_POSTGRESQL_URL_FILE: "/secrets/FERRETDB_POSTGRESQL_URL"
+      FERRETDB_TELEMETRY: "disable"
+      DO_NOT_TRACK: "true"
 
   komodo-core:
     image: ghcr.io/moghtech/komodo-core:1.18.0@sha256:b65ee6d2af592841e610aee19951995ac89fd2046db451b77ccbf82506f19f41
+    container_name: komodo-core
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
       caddy: "*.${ROOT_DOMAIN}"
@@ -36,7 +83,7 @@ services:
     volumes:
       - repo-cache:/repo-cache
       - syncs:/syncs
-      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/secrets:/secrets:ro"
 
 networks:
   caddy:
