@@ -3,7 +3,7 @@
 
   nixConfig = {
     substituters = [
-      "http://10.100.10.1:9000/nix?priority=30"
+      "https://s3.rzegocki.dev/nix?priority=30"
       "https://cache.nixos.org"
     ];
     trusted-public-keys = [
@@ -158,10 +158,10 @@
                 source "$ROOT_DIR/scripts/_lib.sh"
                 echo -e "\e[31mWorking cluster not set.\e[0m"
                 local clusters=($(ls -1 --color=never "$ROOT_DIR/kubernetes/clusters"))
-                CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
+                export CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
                 echo -n "$CURRENT_CLUSTER" > "$ROOT_DIR/.current-cluster"
               else
-                CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
+                export CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
               fi
 
               source .env
