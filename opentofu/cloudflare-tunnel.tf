@@ -12,7 +12,12 @@ data "cloudflare_zero_trust_tunnel_cloudflared_token" "k8s_tunnel_token" {
 
 # Creates the CNAME record that routes http_app.${var.cloudflare_domain} to the tunnel.
 resource "cloudflare_dns_record" "external_ingress" {
-  zone_id = var.cloudflare_zone_id
+  for_each = {
+    for name, opts in var.domains : name => opts
+    if(opts.tunneled == null ? false : opts.tunneled)
+  }
+
+  zone_id = each.value.zone_id
   name    = var.cloudflare_domain_prefix
   content = "${cloudflare_zero_trust_tunnel_cloudflared.k8s_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
