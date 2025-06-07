@@ -28,7 +28,7 @@ services:
       caddy.1_handle.reverse_proxy: "10.100.10.1:5000"
       caddy.2_@obsidian: "host obsidian.${ROOT_DOMAIN}"
       caddy.2_handle: "@obsidian"
-      caddy.2_handle.reverse_proxy: "10.100.10.1:9000"
+      caddy.2_handle.reverse_proxy: "minio.caddy:9000"
       caddy.2_handle.rewrite: "/assets/obsidian{uri}"
       caddy.2_handle.redir: "/ /index.html"
     # security
