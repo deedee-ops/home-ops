@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   komodo-periphery:
-    image: ghcr.io/moghtech/komodo-periphery:1.18.0@sha256:fb12dd26fcb964ac95c0c669cca6efd4dc8c9e3a147f7873835f23727058292f
+    image: ghcr.io/moghtech/komodo-periphery:1.18.1@sha256:920aac112634d058fda59a816c798cae9acf9fc6a2e5c95f60808a946620ea3d
     container_name: komodo-periphery
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
