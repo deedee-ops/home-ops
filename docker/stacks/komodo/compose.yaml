@@ -80,6 +80,7 @@ services:
     networks:
       - default
       - caddy
+      - registry
     volumes:
       - repo-cache:/repo-cache
       - syncs:/syncs
@@ -87,6 +88,8 @@ services:
 
 networks:
   caddy:
+    external: true
+  registry:
     external: true
 
 volumes:

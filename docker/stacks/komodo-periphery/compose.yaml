@@ -12,6 +12,9 @@ services:
       driver: local
     env_file:
       - ./compose.env
+    networks:
+      - default
+      - registry
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc:/proc
