@@ -29,6 +29,8 @@ app-template:
             capabilities:
               drop:
                 - "ALL"
+      serviceAccount:
+        identifier: system-upgrade-controller
   defaultPodOptions:
     securityContext:
       runAsNonRoot: true
@@ -37,5 +39,4 @@ app-template:
       seccompProfile:
         type: RuntimeDefault
   serviceAccount:
-    name: system-upgrade-controller
-    create: true
+    system-upgrade-controller: {}
