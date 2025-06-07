@@ -12,6 +12,7 @@ services:
       - .env
     networks:
       - caddy
+      - registry
     labels:
       caddy: "*.${ROOT_DOMAIN}"
       caddy.1_@registry: "host registry.${ROOT_DOMAIN}"
@@ -26,4 +27,6 @@ services:
 
 networks:
   caddy:
+    external: true
+  registry:
     external: true
