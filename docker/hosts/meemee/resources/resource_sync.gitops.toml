@@ -7,4 +7,3 @@ webhook_enabled = false
 resource_path = [
   "docker/hosts/meemee/resources"
 ]
-delete = true
