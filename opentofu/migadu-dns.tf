@@ -5,7 +5,7 @@ resource "cloudflare_dns_record" "migadu_dns_verify" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "@"
+  name    = each.key
   content = "hosted-email-verify=${each.value.migadu_verification_code}"
   type    = "TXT"
   ttl     = 1
@@ -18,7 +18,7 @@ resource "cloudflare_dns_record" "migadu_dns_mx_primary" {
   }
 
   zone_id  = var.domains[each.key].zone_id
-  name     = "@"
+  name     = each.key
   content  = "aspmx1.migadu.com"
   type     = "MX"
   priority = "10"
@@ -32,7 +32,7 @@ resource "cloudflare_dns_record" "migadu_dns_mx_secondary" {
   }
 
   zone_id  = var.domains[each.key].zone_id
-  name     = "@"
+  name     = each.key
   content  = "aspmx2.migadu.com"
   type     = "MX"
   priority = "20"
@@ -46,8 +46,8 @@ resource "cloudflare_dns_record" "migadu_dns_mx_dkim_a" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "key1._domainkey"
-  content = "key1.${each.key}._domainkey.migadu.com."
+  name    = "key1._domainkey.${each.key}"
+  content = "key1.${each.key}._domainkey.migadu.com"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -60,8 +60,8 @@ resource "cloudflare_dns_record" "migadu_dns_mx_dkim_b" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "key2._domainkey"
-  content = "key2.${each.key}._domainkey.migadu.com."
+  name    = "key2._domainkey.${each.key}"
+  content = "key2.${each.key}._domainkey.migadu.com"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -74,8 +74,8 @@ resource "cloudflare_dns_record" "migadu_dns_mx_dkim_c" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "key3._domainkey"
-  content = "key3.${each.key}._domainkey.migadu.com."
+  name    = "key3._domainkey.${each.key}"
+  content = "key3.${each.key}._domainkey.migadu.com"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -88,7 +88,7 @@ resource "cloudflare_dns_record" "migadu_dns_spf" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "@"
+  name    = each.key
   content = "v=spf1 include:spf.migadu.com -all"
   type    = "TXT"
   ttl     = 1
@@ -101,7 +101,7 @@ resource "cloudflare_dns_record" "migadu_dns_dmarc" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "_dmarc"
+  name    = "_dmarc.${each.key}"
   content = "v=DMARC1; p=quarantine;"
   type    = "TXT"
   ttl     = 1
@@ -114,8 +114,8 @@ resource "cloudflare_dns_record" "migadu_dns_autoconfig" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "autoconfig"
-  content = "autoconfig.migadu.com."
+  name    = "autoconfig.${each.key}"
+  content = "autoconfig.migadu.com"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -127,13 +127,13 @@ resource "cloudflare_dns_record" "migadu_dns_autodiscover" {
     if !opts.spam && !(opts.alias == null ? true : opts.alias) && opts.migadu_verification_code != null
   }
 
-  zone_id = var.domains[each.key].zone_id
-  name    = "_autodiscover._tcp"
-  type    = "SRV"
-  ttl     = 1
+  zone_id  = var.domains[each.key].zone_id
+  name     = "_autodiscover._tcp.${each.key}"
+  type     = "SRV"
+  priority = 0
+  ttl      = 1
 
   data = {
-    service  = "_autodiscover"
     proto    = "_tcp"
     name     = each.key
     priority = 0
@@ -149,13 +149,13 @@ resource "cloudflare_dns_record" "migadu_dns_submissions" {
     if !opts.spam && !(opts.alias == null ? true : opts.alias) && opts.migadu_verification_code != null
   }
 
-  zone_id = var.domains[each.key].zone_id
-  name    = "_submissions._tcp"
-  type    = "SRV"
-  ttl     = 1
+  zone_id  = var.domains[each.key].zone_id
+  name     = "_submissions._tcp.${each.key}"
+  priority = 0
+  type     = "SRV"
+  ttl      = 1
 
   data = {
-    service  = "_submissions"
     proto    = "_tcp"
     name     = each.key
     priority = 0
@@ -171,13 +171,13 @@ resource "cloudflare_dns_record" "migadu_dns_imaps" {
     if !opts.spam && !(opts.alias == null ? true : opts.alias) && opts.migadu_verification_code != null
   }
 
-  zone_id = var.domains[each.key].zone_id
-  name    = "_imaps._tcp"
-  type    = "SRV"
-  ttl     = 1
+  zone_id  = var.domains[each.key].zone_id
+  name     = "_imaps._tcp.${each.key}"
+  type     = "SRV"
+  priority = 0
+  ttl      = 1
 
   data = {
-    service  = "_imaps"
     proto    = "_tcp"
     name     = each.key
     priority = 0
@@ -193,13 +193,13 @@ resource "cloudflare_dns_record" "migadu_dns_pop3s" {
     if !opts.spam && !(opts.alias == null ? true : opts.alias) && opts.migadu_verification_code != null
   }
 
-  zone_id = var.domains[each.key].zone_id
-  name    = "_pop3s._tcp"
-  type    = "SRV"
-  ttl     = 1
+  zone_id  = var.domains[each.key].zone_id
+  name     = "_pop3s._tcp.${each.key}"
+  type     = "SRV"
+  priority = 0
+  ttl      = 1
 
   data = {
-    service  = "_pop3s"
     proto    = "_tcp"
     name     = each.key
     priority = 0

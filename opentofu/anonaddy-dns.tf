@@ -5,8 +5,8 @@ resource "cloudflare_dns_record" "anonaddy_mx_primary" {
   }
 
   zone_id  = var.domains[each.key].zone_id
-  name     = "@"
-  content  = "mail.anonaddy.me."
+  name     = each.key
+  content  = "mail.anonaddy.me"
   type     = "MX"
   priority = "10"
   ttl      = 1
@@ -19,8 +19,8 @@ resource "cloudflare_dns_record" "anonaddy_mx_secondary" {
   }
 
   zone_id  = var.domains[each.key].zone_id
-  name     = "@"
-  content  = "mail2.anonaddy.me."
+  name     = each.key
+  content  = "mail2.anonaddy.me"
   type     = "MX"
   priority = "20"
   ttl      = 1
@@ -33,8 +33,8 @@ resource "cloudflare_dns_record" "anonaddy_mx_dkim_a" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "dk1._domainkey"
-  content = "dk1._domainkey.anonaddy.me."
+  name    = "dk1._domainkey.${each.key}"
+  content = "dk1._domainkey.anonaddy.me"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -47,8 +47,8 @@ resource "cloudflare_dns_record" "anonaddy_mx_dkim_b" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "dk2._domainkey"
-  content = "dk2._domainkey.anonaddy.me."
+  name    = "dk2._domainkey.${each.key}"
+  content = "dk2._domainkey.anonaddy.me"
   proxied = false
   type    = "CNAME"
   ttl     = 1
@@ -61,7 +61,7 @@ resource "cloudflare_dns_record" "anonaddy_spf" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "@"
+  name    = each.key
   content = "v=spf1 include:spf.anonaddy.me -all"
   type    = "TXT"
   ttl     = 1
@@ -74,7 +74,7 @@ resource "cloudflare_dns_record" "anonaddy_dmarc" {
   }
 
   zone_id = var.domains[each.key].zone_id
-  name    = "_dmarc"
+  name    = "_dmarc.${each.key}"
   content = "v=DMARC1; p=quarantine; adkim=s"
   type    = "TXT"
   ttl     = 1

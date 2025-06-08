@@ -4,6 +4,11 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "5.5.0"
     }
+
+    migadu = {
+      source  = "metio/migadu"
+      version = "2025.5.29"
+    }
   }
   required_version = ">= 1.6.0"
 

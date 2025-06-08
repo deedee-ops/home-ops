@@ -18,7 +18,7 @@ resource "cloudflare_dns_record" "external_ingress" {
   }
 
   zone_id = each.value.zone_id
-  name    = var.cloudflare_domain_prefix
+  name    = "${var.cloudflare_domain_prefix}.${each.key}"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.k8s_tunnel.id}.cfargotunnel.com"
   type    = "CNAME"
   ttl     = 1

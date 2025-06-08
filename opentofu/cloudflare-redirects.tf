@@ -9,8 +9,9 @@ resource "cloudflare_ruleset" "redirect" {
   phase   = "http_request_dynamic_redirect"
 
   rules = [{
-    expression = "(http.request.full_uri wildcard \"${each.value.redirect_from}\")"
-    action     = "redirect"
+    description = each.value.redirect_name
+    expression  = "(http.request.full_uri wildcard \"${each.value.redirect_from}\")"
+    action      = "redirect"
     action_parameters = {
       from_value = {
         status_code = (each.value.redirect_permament ? 301 : 302)
