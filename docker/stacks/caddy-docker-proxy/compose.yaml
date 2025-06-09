@@ -15,7 +15,7 @@ services:
       - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - caddy-data:/data
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/caddy/data:/data"
     networks:
       - caddy
     labels:
@@ -43,9 +43,31 @@ services:
       - no-new-privileges
     read_only: true
 
+  sync-certs:
+    image: public.ecr.aws/docker/library/alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+    container_name: sync-certs
+    command:
+      - sh
+      - -c
+      - |-
+          apk add --no-cache openssh-client
+
+          echo -e '0 3 * * * /root/sync-certs.sh wildcard_.${ROOT_DOMAIN}\n\n' > /etc/crontabs/root
+
+          crond -f
+    restart: unless-stopped
+    configs:
+      - source: sync-certs
+        target: /root/sync-certs.sh
+        mode: 0770
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/caddy/data:/data:ro"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/caddy/secrets:/secrets:ro"
+
+configs:
+  sync-certs:
+    file: ./config/sync-certs.sh
+
 networks:
   caddy:
     external: true
-
-volumes:
-  caddy-data: {}

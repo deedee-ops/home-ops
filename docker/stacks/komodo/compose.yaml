@@ -73,6 +73,8 @@ services:
     restart: unless-stopped
     depends_on:
       - komodo-ferretdb
+    ports:
+      - 9120:9120
     logging:
       driver: local
     env_file:
