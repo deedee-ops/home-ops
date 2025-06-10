@@ -31,7 +31,7 @@ services:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/backup:/backup"
 
   komodo-postgres:
-    image: ghcr.io/ferretdb/postgres-documentdb:17-0.103.0@sha256:c2bd151a4ba2227d2f2a4c50406a104def04aef8780495505e6e1fcf6b8b2d8e
+    image: ghcr.io/ferretdb/postgres-documentdb:17-0.103.0@sha256:175c0fc397fcee94e2a11d775fb494f448b30c5d02a77f2d38eca6c241c4ca75
     container_name: komodo-postgres
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
