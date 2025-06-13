@@ -8,14 +8,14 @@ services:
     user: "1000:1000"
     restart: unless-stopped
     env_file:
-      - compose.env
+      - registry.env
       - .env
     networks:
       - caddy
-      - registry
     labels:
       caddy: "*.${ROOT_DOMAIN}"
-      caddy.1_@registry: "host registry.${ROOT_DOMAIN}"
+      caddy.1_@registry.host: "registry.${ROOT_DOMAIN}"
+      caddy.1_@registry.path: "/v2 /v2/*"
       caddy.1_handle: "@registry"
       caddy.1_handle.reverse_proxy: "{{upstreams 5000}}"
     # security
@@ -25,8 +25,26 @@ services:
       - no-new-privileges
     read_only: true
 
+  registry-ui:
+    image: joxit/docker-registry-ui:2.5.7
+    container_name: registry-ui
+    user: "101:101"  # nginx
+    restart: unless-stopped
+    env_file:
+      - registry-ui.env
+    networks:
+      - caddy
+    labels:
+      caddy: "*.${ROOT_DOMAIN}"
+      caddy.1_@registry-ui: "host registry.${ROOT_DOMAIN}"
+      caddy.1_handle: "@registry-ui"
+      caddy.1_handle.reverse_proxy: "{{upstreams 8080}}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+
 networks:
   caddy:
-    external: true
-  registry:
     external: true
