@@ -20,12 +20,6 @@ openebs:
       volumeSnapshots:
         enabled: false
         keep: false
-  zfs-localpv:
-    enabled: false
-  lvm-localpv:
-    enabled: false
-  mayastor:
-    enabled: false
   engines:
     local:
       lvm:
@@ -35,3 +29,15 @@ openebs:
     replicated:
       mayastor:
         enabled: false
+  alloy:
+    enabled: false
+  loki:
+    enabled: false
+  lvm-localpv:
+    enabled: false
+  mayastor:
+    enabled: false
+  minio:
+    enabled: false
+  zfs-localpv:
+    enabled: false
