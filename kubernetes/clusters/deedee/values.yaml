@@ -1,6 +1,6 @@
 ---
 global:
-  rootDomain: &rootDomain "deedee.casa"
+  rootDomain: &rootDomain "rzegocki.dev"
   # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
   kubernetesVersion: v1.33.1
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
