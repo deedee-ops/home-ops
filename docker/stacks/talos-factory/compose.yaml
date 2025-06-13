@@ -28,7 +28,7 @@ services:
       - "-installer-internal-repository"
       - "${TALOS_FACTORY_INTERNAL_REGISTRY_HOST}/talos/images"
       - "-installer-external-repository"
-      - "factory.${ROOT_DOMAIN}/talos/images"
+      - "registry.${ROOT_DOMAIN}/talos/images"
       - "-insecure-cache-repository"
       - "-cache-repository"
       - "${TALOS_FACTORY_INTERNAL_REGISTRY_HOST}/talos/cache"
