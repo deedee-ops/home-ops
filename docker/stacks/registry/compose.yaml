@@ -12,7 +12,6 @@ services:
       - .env
     networks:
       - caddy
-      - registry
     labels:
       caddy: "*.${ROOT_DOMAIN}"
       caddy.1_@registry: "host registry.${ROOT_DOMAIN}"
@@ -25,8 +24,27 @@ services:
       - no-new-privileges
     read_only: true
 
+  registry-ui:
+    image: joxit/docker-registry-ui:2.5.7
+    container_name: registry-ui
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    networks:
+      - caddy
+    environment:
+      - SINGLE_REGISTRY=true
+      - REGISTRY_TITLE=Docker Registry UI
+      - DELETE_IMAGES=true
+      - SHOW_CONTENT_DIGEST=true
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+      - SHOW_CATALOG_NB_TAGS=true
+      - CATALOG_MIN_BRANCHES=1
+      - CATALOG_MAX_BRANCHES=1
+      - TAGLIST_PAGE_SIZE=100
+      - REGISTRY_SECURED=false
+      - CATALOG_ELEMENTS_LIMIT=1000
+
 networks:
   caddy:
-    external: true
-  registry:
     external: true
