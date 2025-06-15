@@ -11,15 +11,6 @@
       },
     },
     {
-      description: "External DNS Group",
-      groupName: "External DNS",
-      matchDatasources: ["docker", "github-releases"],
-      matchPackageNames: ["/external-dns/"],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-    },
-    {
       description: "External Secrets Operator Group",
       groupName: "External Secrets Operator",
       matchDatasources: ["docker", "github-releases"],
