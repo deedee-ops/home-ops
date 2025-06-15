@@ -24,7 +24,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=kubernetes-sigs/external-dns",
-      "$ref": "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.16.1/charts/external-dns/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.17.0/charts/external-dns/values.schema.json"
     },
     "external-secrets": {
       "type": "object",
