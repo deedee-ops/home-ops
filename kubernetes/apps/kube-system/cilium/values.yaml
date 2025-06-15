@@ -112,7 +112,7 @@ cilium:
       enabled: true
       serviceMonitor:
         enabled: true
-    replicas: 2
+    replicas: 1
     resources:
       requests:
         cpu: "50m"

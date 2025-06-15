@@ -13,6 +13,16 @@ customization:
         - talos.auditd.disabled=1
         - -lockdown
         - lockdown=integrity
+        - -consoleblank
+        - consoleblank=15
+        - -init_on_alloc
+        - -init_on_free
+        - -selinux
+        - apparmor=0
+        - init_on_alloc=0
+        - init_on_free=0
+        - mitigations=off
+        - security=none
     systemExtensions:
         officialExtensions:
             - siderolabs/i915

@@ -4,7 +4,7 @@ app-template:
   controllers:
     system-upgrade-controller:
       strategy: RollingUpdate
-      replicas: 2
+      replicas: 1
       containers:
         app:
           image:

@@ -48,7 +48,7 @@ machine:
 
   install:
     # yamllint disable-line rule:line-length
-    image: "factory.rzegocki.dev/metal-installer-secureboot/a09add3580ff16133f61b3bf8188f4a103c074d25e12536d9a7c03c39a812068:{{ ENV.TALOS_VERSION }}"
+    image: "factory.rzegocki.dev/metal-installer-secureboot/9c0efd35c123f9c5fb6912d8d1e0873e1d5e53a6f1f689ae49c0dcaf91880c1a:{{ ENV.TALOS_VERSION }}"
     wipe: false
 
     # they are ignored with UKI and SecureBoot, keeping them here for reference
@@ -64,6 +64,20 @@ machine:
       # more info: https://github.com/siderolabs/talos/pull/8535
       - -lockdown
       - lockdown=integrity
+
+      # do not display console all the time
+      - -consoleblank
+      - consoleblank=15
+
+      # trade security for performance and power saving
+      - -init_on_alloc
+      - -init_on_free
+      - -selinux
+      - apparmor=0
+      - init_on_alloc=0
+      - init_on_free=0
+      - mitigations=off
+      - security=none
 
   features:
     rbac: true
@@ -228,6 +242,11 @@ cluster:
       key: "{{ ENV.TALCONFIG_CLUSTER_ETCD_CA_KEY }}"
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
+
+      # do not wake up CPU so often
+      heartbeat-interval: "500"
+      election-timeout: "5000"
+
     advertisedSubnets:
       - 10.42.20.0/24
   coreDNS:
