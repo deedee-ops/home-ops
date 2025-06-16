@@ -62,7 +62,7 @@ services:
       DO_NOT_TRACK: "true"
 
   komodo-core:
-    image: ghcr.io/moghtech/komodo-core:1.18.2@sha256:b17fc82fb71675a479a0e1705a0cb25a92ae7a195c487c652cf5e5b5c2aac122
+    image: ghcr.io/moghtech/komodo-core:1.18.3@sha256:4d8690fd9c7a75445fd04fac492c81b8c3d2a0ebb35bd40aa1c9e75ea43d7f20
     container_name: komodo-core
     labels:
       komodo.skip:  # Prevent Komodo from stopping with StopAllContainers
