@@ -17,6 +17,7 @@ spec:
       helm:
         valuesObject:
           clusterName: deedee
+          disabledApps: []  # example: kube-system/my-obsolete-app
     - path: kubernetes/apps
       repoURL: https://github.com/deedee-ops/k8s-gitops.git
       targetRevision: master
