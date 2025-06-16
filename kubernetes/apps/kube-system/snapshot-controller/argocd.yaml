@@ -1,0 +1,4 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: snapshot-controller
+namespace: kube-system
