@@ -254,4 +254,45 @@ cluster:
 
   allowSchedulingOnControlPlanes: true
 
+  inlineManifests:
+    - name: powertop-autotune
+      contents: |-
+        ---
+        apiVersion: apps/v1
+        kind: DaemonSet
+        metadata:
+          name: powertop-autotune
+          namespace: kube-system
+        spec:
+          selector:
+            matchLabels:
+              name: powertop-autotune
+          template:
+            metadata:
+              labels:
+                name: powertop-autotune
+            spec:
+              hostPID: true
+              hostNetwork: true
+              containers:
+                - name: powertop
+                  image: public.ecr.aws/docker/library/alpine:3.22.0@sha256:8a1f59ffb675680d47db6337b49d22281a139e9d709335b492be023728e11715
+                  command:
+                    - /bin/sh
+                    - -c
+                    - apk add --no-cache powertop && powertop --auto-tune && sleep infinity
+                  securityContext:
+                    privileged: true
+                  volumeMounts:
+                    - name: procfs
+                      mountPath: /proc
+                    - name: sysfs
+                      mountPath: /sys
+              volumes:
+                - name: procfs
+                  hostPath:
+                    path: /proc
+                - name: sysfs
+                  hostPath:
+                    path: /sys
 # vim:ft=yaml
