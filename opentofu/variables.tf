@@ -44,9 +44,10 @@ variable "domains" {
       proxied = optional(bool)
     })))
     redirects = optional(map(object({
-      from      = string
-      to        = string
-      permament = bool
+      from       = optional(string)
+      expression = optional(string)
+      to         = string
+      permament  = bool
     })))
   }))
 }

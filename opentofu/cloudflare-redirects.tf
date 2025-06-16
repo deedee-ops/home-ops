@@ -10,7 +10,7 @@ resource "cloudflare_ruleset" "redirect" {
 
   rules = [{
     description = each.value.redirect_name
-    expression  = "(http.request.full_uri wildcard \"${each.value.redirect_from}\")"
+    expression  = each.value.redirect_expression
     action      = "redirect"
     action_parameters = {
       from_value = {

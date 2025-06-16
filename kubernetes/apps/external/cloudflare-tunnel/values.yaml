@@ -55,13 +55,11 @@ app-template:
         type: RuntimeDefault
   service:
     app:
-      controller: main
       ports:
         http:
           port: *port
   serviceMonitor:
     app:
-      serviceName: main
       endpoints:
         - port: http
   persistence:
