@@ -1,30 +1,49 @@
 ---
+# This is "special" magic file, which can self-reference it's own data via
+# go templating (because it's double-parsed by argo later).
+# So any value in this file, can be expanded in the file itself.
 global:
-  rootDomain: &rootDomain "rzegocki.dev"
   # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
   kubernetesVersion: v1.33.1
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
   talosVersion: v1.10.4
 
+  clusterName: deedee
+  rootDomain: rzegocki.dev
+  network:
+    k8sGateway: 10.42.20.1
+    k8sCIDR: 10.42.20.0/24
+    cephCIDR: 169.254.20.0/24
+
+  disabledApps: []  # namespace/app-name
+
 cilium:
   cluster:
-    name: deedee
+    name: "{{ .global.clusterName }}"
   custom:
     bgpRouter:
       name: unifi
-      ip: 10.42.20.1
+      ip: "{{ .global.network.k8sGateway }}"
     pools:
-      - 10.42.20.0/24
+      - "{{ .global.network.k8sCIDR }}"
 
 external-dns-cloudflare:
   domainFilters:
-    - *rootDomain
+    - "{{ .global.rootDomain }}"
 
 external-dns-unifi:
   domainFilters:
-    - *rootDomain
+    - "{{ .global.rootDomain }}"
 
 external-secrets:
   bitwarden:
     organizationID: 6d56fa67-67e1-4697-9d7f-b2ad00d31d5d
     projectID: 897c2d63-5ef1-4073-bc12-b2d400b0a7c3
+
+rook-ceph-cluster:
+  network:
+    addressRanges:
+      public:
+        - "{{ .global.network.k8sCIDR }}"
+      cluster:
+        - "{{ .global.network.cephCIDR }}"

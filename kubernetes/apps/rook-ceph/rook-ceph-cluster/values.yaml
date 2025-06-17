@@ -35,11 +35,6 @@ rook-ceph-cluster:
           enabled: true
     network:
       provider: host
-      addressRanges:
-        public:
-          - 10.42.20.0/24
-        cluster:
-          - 169.254.20.0/24
       connections:
         requireMsgr2: true
     resources:

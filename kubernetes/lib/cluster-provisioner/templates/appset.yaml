@@ -3,29 +3,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: '{{ required "clusterName is required!" .Values.clusterName }}'
+  name: '{{ required "clusterName is required!" .Values.global.clusterName }}'
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=invalid"]
   generators:
-    - matrix:
-        generators:
-          - git:
-              repoURL: https://github.com/deedee-ops/k8s-gitops.git
-              revision: master
-              files:
-                # {{- range $disabledApp := .Values.disabledApps }}
-                - path: "kubernetes/apps/{{ $disabledApp }}/argocd.yaml"
-                  exclude: true
-                # {{- end }}
-                - path: "kubernetes/apps/*/*/argocd.yaml"
-              pathParamPrefix: app
-          - git:
-              repoURL: https://github.com/deedee-ops/k8s-gitops.git
-              revision: master
-              files:
-                - path: "kubernetes/clusters/{{ .Values.clusterName }}/values.yaml"
-              pathParamPrefix: cluster
+    - git:
+        repoURL: https://github.com/deedee-ops/k8s-gitops.git
+        revision: master
+        files:
+          # {{- range $disabledApp := .Values.global.disabledApps }}
+          - path: "kubernetes/apps/{{ $disabledApp }}/argocd.yaml"
+            exclude: true
+          # {{- end }}
+          - path: "kubernetes/apps/*/*/argocd.yaml"
 # {{`
   template:
     metadata:
@@ -40,10 +31,10 @@ spec:
         - repoURL: https://github.com/deedee-ops/k8s-gitops.git
           targetRevision: master
           path: 'kubernetes/apps/{{ .namespace }}/{{ .name }}'
-          helm:
-            valueFiles:
 # `}}
-              - "../../../clusters/{{ .Values.clusterName }}/values.yaml"
+          helm:
+            values: |
+              {{- tpl (toYaml .Values | nindent 14) .Values }}
 # {{`
   templatePatch: |
     spec:
