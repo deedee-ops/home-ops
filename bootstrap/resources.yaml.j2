@@ -44,5 +44,18 @@ kind: Secret
 type: Opaque
 stringData:
   token: "{{ ENV.BITWARDEN_SECRETSMANAGER_TOKEN }}"
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/secret-v1.json
+apiVersion: v1
+metadata:
+  name: bitwarden-tls-certs
+  namespace: external-secrets
+kind: Secret
+type: kubernetes.io/tls
+data:
+  ca.crt: "{{ ENV.BITWARDEN_SECRETSMANAGER_CA_CRT }}"
+  tls.crt: "{{ ENV.BITWARDEN_SECRETSMANAGER_TLS_CRT }}"
+  tls.key: "{{ ENV.BITWARDEN_SECRETSMANAGER_TLS_KEY }}"
 # vim:ft=yaml
 # yamllint enable rule:line-length

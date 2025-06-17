@@ -3,3 +3,4 @@
 name: rook-ceph-cluster
 namespace: rook-ceph
 psp: privileged
+selfHeal: true

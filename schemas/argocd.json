@@ -27,6 +27,10 @@
       ],
       "type": "string"
     },
+    "selfHeal": {
+      "description": "Automatically sync, when cluster state diverges from application state.",
+      "type": "boolean"
+    },
     "retries": {
       "description": "Number of retries, before giving up. Set to -1 for indefinite.",
       "type": "integer"

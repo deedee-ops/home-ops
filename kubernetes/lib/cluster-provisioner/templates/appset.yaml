@@ -41,6 +41,9 @@ spec:
       syncPolicy:
         automated:
           prune: true
+        {{- if .selfHeal }}
+          selfHeal: true
+        {{- end }}
         syncOptions:
           - CreateNamespace=true
           {{- range $syncOption := .syncOptions }}
