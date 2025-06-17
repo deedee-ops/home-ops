@@ -49,7 +49,7 @@ machine:
   install:
     # yamllint disable-line rule:line-length
     image: "factory.rzegocki.dev/metal-installer-secureboot/9c0efd35c123f9c5fb6912d8d1e0873e1d5e53a6f1f689ae49c0dcaf91880c1a:{{ ENV.TALOS_VERSION }}"
-    wipe: false
+    wipe: true
 
     # they are ignored with UKI and SecureBoot, keeping them here for reference
     extraKernelArgs:
@@ -295,4 +295,33 @@ cluster:
                 - name: sysfs
                   hostPath:
                     path: /sys
+
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  diskSelector:
+    match: system_disk
+  minSize: 128GB
+  maxSize: 128GB
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: ceph-data
+provisioning:
+  diskSelector:
+    match: system_disk
+  minSize: 1GB
+  maxSize: 1GB
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: extra
+provisioning:
+  diskSelector:
+    match: system_disk
+  minSize: 1GB
+  grow: true
+
 # vim:ft=yaml

@@ -30,12 +30,7 @@ machine:
           - network: 169.254.20.13/32
             metric: 2048
 
-  disks:
-    - device: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R490212
-      partitions:
-        - mountpoint: /var/mnt/extra
-
   install:
-    disk: /dev/disk/by-id/ata-TS128GMTS430S_H854360676
+    disk: /dev/disk/by-id/nvme-WD_Blue_SN570_500GB_22319R490212
 
 # vim:ft=yaml
