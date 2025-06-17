@@ -52,7 +52,7 @@ argo-cd:
     rbac:
       policy.csv: g, lldap_admin, role:admin
     secret:
-      githubSecret: "$webhook-github-secret:webhook.github.secret"
+      createSecret: false
   controller:
     resources:
       requests:

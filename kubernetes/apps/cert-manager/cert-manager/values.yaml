@@ -10,6 +10,10 @@ cert-manager:
     enabled: true
     servicemonitor:
       enabled: true
+  podDnsConfig:
+    options:
+      - name: "ndots"
+        value: "1"
   containerSecurityContext: &csc
     readOnlyRootFilesystem: true
   resources: &resources

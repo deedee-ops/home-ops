@@ -22,6 +22,7 @@ rook-ceph-cluster:
       urlPrefix: /
       ssl: false
       # prometheusEndpoint: ""  # @todo
+    dataDirHostPath: /var/mnt/rook-ceph
     mgr:
       count: 2
       modules:

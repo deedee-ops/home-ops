@@ -1,4 +1,5 @@
 ---
+# {{ if not .Values.initialize }}
 # yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/gateway.networking.k8s.io/httproute_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -47,3 +48,4 @@ spec:
       matches:
         - path:
             value: /api/webhook
+# {{ end }}

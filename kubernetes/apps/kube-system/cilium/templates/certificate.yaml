@@ -1,4 +1,5 @@
 ---
+# {{ if not .Values.initialize }}
 # yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -13,3 +14,4 @@ spec:
   dnsNames:
     - "{{ .Values.global.rootDomain }}"
     - "*.{{ .Values.global.rootDomain }}"
+# {{ end }}

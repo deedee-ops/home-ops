@@ -21,6 +21,10 @@ releases:
           autoDirectNodeRoutes: false
           loadBalancer:
             mode: snat
+          operator:
+            tolerations:
+              - key: "node.kubernetes.io/not-ready"
+                operator: "Exists"
           routingMode: tunnel
           tunnelProtocol: geneve
         initialize: true
@@ -35,6 +39,14 @@ releases:
             ciliumbgpclusterconfigs.cilium.io ciliuml2announcementpolicies.cilium.io ciliumloadbalancerippools.cilium.io
             ciliumclusterwidenetworkpolicies.cilium.io &>/dev/null;
             do sleep 5; done
+        showlogs: true
+      - events: ["cleanup"]
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=kube-controller-manager
+            --filename ../kubernetes/apps/kube-system/cilium/templates/ciliumclusterwidenetworkpolicy.yaml --wait=true
         showlogs: true
 
   - name: coredns
@@ -81,8 +93,14 @@ releases:
         args:
           - -c
           - >-
-            sed 's@{{`{{ .Release.Namespace }}`}}@{{ .Release.Namespace }}@g'
-            ../kubernetes/apps/external-secrets/external-secrets/templates/clustersecretstore.yaml |
+            sed -e 's@{{`{{ .Release.Namespace }}`}}@{{ .Release.Namespace }}@g'
+            -e "s@organizationID:.*@organizationID: $(
+            yq '.external-secrets.bitwarden.organizationID'
+            ../kubernetes/clusters/{{ requiredEnv "CLUSTER_NAME" }}/values.yaml
+            )@g" -e "s@projectID:.*@projectID: $(
+            yq '.external-secrets.bitwarden.projectID'
+            ../kubernetes/clusters/{{ requiredEnv "CLUSTER_NAME" }}/values.yaml
+            )@g" ../kubernetes/apps/external-secrets/external-secrets/templates/clustersecretstore.yaml |
             kubectl apply --namespace={{ .Release.Namespace }} --server-side --field-manager=kube-controller-manager
             --filename - --wait=true
         showlogs: true
@@ -93,7 +111,4 @@ releases:
     chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/argocd/argo-cd'
     needs: ['external-secrets/external-secrets']
     values:
-      - argo-cd:
-          server:
-            ingress:
-              enabled: false
+      - initialize: true
