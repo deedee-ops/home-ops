@@ -1,0 +1,144 @@
+---
+scrapeTargets:
+  nodeExporter: []
+  smartctlExporter: []
+  snmpExporter: []
+  zigbeeExporter: []
+
+kube-prometheus-stack:
+  crds:
+    enabled: true
+  cleanPrometheusOperatorObjectNames: true
+  alertmanager:
+    enabled: false  # @todo
+    # route:
+    #   main:
+    #     enabled: true
+    #     parentRefs:
+    #       - name: internal
+    #         namespace: kube-system
+    #         sectionName: https
+    # alertmanagerSpec:
+    #   alertmanagerConfiguration:
+    #     name: alertmanager
+    #     global:
+    #       resolveTimeout: 5m
+    #   storage:
+    #     volumeClaimTemplate:
+    #       spec:
+    #         storageClassName: ceph-block
+    #         resources:
+    #           requests:
+    #             storage: 64Mi
+
+  kubeApiServer:
+    enabled: true
+  kubeControllerManager:
+    enabled: true
+    service:
+      selector:
+        component: kube-controller-manager
+  kubeEtcd:
+    enabled: true
+    service:
+      selector:
+        component: kube-apiserver
+  kubeProxy:  # cilium does kubeproxy
+    enabled: false
+  kubeScheduler:
+    enabled: true
+    service:
+      selector:
+        component: kube-scheduler
+  coreDns:
+    enabled: true
+  kubelet:
+    enabled: true
+
+  grafana:
+    enabled: false
+    forceDeployDashboards: true
+  kube-state-metrics:
+    fullnameOverride: kube-state-metrics
+    metricLabelsAllowlist:
+      - pods=[*]
+      - deployments=[*]
+      - persistentvolumeclaims=[*]
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      capabilities:
+        drop:
+          - ALL
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        memory: 32Mi
+    prometheus:
+      monitor:
+        enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: ["__meta_kubernetes_pod_node_name"]
+            targetLabel: kubernetes_node
+  prometheus-node-exporter:
+    fullnameOverride: node-exporter
+    prometheus:
+      monitor:
+        enabled: true
+        relabelings:
+          - action: replace
+            regex: (.*)
+            replacement: $1
+            sourceLabels: ["__meta_kubernetes_pod_node_name"]
+            targetLabel: kubernetes_node
+
+  prometheus:
+    route:
+      main:
+        enabled: true
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+    prometheusSpec:
+      podMonitorSelectorNilUsesHelmValues: false
+      probeSelectorNilUsesHelmValues: false
+      ruleSelectorNilUsesHelmValues: false
+      scrapeConfigSelectorNilUsesHelmValues: false
+      serviceMonitorSelectorNilUsesHelmValues: false
+      retention: 14d
+      retentionSize: 50GB
+      resources:
+        requests:
+          cpu: 100m
+        limits:
+          memory: 2000Mi
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: ceph-block
+            resources:
+              requests:
+                storage: 50Gi
+
+  additionalPrometheusRulesMap:
+    oom-rules:
+      groups:
+        - name: oom
+          rules:
+            - alert: OomKilled
+              annotations:
+                summary: >-
+                  Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} has been OOMKilled
+                  {{ $value }} times in the last 10 minutes.
+              expr: >-
+                (kube_pod_container_status_restarts_total - kube_pod_container_status_restarts_total offset 10m >= 1)
+                and ignoring (reason)
+                min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m]) == 1
+              labels:
+                severity: critical

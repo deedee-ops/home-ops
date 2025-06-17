@@ -6,6 +6,7 @@ kubernetes/apps/kube-system/intel-device-plugin-operator/values.yaml
 kubernetes/apps/kube-system/metrics-server/values.yaml
 kubernetes/apps/kube-system/snapshot-controller/values.yaml
 kubernetes/apps/kube-system/spegel/values.yaml
+kubernetes/apps/observability/kube-prometheus-stack/values.yaml
 kubernetes/apps/openebs-system/openebs/values.yaml
 kubernetes/apps/rook-ceph/*/values.yaml
 kubernetes/clusters/*/values.yaml

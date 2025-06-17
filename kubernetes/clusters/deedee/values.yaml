@@ -14,9 +14,23 @@ global:
     k8sGateway: 10.42.20.1
     k8sCIDR: 10.42.20.0/24
     cephCIDR: 169.254.20.0/24
+  machines:
+    nas: nas.home.arpa
 
   disabledApps: []  # namespace/app-name
 
+scrapeTargets:
+  nodeExporter:
+    - "{{ .global.machines.nas }}"
+  smartctlExporter:
+    - "{{ .global.machines.nas }}"
+  snmpExporter:
+    - "{{ .global.machines.nas }}"
+  zigbeeExporter:
+    - "zigbee-top.home.arpa"
+    - "zigbee-bottom.home.arpa"
+
+# dependent charts
 cilium:
   cluster:
     name: "{{ .global.clusterName }}"
@@ -39,6 +53,20 @@ external-secrets:
   bitwarden:
     organizationID: 6d56fa67-67e1-4697-9d7f-b2ad00d31d5d
     projectID: 897c2d63-5ef1-4073-bc12-b2d400b0a7c3
+
+kube-prometheus-stack:
+  alertmanager:
+    route:
+      main:
+        hostnames:
+          - "alertmanager.{{ .global.rootDomain }}"
+    alertmanagerSpec:
+      externalUrl: "https://alertmanager.{{ .global.rootDomain }}"
+  prometheus:
+    route:
+      main:
+        hostnames:
+          - "prometheus.{{ .global.rootDomain }}"
 
 rook-ceph-cluster:
   network:

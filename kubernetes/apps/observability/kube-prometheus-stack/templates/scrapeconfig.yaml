@@ -1,0 +1,68 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name node-exporter
+spec:
+  staticConfigs:
+    - targets:
+        # {{- range $target := .Values.scrapeTargets.nodeExporter }}
+        - "{{ $target }}:9100"
+        # {{- end }}
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name snmp-exporter
+spec:
+  staticConfigs:
+    - targets:
+        # {{- range $target := .Values.scrapeTargets.snmpExporter }}
+        - "{{ $target }}:9116"
+        # {{- end }}
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name smartctl-exporter
+spec:
+  staticConfigs:
+    - targets:
+        # {{- range $target := .Values.scrapeTargets.smartctlExporter }}
+        - "{{ $target }}:9633"
+        # {{- end }}
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: &name zigbee-exporter
+spec:
+  staticConfigs:
+    - targets:
+        # {{- range $target := .Values.scrapeTargets.zigbeeExporter }}
+        - "{{ $target }}"
+        # {{- end }}
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: *name

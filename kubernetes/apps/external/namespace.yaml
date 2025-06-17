@@ -10,6 +10,10 @@ spec:
   ingress:
     - fromEndpoints:
         - {}
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: observability
+            app.kubernetes.io/name: prometheus
   egress:
     - toEndpoints:
         - {}

@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: prometheus
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prometheus
+    egress:
+      - toFQDNs:
+          # {{- range $target := .Values.scrapeTargets.nodeExporter }}
+          - matchName: "{{ $target }}"
+          # {{- end }}
+        toPorts:
+          - ports:
+              - port: "9100"
+      - toFQDNs:
+          # {{- range $target := .Values.scrapeTargets.snmpExporter }}
+          - matchName: "{{ $target }}"
+          # {{- end }}
+        toPorts:
+          - ports:
+              - port: "9116"
+      - toFQDNs:
+          # {{- range $target := .Values.scrapeTargets.smartctlExporter }}
+          - matchName: "{{ $target }}"
+          # {{- end }}
+        toPorts:
+          - ports:
+              - port: "9633"
+      - toFQDNs:
+          # {{- range $target := .Values.scrapeTargets.zigbeeExporter }}
+          - matchName: "{{ $target }}"
+          # {{- end }}
+        toPorts:
+          - ports:
+              - port: "80"

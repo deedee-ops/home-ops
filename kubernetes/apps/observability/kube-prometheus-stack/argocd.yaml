@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: kube-prometheus-stack
+namespace: observability
+psp: privileged  # for node-exporter
+syncOptions:
+  - ServerSideApply=true
+ignoreDifferences: |
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    name: kube-prometheus-stack-admission
+    jsonPointers:
+      - /webhooks/0/clientConfig/caBundle
+      - /webhooks/0/failurePolicy
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    name: kube-prometheus-stack-admission
+    jsonPointers:
+      - /webhooks/0/clientConfig/caBundle
+      - /webhooks/0/failurePolicy
+  - group: batch
+    kind: CronJob
+    jsonPointers:
+      - /spec/jobTemplate/spec/template/spec/containers/0/resources
+  - group: apps
+    kind: DaemonSet
+    jsonPointers:
+      - /spec/template/spec/containers/0/resources
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    jsonPointers:
+      - /spec/parentRefs/0/group
+      - /spec/parentRefs/0/kind
+      - /spec/rules/0/backendRefs/0/group
+      - /spec/rules/0/backendRefs/0/kind
+      - /spec/rules/0/backendRefs/0/weight
