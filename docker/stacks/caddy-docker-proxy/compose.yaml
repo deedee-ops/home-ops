@@ -60,6 +60,8 @@ services:
       - source: sync-certs
         target: /root/sync-certs.sh
         mode: 0770
+    labels:
+      caddy.key_type: "rsa4096"  # because matchbox/IPXE requires RSA and caddy can't do two types for the same cert
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/caddy/data:/data:ro"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/caddy/secrets:/secrets:ro"
