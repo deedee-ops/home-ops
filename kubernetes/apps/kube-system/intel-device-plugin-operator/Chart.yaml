@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: intel-device-plugins-operator
+version: 1.0.0
+type: application
+dependencies:
+  - name: intel-device-plugins-operator
+    version: 0.32.1
+    repository: oci://ghcr.io/home-operations/charts-mirror
+  - name: intel-device-plugins-gpu
+    version: 0.32.1
+    repository: oci://ghcr.io/home-operations/charts-mirror

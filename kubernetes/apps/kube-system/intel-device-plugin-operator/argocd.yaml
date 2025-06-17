@@ -1,0 +1,5 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: intel-device-plugin-operator
+namespace: kube-system
+psp: privileged

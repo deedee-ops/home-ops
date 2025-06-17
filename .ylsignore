@@ -2,6 +2,7 @@ docker/stacks/snmp-exporter/config/*.yml
 kubernetes/apps/argocd/argo-cd/values.yaml
 kubernetes/apps/kube-system/coredns/values.yaml
 kubernetes/apps/kube-system/descheduler/values.yaml
+kubernetes/apps/kube-system/intel-device-plugin-operator/values.yaml
 kubernetes/apps/kube-system/metrics-server/values.yaml
 kubernetes/apps/kube-system/snapshot-controller/values.yaml
 kubernetes/apps/kube-system/spegel/values.yaml
