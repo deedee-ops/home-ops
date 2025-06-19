@@ -3,11 +3,6 @@
   "$id": "homelab-values",
   "type": "object",
   "properties": {
-    "app-template": {
-      "type": "object",
-      "additionalProperties": false,
-      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
-    },
     "cert-manager": {
       "type": "object",
       "additionalProperties": false,
@@ -42,6 +37,27 @@
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=stakater/Reloader",
       "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.4/deployments/kubernetes/chart/reloader/values.schema.json"
+    },
+
+    "cloudflare-tunnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
+    },
+    "irqbalance": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
+    },
+    "system-upgrade-controller": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
+    },
+    "unpoller": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
     }
   }
 }
