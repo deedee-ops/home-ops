@@ -1,0 +1,4 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: blackbox-exporter
+namespace: observability

@@ -19,6 +19,16 @@ global:
 
   disabledApps: []  # namespace/app-name
 
+blackboxExporterProbes:
+  icmp:
+    - "{{ .global.machines.nas }}"
+    - "zigbee-top.home.arpa"
+    - "zigbee-bottom.home.arpa"
+  tcp_connect:
+    # nfs
+    - host: "{{ .global.machines.nas }}"
+      port: "2049"
+
 scrapeTargets:
   nodeExporter:
     - "{{ .global.machines.nas }}"

@@ -1,0 +1,54 @@
+---
+# {{- if gt (len .Values.blackboxExporterProbes.http_2xx) 0 }}
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: http_2xx
+spec:
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        # {{- range $target := .Values.blackboxExporterProbes.http_2xx }}
+        - "{{ $target }}"
+        # {{- end }}
+# {{- end }}
+# {{- if gt (len .Values.blackboxExporterProbes.icmp) 0 }}
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: icmp
+spec:
+  module: icmp
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        # {{- range $target := .Values.blackboxExporterProbes.icmp }}
+        - "{{ $target }}"
+        # {{- end }}
+# {{- end }}
+# {{- if gt (len .Values.blackboxExporterProbes.tcp_connect) 0 }}
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: tcp-connect
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        # {{- range $target := .Values.blackboxExporterProbes.tcp_connect }}
+        - "{{ $target.host }}:{{ $target.port }}"
+        # {{- end }}
+# {{- end }}
