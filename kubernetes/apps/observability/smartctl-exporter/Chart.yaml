@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: smartctl-exporter
+version: 1.0.0
+type: application
+dependencies:
+  - name: prometheus-smartctl-exporter
+    version: 0.15.1
+    repository: oci://ghcr.io/prometheus-community/charts
