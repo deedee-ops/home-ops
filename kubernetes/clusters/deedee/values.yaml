@@ -75,3 +75,11 @@ rook-ceph-cluster:
         - "{{ .global.network.k8sCIDR }}"
       cluster:
         - "{{ .global.network.cephCIDR }}"
+
+unpoller:
+  controllers:
+    unpoller:
+      containers:
+        main:
+          env:
+            UP_UNIFI_DEFAULT_URL: "https://{{ .global.network.k8sGateway }}"

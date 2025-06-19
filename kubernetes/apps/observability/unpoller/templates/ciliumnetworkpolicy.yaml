@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: unpoller
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: unpoller
+    egress:
+      - toCIDRSet:
+          - cidr: "{{ .Values.global.network.k8sGateway }}/32"
+        toPorts:
+          - ports:
+              - port: "443"
