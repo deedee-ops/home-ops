@@ -35,7 +35,14 @@ scrapeTargets:
   smartctlExporter:
     - "{{ .global.machines.nas }}"
   snmpExporter:
-    - "{{ .global.machines.nas }}"
+    - host: "{{ .global.machines.nas }}"
+      params:
+        auth:
+          - synology
+        module:
+          - synology
+        target:
+          - "{{ .global.machines.nas}}"
   zigbeeExporter:
     - "zigbee-top.home.arpa"
     - "zigbee-bottom.home.arpa"
@@ -63,6 +70,14 @@ external-secrets:
   bitwarden:
     organizationID: 6d56fa67-67e1-4697-9d7f-b2ad00d31d5d
     projectID: 897c2d63-5ef1-4073-bc12-b2d400b0a7c3
+
+grafana:
+  env:
+    GF_SERVER_ROOT_URL: "https://grafana.{{ .global.rootDomain }}"
+  route:
+    main:
+      hostnames:
+        - "grafana.{{ .global.rootDomain }}"
 
 kube-prometheus-stack:
   alertmanager:

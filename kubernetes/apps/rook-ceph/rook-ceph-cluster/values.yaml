@@ -21,7 +21,7 @@ rook-ceph-cluster:
       enabled: true
       urlPrefix: /
       ssl: false
-      # prometheusEndpoint: ""  # @todo
+      prometheusEndpoint: "http://prometheus-operated.observability.svc.cluster.local:9090"
     dataDirHostPath: /var/mnt/rook-ceph
     mgr:
       count: 2

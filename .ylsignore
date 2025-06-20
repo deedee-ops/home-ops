@@ -7,6 +7,7 @@ kubernetes/apps/kube-system/metrics-server/values.yaml
 kubernetes/apps/kube-system/snapshot-controller/values.yaml
 kubernetes/apps/kube-system/spegel/values.yaml
 kubernetes/apps/observability/blackbox-exporter/values.yaml
+kubernetes/apps/observability/grafana/values.yaml
 kubernetes/apps/observability/kube-prometheus-stack/values.yaml
 kubernetes/apps/observability/smartctl-exporter/values.yaml
 kubernetes/apps/openebs-system/openebs/values.yaml

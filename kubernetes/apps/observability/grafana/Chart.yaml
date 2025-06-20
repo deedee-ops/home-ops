@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: grafana
+version: 1.0.0
+type: application
+dependencies:
+  - name: grafana
+    version: 9.2.7
+    repository: oci://ghcr.io/grafana/helm-charts

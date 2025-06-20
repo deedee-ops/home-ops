@@ -11,6 +11,7 @@ cert-manager:
     servicemonitor:
       enabled: true
   podDnsConfig:
+    # ensure FQDNs are not expanded with search domains, so cilium can apply policies correctly
     options:
       - name: "ndots"
         value: "1"
