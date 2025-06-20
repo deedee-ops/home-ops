@@ -1,7 +1,7 @@
 ---
 spegel:
   grafanaDashboard:
-    enabled: false  # @todo
+    enabled: true
   securityContext:
     readOnlyRootFilesystem: true
     capabilities:

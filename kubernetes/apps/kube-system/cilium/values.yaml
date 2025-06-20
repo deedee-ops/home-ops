@@ -22,7 +22,7 @@ cilium:
   cni:
     exclusive: false  # for multus
   dashboards:
-    enabled: false  # TODO: grafana
+    enabled: true
   # make toFQDNs more bearable
   # see: https://github.com/cilium/cilium/issues/28427
   dnsProxy:
@@ -58,8 +58,8 @@ cilium:
         - port-distribution
         - icmp
         - http
-      # dashboards:  # TODO: grafana
-      #   enabled: true
+      dashboards:
+        enabled: true
       serviceMonitor:
         enabled: true
     relay:
@@ -107,7 +107,7 @@ cilium:
   operator:
     enabled: true
     dashboards:
-      enabled: false  # TODO: grafana
+      enabled: true
     prometheus:
       enabled: true
       serviceMonitor:

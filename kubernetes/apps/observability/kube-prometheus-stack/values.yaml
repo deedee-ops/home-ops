@@ -10,7 +10,7 @@ kube-prometheus-stack:
     enabled: true
   cleanPrometheusOperatorObjectNames: true
   alertmanager:
-    enabled: false  # @todo
+    enabled: false  # TODO: alertmanager
     # route:
     #   main:
     #     enabled: true
@@ -125,6 +125,12 @@ kube-prometheus-stack:
             resources:
               requests:
                 storage: 50Gi
+      additionalConfig:
+        dnsConfig:
+          # ensure FQDNs are not expanded with search domains, so cilium can apply policies correctly
+          options:
+            - name: ndots
+              value: "1"
 
   additionalPrometheusRulesMap:
     oom-rules:

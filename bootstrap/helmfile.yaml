@@ -12,8 +12,13 @@ releases:
     chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/cilium'
     values:
       - cilium:
+          dashboards:
+            enabled: false
           hubble:
             enabled: false
+            metrics:
+              dashboards:
+                enabled: false
             relay:
               enabled: false
             ui:
@@ -22,6 +27,8 @@ releases:
           loadBalancer:
             mode: snat
           operator:
+            dashboards:
+              enabled: false
             tolerations:
               - key: "node.kubernetes.io/not-ready"
                 operator: "Exists"
@@ -60,6 +67,10 @@ releases:
     atomic: true
     chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/spegel'
     needs: ["kube-system/coredns"]
+    values:
+      - spegel:
+          grafanaDashboard:
+            enabled: false
 
   # TODO: waiting for: https://github.com/sigstore/policy-controller/pull/1725 to be released
   # # - name: policy-controller
@@ -87,6 +98,9 @@ releases:
     needs: ["kube-system/spegel"]
     values:
       - installSecretStore: false
+        external-secrets:
+          grafanaDashboard:
+            enabled: false
     hooks:
       - events: ["postsync"]
         command: bash

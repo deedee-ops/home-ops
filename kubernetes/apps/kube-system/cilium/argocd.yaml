@@ -3,6 +3,9 @@
 name: cilium
 namespace: kube-system
 psp: privileged
+syncOptions:
+  # grafana dashboard is a big resource
+  - ServerSideApply=true
 ignoreDifferences: |
   - kind: Secret
     group: ""
