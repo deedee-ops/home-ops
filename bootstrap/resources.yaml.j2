@@ -1,7 +1,7 @@
 ---
 # yamllint disable rule:line-length
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/namespace-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -13,7 +13,7 @@ metadata:
 # TODO: waiting for: https://github.com/sigstore/policy-controller/pull/1725 to be released
 # ---
 # # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/namespace-v1.json
+# # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
 # apiVersion: v1
 # kind: Namespace
 # metadata:
@@ -24,7 +24,7 @@ metadata:
 #     pod-security.kubernetes.io/warn: restricted
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/namespace-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -35,7 +35,7 @@ metadata:
     pod-security.kubernetes.io/warn: restricted
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/secret-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/secret-v1.json
 apiVersion: v1
 metadata:
   name: bitwarden-access-token
@@ -46,7 +46,7 @@ stringData:
   token: "{{ ENV.BITWARDEN_SECRETSMANAGER_TOKEN }}"
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.1/secret-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/secret-v1.json
 apiVersion: v1
 metadata:
   name: bitwarden-tls-certs
