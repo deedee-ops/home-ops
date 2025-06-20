@@ -9,7 +9,9 @@ metadata:
     external-dns.alpha.kubernetes.io/controller: none
 spec:
   parentRefs:
-    - name: internal
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
       namespace: kube-system
       sectionName: http
   rules:
@@ -18,4 +20,8 @@ spec:
             scheme: https
             statusCode: 301
           type: RequestRedirect
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
 # {{ end }}

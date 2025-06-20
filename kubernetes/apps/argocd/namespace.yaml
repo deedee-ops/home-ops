@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: enable-local-egress
+  namespace: argocd
+spec:
+  endpointSelector: {}
+  egress:
+    - toEntities:
+        - ingress
+        - kube-apiserver
+    - toEndpoints:
+        - {}

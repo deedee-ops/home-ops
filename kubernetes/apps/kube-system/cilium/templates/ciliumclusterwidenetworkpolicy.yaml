@@ -4,12 +4,23 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumClusterwideNetworkPolicy
 metadata:
-  name: default-disable-internet-policy
+  name: default-disable-egress-policy
 specs:
-  - endpointSelector: {}
+  - endpointSelector:
+      matchExpressions:
+        - key: reserved:ingress
+          operator: Exists
     egress:
       - toEntities:
           - cluster
+  - endpointSelector:
+      matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+    egress:
+      - toEntities:
+          - cluster
+  - endpointSelector: {}
+    egress:
       - toEndpoints:
           - matchLabels:
               io.kubernetes.pod.namespace: kube-system

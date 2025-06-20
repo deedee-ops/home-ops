@@ -37,3 +37,21 @@ specs:
         toPorts:
           - ports:
               - port: "80"
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cluster-networking-for-prometheus
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - kube-prometheus-stack-prometheus-operator
+          - kube-state-metrics
+          - prometheus
+  egress:
+    - toEntities:
+        - cluster

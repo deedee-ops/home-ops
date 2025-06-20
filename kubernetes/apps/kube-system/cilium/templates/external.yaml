@@ -32,6 +32,7 @@ spec:
           from: All
       tls:
         certificateRefs:
-          - kind: Secret
+          - group: ""
+            kind: Secret
             name: '{{ .Values.global.rootDomain | replace "." "-" }}-tls'
 # {{ end }}

@@ -22,3 +22,12 @@ ignoreDifferences: |
     name: hubble-server-certs
     jsonPointers:
       - "/data"
+  - kind: Secret
+    group: ""
+    name: hubble-server-certs
+    jsonPointers:
+      - "/data"
+  - kind: ServiceMonitor
+    group: monitoring.coreos.com
+    jqPathExpressions:
+      - ".spec.endpoints[].relabelings[].action"
