@@ -14,3 +14,5 @@ specs:
         toPorts:
           - ports:
               - port: "443"
+      - toEntities:
+          - kube-apiserver
