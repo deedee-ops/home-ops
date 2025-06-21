@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: smtp-relay
+version: 1.0.0
+type: application
+dependencies:
+  - name: app-template
+    version: 4.1.1
+    repository: oci://ghcr.io/bjw-s-labs/helm
+    alias: smtp-relay

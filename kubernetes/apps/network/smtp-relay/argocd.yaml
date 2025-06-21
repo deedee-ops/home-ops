@@ -1,0 +1,5 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+name: smtp-relay
+namespace: network
+psp: restricted
