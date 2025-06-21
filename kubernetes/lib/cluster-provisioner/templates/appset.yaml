@@ -37,6 +37,11 @@ spec:
               {{- tpl (toYaml .Values | nindent 14) .Values }}
 # {{`
   templatePatch: |
+    {{- if .serverSideApply }}
+    metadata:
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
+    {{- end }}
     spec:
       syncPolicy:
         automated:
@@ -46,6 +51,9 @@ spec:
         {{- end }}
         syncOptions:
           - CreateNamespace=true
+          {{- if .serverSideApply }}
+          - ServerSideApply=true
+          {{- end }}
           {{- range $syncOption := .syncOptions }}
           - "{{ $syncOption }}"
           {{- end }}
