@@ -10,26 +10,41 @@ kube-prometheus-stack:
     enabled: true
   cleanPrometheusOperatorObjectNames: true
   alertmanager:
-    enabled: false  # TODO: alertmanager
-    # route:
-    #   main:
-    #     enabled: true
-    #     parentRefs:
-    #       - name: internal
-    #         namespace: kube-system
-    #         sectionName: https
-    # alertmanagerSpec:
-    #   alertmanagerConfiguration:
-    #     name: alertmanager
-    #     global:
-    #       resolveTimeout: 5m
-    #   storage:
-    #     volumeClaimTemplate:
-    #       spec:
-    #         storageClassName: ceph-block
-    #         resources:
-    #           requests:
-    #             storage: 64Mi
+    route:
+      main:
+        enabled: true
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        filters:
+          - type: ResponseHeaderModifier
+            responseHeaderModifier:
+              add:
+                - name: Content-Security-Policy
+                  value: >-
+                    default-src 'self' 'unsafe-inline' data:; object-src 'none';
+    alertmanagerSpec:
+      alertmanagerConfiguration:
+        name: alertmanager
+        global:
+          resolveTimeout: 5m
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: ceph-block
+            resources:
+              requests:
+                storage: 64Mi
+      podMetadata:
+        labels:
+          egress.home.arpa/smtp-relay: allow
+      additionalConfig:
+        dnsConfig:
+          # ensure FQDNs are not expanded with search domains, so cilium can apply policies correctly
+          options:
+            - name: ndots
+              value: "1"
 
   kubeApiServer:
     enabled: true
@@ -105,6 +120,13 @@ kube-prometheus-stack:
           - name: internal
             namespace: kube-system
             sectionName: https
+        filters:
+          - type: ResponseHeaderModifier
+            responseHeaderModifier:
+              add:
+                - name: Content-Security-Policy
+                  value: >-
+                    default-src 'self' 'unsafe-inline'; object-src 'none';
     prometheusSpec:
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
@@ -117,7 +139,7 @@ kube-prometheus-stack:
         requests:
           cpu: 100m
         limits:
-          memory: 2000Mi
+          memory: 4096Mi
       storageSpec:
         volumeClaimTemplate:
           spec:
