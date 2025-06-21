@@ -1,5 +1,5 @@
 ---
 # yaml-language-server: $schema=../../../../schemas/argocd.json
-name: cloudflare-tunnel
-namespace: external
+name: external-dns-unifi
+namespace: network
 psp: restricted
