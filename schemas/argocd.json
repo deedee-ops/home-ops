@@ -27,6 +27,10 @@
       ],
       "type": "string"
     },
+    "serverSideApply": {
+      "description": "Apply all the manifests (and diffs) server-side. Useful for large resources.",
+      "type": "boolean"
+    },
     "selfHeal": {
       "description": "Automatically sync, when cluster state diverges from application state.",
       "type": "boolean"
