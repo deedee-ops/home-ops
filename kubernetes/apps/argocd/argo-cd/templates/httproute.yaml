@@ -23,7 +23,7 @@ spec:
             add:
               - name: Content-Security-Policy
                 value: >-
-                  default-src 'self' 'unsafe-inline'; object-src 'none';
+                  default-src 'self' 'unsafe-inline' data:; object-src 'none';
 
 # default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:
 # https://*.{{ .Values.global.rootDomain }}; object-src 'none';

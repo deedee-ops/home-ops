@@ -35,7 +35,7 @@ data:
 
     target.smtp remote_smtp {
         debug {env:DEBUG}
-        attempt_starttls yes
+        attempt_starttls no
         require_tls yes
         auth plain {env:MADDY_EGRESS_USERNAME} {env:MADDY_EGRESS_PASSWORD}
         targets tls://{env:MADDY_EGRESS_HOST}:{env:MADDY_EGRESS_PORT}

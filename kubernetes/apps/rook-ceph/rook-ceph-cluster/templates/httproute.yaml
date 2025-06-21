@@ -22,4 +22,4 @@ spec:
             add:
               - name: Content-Security-Policy
                 value: >-
-                  default-src 'self' 'unsafe-inline'; object-src 'none';
+                  default-src 'self' 'unsafe-inline' data:; object-src 'none';
