@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   home-assistant:
-    image: ghcr.io/home-operations/home-assistant:2025.6.2@sha256:a77cf6de9d140fc2a66136336431217a65982f1ed3cf7dd9539046f3be49dc1b
+    image: ghcr.io/home-operations/home-assistant:2025.6.3@sha256:6f6b427121f376c92dac2ce14b99ff088010da3f082142fd8b86b4ade563328f
     container_name: home-assistant
     user: "1000:1000"
     restart: unless-stopped
