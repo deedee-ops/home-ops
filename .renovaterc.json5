@@ -14,7 +14,6 @@
     ":timezone(Europe/Warsaw)",
     "github>deedee-ops/k8s-gitops//.renovate/autoMerge.json5",
     "github>deedee-ops/k8s-gitops//.renovate/customManagers.json5",
-    "github>deedee-ops/k8s-gitops//.renovate/customVersions.json5",
     "github>deedee-ops/k8s-gitops//.renovate/grafanaDashboards.json5",
     "github>deedee-ops/k8s-gitops//.renovate/groups.json5",
     "github>deedee-ops/k8s-gitops//.renovate/labels.json5",
