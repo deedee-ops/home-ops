@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: dragonfly
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: dragonfly-operator
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/part-of: dragonfly
