@@ -58,6 +58,7 @@ grafana:
             path: /var/lib/grafana/dashboards/default
   dashboards:
     default:
+      # grafana dashboard registry
       ceph-cluster:
         # renovate: depName="Ceph Cluster"
         gnetId: 2842
@@ -171,6 +172,30 @@ grafana:
         gnetId: 11312
         revision: 9
         datasource: Prometheus
+
+      # urls
+      crunchy-pgbackrest:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/pgbackrest.json"
+        datasource: Prometheus
+      crunchy-pgbouncer:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/pgbouncer_direct.json"
+        datasource: Prometheus
+      crunchy-pod-details:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/pod_details.json"
+        datasource: Prometheus
+      crunchy-postgresql-details:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/postgresql_details.json"
+        datasource: Prometheus
+      crunchy-postgresql-overview:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/postgresql_overview.json"
+        datasource: Prometheus
+      crunchy-postgresql-service-health:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/postgresql_service_health.json"
+        datasource: Prometheus
+      crunchy-query-statistics:
+        url: "https://raw.githubusercontent.com/CrunchyData/postgres-operator-examples/refs/heads/main/kustomize/monitoring/grafana/dashboards/query_statistics.json"
+        datasource: Prometheus
+
   sidecar:
     image:
       registry: ghcr.io

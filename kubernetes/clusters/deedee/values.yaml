@@ -42,7 +42,7 @@ scrapeTargets:
         module:
           - synology
         target:
-          - "{{ .global.machines.nas}}"
+          - "{{ .global.machines.nas }}"
   zigbeeExporter:
     - "zigbee-top.home.arpa"
     - "zigbee-bottom.home.arpa"

@@ -4,7 +4,6 @@ name: kube-prometheus-stack
 namespace: observability
 psp: privileged  # for node-exporter
 serverSideApply: true
-syncOptions:
 ignoreDifferences: |
   - group: admissionregistration.k8s.io
     kind: MutatingWebhookConfiguration

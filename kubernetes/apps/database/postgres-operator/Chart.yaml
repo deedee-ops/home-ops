@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: crunchydata-pgo
+version: 1.0.0
+type: application
+dependencies:
+  - name: pgo
+    version: 5.8.2
+    repository: oci://registry.developers.crunchydata.com/crunchydata
