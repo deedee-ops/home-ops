@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-alertmanager
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "alertmanager.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "alertmanager.labels" . | nindent 8 }}
+        {{- with .Values.alertmanager.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+      - name: alertmanager
+        image: {{ .Values.alertmanager.image.repository }}:{{ .Values.alertmanager.image.tag }}
+        args:
+        - --config.file=/etc/alertmanager/alertmanager.yml
+        - --storage.path=/alertmanager
+        - --log.level=info
+        - --cluster.advertise-address=0.0.0.0:9093
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9093
+          initialDelaySeconds: 25
+          periodSeconds: 20
+        ports:
+        - containerPort: 9093
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9093
+        resources:
+          {{- toYaml .Values.alertmanager.resources | nindent 10 }}
+        {{- with .Values.alertmanager.containerSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - mountPath: /etc/alertmanager
+          name: alertmanagerconf
+        - mountPath: /alertmanager
+          name: alertmanagerdata
+      {{- if not .Values.openShift }}
+      securityContext:
+        fsGroup: 26
+      {{- end }}
+      serviceAccountName: alertmanager
+      volumes:
+      - name: alertmanagerdata
+        persistentVolumeClaim:
+          claimName: alertmanagerdata
+      - name: alertmanagerconf
+        configMap:
+          defaultMode: 420
+          name: alertmanager-config

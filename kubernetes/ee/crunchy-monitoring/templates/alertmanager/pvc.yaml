@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alertmanagerdata
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+{{- .Values.alertmanager.pvc | toYaml | nindent 2 }}

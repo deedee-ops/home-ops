@@ -16,6 +16,7 @@ specs:
           - matchName: ghcr.io
           - matchName: pkg-containers.githubusercontent.com
           - matchName: quay.io
+          - matchName: registry.developers.crunchydata.com
           - matchPattern: "cdn*.quay.io"
         toPorts:
           - ports:

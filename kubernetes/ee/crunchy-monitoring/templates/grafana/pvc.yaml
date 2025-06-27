@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafanadata
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+spec:
+{{- .Values.grafana.pvc | toYaml | nindent 2 }}

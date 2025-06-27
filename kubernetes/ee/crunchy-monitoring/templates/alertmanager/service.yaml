@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-alertmanager
+  labels:
+    {{- include "alertmanager.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: alertmanager
+    port: 9093
+  selector:
+    {{- include "alertmanager.selectorLabels" . | nindent 4 }}

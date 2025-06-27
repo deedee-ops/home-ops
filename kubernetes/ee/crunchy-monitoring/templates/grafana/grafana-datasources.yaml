@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  labels:
+    {{- include "grafana.labels" . | nindent 4 }}
+data:
+  crunchy_grafana_datasource.yml: |
+{{- .Files.Get "config/crunchy_grafana_datasource.yml" | nindent 4 }}

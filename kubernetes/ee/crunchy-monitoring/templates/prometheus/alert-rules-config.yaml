@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alert-rules-config
+  labels:
+    {{- include "prometheus.labels" . | nindent 4 }}
+data:
+  crunchy-alert-rules-pg.yml: |
+{{- .Files.Get "config/crunchy-alert-rules-pg.yml" | nindent 4 }}
