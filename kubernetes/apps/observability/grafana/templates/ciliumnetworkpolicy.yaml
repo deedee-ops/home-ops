@@ -10,8 +10,9 @@ specs:
         app.kubernetes.io/name: grafana
     egress:
       - toFQDNs:
-          - matchName: grafana.com             # dashboards
-          - matchName: storage.googleapis.com  # plugins
+          - matchName: grafana.com                # dashboards
+          - matchName: raw.githubusercontent.com  # custom dashboards
+          - matchName: storage.googleapis.com     # plugins
         toPorts:
           - ports:
               - port: "443"
