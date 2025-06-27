@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/chart.json
+apiVersion: v2
+name: dragonfly-operator
+version: 1.0.0
+type: application
+dependencies:
+  - name: dragonfly-operator
+    version: v1.1.11
+    repository: oci://ghcr.io/dragonflydb/dragonfly-operator/helm

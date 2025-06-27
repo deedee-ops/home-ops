@@ -12,6 +12,7 @@ spec:
         operator: In
         values:
           - crunchydata-pgo
+          - dragonfly-operator
   egress:
     - toEntities:
         - kube-apiserver
