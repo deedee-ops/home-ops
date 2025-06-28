@@ -56,7 +56,7 @@ spec:
             followRedirects: true
     - name: email
       emailConfigs:
-        - from: "Homelab <homelab@{{ .Values.global.rootDomain }}>"
+        - from: "DeeDee <deedee@{{ .Values.global.rootDomain }}>"
           to: "homelab@{{ .Values.global.rootDomain }}"
           hello: "{{ .Values.global.rootDomain }}"
           smarthost: smtp-relay.network.svc.cluster.local:25
