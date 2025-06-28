@@ -9,6 +9,8 @@ specs:
       matchLabels:
         app.kubernetes.io/name: grafana
     egress:
+      - toEntities:
+          - kube-apiserver  # for fetching grafana dashboard configmaps
       - toFQDNs:
           - matchName: grafana.com                # dashboards
           - matchName: raw.githubusercontent.com  # custom dashboards
