@@ -39,6 +39,11 @@
       "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.4/deployments/kubernetes/chart/reloader/values.schema.json"
     },
 
+    "authelia": {
+      "type": "object",
+      "additionalProperties": false,
+      "$ref": "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/refs/heads/main/charts/other/app-template/values.schema.json"
+    },
     "cloudflare-tunnel": {
       "type": "object",
       "additionalProperties": false,
