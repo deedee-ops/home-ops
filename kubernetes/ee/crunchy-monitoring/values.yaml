@@ -86,7 +86,7 @@ prometheus:
 
   image:
     repository: prom/prometheus
-    tag: v2.54.1
+    tag: v2.55.1
 
   labels: {}
 
