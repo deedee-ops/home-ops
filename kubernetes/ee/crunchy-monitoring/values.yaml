@@ -12,7 +12,7 @@ alertmanager:
 
   image:
     repository: prom/alertmanager
-    tag: v0.27.0
+    tag: v0.28.1
 
   labels: {}
 
