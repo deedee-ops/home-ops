@@ -51,7 +51,7 @@ grafana:
 
   image:
     repository: grafana/grafana
-    tag: 11.1.5
+    tag: 11.6.3
 
   labels: {}
 
