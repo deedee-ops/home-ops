@@ -24,6 +24,7 @@ spec:
               - name: Content-Security-Policy
                 value: >-
                   default-src 'self' 'unsafe-inline' data:; object-src 'none';
+                  connect-src 'self' https://auth.{{ .Values.global.rootDomain }};
 
 # default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:
 # https://*.{{ .Values.global.rootDomain }}; object-src 'none';

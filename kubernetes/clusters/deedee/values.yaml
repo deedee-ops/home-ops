@@ -54,6 +54,26 @@ authelia:
       hostnames:
         - "auth.{{ .global.rootDomain }}"
 
+argo-cd:
+  configs:
+    cm:
+      url: "https://argocd.{{ .global.rootDomain }}"
+      oidc.config: |
+        name: Authelia
+        issuer: "https://auth.{{ .global.rootDomain }}"
+        clientID: $oidc.authelia.clientID
+        clientSecret: $oidc.authelia.clientSecret
+        requestedScopes:
+          - openid
+          - profile
+          - email
+          - groups
+        requestedIDTokenClaims:
+          email:
+            essential: true
+          groups:
+            essential: true
+
 cilium:
   cluster:
     name: "{{ .global.clusterName }}"
