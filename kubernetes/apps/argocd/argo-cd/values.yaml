@@ -50,7 +50,7 @@ argo-cd:
           clusters:
           - "*"
     rbac:
-      policy.csv: g, lldap_admin, role:admin
+      policy.csv: g, admins, role:admin
     secret:
       createSecret: false
   controller:
@@ -69,6 +69,8 @@ argo-cd:
   global:
     deploymentStrategy:
       type: RollingUpdate
+    podLabels:
+      egress.home.arpa/authelia: allow
     securityContext:
       runAsNonRoot: true
       runAsUser: 999
