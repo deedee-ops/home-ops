@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: enable-kube-apiserver
+  namespace: security
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - authelia
+          - authelia-pg-cluster
+  egress:
+    - toEntities:
+        - kube-apiserver
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: authelia
+  namespace: security
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/project: authelia
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/project: authelia
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: allow-authelia
+specs:
+  - endpointSelector:
+      matchLabels:
+        egress.home.arpa/authelia: allow
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: authelia
+        toPorts:
+          - ports:
+              - port: "9091"
+      - toFQDNs:
+          - matchName: "auth.{{ .Values.global.rootDomain }}"
+        toPorts:
+          - ports:
+              - port: "443"

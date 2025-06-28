@@ -48,6 +48,12 @@ scrapeTargets:
     - "zigbee-bottom.home.arpa"
 
 # dependent charts
+authelia:
+  route:
+    main:
+      hostnames:
+        - "auth.{{ .global.rootDomain }}"
+
 cilium:
   cluster:
     name: "{{ .global.clusterName }}"
