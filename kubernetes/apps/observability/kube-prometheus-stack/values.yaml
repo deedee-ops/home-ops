@@ -141,6 +141,8 @@ kube-prometheus-stack:
             targetLabel: kubernetes_node
 
   prometheus:
+    ingress:
+      servicePort: 8081  # oauth-proxy
     route:
       main:
         enabled: true
@@ -154,7 +156,13 @@ kube-prometheus-stack:
               add:
                 - name: Content-Security-Policy
                   value: >-
-                    default-src 'self' 'unsafe-inline'; object-src 'none';
+                    default-src 'self' 'unsafe-inline' data:; object-src 'none';
+    service:
+      additionalPorts:
+        - name: oauth2-proxy
+          port: 8081
+          targetPort: 8081
+          protocol: TCP
     prometheusSpec:
       podMonitorSelectorNilUsesHelmValues: false
       probeSelectorNilUsesHelmValues: false
@@ -181,6 +189,25 @@ kube-prometheus-stack:
           options:
             - name: ndots
               value: "1"
+
+      containers:
+        - name: oauth-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0@sha256:cb93cfc897860ddf4f7fef7d587a0e5038e00dd63d724e169ef7875205640c5e
+          envFrom:
+            - secretRef:
+                name: prometheus-oidc-secret
+
+          args:
+            - --upstream=http://127.0.0.1:9090
+            - --http-address=0.0.0.0:8081
+            - --metrics-address=0.0.0.0:8082
+          ports:
+            - containerPort: 8081
+              name: oauth-proxy
+              protocol: TCP
+            - containerPort: 8082
+              name: oauth-metrics
+              protocol: TCP
 
   additionalPrometheusRulesMap:
     oom-rules:
