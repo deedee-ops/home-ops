@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: kube-prometheus-stack
-    version: 75.6.0
+    version: 75.6.1
     repository: oci://ghcr.io/prometheus-community/charts
