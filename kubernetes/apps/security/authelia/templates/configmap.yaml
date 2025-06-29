@@ -122,6 +122,13 @@ data:
         minimum_parameter_entropy: 8
         cors:
           allowed_origins_from_client_redirect_uris: true
+        claims_policies:
+          broken_oidc:
+            id_token:
+              - email
+              - name
+              - groups
+              - preferred_username
         clients:
           - client_id: dummy
             # dummy secret to silence validator
