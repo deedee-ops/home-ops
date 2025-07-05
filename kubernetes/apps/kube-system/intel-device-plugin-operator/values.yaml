@@ -1,9 +1,0 @@
----
-intel-device-plugins-operator:
-  manager:
-    devices:
-      gpu: true
-intel-device-plugins-gpu:
-  name: i915
-  nodeFeatureRule: false
-  sharedDevNum: 99

@@ -1,4 +1,0 @@
----
-pgo:
-  customPodLabels:
-    app.kubernetes.io/name: crunchydata-pgo

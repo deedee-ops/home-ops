@@ -6,18 +6,17 @@ metadata:
   name: '{{ required "clusterName is required!" .Values.global.clusterName }}'
 spec:
   goTemplate: true
-  goTemplateOptions: ["missingkey=invalid"]
+  goTemplateOptions:
+    - "missingkey=invalid"
   generators:
     - git:
-        repoURL: https://github.com/deedee-ops/k8s-gitops.git
+        repoURL: https://github.com/deedee-ops/home-ops.git
         revision: master
         files:
-          # {{- range $disabledApp := .Values.global.disabledApps }}
-          - path: "kubernetes/apps/{{ $disabledApp }}/argocd.yaml"
-            exclude: true
-          # {{- end }}
-          - path: "kubernetes/apps/*/*/argocd.yaml"
-# {{`
+          # {{- range $enabledApp := .Values.global.enabledApps }}
+          - path: "kubernetes/apps/{{ $enabledApp }}/app.yaml"
+            # {{- end }}
+  # {{`
   template:
     metadata:
       name: '{{ .name }}'
@@ -27,22 +26,69 @@ spec:
         namespace: '{{ .namespace }}'
         server: https://kubernetes.default.svc
       project: default
-      sources:
-        - repoURL: https://github.com/deedee-ops/k8s-gitops.git
-          targetRevision: master
-          path: 'kubernetes/apps/{{ .namespace }}/{{ .name }}'
-# `}}
-          helm:
-            values: |
-              {{- tpl (toYaml .Values | nindent 14) .Values }}
-# {{`
-  templatePatch: |
-    {{- if .serverSideApply }}
+  templatePatch: |-
+    # `}}
+    # {{`{{`}} $clusterValues := `{{ tpl (.Values | toJson) .Values | replace "`" "\\u0060" }}` | fromJson {{`}}`}}
+    # {{`
     metadata:
       annotations:
+        argocd.argoproj.io/appset: "true"
+    {{- if .serverSideApply }}
         argocd.argoproj.io/compare-options: ServerSideDiff=true
     {{- end }}
+    {{- range $annotationName, $annotationValue := .annotations }}
+        {{ $annotationName }}: {{ $annotationValue }}
+    {{- end }}
     spec:
+      sources:
+        - repoURL: "{{ .repoURL }}"
+          # {{- $baseVersion := .version }}
+          # {{- with index $clusterValues .name }}
+          targetRevision: "{{ index . "chartVersion" | default $baseVersion }}"
+          # {{- else }}
+          targetRevision: "{{ $baseVersion }}"
+          # {{- end }}
+          # {{- with .repoPath }}
+          path: "{{ . }}"
+          # {{- else }}
+          chart: "{{ .chartName | default .name }}"
+          # {{- end }}
+          helm:
+            releaseName: "{{ .name }}"
+            values: |
+              # {{- $baseValues := .values }}
+              # {{- with index $clusterValues .name }}
+              {{- toYaml (deepCopy . | mergeOverwrite ($baseValues | default dict)) | nindent 10 }}
+              # {{- else }}
+              {{- toYaml ($baseValues | default dict) | nindent 10 }}
+              # {{- end }}
+        {{- if .withKustomize }}
+        - repoURL: {{ .repoURL | default "https://github.com/deedee-ops/home-ops.git" }}
+          targetRevision: {{ .version | default "staging" }}
+          path: "{{ .repoPath }}"
+          kustomize: {}
+        {{- end }}
+        - repoURL: https://github.com/deedee-ops/home-ops.git
+          path: kubernetes/apps
+          targetRevision: master
+          directory:
+            recurse: true
+            include: '{{ .namespace }}/{{ .name }}/templates/*.yaml'
+        - repoURL: https://github.com/deedee-ops/home-ops.git
+          path: kubernetes/apps
+          targetRevision: master
+          directory:
+            recurse: true
+            include: '{{ .namespace }}/{{ .name }}/templates/*.jsonnet'
+            jsonnet:
+              extVars:
+                - name: namespace
+                  value: '{{ .namespace }}'
+                - name: global
+                  code: true
+                  value: >
+                    {{ (index $clusterValues "global") | toJson }}
+
       syncPolicy:
         automated:
           prune: true
@@ -75,4 +121,4 @@ spec:
       ignoreDifferences:
         {{- .ignoreDifferences | nindent 4 }}
       {{- end }}
-# `}}
+    # `}}

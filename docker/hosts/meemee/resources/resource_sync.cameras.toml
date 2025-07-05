@@ -1,9 +1,0 @@
-[[resource_sync]]
-name = "cameras"
-[resource_sync.config]
-git_provider = "git.rzegocki.dev"
-repo = "deedee/home-cameras"
-branch = "master"
-git_account = "komodo"
-webhook_enabled = false
-resource_path = ["komodo"]

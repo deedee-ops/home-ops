@@ -1,17 +1,15 @@
 ---
 # yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
-apiVersion: "cilium.io/v2"
+apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: bitwarden-secretsmanager
+  name: external-secrets-egress-internal
 specs:
   - endpointSelector:
       matchLabels:
-        app.kubernetes.io/name: bitwarden-sdk-server
+        app.kubernetes.io/instance: external-secrets
     egress:
-      - toFQDNs:
-          - matchName: "api.bitwarden.eu"
-          - matchName: "identity.bitwarden.eu"
-        toPorts:
-          - ports:
-              - port: "443"
+      - toEntities:
+          - kube-apiserver
+      - toEndpoints:
+          - {}

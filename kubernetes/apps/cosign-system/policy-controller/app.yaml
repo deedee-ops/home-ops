@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+namespace: cosign-system
+name: policy-controller
+repoURL: oci://ghcr.io/sigstore/helm-charts/policy-controller
+version: 0.10.5
+psp: restricted
+ignoreDifferences: |
+  - group: admissionregistration.k8s.io
+    kind: MutatingWebhookConfiguration
+    name: policy.sigstore.dev
+    jsonPointers:
+      - /webhooks/0/namespaceSelector
+  - group: admissionregistration.k8s.io
+    kind: ValidatingWebhookConfiguration
+    name: policy.sigstore.dev
+    jsonPointers:
+      - /webhooks/0/namespaceSelector
+values:
+  webhook:
+    securityContext:
+      enabled: true
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+# vim:ft=yaml

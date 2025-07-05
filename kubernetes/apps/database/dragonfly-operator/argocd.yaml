@@ -1,5 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: dragonfly-operator
-namespace: database
-psp: restricted

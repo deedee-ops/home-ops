@@ -1,8 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: system-upgrade-controller
-namespace: system-upgrade
-# SUC must be on privileged PSP because jobs hardcode host* flags
-# https://github.com/rancher/system-upgrade-controller/blob/a7ecca97862c5658e5da33e4348677a043cfbb15/pkg/upgrade/job/job.go#L194-L196
-psp: privileged
-retries: 6

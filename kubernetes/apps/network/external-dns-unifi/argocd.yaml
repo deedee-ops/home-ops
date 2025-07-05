@@ -1,5 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: external-dns-unifi
-namespace: network
-psp: restricted

@@ -1,0 +1,104 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+releases:
+  - name: cilium
+    namespace: kube-system
+    chart: oci://ghcr.io/home-operations/charts-mirror/cilium
+    version: 1.18.2
+    values:
+      - ./templates/values.yaml.gotmpl
+      - hubble: # hubble wouldn't work at this stage
+          enabled: false
+          relay:
+            enabled: false
+          ui:
+            enabled: false
+    hooks:
+      # Wait for cilium CRDs to be available
+      - events:
+          - "postsync"
+        command: bash
+        args:
+          - -c
+          - >-
+            until kubectl get crd ciliumbgpadvertisements.cilium.io ciliumbgppeerconfigs.cilium.io
+            ciliumbgpclusterconfigs.cilium.io ciliuml2announcementpolicies.cilium.io ciliumloadbalancerippools.cilium.io
+            ciliumclusterwidenetworkpolicies.cilium.io &>/dev/null; do sleep 5; done
+        showlogs: true
+      - events:
+          - "cleanup"
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=bootstrap
+            --filename ../../kubernetes/apps/kube-system/cilium/templates/ciliumclusterwidenetworkpolicy.yaml
+            --wait=true
+        showlogs: true
+  - name: coredns
+    namespace: kube-system
+    chart: oci://ghcr.io/coredns/charts/coredns
+    version: 1.45.0
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/cilium
+  - name: spegel
+    namespace: kube-system
+    chart: oci://ghcr.io/spegel-org/helm-charts/spegel
+    version: 0.4.0
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/coredns
+  - name: policy-controller
+    namespace: cosign-system
+    chart: oci://ghcr.io/sigstore/helm-charts/policy-controller
+    version: 0.10.5
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/spegel
+    hooks:
+      - events:
+          - "presync"
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=bootstrap -n cosign-system
+            --filename ../../kubernetes/apps/cosign-system/policy-controller/templates/ciliumnetworkpolicy.yaml
+            --wait=true
+        showlogs: true
+      # Wait for policy-controller CRDs to be available
+      - events:
+          - "postsync"
+        command: bash
+        args:
+          - -c
+          - >-
+            until kubectl get crd clusterimagepolicies.policy.sigstore.dev &>/dev/null; do sleep 5; done
+        showlogs: true
+  - name: argo-cd
+    namespace: argocd
+    chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
+    version: 8.6.4
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - cosign-system/policy-controller
+    hooks:
+      - events:
+          - "presync"
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=bootstrap -n argocd
+            --filename ../../kubernetes/apps/argocd/argo-cd/templates/ciliumnetworkpolicy.yaml
+            --wait=true
+        showlogs: true

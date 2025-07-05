@@ -1,6 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: rook-ceph-cluster
-namespace: rook-ceph
-psp: privileged
-selfHeal: true

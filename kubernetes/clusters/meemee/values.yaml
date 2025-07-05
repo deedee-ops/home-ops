@@ -1,0 +1,39 @@
+---
+# This is "special" magic file, which can self-reference it's own data via
+# go templating (because it's double-parsed by argo later). It can also
+# use data from globals.json (even more magic!).
+# So any value in this file or globals.json, can be expanded in the file itself.
+vars:
+  network:
+    k8sIP: 10.100.10.10
+argo-cd:
+  configs:
+    cm:
+      url: "https://argocd.{{ .global.rootDomain }}"
+      oidc.config: |
+        name: Authelia
+        issuer: "https://auth.{{ .global.rootDomain }}"
+        clientID: $oidc.authelia.clientID
+        clientSecret: $oidc.authelia.clientSecret
+        requestedScopes:
+          - openid
+          - profile
+          - email
+          - groups
+        requestedIDTokenClaims:
+          email:
+            essential: true
+          groups:
+            essential: true
+cilium:
+  cluster:
+    name: meemee
+    loadBalancer:
+      mode: snat
+    routingMode: tunnel
+    tunnelProtocol: geneve
+  custom:
+    pools:
+      - "{{ .vars.network.k8sIP }}/32"
+  k8sServiceHost: "{{ .vars.network.k8sIP }}"
+  k8sServicePort: "6443"

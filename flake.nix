@@ -48,7 +48,7 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "bws" ];
+          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "1password-cli" ];
         };
       in
       {
@@ -66,6 +66,7 @@
             };
             terraform-format.enable = true;
             tflint.enable = true;
+            yamlfmt.enable = true;
             yamllint.enable = true;
             zizmor = {
               enable = true;
@@ -128,10 +129,11 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
-            pkgs.bws
-            pkgs.go-task
+            pkgs._1password-cli
+            pkgs.gum
             pkgs.helmfile
             pkgs.jq
+            pkgs.just
             pkgs.k9s
             pkgs.kubectl
             pkgs.kubectl-node-shell
@@ -140,6 +142,7 @@
             pkgs.opentofu
             pkgs.popeye
             pkgs.talosctl
+            pkgs.yamlfmt
             pkgs.yq-go
 
             (pkgs.wrapHelm pkgs.kubernetes-helm {
@@ -149,29 +152,24 @@
             })
           ];
 
-          shellHook =
-            self.checks.${system}.pre-commit-check.shellHook
-            + ''
-              export ROOT_DIR="$(git rev-parse --show-toplevel)"
+          shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
+            export ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-              if [[ ! -e "$ROOT_DIR/.current-cluster" || ! -s "$ROOT_DIR/.current-cluster" ]]; then
-                source "$ROOT_DIR/scripts/_lib.sh"
-                echo -e "\e[31mWorking cluster not set.\e[0m"
-                local clusters=($(ls -1 --color=never "$ROOT_DIR/kubernetes/clusters"))
-                export CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
-                echo -n "$CURRENT_CLUSTER" > "$ROOT_DIR/.current-cluster"
-              else
-                export CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
-              fi
+            if [[ ! -e "$ROOT_DIR/.current-cluster" || ! -s "$ROOT_DIR/.current-cluster" ]]; then
+              source "$ROOT_DIR/scripts/_lib.sh"
+              echo -e "\e[31mWorking cluster not set.\e[0m"
+              local clusters=($(ls -1 --color=never "$ROOT_DIR/kubernetes/clusters"))
+              export CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
+              echo -n "$CURRENT_CLUSTER" > "$ROOT_DIR/.current-cluster"
+            else
+              export CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
+            fi
 
-              source .env
-              export BWS_ACCESS_TOKEN="$(${pkgs.lib.getExe pkgs.rbw} get "BWS_ACCESS_TOKEN_''${CURRENT_CLUSTER^^}")"
+            source .env
 
-              bws secret list | jq -r '.[] | select(.key == "TALCONFIG_TALOSCONFIG") | .value' > "$ROOT_DIR/talosconfig"
-              bws secret list | jq -r '.[] | select(.key == "TOFU_TFVARS") | .value' > "$ROOT_DIR/opentofu/terraform.tfvars"
-              export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
-              export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
-            '';
+            #export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
+            #export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
+          '';
         };
       }
     );
