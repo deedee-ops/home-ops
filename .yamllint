@@ -4,12 +4,10 @@ extends: default
 
 rules:
   comments:
-    ignore: |
-      .github/workflows/*.yaml
+    min-spaces-from-content: 1
 
   comments-indentation:
     ignore:
-      - "**/prometheusrule.yaml"
       - "kubernetes/lib/cluster-provisioner/templates/appset.yaml"
   line-length:
     allow-non-breakable-words: true

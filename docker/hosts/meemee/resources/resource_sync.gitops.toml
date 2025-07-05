@@ -1,9 +1,0 @@
-[[resource_sync]]
-name = "gitops"
-[resource_sync.config]
-repo = "deedee-ops/k8s-gitops"
-branch = "master"
-webhook_enabled = false
-resource_path = [
-  "docker/hosts/meemee/resources"
-]

@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+namespace: kube-system
+name: spegel
+repoURL: oci://ghcr.io/spegel-org/helm-charts/spegel
+version: 0.4.0
+values:
+  grafanaDashboard:
+    enabled: true
+  securityContext:
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  service:
+    registry:
+      hostPort: 29999
+  serviceMonitor:
+    enabled: true
+  spegel:
+    containerdSock: /run/containerd/containerd.sock
+    containerdRegistryConfigPath: /etc/cri/conf.d/hosts

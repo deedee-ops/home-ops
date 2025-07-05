@@ -4,6 +4,13 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "namespace": {
+      "description": "The namespace to which application will be deployed.",
+      "maxLength": 63,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "type": "string"
+    },
     "name": {
       "description": "Name of the application.",
       "maxLength": 31,
@@ -11,11 +18,31 @@
       "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
       "type": "string"
     },
-    "namespace": {
-      "description": "The namespace to which application will be deployed.",
-      "maxLength": 63,
+    "chartName": {
+      "description": "Name of the deployed chart (use only if it differes from .name)",
+      "maxLength": 31,
       "minLength": 1,
       "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "repoURL": {
+      "description": "URL of chart repository, oci resource or argocd git repo",
+      "maxLength": 1000,
+      "minLength": 1,
+      "pattern": "^(https?|oci)://[a-zA-Z0-9._~%-]+(?:\\.[a-zA-Z0-9._~%-]+)*(/[^\\s]*)?$",
+      "type": "string"
+    },
+    "repoPath": {
+      "description": "If repoURL is ArgoCD git repo, this is the path inside the repo to look in",
+      "maxLength": 1000,
+      "minLength": 1,
+      "pattern": "^(?!/)(\\.{1,2}|[^/\\0]+)(/([^/\\0]+))*/?$",
+      "type": "string"
+    },
+    "version": {
+      "description": "Version of the chart",
+      "maxLength": 31,
+      "minLength": 1,
       "type": "string"
     },
     "psp": {
@@ -49,6 +76,10 @@
         "type": "string"
       },
       "type": "array"
+    },
+    "values": {
+      "description": "Default helm chart values, expected to be shared between the clusters",
+      "type": "object"
     }
   },
   "required": [

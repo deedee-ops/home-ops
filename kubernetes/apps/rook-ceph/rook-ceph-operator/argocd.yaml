@@ -1,5 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: rook-ceph-operator
-namespace: rook-ceph
-psp: privileged

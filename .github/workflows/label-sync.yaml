@@ -1,7 +1,6 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Label Sync
-
 'on':
   workflow_dispatch:
   push:
@@ -11,21 +10,18 @@ name: Label Sync
       - ".github/labels.yaml"
   schedule:
     - cron: "0 0 * * *" # Every day at midnight
-
 permissions:
   issues: write
-
 jobs:
   main:
     name: Label Sync - Sync Labels
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           sparse-checkout: .github/labels.yaml
           persist-credentials: false
-
       - name: Sync Labels
         uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3
         with:

@@ -1,6 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: postgres-operator
-namespace: database
-psp: restricted
-serverSideApply: true

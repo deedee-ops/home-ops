@@ -1,5 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: irqbalance
-namespace: kube-system
-psp: privileged

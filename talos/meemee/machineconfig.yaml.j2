@@ -1,0 +1,190 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.11.3/pkg/machinery/config/schemas/config.schema.json
+# yamllint enable rule:line-length
+
+version: v1alpha1
+machine:
+  ca:
+    crt: op://homelab/meemee/talos/.machine.ca.crt
+    # {% if ENV.IS_CONTROLPLANE %}
+    key: op://homelab/meemee/talos/.machine.ca.key
+    # {% endif %}
+
+  features:
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+      resolveMemberNames: true
+    kubePrism:
+      enabled: false # not applicable for one-node clusters
+    # {% if ENV.IS_CONTROLPLANE %}
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - "os:admin"
+      allowedKubernetesNamespaces:
+        - system-upgrade
+    # {% endif %}
+
+    rbac: true
+    stableHostname: true
+  files:
+    # Spegel
+    - op: create
+      path: /etc/cri/conf.d/20-customization.part
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
+        [plugins."io.containerd.cri.v1.runtime"]
+          cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
+          device_ownership_from_security_context = true
+  install:
+    image: factory.talos.dev/metal-installer/8070936d5c98057c94a856ea7a523b4ed336cfa2fdb5ba821e1873bfef2f1845:v1.11.3
+    wipe: false
+    extraKernelArgs:
+      - -init_on_alloc
+      - -init_on_free
+      - -selinux
+      - apparmor=0
+      - init_on_alloc=0
+      - init_on_free=0
+      - mitigations=off
+      - security=none
+      - talos.auditd.disabled=1
+  kubelet:
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+    extraConfig:
+      featureGates:
+        UserNamespacesSupport: true
+        UserNamespacesPodSecurityStandards: true
+      serializeImagePulls: false
+    image: "ghcr.io/siderolabs/kubelet:v1.34.1"
+    nodeIP:
+      validSubnets:
+        - 10.100.0.0/16
+  network:
+    interfaces:
+      - deviceSelector:
+          hardwareAddr: 02:00:0a:64:*
+        dhcp: true
+  nodeLabels:
+    topology.kubernetes.io/region: homelab
+    topology.kubernetes.io/zone: meemee
+  token: op://homelab/meemee/talos/.machine.token
+
+cluster:
+  ca:
+    crt: op://homelab/meemee/talos/.cluster.ca.crt
+    # {% if ENV.IS_CONTROLPLANE %}
+    key: op://homelab/meemee/talos/.cluster.ca.key
+    # {% endif %}
+
+  clusterName: meemee
+  controlPlane:
+    endpoint: https://10.100.10.10:6443
+  discovery:
+    enabled: false
+  id: op://homelab/meemee/talos/.cluster.id
+  network:
+    cni:
+      name: none
+    dnsDomain: cluster.local
+    podSubnets:
+      - 172.30.0.0/16
+    serviceSubnets:
+      - 172.31.0.0/16
+  secret: op://homelab/meemee/talos/.cluster.secret
+  token: op://homelab/meemee/talos/.cluster.token
+
+  # {% if ENV.IS_CONTROLPLANE %}
+  aggregatorCA:
+    crt: op://homelab/meemee/talos/.cluster.aggregatorCA.crt
+    key: op://homelab/meemee/talos/.cluster.aggregatorCA.key
+  allowSchedulingOnControlPlanes: true
+  apiServer:
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+          defaults:
+            audit: restricted
+            audit-version: latest
+            enforce: baseline
+            enforce-version: latest
+            warn: restricted
+            warn-version: latest
+          exemptions:
+            namespaces:
+              - kube-system
+            runtimeClasses: []
+            usernames: []
+          kind: PodSecurityConfiguration
+    auditPolicy:
+      apiVersion: audit.k8s.io/v1
+      kind: Policy
+      rules:
+        - level: Metadata
+    certSANs:
+      - 10.100.10.10
+    disablePodSecurityPolicy: true
+    extraArgs:
+      enable-aggregator-routing: "true"
+      runtime-config: admissionregistration.k8s.io/v1alpha1=true
+    image: registry.k8s.io/kube-apiserver:v1.34.1
+  controllerManager:
+    extraArgs:
+      bind-address: 0.0.0.0
+    image: registry.k8s.io/kube-controller-manager:v1.34.1
+  coreDNS:
+    disabled: true
+  etcd:
+    advertisedSubnets:
+      - 10.100.0.0/16
+    ca:
+      crt: op://homelab/meemee/talos/.cluster.etcd.ca.crt
+      key: op://homelab/meemee/talos/.cluster.etcd.ca.key
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
+  proxy:
+    disabled: true
+    image: registry.k8s.io/kube-proxy:v1.34.1
+  scheduler:
+    config:
+      apiVersion: kubescheduler.config.k8s.io/v1
+      kind: KubeSchedulerConfiguration
+      profiles:
+        - schedulerName: default-scheduler
+          plugins:
+            score:
+              disabled:
+                - name: ImageLocality
+          pluginConfig:
+            - name: PodTopologySpread
+              args:
+                defaultingType: List
+                defaultConstraints:
+                  - maxSkew: 1
+                    topologyKey: kubernetes.io/hostname
+                    whenUnsatisfiable: ScheduleAnyway
+    extraArgs:
+      bind-address: 0.0.0.0
+    image: registry.k8s.io/kube-scheduler:v1.34.1
+  secretboxEncryptionSecret: op://homelab/meemee/talos/.cluster.secretboxEncryptionSecret
+  serviceAccount:
+    key: op://homelab/meemee/talos/.cluster.serviceAccount.key
+    # {% endif %}
+
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: lancache
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/sdb"
+  minSize: 1G
+  # vim:ft=yaml

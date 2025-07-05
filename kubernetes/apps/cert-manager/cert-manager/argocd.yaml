@@ -1,5 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-name: cert-manager
-namespace: cert-manager
-psp: restricted

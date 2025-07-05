@@ -1,5 +1,0 @@
-[[builder]]
-name = "local"
-[builder.config]
-type = "Server"
-params.server_id = "meemee"

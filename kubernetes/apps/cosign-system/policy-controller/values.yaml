@@ -1,9 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/values.json
-policy-controller:
-  webhook:
-    securityContext:
-      enabled: true
-      runAsNonRoot: true
-      seccompProfile:
-        type: RuntimeDefault
