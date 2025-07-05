@@ -12,8 +12,8 @@ authelia:
       initContainers:
         config-sync:
           image:
-            repository: ghcr.io/kiwigrid/k8s-sidecar
-            tag: 1.30.5@sha256:b67b51f394c7ae336aa2fcd624e343dbea6e3f2073081e267d50c82d512c5762
+            repository: ghcr.io/home-operations/k8s-sidecar
+            tag: 1.30.5@sha256:0c429f991b01b39e73bf926bfaee8e4ce90eae422789c8c24b8bab4f2739df2b
             pullPolicy: IfNotPresent
 
           env:
