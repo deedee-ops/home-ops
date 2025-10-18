@@ -23,12 +23,8 @@ function main() {
     # shellcheck disable=SC2034
     local -r LOG_LEVEL="info"
 
-    check_env BWS_ACCESS_TOKEN KUBERNETES_VERSION TALOS_VERSION
-    check_cli bws minijinja-cli talosctl
-
-    if ! bws project list &>/dev/null; then
-        log error "Failed to authenticate with Bitwarden Secrets"
-    fi
+    check_env KUBERNETES_VERSION TALOS_VERSION
+    check_cli minijinja-cli op talosctl
 
     local base patch machine_config
 

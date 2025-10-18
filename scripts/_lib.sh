@@ -112,7 +112,7 @@ function render_template() {
         log error "File does not exist" "file=${file}"
     fi
 
-    if ! output=$(bws run -- minijinja-cli "${file}" 2>/dev/null) || [[ -z "${output}" ]]; then
+    if ! output=$(minijinja-cli "${file}" | op inject 2>/dev/null) || [[ -z "${output}" ]]; then
         log error "Failed to render config" "file=${file}"
     fi
 
