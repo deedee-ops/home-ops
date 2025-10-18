@@ -1,4 +1,4 @@
-{{- $base := (fromYaml (readFile (printf "../../../kubernetes/apps/%s.yaml" .Release.Name))).values }}
+{{- $base := (fromYaml (readFile (printf "../../../kubernetes/apps/%s/%s/app.yaml" .Release.Namespace .Release.Name))).values }}
 {{- $cluster := (index (fromYaml (readFile (printf "../../../kubernetes/clusters/%s/values.yaml" .Release.KubeContext))) .Release.Name)}}
 {{- if $cluster }}
 {{ mustMergeOverwrite $base $cluster | toYaml }}

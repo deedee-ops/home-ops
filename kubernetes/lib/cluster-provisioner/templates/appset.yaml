@@ -13,7 +13,7 @@ spec:
         revision: master
         files:
           # {{- range $enabledApp := .Values.global.enabledApps }}
-          - path: "kubernetes/apps/{{ $enabledApp }}.yaml"
+          - path: "kubernetes/apps/{{ $enabledApp }}/app.yaml"
           # {{- end }}
   # {{`
   template:
@@ -72,13 +72,13 @@ spec:
           targetRevision: master
           directory:
             recurse: true
-            include: '{{ .name }}/*.yaml'
+            include: '{{ .namespace }}/{{ .name }}/templates/*.yaml'
         - repoURL: https://github.com/deedee-ops/home-ops.git
           path: kubernetes/apps
           targetRevision: master
           directory:
             recurse: true
-            include: '{{ .name }}/*.jsonnet'
+            include: '{{ .namespace }}/{{ .name }}/templates/*.jsonnet'
             jsonnet:
               extVars:
                 - name: namespace

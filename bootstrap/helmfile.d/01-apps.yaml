@@ -36,7 +36,8 @@ releases:
           - -c
           - >-
             kubectl apply --server-side --field-manager=bootstrap
-            --filename ../../kubernetes/apps/cilium/ciliumclusterwidenetworkpolicy.yaml --wait=true
+            --filename ../../kubernetes/apps/kube-system/cilium/templates/ciliumclusterwidenetworkpolicy.yaml
+            --wait=true
         showlogs: true
 
   - name: coredns
@@ -72,7 +73,7 @@ releases:
           - -c
           - >-
             kubectl apply --server-side --field-manager=bootstrap -n cosign-system
-            --filename ../../kubernetes/apps/policy-controller/ciliumnetworkpolicy.yaml --wait=true
+            --filename ../../kubernetes/apps/cosign-system/policy-controller/templates/ciliumnetworkpolicy.yaml --wait=true
         showlogs: true
       # Wait for policy-controller CRDs to be available
       - events: ['postsync']
