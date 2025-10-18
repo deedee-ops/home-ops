@@ -12,10 +12,6 @@ machine:
     key: op://homelab/meemee/talos/.machine.ca.key
     # {% endif %}
 
-  certSANs:
-    - 127.0.0.1
-    - 10.100.10.10
-
   features:
     apidCheckExtKeyUsage: true
     diskQuotaSupport: true
@@ -46,7 +42,7 @@ machine:
           cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
           device_ownership_from_security_context = true
   install:
-    image: ghcr.io/siderolabs/installer:v1.11.3
+    image: factory.talos.dev/metal-installer/8070936d5c98057c94a856ea7a523b4ed336cfa2fdb5ba821e1873bfef2f1845:v1.11.3
     wipe: false
     extraKernelArgs:
       - -init_on_alloc
@@ -91,12 +87,7 @@ cluster:
   controlPlane:
     endpoint: https://10.100.10.10:6443
   discovery:
-    enabled: true
-    registries:
-      kubernetes:
-        disabled: false
-      service:
-        disabled: true
+    enabled: false
   id: op://homelab/meemee/talos/.cluster.id
   network:
     cni:
@@ -138,12 +129,10 @@ cluster:
       rules:
         - level: Metadata
     certSANs:
-      - 127.0.0.1
       - 10.100.10.10
     disablePodSecurityPolicy: true
     extraArgs:
       enable-aggregator-routing: "true"
-      feature-gates: MutatingAdmissionPolicy=true,UserNamespacesSupport=true,UserNamespacesPodSecurityStandards=true
       runtime-config: admissionregistration.k8s.io/v1alpha1=true
     image: registry.k8s.io/kube-apiserver:v1.34.1
   controllerManager:
