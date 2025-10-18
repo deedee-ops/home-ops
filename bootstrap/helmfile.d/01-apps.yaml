@@ -12,30 +12,12 @@ releases:
     version: 1.18.2
     values:
       - ./templates/values.yaml.gotmpl
-      - cilium:
-          dashboards:
+      - hubble:  # hubble wouldn't work at this stage
+          enabled: false
+          relay:
             enabled: false
-          hubble:
+          ui:
             enabled: false
-            metrics:
-              dashboards:
-                enabled: false
-            relay:
-              enabled: false
-            ui:
-              enabled: false
-          autoDirectNodeRoutes: false
-          loadBalancer:
-            mode: snat
-          operator:
-            dashboards:
-              enabled: false
-            tolerations:
-              - key: "node.kubernetes.io/not-ready"
-                operator: "Exists"
-          routingMode: tunnel
-          tunnelProtocol: geneve
-        initialize: true
     hooks:
       # Wait for cilium CRDs to be available
       - events: ["postsync"]
@@ -53,6 +35,24 @@ releases:
         args:
           - -c
           - >-
-            kubectl apply --server-side --field-manager=kube-controller-manager
-            --filename ../kubernetes/apps/kube-system/cilium/templates/ciliumclusterwidenetworkpolicy.yaml --wait=true
+            kubectl apply --server-side --field-manager=bootstrap
+            --filename ../../kubernetes/apps/cilium/ciliumclusterwidenetworkpolicy.yaml --wait=true
         showlogs: true
+
+  - name: coredns
+    namespace: kube-system
+    chart: oci://ghcr.io/coredns/charts/coredns
+    version: 1.45.0
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/cilium
+
+  - name: spegel
+    namespace: kube-system
+    chart: oci://ghcr.io/spegel-org/helm-charts/spegel
+    version: 0.4.0
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/coredns

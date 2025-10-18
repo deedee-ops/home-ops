@@ -1,0 +1,13 @@
+---
+cilium:
+  cluster:
+    name: meemee
+    loadBalancer:
+      mode: snat
+    routingMode: tunnel
+    tunnelProtocol: geneve
+  custom:
+    pools:
+      - 10.100.10.10/32
+  k8sServiceHost: "10.100.10.10"
+  k8sServicePort: "6443"

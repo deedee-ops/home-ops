@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: default-disable-egress-policy
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: reserved:ingress
+          operator: Exists
+    egress:
+      - toEntities:
+          - cluster
+  - endpointSelector:
+      matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+    egress:
+      - toEntities:
+          - cluster
+  - endpointSelector: {}
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: kube-system
+              k8s-app: kube-dns
+        toPorts:
+          - ports:
+              - port: "53"
+                protocol: UDP
+            rules:
+              dns:
+                - matchPattern: "*"
+  - endpointSelector:
+      matchLabels:
+        io.kubernetes.pod.namespace: kube-system
+        k8s-app: kube-dns
+    egress:
+      - toEntities:
+          - world
+        toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY
+            rules:
+              dns:
+                - matchPattern: "*"

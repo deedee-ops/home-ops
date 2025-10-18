@@ -1,0 +1,19 @@
+---
+name: spegel
+namespace: kube-system
+values:
+  grafanaDashboard:
+    enabled: true
+  securityContext:
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+  service:
+    registry:
+      hostPort: 29999
+  serviceMonitor:
+    enabled: true
+  spegel:
+    containerdSock: /run/containerd/containerd.sock
+    containerdRegistryConfigPath: /etc/cri/conf.d/hosts

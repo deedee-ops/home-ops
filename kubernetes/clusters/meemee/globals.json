@@ -1,0 +1,26 @@
+{
+  "global": {
+    "clusterName": "meemee",
+    "rootDomain": "rzegocki.dev",
+    "enabledApps": [
+      "argo-cd",
+      "coredns",
+      "dragonfly-operator",
+      "filebeat",
+      "grafana",
+      "ingress-nginx",
+      "kube-prometheus-stack",
+      "metrics-server",
+      "nfs-server-provisioner",
+      "postgres-operator",
+      "prometheus-blackbox-exporter",
+      "reloader",
+      "snapshot-controller",
+      "system-upgrade-controller",
+      "vault-secrets-operator",
+      "velero",
+      "vsphere-cpi",
+      "vsphere-csi"
+    ]
+  }
+}

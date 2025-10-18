@@ -15,8 +15,7 @@ controller := shell(talosctl_cmd + " config info -o yaml | yq -e '.endpoints[0]'
 nodes := shell(talosctl_cmd + " config info -o yaml | yq -e '.nodes | join (\" \")'")
 
 [private]
-default: talos k8s (kubeconfig "node") wait resources crds
-# default: talos k8s (kubeconfig "node") wait namespaces resources crds apps kubeconfig
+default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
 
 [doc('Install Talos')]
 talos:
@@ -76,8 +75,8 @@ crds:
     fi;
 
 [doc('Apply Helmfile Apps')]
-apps:
+apps $KUBECONFIG=(cluster_dir + "/kubeconfig"):
     just log info "Running stage..." "stage" "$0"
-    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync --hide-notes; then \
+    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync --hide-notes --kube-context "{{ cluster }}"; then \
         just log fatal "Failed to sync helmfile" "stage" "$0"; \
     fi

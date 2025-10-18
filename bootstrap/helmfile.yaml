@@ -12,6 +12,7 @@ releases:
     chart: '{{ requiredEnv "ROOT_DIR" }}/kubernetes/apps/kube-system/cilium'
     values:
       - cilium:
+          autoDirectNodeRoutes: false
           dashboards:
             enabled: false
           hubble:
@@ -23,7 +24,6 @@ releases:
               enabled: false
             ui:
               enabled: false
-          autoDirectNodeRoutes: false
           loadBalancer:
             mode: snat
           operator:

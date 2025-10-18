@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: infra
+  sources:
+    - repoURL: https://github.com/deedee-ops/home-ops.git
+      path: lib/cluster-provisioner
+      targetRevision: master
+      helm:
+        valueFiles:
+          - ../../clusters/meemee/globals.json
+          - ../../clusters/meemee/values.yaml
+    - repoURL: https://github.com/deedee-ops/home-ops.git
+      path: clusters/meemee/templates
+      targetRevision: master
+      directory:
+        recurse: true
+        include: '*.yaml'
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
