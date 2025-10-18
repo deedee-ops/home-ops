@@ -1,0 +1,14 @@
+---
+name: policy-controller
+namespace: cosign-system
+psp: restricted
+
+values:
+  webhook:
+    securityContext:
+      enabled: true
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+# vim:ft=yaml

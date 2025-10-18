@@ -56,3 +56,30 @@ releases:
       - ./templates/values.yaml.gotmpl
     needs:
       - kube-system/coredns
+
+  - name: policy-controller
+    namespace: cosign-system
+    chart: oci://ghcr.io/sigstore/helm-charts/policy-controller
+    version: 0.10.5
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/spegel
+    hooks:
+      - events: ["presync"]
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=bootstrap -n cosign-system
+            --filename ../../kubernetes/apps/policy-controller/ciliumnetworkpolicy.yaml --wait=true
+        showlogs: true
+      # Wait for policy-controller CRDs to be available
+      - events: ['postsync']
+        command: bash
+        args:
+          - -c
+          - >-
+            until kubectl get crd clusterimagepolicies.policy.sigstore.dev &>/dev/null;
+            do sleep 5; done
+        showlogs: true
