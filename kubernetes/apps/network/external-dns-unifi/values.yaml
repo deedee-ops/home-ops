@@ -12,7 +12,7 @@ external-dns-unifi:
     webhook:
       image:
         repository: ghcr.io/kashalls/external-dns-unifi-webhook
-        tag: v0.6.0@sha256:dd71adb88b64174b158481fb359dfe985d8bea1cad8cefba36209c8fc9eb03d3
+        tag: v0.7.0@sha256:a5503c1c61e3a8f6d66a0172fca6fb9affbe1f527ae6360ccf5ff5f0bf181c6e
       env:
         - name: UNIFI_HOST
           value: https://unifi.home.arpa
