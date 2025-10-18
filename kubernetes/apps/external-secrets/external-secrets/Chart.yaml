@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: external-secrets
-    version: 0.18.1
+    version: 0.20.3
     repository: oci://ghcr.io/external-secrets/charts

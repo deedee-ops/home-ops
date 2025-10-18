@@ -25,7 +25,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=external-secrets/external-secrets",
-      "$ref": "https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v0.18.1/deploy/charts/external-secrets/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v0.20.3/deploy/charts/external-secrets/values.schema.json"
     },
     "policy-controller": {
       "type": "object",
