@@ -48,7 +48,7 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "bws" ];
+          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "1password-cli" ];
         };
       in
       {
@@ -128,7 +128,7 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
-            pkgs.bws
+            pkgs._1password-cli
             pkgs.go-task
             pkgs.helmfile
             pkgs.jq
@@ -165,12 +165,11 @@
               fi
 
               source .env
-              export BWS_ACCESS_TOKEN="$(${pkgs.lib.getExe pkgs.rbw} get "BWS_ACCESS_TOKEN_''${CURRENT_CLUSTER^^}")"
+              # export OP_SESSION_US5CKINWSNABHKIHXHGPCK6DDA="$(op signin --raw)"
+              # op read op://homelab/meemee/talos/.cluster.id
 
-              bws secret list | jq -r '.[] | select(.key == "TALCONFIG_TALOSCONFIG") | .value' > "$ROOT_DIR/talosconfig"
-              bws secret list | jq -r '.[] | select(.key == "TOFU_TFVARS") | .value' > "$ROOT_DIR/opentofu/terraform.tfvars"
-              export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
-              export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
+              #export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
+              #export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
             '';
         };
       }

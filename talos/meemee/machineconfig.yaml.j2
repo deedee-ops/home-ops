@@ -7,10 +7,14 @@
 version: v1alpha1
 machine:
   ca:
-    crt: op://kubernetes/meemee/talos/.machine.ca.crt
+    crt: op://homelab/meemee/talos/.machine.ca.crt
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://kubernetes/meemee/talos/.machine.ca.key
+    key: op://homelab/meemee/talos/.machine.ca.key
     # {% endif %}
+
+  certSANs:
+    - 127.0.0.1
+    - 10.100.10.10
 
   features:
     apidCheckExtKeyUsage: true
@@ -20,8 +24,7 @@ machine:
       forwardKubeDNSToHost: false
       resolveMemberNames: true
     kubePrism:
-      enabled: true
-      port: 7445
+      enabled: false  # not applicable for one-node clusters
     # {% if ENV.IS_CONTROLPLANE %}
     kubernetesTalosAPIAccess:
       enabled: true
@@ -66,35 +69,35 @@ machine:
     image: "ghcr.io/siderolabs/kubelet:v1.34.1"
     nodeIP:
       validSubnets:
-        - 10.100.10.0/16
+        - 10.100.0.0/16
   network:
     interfaces:
       - deviceSelector:
           hardwareAddr: 02:00:0a:64:*
-        dhcp: false
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.100.1.1
-    nameservers:
-      - 10.100.1.1
+        dhcp: true
   nodeLabels:
     topology.kubernetes.io/region: homelab
     topology.kubernetes.io/zone: meemee
-  token: op://kubernetes/meemee/talos/.machine.token
+  token: op://homelab/meemee/talos/.machine.token
 
 cluster:
   ca:
-    crt: op://kubernetes/meemee/talos/.cluster.ca.crt
+    crt: op://homelab/meemee/talos/.cluster.ca.crt
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://kubernetes/meemee/talos/.cluster.ca.key
+    key: op://homelab/meemee/talos/.cluster.ca.key
     # {% endif %}
 
   clusterName: meemee
   controlPlane:
-    endpoint: https://10.100.10.2:6443
+    endpoint: https://10.100.10.10:6443
   discovery:
-    enabled: false
-  id: op://kubernetes/meemee/talos/.cluster.id
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: false
+      service:
+        disabled: true
+  id: op://homelab/meemee/talos/.cluster.id
   network:
     cni:
       name: none
@@ -103,13 +106,13 @@ cluster:
       - 172.30.0.0/16
     serviceSubnets:
       - 172.31.0.0/16
-  secret: op://kubernetes/meemee/talos/.cluster.secret
-  token: op://kubernetes/meemee/talos/.cluster.token
+  secret: op://homelab/meemee/talos/.cluster.secret
+  token: op://homelab/meemee/talos/.cluster.token
 
   # {% if ENV.IS_CONTROLPLANE %}
   aggregatorCA:
-    crt: op://kubernetes/meemee/talos/.cluster.aggregatorCA.crt
-    key: op://kubernetes/meemee/talos/.cluster.aggregatorCA.key
+    crt: op://homelab/meemee/talos/.cluster.aggregatorCA.crt
+    key: op://homelab/meemee/talos/.cluster.aggregatorCA.key
   allowSchedulingOnControlPlanes: true
   apiServer:
     admissionControl:
@@ -135,6 +138,7 @@ cluster:
       rules:
         - level: Metadata
     certSANs:
+      - 127.0.0.1
       - 10.100.10.10
     disablePodSecurityPolicy: true
     extraArgs:
@@ -150,10 +154,10 @@ cluster:
     disabled: true
   etcd:
     advertisedSubnets:
-      - 10.100.10.0/16
+      - 10.100.0.0/16
     ca:
-      crt: op://kubernetes/meemee/talos/.cluster.etcd.ca.crt
-      key: op://kubernetes/meemee/talos/.cluster.etcd.ca.key
+      crt: op://homelab/meemee/talos/.cluster.etcd.ca.crt
+      key: op://homelab/meemee/talos/.cluster.etcd.ca.key
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
@@ -180,9 +184,9 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.34.1
-  secretboxEncryptionSecret: op://kubernetes/meemee/talos/.cluster.secretboxEncryptionSecret
+  secretboxEncryptionSecret: op://homelab/meemee/talos/.cluster.secretboxEncryptionSecret
   serviceAccount:
-    key: op://kubernetes/meemee/talos/.cluster.serviceAccount.key
+    key: op://homelab/meemee/talos/.cluster.serviceAccount.key
   # {% endif %}
 
 ---
@@ -192,5 +196,6 @@ name: lancache
 provisioning:
   diskSelector:
     match: disk.dev_path == "/dev/sdb"
+  minSize: 1G
 
 # vim:ft=yaml
