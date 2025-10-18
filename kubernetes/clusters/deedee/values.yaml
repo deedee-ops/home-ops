@@ -6,7 +6,7 @@ global:
   # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
   kubernetesVersion: v1.33.2
   # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-  talosVersion: v1.10.4
+  talosVersion: v1.11.3
 
   clusterName: deedee
   rootDomain: rzegocki.dev
