@@ -6,6 +6,6 @@ version: 1.0.0
 type: application
 dependencies:
   - name: external-dns
-    version: 1.17.0
+    version: 1.19.0
     repository: oci://ghcr.io/home-operations/charts-mirror
     alias: external-dns-cloudflare
