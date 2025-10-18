@@ -6,7 +6,7 @@ version: 1.0.0
 type: application
 dependencies:
   - name: intel-device-plugins-operator
-    version: 0.32.1
+    version: 0.34.0
     repository: oci://ghcr.io/home-operations/charts-mirror
   - name: intel-device-plugins-gpu
     version: 0.32.1
