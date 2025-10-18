@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   caddy:
-    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2025.06.26@sha256:d38562d63c96ac0b810b575f5e09d0900be050ab7279c07b84553f375cc1884d
+    image: ghcr.io/homeall/caddy-reverse-proxy-cloudflare:2025.10.14@sha256:e42b96e406c55d455275dbd98947f559b3f8b41322e736b16f98d70350bd0ba2
     container_name: caddy-docker-proxy
     restart: unless-stopped
     user: "1000:0"
