@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: dragonfly-operator
-    version: v1.1.11
+    version: v1.3.0
     repository: oci://ghcr.io/dragonflydb/dragonfly-operator/helm
