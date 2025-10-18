@@ -57,7 +57,7 @@ kube-prometheus-stack:
 
       containers:
         - name: oauth-proxy
-          image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0@sha256:cb93cfc897860ddf4f7fef7d587a0e5038e00dd63d724e169ef7875205640c5e
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.12.0@sha256:fe8f76728c36536d498b2a5c11172cb18dc30bbb555df2a6d14c036b29cb9f10
           envFrom:
             - secretRef:
                 name: alertmanager-oidc-secret
@@ -192,7 +192,7 @@ kube-prometheus-stack:
 
       containers:
         - name: oauth-proxy
-          image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0@sha256:cb93cfc897860ddf4f7fef7d587a0e5038e00dd63d724e169ef7875205640c5e
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.12.0@sha256:fe8f76728c36536d498b2a5c11172cb18dc30bbb555df2a6d14c036b29cb9f10
           envFrom:
             - secretRef:
                 name: prometheus-oidc-secret
