@@ -73,7 +73,8 @@ releases:
           - -c
           - >-
             kubectl apply --server-side --field-manager=bootstrap -n cosign-system
-            --filename ../../kubernetes/apps/cosign-system/policy-controller/templates/ciliumnetworkpolicy.yaml --wait=true
+            --filename ../../kubernetes/apps/cosign-system/policy-controller/templates/ciliumnetworkpolicy.yaml
+            --wait=true
         showlogs: true
       # Wait for policy-controller CRDs to be available
       - events: ['postsync']

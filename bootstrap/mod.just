@@ -2,7 +2,7 @@ set positional-arguments := true
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-cluster := 'meemee'
+cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
 
 bootstrap_dir := justfile_dir() + '/bootstrap'
 kubernetes_dir := justfile_dir() + '/kubernetes'

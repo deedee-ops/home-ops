@@ -1,7 +1,8 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-cluster := 'meemee'
+cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+
 talos_dir := justfile_dir() + '/talos'
 cluster_dir := talos_dir + '/' + cluster
 

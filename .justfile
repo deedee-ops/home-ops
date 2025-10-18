@@ -7,6 +7,10 @@ mod bootstrap "bootstrap"
 #mod kube "kubernetes"
 mod talos "talos"
 
+cluster:
+  echo -n "$(find "{{ justfile_dir() }}/talos" -mindepth 1 -maxdepth 1 -type d | sed 's@.*/@@g' | xargs gum choose --header 'Cluster?')" > "{{ justfile_dir() }}/.current-cluster"
+  cat "{{ justfile_dir() }}/.current-cluster"
+
 [private]
 default:
     just -l
