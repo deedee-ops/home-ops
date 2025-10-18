@@ -6,5 +6,5 @@ version: 1.0.0
 type: application
 dependencies:
   - name: grafana
-    version: 9.2.9
+    version: 10.1.2
     repository: oci://ghcr.io/grafana/helm-charts
