@@ -45,7 +45,7 @@ services:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/pgdata:/var/lib/postgresql/data"
 
   komodo-ferretdb:
-    image: ghcr.io/ferretdb/ferretdb:2.3.1@sha256:1170bd36c39378614edd3f1d2b92f0c5a9b30e482a79ea0c3fc0fe11baba3afa
+    image: ghcr.io/ferretdb/ferretdb:2.5.0@sha256:7449f6ce1e75b187c328c9ce65ec4e8963767b34b4d604f9b9b6605c6d8d3ee7
     container_name: komodo-ferretdb
     user: "1000:1000"
     labels:
