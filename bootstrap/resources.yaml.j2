@@ -10,18 +10,17 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/warn: privileged
-# TODO: waiting for: https://github.com/sigstore/policy-controller/pull/1725 to be released
-# ---
-# # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: cosign-system
-#   labels:
-#     pod-security.kubernetes.io/enforce: restricted
-#     pod-security.kubernetes.io/audit: restricted
-#     pod-security.kubernetes.io/warn: restricted
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cosign-system
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
@@ -37,25 +36,11 @@ metadata:
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/secret-v1.json
 apiVersion: v1
-metadata:
-  name: bitwarden-access-token
-  namespace: external-secrets
 kind: Secret
-type: Opaque
+metadata:
+  name: onepassword-secret
+  namespace: external-secrets
 stringData:
-  token: "{{ ENV.BITWARDEN_SECRETSMANAGER_TOKEN }}"
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/secret-v1.json
-apiVersion: v1
-metadata:
-  name: bitwarden-tls-certs
-  namespace: external-secrets
-kind: Secret
-type: kubernetes.io/tls
-data:
-  ca.crt: "{{ ENV.BITWARDEN_SECRETSMANAGER_CA_CRT }}"
-  tls.crt: "{{ ENV.BITWARDEN_SECRETSMANAGER_TLS_CRT }}"
-  tls.key: "{{ ENV.BITWARDEN_SECRETSMANAGER_TLS_KEY }}"
-# vim:ft=yaml
-# yamllint enable rule:line-length
+  1password-credentials.json: >-
+    op://homelab/1password/OP_CREDENTIALS_JSON
+  token: op://homelab/1password/OP_CONNECT_TOKEN

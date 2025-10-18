@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/helmfile
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    chart: oci://ghcr.io/home-operations/charts-mirror/cilium
+    version: 1.18.2
+    values:
+      - ./templates/values.yaml.gotmpl
+      - cilium:
+          dashboards:
+            enabled: false
+          hubble:
+            enabled: false
+            metrics:
+              dashboards:
+                enabled: false
+            relay:
+              enabled: false
+            ui:
+              enabled: false
+          autoDirectNodeRoutes: false
+          loadBalancer:
+            mode: snat
+          operator:
+            dashboards:
+              enabled: false
+            tolerations:
+              - key: "node.kubernetes.io/not-ready"
+                operator: "Exists"
+          routingMode: tunnel
+          tunnelProtocol: geneve
+        initialize: true
+    hooks:
+      # Wait for cilium CRDs to be available
+      - events: ["postsync"]
+        command: bash
+        args:
+          - -c
+          - >-
+            until kubectl get crd ciliumbgpadvertisements.cilium.io ciliumbgppeerconfigs.cilium.io
+            ciliumbgpclusterconfigs.cilium.io ciliuml2announcementpolicies.cilium.io ciliumloadbalancerippools.cilium.io
+            ciliumclusterwidenetworkpolicies.cilium.io &>/dev/null;
+            do sleep 5; done
+        showlogs: true
+      - events: ["cleanup"]
+        command: bash
+        args:
+          - -c
+          - >-
+            kubectl apply --server-side --field-manager=kube-controller-manager
+            --filename ../kubernetes/apps/kube-system/cilium/templates/ciliumclusterwidenetworkpolicy.yaml --wait=true
+        showlogs: true

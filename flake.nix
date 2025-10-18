@@ -129,9 +129,10 @@
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
             pkgs._1password-cli
-            pkgs.go-task
+            pkgs.gum
             pkgs.helmfile
             pkgs.jq
+            pkgs.just
             pkgs.k9s
             pkgs.kubectl
             pkgs.kubectl-node-shell
