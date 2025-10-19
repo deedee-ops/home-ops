@@ -6,14 +6,18 @@ metadata:
   name: envoy-gateway-egress-internal
 specs:
   - endpointSelector:
-      matchExpressions:
-        - key: job-name
-          operator: In
-          values:
-            - envoy-gateway-gateway-helm-certgen
+      matchLabels:
+        job-name: envoy-gateway-gateway-helm-certgen
     egress:
       - toEntities:
           - kube-apiserver
       - toEndpoints:
           - {}
-
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/instance: envoy-gateway
+    egress:
+      - toEntities:
+          - kube-apiserver
+      - toEndpoints:
+          - {}
