@@ -14,6 +14,7 @@ specs:
           - matchName: github.com
           # helm charts
           - matchName: ghcr.io
+          - matchName: mirror.gcr.io
           - matchName: pkg-containers.githubusercontent.com
           - matchName: quay.io
           - matchName: registry.developers.crunchydata.com

@@ -1,0 +1,28 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+#
+# IMPORTANT FOR TESTING!
+#
+# This is UDP-based protocol, so firewall on port 69 needs to be opened on BOTH client and server.
+services:
+  tftpd:
+    image: "registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:73cdb789e3198f9df59a78aa4caf5f397cdd798f790565359cee5f47b76795ce"
+    container_name: tftpd
+    env_file:
+      - compose.env
+    restart: unless-stopped
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/tftpd/data:/tftpboot"
+    ports:
+      - "69:1069/udp"
+    # security
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_SETGID
+      - CAP_SETUID
+      - CAP_SYS_CHROOT
+    security_opt:
+      - no-new-privileges
+    read_only: true

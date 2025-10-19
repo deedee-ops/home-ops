@@ -1,0 +1,16 @@
+[[stack]]
+name = "rustfs"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/home-ops"
+branch = "master"
+webhook_enabled = false
+run_directory = "docker/stacks/rustfs"
+environment = """
+ROOT_DOMAIN="[[ROOT_DOMAIN]]"
+S3_DATA_DIRECTORY=/mnt/apps/s3
+"""
+pre_deploy.command = """
+"${PERIPHERY_ROOT_DIRECTORY}/sops" -d "../../hosts/meemee/secrets/rustfs.sops.env" > override.env
+"""

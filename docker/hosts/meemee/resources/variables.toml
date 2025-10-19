@@ -1,0 +1,4 @@
+[[variable]]
+name = "ROOT_DOMAIN"
+value = "rzegocki.dev"
+is_secret = false

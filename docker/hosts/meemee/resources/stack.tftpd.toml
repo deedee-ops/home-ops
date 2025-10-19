@@ -1,0 +1,9 @@
+[[stack]]
+name = "tftpd"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/home-ops"
+branch = "master"
+webhook_enabled = false
+run_directory = "docker/stacks/tftpd"

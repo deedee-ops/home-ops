@@ -41,6 +41,7 @@ spec:
     {{- end }}
     spec:
       sources:
+        {{- if .repoURL }}
         - repoURL: "{{ .repoURL }}"
           # {{- $baseVersion := .version }}
           # {{- with index $clusterValues .name }}
@@ -62,6 +63,7 @@ spec:
               # {{- else }}
               {{- toYaml ($baseValues | default dict) | nindent 10 }}
               # {{- end }}
+        {{- end }}
         {{- if .withKustomize }}
         - repoURL: {{ .repoURL | default "https://github.com/deedee-ops/home-ops.git" }}
           targetRevision: {{ .version | default "staging" }}
@@ -88,6 +90,10 @@ spec:
                   code: true
                   value: >
                     {{ (index $clusterValues "global") | toJson }}
+                - name: "{{ .name }}"
+                  code: true
+                  value: >
+                    {{ (index $clusterValues .name) | toJson }}
 
       syncPolicy:
         automated:

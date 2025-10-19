@@ -1,3 +1,3 @@
-talos/meemee/machineconfig.yaml.j2
-talos/meemee/schematic.yaml.j2
+talos/*/machineconfig.yaml.j2
+talos/*/schematic.yaml.j2
 kubernetes/clusters/*/values.yaml

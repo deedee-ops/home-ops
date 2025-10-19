@@ -1,0 +1,12 @@
+[[stack]]
+name = "matchbox"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/home-ops"
+branch = "master"
+webhook_enabled = false
+run_directory = "docker/stacks/matchbox"
+environment = """
+ROOT_DOMAIN="[[ROOT_DOMAIN]]"
+"""

@@ -1,0 +1,47 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: rustfs
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file:
+      - ./compose.env
+      - ./override.env
+    volumes:
+      - "${S3_DATA_DIRECTORY:-/s3}:/data"
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    # traefik
+    labels:
+      traefik.enable: "true"
+      # S3
+      traefik.http.services.s3.loadbalancer.server.port: "9000"
+      traefik.http.routers.s3.entrypoints: https
+      traefik.http.routers.s3.rule: Host(`s3.${ROOT_DOMAIN}`)
+      traefik.http.routers.s3.service: s3
+      traefik.http.routers.s3.tls: true
+      traefik.http.routers.s3.middlewares: nix-compress,nix-encoding
+      # Dashboard
+      traefik.http.services.rustfs.loadbalancer.server.port: "9001"
+      traefik.http.routers.rustfs.entrypoints: https
+      traefik.http.routers.rustfs.rule: Host(`rustfs.${ROOT_DOMAIN}`)
+      traefik.http.routers.rustfs.service: rustfs
+      traefik.http.routers.rustfs.tls: true
+      # Hack for nix-cache to avoid double zstd encoding - without this
+      # rustfs will return zstd-compressed response of actual zstd file
+      # causing "input compression not recognized" errors on nix
+      traefik.http.middlewares.nix-compress.compress.encodings: "gzip, br"
+      traefik.http.middlewares.nix-encoding.headers.customrequestheaders.Accept-Encoding: ""
+
+networks:
+  internal:
+    name: internal
+    external: true

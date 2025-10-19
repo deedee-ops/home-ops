@@ -3,6 +3,8 @@
 .pre-commit-config.yaml
 kubeconfig
 talosconfig
+secrets.env
+keys.txt
 
 .terraform
 .terraform.lock.hcl
