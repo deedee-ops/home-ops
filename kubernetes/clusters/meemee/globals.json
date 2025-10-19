@@ -14,7 +14,8 @@
       "kube-system/cilium",
       "kube-system/coredns",
       "kube-system/spegel",
-      "network/certificates"
+      "network/certificates",
+      "network/envoy-gateway"
     ]
   }
 }
