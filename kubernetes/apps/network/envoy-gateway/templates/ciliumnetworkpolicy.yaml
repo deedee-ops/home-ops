@@ -19,5 +19,6 @@ specs:
     egress:
       - toEntities:
           - kube-apiserver
+          - cluster
       - toEndpoints:
           - {}
