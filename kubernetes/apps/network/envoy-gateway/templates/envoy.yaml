@@ -14,10 +14,6 @@ spec:
       envoyDeployment:
         container:
           image: mirror.gcr.io/envoyproxy/envoy:v1.36.2
-          ports:
-            - containerPort: 80
-              hostPort: 80
-              protocol: TCP
           resources:
             requests:
               cpu: 100m
