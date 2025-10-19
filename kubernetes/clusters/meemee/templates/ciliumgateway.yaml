@@ -18,6 +18,7 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumGatewayClassConfig
 metadata:
   name: cilium-nodeport
+  namespace: kube-system
 spec:
   service:
     type: NodePort
