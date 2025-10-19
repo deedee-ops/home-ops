@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: cert-manager-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: cert-manager
+    egress:
+      - toFQDNs:
+          - matchName: api.cloudflare.com
+          - matchName: letsencrypt.org
+          - matchPattern: "*.api.letsencrypt.org"
+        toPorts:
+          - ports:
+              - port: "443"
+      - toCIDRSet:
+          - cidr: 1.0.0.1/32
+        toPorts:
+          - ports:
+              - port: "443"
+      - toCIDRSet:
+          - cidr: 1.1.1.1/32
+        toPorts:
+          - ports:
+              - port: "443"
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: cert-manager-egress-internal
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/instance: cert-manager
+    egress:
+      - toEntities:
+          - kube-apiserver
+      - toEndpoints:
+          - {}

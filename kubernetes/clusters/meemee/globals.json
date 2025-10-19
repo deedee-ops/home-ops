@@ -4,6 +4,7 @@
     "rootDomain": "rzegocki.dev",
     "enabledApps": [
       "argocd/argo-cd",
+      "cert-manager/cert-manager",
       "cosign-system/policy-controller",
       "external-secrets/external-secrets",
       "external-secrets/onepassword",
