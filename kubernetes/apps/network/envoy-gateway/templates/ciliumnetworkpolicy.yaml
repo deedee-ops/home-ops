@@ -13,7 +13,7 @@ specs:
             - envoy-gateway-gateway-helm-certgen
     egress:
       - toEntities:
-          - ingress
           - kube-apiserver
       - toEndpoints:
           - {}
+
