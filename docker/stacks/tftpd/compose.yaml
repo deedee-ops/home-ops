@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   tftpd:
-    image: "registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:41f614ba418aaba5efe1a6a3a166f66c4414f9dfcbc0b579f9dce91d667f5e0d"
+    image: "registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:a09bec29195006f7a800ac0509a5290aadefe228b70908805b19fbb4ecaf86a0"
     container_name: tftpd
     # synology kernel is super old, so it doesn't allow to bind lower ports
     # user: "21:21"
