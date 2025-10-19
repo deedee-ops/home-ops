@@ -10,14 +10,7 @@ specs:
         app.kubernetes.io/name: onepassword
     egress:
       - toFQDNs:
-          # gitops repo
-          - matchName: github.com
-          # helm charts
-          - matchName: ghcr.io
-          - matchName: pkg-containers.githubusercontent.com
-          - matchName: quay.io
-          - matchName: registry.developers.crunchydata.com
-          - matchPattern: "cdn*.quay.io"
+          - matchName: my.1password.eu
         toPorts:
           - ports:
               - port: "443"
