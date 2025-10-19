@@ -1,40 +1,40 @@
-local namespace = std.extVar("namespace");
-local global = std.extVar("global");
+local namespace = std.extVar('namespace');
+local global = std.extVar('global');
 
 [
   {
-    apiVersion: "gateway.networking.k8s.io/v1",
-    kind: "HTTPRoute",
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
     metadata: {
-      name: "argo-cd",
+      name: 'argo-cd',
     },
     spec: {
       hostnames: [
-        "argocd.%s" % global.rootDomain
+        'argocd.%s' % global.rootDomain,
       ],
       parentRefs: [
         {
-          name: "internal",
-          namespace: "kube-system",
-          sectionName: "https",
+          name: 'internal',
+          namespace: 'kube-system',
+          sectionName: 'https',
         },
       ],
       rules: [
         {
           backendRefs: [
             {
-              name: "argo-cd-server",
+              name: 'argo-cd-server',
               namespace: namespace,
               port: 80,
             },
           ],
           filters: [
             {
-              type: "ResponseHeaderModifier",
+              type: 'ResponseHeaderModifier',
               responseHeaderModifier: {
                 add: [
                   {
-                    name: "Content-Security-Policy",
+                    name: 'Content-Security-Policy',
                     value: "default-src 'self' 'unsafe-inline' data:; object-src 'none'; connect-src 'self' https://auth.%s;" % global.rootDomain,
                   },
                 ],
@@ -45,29 +45,28 @@ local global = std.extVar("global");
       ],
     },
   },
-
   {
-    apiVersion: "gateway.networking.k8s.io/v1",
-    kind: "HTTPRoute",
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'HTTPRoute',
     metadata: {
-      name: "argo-cd-webhook",
+      name: 'argo-cd-webhook',
     },
     spec: {
       hostnames: [
-        "argocd.%s" % global.rootDomain
+        'argocd.%s' % global.rootDomain,
       ],
       parentRefs: [
         {
-          name: "external",
-          namespace: "kube-system",
-          sectionName: "https",
+          name: 'external',
+          namespace: 'kube-system',
+          sectionName: 'https',
         },
       ],
       rules: [
         {
           backendRefs: [
             {
-              name: "argo-cd-server",
+              name: 'argo-cd-server',
               namespace: namespace,
               port: 80,
             },
@@ -75,12 +74,12 @@ local global = std.extVar("global");
           matches: [
             {
               path: {
-                value: "/api/webhook",
+                value: '/api/webhook',
               },
             },
           ],
         },
       ],
     },
-  }
+  },
 ]
