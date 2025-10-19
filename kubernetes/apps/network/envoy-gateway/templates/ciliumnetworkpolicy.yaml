@@ -22,3 +22,11 @@ specs:
           - cluster
       - toEndpoints:
           - {}
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/managed-by: envoy-gateway
+    egress:
+      - toEntities:
+          - cluster
+      - toEndpoints:
+          - {}
