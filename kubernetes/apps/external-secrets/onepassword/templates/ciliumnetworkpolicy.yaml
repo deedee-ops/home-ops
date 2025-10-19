@@ -10,6 +10,7 @@ specs:
         app.kubernetes.io/name: onepassword
     egress:
       - toFQDNs:
+          # alongside `my.1password.eu` 1p uses some CDN domains like `b5n.1password.eu`
           - matchPattern: "*.1password.eu"
         toPorts:
           - ports:
