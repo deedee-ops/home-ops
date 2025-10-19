@@ -5,6 +5,9 @@ local global = std.extVar('global');
   kind: 'Certificate',
   metadata: {
     name: 'root-domain',
+    annotations: {
+      'argocd.argoproj.io/sync-wave': '1',
+    },
   },
   spec: {
     secretName: 'root-domain-tls',
@@ -19,4 +22,3 @@ local global = std.extVar('global');
     ],
   },
 }
-
