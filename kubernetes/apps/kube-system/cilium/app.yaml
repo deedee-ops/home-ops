@@ -1,6 +1,8 @@
 ---
-name: cilium
 namespace: kube-system
+name: cilium
+repoURL: oci://ghcr.io/home-operations/charts-mirror/cilium
+version: 1.18.2
 psp: privileged
 syncOptions:
   # grafana dashboard is a big resource

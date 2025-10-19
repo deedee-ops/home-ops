@@ -1,6 +1,8 @@
 ---
-name: spegel
 namespace: kube-system
+name: spegel
+repoURL: oci://ghcr.io/spegel-org/helm-charts/spegel
+version: 0.4.0
 values:
   grafanaDashboard:
     enabled: true

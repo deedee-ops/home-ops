@@ -1,6 +1,8 @@
 ---
-name: policy-controller
 namespace: cosign-system
+name: policy-controller
+repoURL: oci://ghcr.io/sigstore/helm-charts/policy-controller
+version: 0.10.5
 psp: restricted
 
 values:

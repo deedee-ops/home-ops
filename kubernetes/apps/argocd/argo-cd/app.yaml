@@ -1,6 +1,8 @@
 ---
-name: argo-cd
 namespace: argocd
+name: argo-cd
+repoURL: oci://ghcr.io/argoproj/argo-helm/argo-cd
+version: 8.6.4
 psp: restricted
 ignoreDifferences: |
   - group: ""

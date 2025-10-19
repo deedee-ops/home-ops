@@ -1,6 +1,8 @@
 ---
-name: coredns
 namespace: kube-system
+name: coredns
+repoURL: oci://ghcr.io/coredns/charts/coredns
+version: 1.45.0
 psp: privileged
 
 values:

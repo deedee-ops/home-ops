@@ -166,8 +166,6 @@
               fi
 
               source .env
-              # export OP_SESSION_US5CKINWSNABHKIHXHGPCK6DDA="$(op signin --raw)"
-              # op read op://homelab/meemee/talos/.cluster.id
 
               #export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
               #export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
