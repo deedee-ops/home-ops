@@ -53,7 +53,7 @@ authelia:
         main:
           image:
             repository: ghcr.io/authelia/authelia
-            tag: 4.39.4@sha256:9983c11ae35974fc99d66694e2ac20280b50c0ed4aa7a5cddca2d240c5bc6af0
+            tag: 4.39.13@sha256:87c32df41ad3ff1e015ebfc0e413fe78aa12754cb91fd9452a9f33f8890105b6
 
           env:
             TZ: Europe/Warsaw
