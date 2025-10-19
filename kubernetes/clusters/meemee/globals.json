@@ -2,6 +2,9 @@
   "global": {
     "clusterName": "meemee",
     "rootDomain": "rzegocki.dev",
+    "tls": {
+      "clusterIssuer": "letsencrypt-staging"
+    },
     "enabledApps": [
       "argocd/argo-cd",
       "cert-manager/cert-manager",

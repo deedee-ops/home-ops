@@ -35,8 +35,5 @@ cilium:
   custom:
     pools:
       - "{{ .vars.network.k8sIP }}/32"
-  gatewayAPI:
-    hostNetwork:
-      enabled: true
   k8sServiceHost: "{{ .vars.network.k8sIP }}"
   k8sServicePort: "6443"

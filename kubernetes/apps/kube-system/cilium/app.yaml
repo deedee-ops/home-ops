@@ -76,10 +76,6 @@ values:
         memory: "32Mi"
       limits:
         memory: "1Gi"
-  gatewayAPI:
-    enabled: true
-    enableAlpn: true
-    xffNumTrustedHops: 1
   hubble:
     enabled: true
     metrics:
