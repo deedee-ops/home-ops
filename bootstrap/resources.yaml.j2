@@ -16,6 +16,17 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: argocd
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
   name: cosign-system
   labels:
     pod-security.kubernetes.io/enforce: restricted
@@ -44,3 +55,17 @@ stringData:
   1password-credentials.json: >-
     op://homelab/1password/OP_CREDENTIALS_JSON
   token: op://homelab/1password/OP_CONNECT_TOKEN
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.33.2/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-secret
+  namespace: argocd
+stringData:
+  admin.password: op://homelab/meemee/kubernetes/ARGOCD_ADMIN_PASSWORD
+  admin.passwordMtime: "2025-10-19T09:16:23Z"
+  server.secretkey: op://homelab/meemee/kubernetes/ARGOCD_SERVER_SECRETKEY
+
+# vim:ft=yaml
