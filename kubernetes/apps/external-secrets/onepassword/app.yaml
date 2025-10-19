@@ -1,0 +1,114 @@
+---
+namespace: external-secrets
+name: onepassword
+repoURL: oci://ghcr.io/bjw-s-labs/helm/app-template
+version: 4.4.0
+psp: restricted
+
+values:
+  controllers:
+    onepassword:
+      strategy: RollingUpdate
+      containers:
+        api:
+          image:
+            repository: ghcr.io/1password/connect-api
+            tag: 1.8.1@sha256:ac6e9efe4f54cc351393fcb8f01b10e667b08b68ff47ebf6024ff93eae642e5c
+          env:
+            XDG_DATA_HOME: /config
+            OP_HTTP_PORT: 8080
+            OP_BUS_PORT: 11220
+            OP_BUS_PEERS: localhost:11221
+            OP_SESSION:
+              valueFrom:
+                secretKeyRef:
+                  name: "onepassword-secret"
+                  key: 1password-credentials.json
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /heartbeat
+                  port: 8080
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8080
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+          resources: &resources
+            requests:
+              cpu: 10m
+            limits:
+              memory: 64Mi
+          securityContext: &securityContext
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: ["ALL"]}
+        sync:
+          image:
+            repository: ghcr.io/1password/connect-sync
+            tag: 1.8.1@sha256:565e1765aff957379acbb46fab2b2d67380a149d70ef22507d05a5316a100052
+          env:
+            XDG_DATA_HOME: /config
+            OP_HTTP_PORT: 8081
+            OP_BUS_PORT: 11221
+            OP_BUS_PEERS: localhost:11220
+            OP_SESSION:
+              valueFrom:
+                secretKeyRef:
+                  name: "onepassword-secret"
+                  key: 1password-credentials.json
+          probes:
+            liveness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /heartbeat
+                  port: 8081
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+            readiness:
+              enabled: true
+              custom: true
+              spec:
+                httpGet:
+                  path: /health
+                  port: 8081
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+          resources: *resources
+          securityContext: *securityContext
+  defaultPodOptions:
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+      runAsGroup: 999
+  service:
+    app:
+      ports:
+        http:
+          port: 8080
+  persistence:
+    config:
+      type: emptyDir
+      globalMounts:
+        - path: /config
+
+# vim:ft=yaml
