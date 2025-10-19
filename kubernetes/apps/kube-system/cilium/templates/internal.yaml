@@ -7,7 +7,7 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/target: "internal.rzegocki.dev"
 spec:
-  gatewayClassName: cilium-nodeport
+  gatewayClassName: cilium
   # addresses:
   #   - type: IPAddress
   #     value: 10.100.10.10
