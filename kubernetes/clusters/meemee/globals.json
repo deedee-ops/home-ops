@@ -1,6 +1,7 @@
 {
   "global": {
     "clusterName": "meemee",
+    "singleNode": true,
     "rootDomain": "rzegocki.dev",
     "tls": {
       "clusterIssuer": "letsencrypt-staging"
