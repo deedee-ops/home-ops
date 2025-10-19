@@ -1,0 +1,54 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  registry:
+    image: public.ecr.aws/docker/library/registry:3.0.0@sha256:1fc7de654f2ac1247f0b67e8a459e273b0993be7d2beda1f3f56fbf1001ed3e7
+    container_name: registry
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file:
+      - registry.env
+      - override.env
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.registry.loadbalancer.server.port: "5000"
+      traefik.http.routers.registry.entrypoints: https
+      traefik.http.routers.registry.rule: "Host(`registry.${ROOT_DOMAIN}`) && PathPrefix(`/v2`)"
+      traefik.http.routers.registry.service: registry
+      traefik.http.routers.registry.tls: true
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  registry-ui:
+    image: joxit/docker-registry-ui:2.5.7@sha256:5594b76bf8dd9de479648e28f38572d020d260568be40b7e52b9758b442275e1
+    container_name: registry-ui
+    user: "101:101" # nginx
+    restart: unless-stopped
+    env_file:
+      - registry-ui.env
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.registry-ui.loadbalancer.server.port: "8080"
+      traefik.http.routers.registry-ui.entrypoints: https
+      traefik.http.routers.registry-ui.rule: "Host(`registry.${ROOT_DOMAIN}`) && !PathPrefix(`/v2`)"
+      traefik.http.routers.registry-ui.service: registry-ui
+      traefik.http.routers.registry-ui.tls: true
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+
+networks:
+  internal:
+    name: internal
+    external: true

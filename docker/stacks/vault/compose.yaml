@@ -1,0 +1,44 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  vault1:
+    image: hashicorp/vault:1.20.4@sha256:268bb80aa9c6d13d65fcfa05c0c268caca068952240a8087291a6ce0b66e3a10
+    container_name: vault
+    restart: unless-stopped
+    command: server
+    configs:
+      - source: vault-config
+        target: /vault/config/config.hcl
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/vault/file:/vault/file"
+      - "./override.env:/secrets/override.env"
+    networks:
+      - internal
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+    # security
+    cap_add:
+      - CAP_IPC_LOCK
+    # traefik
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.vault.loadbalancer.server.port: "8200"
+      traefik.http.routers.vault.entrypoints: https
+      traefik.http.routers.vault.rule: Host(`vault.${ROOT_DOMAIN}`)
+      traefik.http.routers.vault.service: vault
+      traefik.http.routers.vault.tls: true
+    post_start:
+      - command: >-
+          sh -c "sleep 5 &&
+          vault operator unseal $(cat /secrets/override.env | sed -E 's@[^=]*=\"?([^\"]+)\"?@\\1@')"
+          || true
+
+configs:
+  vault-config:
+    file: ./config/config.hcl
+
+networks:
+  internal:
+    name: internal
+    external: true

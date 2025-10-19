@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
+http:
+  routers:
+    truenas:
+      rule: 'Host(`nas.{{ env "ROOT_DOMAIN" }}`)'
+      entryPoints:
+        - https
+      service: truenas
+      tls: {}
+
+  services:
+    truenas:
+      loadBalancer:
+        servers:
+          - url: "https://host.docker.internal:444"
+        passHostHeader: true
+        serversTransport: insecureSkipVerifyTransport
+
+  serversTransports:
+    insecureSkipVerifyTransport:
+      insecureSkipVerify: true

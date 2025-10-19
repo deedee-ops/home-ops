@@ -1,0 +1,63 @@
+#name=Install and run komodo periphery
+#arrayStarted=true
+#backgroundOnly=true
+#argumentDescription=First argument is context, second is target directory
+#argumentDefault=meemee /mnt/user/appdata/docker
+
+set -e
+CONTEXT="${1:-meemee}"
+TARGET_DIR="${2:-/mnt/user/appdata/docker}"
+export SOPS_AGE_KEY_FILE="${TARGET_DIR}/age-keys.txt"
+
+mkdir -p "$TARGET_DIR/stacks" "$TARGET_DIR/volumes/komodo"
+
+if ! test -f "$SOPS_AGE_KEY_FILE"; then
+    echo "Error: missing age key file at $SOPS_AGE_KEY_FILE"
+    exit 1
+fi
+
+version="$(curl -sSL https://api.github.com/repos/getsops/sops/releases/latest | jq -r .tag_name)"
+digest="$(curl -sSL https://api.github.com/repos/getsops/sops/releases/latest | jq -r '.assets[] | select(.name == "sops-'"${version}"'.linux.amd64") | .digest')"
+if [ ! -f "${TARGET_DIR}/sops" ] || [[ "sha256:$(sha256sum "${TARGET_DIR}/sops" | awk '{print $1}')" != "${digest}" ]]; then
+  url="$(curl -sSL https://api.github.com/repos/getsops/sops/releases/latest | jq -r '.assets[] | select(.name == "sops-'"${version}"'.linux.amd64") | .browser_download_url')"
+  curl -sSL -o "${TARGET_DIR}/sops" "${url}"
+  chmod +x "${TARGET_DIR}/sops"
+fi
+
+rm -rf "$TARGET_DIR/stacks/komodo" || true
+git clone https://github.com/deedee-ops/home-ops "$TARGET_DIR/stacks/komodo"
+KOMODO_STACK_DIR="$TARGET_DIR/stacks/komodo/docker/stacks/komodo"
+HOSTS_DIR="$TARGET_DIR/stacks/komodo/docker/hosts"
+
+if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env"; then
+  "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env" > "$KOMODO_STACK_DIR/override.env"
+fi
+
+if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml"; then
+  "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml" > "$KOMODO_STACK_DIR/config.toml"
+fi
+
+export HOME="${TARGET_DIR}"
+export PERIPHERY_ROOT_DIRECTORY="${TARGET_DIR}"
+export PATH="${PATH}"
+
+source "${KOMODO_STACK_DIR}/override.env"
+eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml" | sed 's@`@#-#@g')\"" | sed 's@#-#@`@g' > /tmp/kcompose.yaml
+mv /tmp/kcompose.yaml "$KOMODO_STACK_DIR/compose.yaml"
+
+cp "${TARGET_DIR}/stacks/komodo/scripts/nas/periphery.config.toml" "${TARGET_DIR}/periphery.config.toml"
+
+docker network create internal || true
+cd "${KOMODO_STACK_DIR}" && docker compose -p komodo -f compose.yaml up -d
+
+digest="$(curl -sSL https://api.github.com/repos/moghtech/komodo/releases/latest | jq -r '.assets[] | select(.name == "periphery-x86_64") | .digest')"
+if [ ! -f "${TARGET_DIR}/periphery" ] || [[ "sha256:$(sha256sum "${TARGET_DIR}/periphery" | awk '{print $1}')" != "${digest}" ]]; then
+  url="$(curl -sSL https://api.github.com/repos/moghtech/komodo/releases/latest | jq -r '.assets[] | select(.name == "periphery-x86_64") | .browser_download_url')"
+  curl -sSL -o "${TARGET_DIR}/periphery" "${url}"
+  chmod +x "${TARGET_DIR}/periphery"
+  pkill periphery
+fi
+
+pgrep periphery || "${TARGET_DIR}/periphery" --config-path "${TARGET_DIR}/periphery.config.toml"
+
+# vim:ft=bash

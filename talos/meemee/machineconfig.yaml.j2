@@ -7,9 +7,9 @@
 version: v1alpha1
 machine:
   ca:
-    crt: op://homelab/meemee/talos/.machine.ca.crt
+    crt: op://meemee/talos/.machine.ca.crt
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://homelab/meemee/talos/.machine.ca.key
+    key: op://meemee/talos/.machine.ca.key
     # {% endif %}
 
   features:
@@ -75,13 +75,15 @@ machine:
   nodeLabels:
     topology.kubernetes.io/region: homelab
     topology.kubernetes.io/zone: meemee
-  token: op://homelab/meemee/talos/.machine.token
+  sysctls:
+    net.ipv4.ip_unprivileged_port_start: "0" # cilium envoy gateway nodeport
+  token: op://meemee/talos/.machine.token
 
 cluster:
   ca:
-    crt: op://homelab/meemee/talos/.cluster.ca.crt
+    crt: op://meemee/talos/.cluster.ca.crt
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://homelab/meemee/talos/.cluster.ca.key
+    key: op://meemee/talos/.cluster.ca.key
     # {% endif %}
 
   clusterName: meemee
@@ -89,7 +91,7 @@ cluster:
     endpoint: https://10.100.10.10:6443
   discovery:
     enabled: false
-  id: op://homelab/meemee/talos/.cluster.id
+  id: op://meemee/talos/.cluster.id
   network:
     cni:
       name: none
@@ -98,13 +100,13 @@ cluster:
       - 172.30.0.0/16
     serviceSubnets:
       - 172.31.0.0/16
-  secret: op://homelab/meemee/talos/.cluster.secret
-  token: op://homelab/meemee/talos/.cluster.token
+  secret: op://meemee/talos/.cluster.secret
+  token: op://meemee/talos/.cluster.token
 
   # {% if ENV.IS_CONTROLPLANE %}
   aggregatorCA:
-    crt: op://homelab/meemee/talos/.cluster.aggregatorCA.crt
-    key: op://homelab/meemee/talos/.cluster.aggregatorCA.key
+    crt: op://meemee/talos/.cluster.aggregatorCA.crt
+    key: op://meemee/talos/.cluster.aggregatorCA.key
   allowSchedulingOnControlPlanes: true
   apiServer:
     admissionControl:
@@ -146,8 +148,8 @@ cluster:
     advertisedSubnets:
       - 10.100.0.0/16
     ca:
-      crt: op://homelab/meemee/talos/.cluster.etcd.ca.crt
-      key: op://homelab/meemee/talos/.cluster.etcd.ca.key
+      crt: op://meemee/talos/.cluster.etcd.ca.crt
+      key: op://meemee/talos/.cluster.etcd.ca.key
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
@@ -174,9 +176,9 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.34.1
-  secretboxEncryptionSecret: op://homelab/meemee/talos/.cluster.secretboxEncryptionSecret
+  secretboxEncryptionSecret: op://meemee/talos/.cluster.secretboxEncryptionSecret
   serviceAccount:
-    key: op://homelab/meemee/talos/.cluster.serviceAccount.key
+    key: op://meemee/talos/.cluster.serviceAccount.key
     # {% endif %}
 
 ---

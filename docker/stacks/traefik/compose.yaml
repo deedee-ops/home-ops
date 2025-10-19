@@ -1,0 +1,58 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  traefik:
+    env_file:
+      - ./compose.env
+      - ./override.env
+      - .env # dynamically created by stacks
+    image: public.ecr.aws/docker/library/traefik:3.5.3@sha256:d6be8725d21b45bdd84b93ea01438256e0e3c94aa8fa51834fe87f37cd5d4af8
+    container_name: traefik
+    restart: always
+    environment:
+      TZ: Europe/Warsaw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: traefik-config
+        target: /etc/traefik/traefik.yml
+    volumes:
+      - ./config/extra:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/traefik/certs:/certs"
+    networks:
+      - default
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  traefik-to-unifi:
+    env_file:
+      - ./override.env
+    image: ghcr.io/ajgon/traefik-to-unifi:1.2.1@sha256:aa10394789ebf91a9677e9e0b76a90d45c85c2bd474381a7715e9bcbe828b6b9
+    container_name: traefik-to-unifi
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  traefik-config:
+    file: ./config/traefik.yaml
+
+networks:
+  internal:
+    name: internal
+    external: true
