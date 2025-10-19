@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: envoy-gateway-egress-internal
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: job-name
+          operator: In
+          values:
+            - envoy-gateway-gateway-helm-certgen
+    egress:
+      - toEntities:
+          - ingress
+          - kube-apiserver
+      - toEndpoints:
+          - {}
