@@ -19,6 +19,11 @@ releases:
     chart: oci://mirror.gcr.io/envoyproxy/gateway-helm
     version: 1.5.3
 
+  - name: external-secrets
+    namespace: external-secrets
+    chart: oci://ghcr.io/external-secrets/charts/external-secrets
+    version: 0.20.3
+
   - name: kube-prometheus-stack
     namespace: observability
     chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack

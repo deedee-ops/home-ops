@@ -3,17 +3,12 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-  name: argo-cd-egress
+  name: onepassword
 specs:
   - endpointSelector:
       matchLabels:
-        app.kubernetes.io/name: argo-cd-repo-server
+        app.kubernetes.io/name: onepassword
     egress:
-      - toEntities:
-          - ingress
-          - kube-apiserver
-      - toEndpoints:
-          - {}
       - toFQDNs:
           # gitops repo
           - matchName: github.com

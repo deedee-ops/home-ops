@@ -52,8 +52,7 @@ metadata:
   name: onepassword-secret
   namespace: external-secrets
 stringData:
-  1password-credentials.json: >-
-    op://homelab/1password/OP_CREDENTIALS_JSON
+  1password-credentials.json: op://homelab/1password/OP_CREDENTIALS_JSON_B64
   token: op://homelab/1password/OP_CONNECT_TOKEN
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet

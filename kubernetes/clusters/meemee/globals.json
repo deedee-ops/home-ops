@@ -4,6 +4,7 @@
     "enabledApps": [
       "argocd/argo-cd",
       "cosign-system/policy-controller",
+      "external-secrets/external-secrets",
       "external-secrets/onepassword",
       "kube-system/cilium",
       "kube-system/coredns",

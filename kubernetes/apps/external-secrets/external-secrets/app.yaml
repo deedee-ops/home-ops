@@ -1,0 +1,37 @@
+---
+namespace: external-secrets
+name: external-secrets
+repoURL: oci://ghcr.io/external-secrets/charts/external-secrets
+version: 0.20.3
+psp: restricted
+
+values:
+  certController:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    serviceMonitor:
+      enabled: true
+  grafanaDashboard:
+    enabled: true
+  leaderElect: true
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      memory: "1Gi"
+  serviceMonitor:
+    enabled: true
+  webhook:
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        memory: "1Gi"
+    serviceMonitor:
+      enabled: true

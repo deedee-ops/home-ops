@@ -3,3 +3,5 @@
 - renovate app.yaml
 - schemas (app.yaml, remove k8s basic ones)
 - unified yaml formatter
+- registry cache everything
+- grafana dashboard operator ?
