@@ -13,7 +13,8 @@
       "external-secrets/onepassword",
       "kube-system/cilium",
       "kube-system/coredns",
-      "kube-system/spegel"
+      "kube-system/spegel",
+      "network/certificates"
     ]
   }
 }
