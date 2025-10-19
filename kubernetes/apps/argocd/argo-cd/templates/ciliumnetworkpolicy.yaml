@@ -30,7 +30,7 @@ metadata:
 specs:
   - endpointSelector:
       matchLabels:
-        app.kubernetes.io/name: argo-cd-repo-server
+        app.kubernetes.io/instance: argo-cd
     egress:
       - toEntities:
           - ingress
