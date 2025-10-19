@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   borgmatic:
-    image: "ghcr.io/borgmatic-collective/borgmatic:2.0.6@sha256:26a353844a4ea2bc890c0099c74b4b52f8142c425322def8dc3de0b3d73d8e9a"
+    image: "ghcr.io/borgmatic-collective/borgmatic:2.0.9@sha256:78a3539080453afda28fcbeeea4ef8b566e378af0df988d9c41a14b78d5db079"
     container_name: borgmatic
     restart: always
     env_file:
