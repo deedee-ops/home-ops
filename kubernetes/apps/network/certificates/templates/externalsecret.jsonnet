@@ -13,7 +13,7 @@ local global = std.extVar('global');
       name: 'onepassword',
     },
     target: {
-      name: 'root-domain-tls-test',
+      name: 'root-domain-tls',
       creationPolicy: 'Orphan',
       template: {
         type: 'kubernetes.io/tls',
