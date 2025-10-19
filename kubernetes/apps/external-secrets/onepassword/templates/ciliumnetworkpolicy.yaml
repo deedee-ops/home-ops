@@ -3,7 +3,7 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-  name: onepassword
+  name: onepassword-egress-external
 specs:
   - endpointSelector:
       matchLabels:
