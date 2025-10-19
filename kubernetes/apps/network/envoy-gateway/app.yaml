@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=../../../../schemas/argocd.json
+namespace: network
+name: envoy-gateway
+repoURL: oci://mirror.gcr.io/envoyproxy/gateway-helm
+version: 1.5.3
+psp: restricted
+syncOptions:
+  # CRDs are enormous
+  - ServerSideApply=true
+
+values:
+  global:
+    imageRegistry: mirror.gcr.io
+  config:
+    envoyGateway:
+      provider:
+        type: Kubernetes
+        kubernetes:
+          deploy:
+            type: GatewayNamespace
+            # vim:ft=yaml

@@ -1,0 +1,61 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  talos-factory:
+    image: ghcr.io/siderolabs/image-factory:v0.8.4-12-gd1bec57@sha256:698b0820a0f46d384c7b202fa859c0620dd3954a50ccf94a729b2b991c974e4a
+    container_name: talos-factory
+    restart: unless-stopped
+    user: 1000:1000
+    env_file:
+      - compose.env
+    command:
+      - "-external-url"
+      - "https://talos.crypt.${ROOT_DOMAIN}"
+      - "-cache-signing-key-path"
+      - "/config/cache-signing-key.key"
+      - "-secureboot"
+      - "-secureboot-pcr-key-path"
+      - "/config/pcr-signing-key.pem"
+      - "-secureboot-signing-cert-path"
+      - "/config/uki-signing-cert.pem"
+      - "-secureboot-signing-key-path"
+      - "/config/uki-signing-key.pem"
+      - "-insecure-schematic-service-repository"
+      - "-schematic-service-repository"
+      - "registry:5000/talos/schematic"
+      - "-insecure-installer-internal-repository"
+      - "-installer-internal-repository"
+      - "registry:5000/talos/images"
+      - "-installer-external-repository"
+      - "registry.${ROOT_DOMAIN}/talos/images"
+      - "-insecure-cache-repository"
+      - "-cache-repository"
+      - "registry:5000/talos/cache"
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/talos-factory/config:/config:ro"
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.talos-factory.loadbalancer.server.port: "8080"
+      traefik.http.routers.talos-factory.entrypoints: https
+      traefik.http.routers.talos-factory.rule: Host(`talos.crypt.${ROOT_DOMAIN}`)
+      traefik.http.routers.talos-factory.service: talos-factory
+      traefik.http.routers.talos-factory.tls: true
+      traefik.http.routers.talos-factory.tls.certresolver: letsencrypt-rsa
+      traefik.http.routers.talos-factory.tls.options: rsa-kex@file
+      traefik.http.routers.talos-factory.tls.domains[0].main: '*.crypt.${ROOT_DOMAIN}'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  internal:
+    name: internal
+    external: true

@@ -1,0 +1,13 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  smartctl-exporter:
+    image: quay.io/prometheuscommunity/smartctl-exporter:v0.14.0@sha256:a13840e6df4e3c6a3b25c46e15d5156f7c5109acad97f9b92a6955bd658b62c3
+    container_name: smartctl-exporter
+    restart: unless-stopped
+    ports:
+      - '9633:9633'
+    privileged: true
+    read_only: true
+    user: root

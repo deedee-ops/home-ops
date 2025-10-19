@@ -6,16 +6,15 @@ cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || ju
 talos_dir := justfile_dir() + '/talos'
 cluster_dir := talos_dir + '/' + cluster
 
-talosctl_cmd := 'talosctl --talosconfig=' + cluster_dir + '/talosconfig'
-controller := shell(talosctl_cmd + " config info -o yaml | yq -e '.endpoints[0]'")
+controller := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'")
 
 [private]
 default:
     just -l talos
 
 [doc('Apply Talos config to a node')]
-apply-node node *args:
-    just talos render-config "{{ node }}" | {{ talosctl_cmd }} -n "{{ node }}" apply-config -f /dev/stdin {{ args }}
+apply-node node $TALOSCONFIG=(cluster_dir + "/talosconfig") *args:
+    just talos render-config "{{ node }}" | talosctl -n "{{ node }}" apply-config -f /dev/stdin {{ args }}
 
 [doc('Download Talos machine image')]
 download-image version schematic:
@@ -27,36 +26,36 @@ download-image version schematic:
 
 [doc('Generate schematic ID from Talos schematic')]
 gen-schematic-id:
-    curl -sX POST --data-binary @<(just template "{{ cluster_dir }}/schematic.yaml.j2") "https://factory.talos.dev/schematics" | jq -r '.id'
+    curl -sX POST --data-binary @<(just template "{{ cluster_dir }}/schematic.yaml.j2") "https://talos.crypt.rzegocki.dev/schematics" | jq -r '.id'
 
 [doc('Reboot a node')]
-reboot-node node:
+reboot-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     gum confirm "Reboot node {{ node }}?" --default="No" && \
-        {{ talosctl_cmd }} -n {{ node }} reboot -m powercycle || exit 0
+        talosctl -n {{ node }} reboot -m powercycle || exit 0
 
 [doc('Render Talos config for a node')]
-render-config node:
+render-config node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     export IS_CONTROLPLANE="$(just talos machine-controlplane {{ node }})"; \
-    {{ talosctl_cmd }} machineconfig patch <(just template "{{ cluster_dir }}/machineconfig.yaml.j2") \
+    talosctl machineconfig patch <(just template "{{ cluster_dir }}/machineconfig.yaml.j2") \
         -p @<(just template "{{ cluster_dir }}/nodes/{{ node }}.yaml.j2")
 
 [doc('Reset a node')]
-reset-node node:
+reset-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     gum confirm "Reset node {{ node }}?" --default="No" && \
-        {{ talosctl_cmd }} -n "{{ node }}" reset --graceful=false || exit 0
+        talosctl -n "{{ node }}" reset --graceful=false || exit 0
 
 [doc('Shutdown a node')]
-shutdown-node node:
+shutdown-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     gum confirm "Shutdown node {{ node }}?" --default="No" && \
-        {{ talosctl_cmd }} -n "{{ node }}" shutdown --force || exit 0
+        talosctl -n "{{ node }}" shutdown --force || exit 0
 
 [doc('Upgrade Kubernetes version on the cluster')]
-upgrade-k8s version:
-    {{ talosctl_cmd }} -n "{{ controller }}" upgrade-k8s --to {{ version }}
+upgrade-k8s version $TALOSCONFIG=(cluster_dir + "/talosconfig"):
+    talosctl -n "{{ controller }}" upgrade-k8s --to {{ version }}
 
 [doc('Upgrade Talos version on a node')]
-upgrade-node node:
-    {{ talosctl_cmd }} -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m
+upgrade-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
+    talosctl -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m
 
 [private]
 machine-controlplane node:

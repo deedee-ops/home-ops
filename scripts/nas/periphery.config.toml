@@ -1,0 +1,23 @@
+port = 8120
+bind_ip = "0.0.0.0"
+
+disable_terminals = true
+disable_container_exec = true
+
+stats_polling_rate = "5-sec"
+container_stats_polling_rate = "30-sec"
+
+legacy_compose_cli = false
+include_disk_mounts = []
+exclude_disk_mounts = []
+
+# Security
+ssl_enabled = true
+
+# Logging
+logging.level = "info"
+logging.stdio = "standard"
+logging.otlp_endpoint = ""
+logging.opentelemetry_service_name = "Periphery"
+logging.pretty = false
+pretty_startup_config = false

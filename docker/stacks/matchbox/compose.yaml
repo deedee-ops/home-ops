@@ -1,0 +1,65 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+services:
+  matchbox:
+    image: quay.io/poseidon/matchbox:v0.11.0@sha256:06bcdae85335fd00e8277b007b55cfb49d96a0114628c0f70db2b92b079d246a
+    container_name: matchbox
+    user: "1000:1000"
+    restart: unless-stopped
+    command:
+      - "-address=0.0.0.0:8080"
+      - "-assets-path="
+    configs:
+      - source: groups-default
+        target: /var/lib/matchbox/groups/default.json
+      - source: groups-deedee-blossom
+        target: /var/lib/matchbox/groups/deedee-blossom.json
+      - source: groups-deedee-bubbles
+        target: /var/lib/matchbox/groups/deedee-bubbles.json
+      - source: groups-deedee-buttercup
+        target: /var/lib/matchbox/groups/deedee-buttercup.json
+      - source: profiles-netbootxyz
+        target: /var/lib/matchbox/profiles/netbootxyz.json
+      - source: profiles-talos-nuc-12
+        target: /var/lib/matchbox/profiles/talos-nuc-12.json
+    volumes:
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/ssl:/etc/matchbox:ro"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/config:/var/lib/matchbox"
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.matchbox.loadbalancer.server.port: "8080"
+      traefik.http.routers.matchbox.entrypoints: https
+      traefik.http.routers.matchbox.rule: Host(`matchbox.crypt.${ROOT_DOMAIN}`)
+      traefik.http.routers.matchbox.service: matchbox
+      traefik.http.routers.matchbox.tls: true
+      traefik.http.routers.matchbox.tls.certresolver: letsencrypt-rsa
+      traefik.http.routers.matchbox.tls.options: rsa-kex@file
+      traefik.http.routers.matchbox.tls.domains[0].main: '*.crypt.${ROOT_DOMAIN}'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  groups-default:
+    file: ./config/groups/default.json
+  groups-deedee-blossom:
+    file: ./config/groups/deedee-blossom.json
+  groups-deedee-bubbles:
+    file: ./config/groups/deedee-bubbles.json
+  groups-deedee-buttercup:
+    file: ./config/groups/deedee-buttercup.json
+  profiles-netbootxyz:
+    file: ./config/profiles/netbootxyz.json
+  profiles-talos-nuc-12:
+    file: ./config/profiles/talos-nuc-12.json
+
+networks:
+  internal:
+    name: internal
+    external: true

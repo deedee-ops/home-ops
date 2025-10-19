@@ -10,9 +10,9 @@ talos_dir := justfile_dir() + '/talos'
 cluster_dir := talos_dir + '/' + cluster
 
 kubectl_cmd := 'kubectl --kubeconfig=' + cluster_dir + '/kubeconfig'
-talosctl_cmd := 'talosctl --talosconfig=' + cluster_dir + '/talosconfig'
-controller := shell(talosctl_cmd + " config info -o yaml | yq -e '.endpoints[0]'")
-nodes := shell(talosctl_cmd + " config info -o yaml | yq -e '.nodes | join (\" \")'")
+# talosctl_cmd := 'talosctl --talosconfig=' + cluster_dir + '/talosconfig'
+controller := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'")
+nodes := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'")
 
 [private]
 default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
@@ -31,17 +31,17 @@ talos:
     done
 
 [doc('Install Kubernetes')]
-k8s:
+k8s $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     just log info "Running stage..." "stage" "$0"
-    until op=$({{ talosctl_cmd }} -n "{{ controller }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
+    until op=$(talosctl -n "{{ controller }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
         just log info "Kubernetes bootstrap in progress. Retrying in 5 seconds..." "stage" "$0"; \
         sleep 5; \
     done
 
 [doc('Fetch kubeconfig')]
-kubeconfig lb="cilium":
+kubeconfig $TALOSCONFIG=(cluster_dir + "/talosconfig") lb="cilium":
     just log info "Running stage..." "stage" "$0"
-    if ! {{ talosctl_cmd }} kubeconfig -n "{{ controller }}" -f --force-context-name {{ cluster }} {{ cluster_dir }}; then \
+    if ! talosctl kubeconfig -n "{{ controller }}" -f --force-context-name {{ cluster }} {{ cluster_dir }}; then \
         just log fatal "Failed to fetch kubeconfig" "stage" "$0"; \
     fi
     if [[ "{{ lb }}" != "cilium" ]]; then \

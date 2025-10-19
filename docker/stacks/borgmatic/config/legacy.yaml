@@ -1,0 +1,46 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/borgmatic-collective/borgmatic/main/borgmatic/config/schema.yaml
+# yamllint enable rule:line-length
+
+# location
+source_directories:
+  - /mnt/tank/legacy
+repositories:
+  - path: "${BORGMATIC_LEGACY_REPO_BORGBASE_EU}"
+    label: borgbase-legacy
+
+exclude_caches: true
+exclude_if_present:
+  - .nobackup
+
+# directories
+user_runtime_directory: /config/legacy/runtime
+user_state_directory: /config/legacy/state
+temporary_directory: /config/legacy/tmp
+borg_base_directory: /config/legacy/borg
+
+# storage
+encryption_passphrase: "${BORGMATIC_LEGACY_ENCRYPTION_PASSPHRASE}"
+retries: 5
+compression: auto,zstd
+ssh_command: ssh -i /config/legacy/ssh.key -o StrictHostKeyChecking=no
+lock_wait: 5
+archive_name_format: 'legacy-{now:%Y-%m-%d-%H%M%S}'
+
+# retention
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 3
+
+# consistency
+checks:
+  - name: repository
+    frequency: "2 weeks"
+  - name: archives
+    frequency: always
+check_last: 3
+
+healthchecks:
+  ping_url: "${BORGMATIC_LEGACY_HC_PING_URL}"
