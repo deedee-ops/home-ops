@@ -2,6 +2,8 @@
 # yaml-language-server: $schema=../../../../schemas/argocd.json
 name: external-dns-unifi
 namespace: network
+repoURL: oci://ghcr.io/home-operations/charts-mirror/external-dns
+version: 1.19.0
 psp: restricted
 
 values:
