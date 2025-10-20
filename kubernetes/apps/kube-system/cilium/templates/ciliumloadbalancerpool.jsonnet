@@ -1,6 +1,6 @@
 local cilium = std.extVar('cilium');
 
-if cilium.custom && cilium.custom.pools then {
+if std.objectHas(cilium, 'custom') && cilium.custom.pools then {
   apiVersion: 'cilium.io/v2alpha1',
   kind: 'CiliumLoadBalancerIPPool',
   metadata: {
