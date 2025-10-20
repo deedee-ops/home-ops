@@ -1,6 +1,6 @@
 local global = std.extVar('global');
 
-[
+if global.singleNode then [
   {
     apiVersion: 'gateway.envoyproxy.io/v1alpha1',
     kind: 'EnvoyProxy',
@@ -157,5 +157,52 @@ local global = std.extVar('global');
       },
     },
   },
+] else [
+  {
+    apiVersion: 'gateway.envoyproxy.io/v1alpha1',
+    kind: 'EnvoyProxy',
+    metadata: {
+      name: 'envoy',
+    },
+    spec: {
+      logging: {
+        level: {
+          default: 'info',
+        },
+      },
+      provider: {
+        type: 'Kubernetes',
+        kubernetes: {
+          envoyDeployment: {
+            container: {
+              image: 'mirror.gcr.io/envoyproxy/envoy:v1.36.2',
+              resources: {
+                requests: {
+                  cpu: '100m',
+                },
+                limits: {
+                  memory: '1Gi',
+                },
+              },
+            },
+          },
+          envoyService: {
+            externalTrafficPolicy: 'Local',
+          },
+        },
+      },
+      shutdown: {
+        drainTimeout: '180s',
+      },
+      telemetry: {
+        metrics: {
+          prometheus: {
+            compression: {
+              type: 'Gzip',
+            },
+          },
+        },
+      },
+    },
+  },
 ]
-

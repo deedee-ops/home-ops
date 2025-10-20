@@ -5,7 +5,7 @@ local global = std.extVar('global');
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',
     metadata: {
-      name: 'envoy-internal',
+      name: if global.singleNode then 'envoy-internal' else 'envoy',
       annotations: {
         'external-dns.alpha.kubernetes.io/target': '%s-internal.%s' % [global.clusterName, global.rootDomain],
       },
@@ -16,7 +16,6 @@ local global = std.extVar('global');
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
           [if !global.singleNode then 'lbipam.cilium.io/ips']: global.ips.internalLB,
-          [if global.singleNode then 'io.cilium.hostPort.bindAddr']: global.ips.internalLB,
         },
       },
       listeners: [
@@ -56,7 +55,7 @@ local global = std.extVar('global');
     apiVersion: 'gateway.networking.k8s.io/v1',
     kind: 'Gateway',
     metadata: {
-      name: 'envoy-external',
+      name: if global.singleNode then 'envoy-external' else 'envoy',
       annotations: {
         'external-dns.alpha.kubernetes.io/target': '%s-external.%s' % [global.clusterName, global.rootDomain],
       },
@@ -67,7 +66,6 @@ local global = std.extVar('global');
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-external.%s' % [global.clusterName, global.rootDomain],
           [if !global.singleNode then 'lbipam.cilium.io/ips']: global.ips.externalLB,
-          [if global.singleNode then 'io.cilium.hostPort.bindAddr']: global.ips.externalLB,
         },
       },
       listeners: [
