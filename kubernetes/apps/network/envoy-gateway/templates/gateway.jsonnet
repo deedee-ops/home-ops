@@ -1,52 +1,104 @@
 local global = std.extVar('global');
 
-{
-  apiVersion: 'gateway.networking.k8s.io/v1',
-  kind: 'Gateway',
-  metadata: {
-    name: 'envoy-internal',
-    annotations: {
-      'external-dns.alpha.kubernetes.io/target': '%s-internal.%s' % [global.clusterName, global.rootDomain],
-    },
-  },
-  spec: {
-    gatewayClassName: 'envoy',
-    infrastructure: {
+[
+  {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'Gateway',
+    metadata: {
+      name: 'envoy-internal',
       annotations: {
-        'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
-        'lbipam.cilium.io/ips': global.ips.internalLB,
+        'external-dns.alpha.kubernetes.io/target': '%s-internal.%s' % [global.clusterName, global.rootDomain],
       },
     },
-    listeners: [
-      {
-        name: 'http',
-        protocol: 'HTTP',
-        port: 80,
-        allowedRoutes: {
-          namespaces: {
-            from: 'Same',
-          },
+    spec: {
+      gatewayClassName: 'envoy',
+      infrastructure: {
+        annotations: {
+          'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
+          'lbipam.cilium.io/ips': global.ips.internalLB,
         },
       },
-      {
-        name: 'https',
-        protocol: 'HTTPS',
-        port: 443,
-        allowedRoutes: {
-          namespaces: {
-            from: 'All',
-          },
-        },
-        tls: {
-          certificateRefs: [
-            {
-              group: '',
-              kind: 'Secret',
-              name: 'root-domain-tls',
+      listeners: [
+        {
+          name: 'http',
+          protocol: 'HTTP',
+          port: 80,
+          allowedRoutes: {
+            namespaces: {
+              from: 'Same',
             },
-          ],
+          },
+        },
+        {
+          name: 'https',
+          protocol: 'HTTPS',
+          port: 443,
+          allowedRoutes: {
+            namespaces: {
+              from: 'All',
+            },
+          },
+          tls: {
+            certificateRefs: [
+              {
+                group: '',
+                kind: 'Secret',
+                name: 'root-domain-tls',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
+    apiVersion: 'gateway.networking.k8s.io/v1',
+    kind: 'Gateway',
+    metadata: {
+      name: 'envoy-external',
+      annotations: {
+        'external-dns.alpha.kubernetes.io/target': '%s-external.%s' % [global.clusterName, global.rootDomain],
+      },
+    },
+    spec: {
+      gatewayClassName: 'envoy',
+      infrastructure: {
+        annotations: {
+          'external-dns.alpha.kubernetes.io/hostname': '%s-external.%s' % [global.clusterName, global.rootDomain],
+          'lbipam.cilium.io/ips': global.ips.externalLB,
         },
       },
-    ],
+      listeners: [
+        {
+          name: 'http',
+          protocol: 'HTTP',
+          port: 80,
+          allowedRoutes: {
+            namespaces: {
+              from: 'Same',
+            },
+          },
+        },
+        {
+          name: 'https',
+          protocol: 'HTTPS',
+          port: 443,
+          allowedRoutes: {
+            namespaces: {
+              from: 'All',
+            },
+          },
+          tls: {
+            certificateRefs: [
+              {
+                group: '',
+                kind: 'Secret',
+                name: 'root-domain-tls',
+              },
+            ],
+          },
+        },
+      ],
+    },
   },
-}
+]
