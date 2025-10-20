@@ -35,10 +35,7 @@ local global = std.extVar('global');
                 add: [
                   {
                     name: 'Content-Security-Policy',
-                    value: |||
-                      default-src 'self' 'unsafe-inline' data:; object-src 'none';
-                      connect-src 'self' https://auth.%s;
-                    ||| % global.rootDomain,
+                    value: "default-src 'self' 'unsafe-inline' data:; object-src 'none'; connect-src 'self' https://auth.%s;" % global.rootDomain,
                   },
                 ],
               },
