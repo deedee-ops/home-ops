@@ -39,6 +39,7 @@ local global = std.extVar('global');
         tls: {
           certificateRefs: [
             {
+              group: '',
               kind: 'Secret',
               name: 'root-domain-tls',
             },
