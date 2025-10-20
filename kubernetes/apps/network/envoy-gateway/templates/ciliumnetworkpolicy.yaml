@@ -4,6 +4,8 @@ apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
   name: envoy-gateway-egress-internal
+  annotations:
+    argocd.argoproj.io/sync-wave: '-1'
 specs:
   - endpointSelector:
       matchLabels:
