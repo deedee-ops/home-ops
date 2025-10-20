@@ -15,7 +15,7 @@ local global = std.extVar('global');
       parentRefs: [
         {
           name: 'envoy-internal',
-          namespace: 'kube-system',
+          namespace: 'network',
           sectionName: 'https',
         },
       ],
@@ -61,7 +61,7 @@ local global = std.extVar('global');
       parentRefs: [
         {
           name: 'envoy-external',
-          namespace: 'kube-system',
+          namespace: 'network',
           sectionName: 'https',
         },
       ],
