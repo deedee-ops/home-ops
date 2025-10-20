@@ -5,7 +5,7 @@
     "rootDomain": "rzegocki.dev",
     "ips": {
       "internalLB": "10.100.10.10",
-      "externalLB": "10.100.10.10"
+      "externalLB": "10.100.10.11"
     },
     "tls": {
       "clusterIssuer": "letsencrypt-production"

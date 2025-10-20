@@ -15,7 +15,8 @@ local global = std.extVar('global');
       infrastructure: {
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
-          'lbipam.cilium.io/ips': global.ips.internalLB,
+          [if !global.singleNode then 'lbipam.cilium.io/ips']: global.ips.internalLB,
+          [if global.singleNode then 'io.cilium.hostPort.bindAddr']: global.ips.internalLB,
         },
       },
       listeners: [
@@ -65,7 +66,8 @@ local global = std.extVar('global');
       infrastructure: {
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-external.%s' % [global.clusterName, global.rootDomain],
-          'lbipam.cilium.io/ips': global.ips.externalLB,
+          [if !global.singleNode then 'lbipam.cilium.io/ips']: global.ips.externalLB,
+          [if global.singleNode then 'io.cilium.hostPort.bindAddr']: global.ips.externalLB,
         },
       },
       listeners: [

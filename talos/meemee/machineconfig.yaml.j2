@@ -71,7 +71,15 @@ machine:
     interfaces:
       - deviceSelector:
           hardwareAddr: 02:00:0a:64:*
-        dhcp: true
+        dhcp: false
+        addresses:
+          - 10.100.10.10/16
+          - 10.100.10.11/16
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.100.1.1
+    nameservers:
+      - 10.100.1.1
   nodeLabels:
     topology.kubernetes.io/region: homelab
     topology.kubernetes.io/zone: meemee
