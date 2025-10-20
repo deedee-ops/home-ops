@@ -4,8 +4,8 @@
     "singleNode": true,
     "rootDomain": "rzegocki.dev",
     "ips": {
-      "internalLB": "10.100.10.10",
-      "externalLB": "10.100.10.11"
+      "internalLB": "10.100.10.11",
+      "externalLB": "10.100.10.12"
     },
     "tls": {
       "clusterIssuer": "letsencrypt-production"
