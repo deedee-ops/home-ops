@@ -90,6 +90,10 @@ spec:
                   code: true
                   value: >
                     {{ (index $clusterValues "global") | toJson }}
+                - name: .name
+                  code: true
+                  value: >
+                    {{ (index $clusterValues .name) | toJson }}
 
       syncPolicy:
         automated:
