@@ -34,9 +34,11 @@ cilium:
     tunnelProtocol: geneve
   custom:
     pools:
-      - "{{ .vars.network.k8sIP }}/32"
+      - "{{ .vars.network.k8sIP }}/29"
   k8sServiceHost: "{{ .vars.network.k8sIP }}"
   k8sServicePort: "6443"
+  l2announcements:
+    enabled: true
 
 external-dns-unifi:
   # Avoid storing external domains in UniFi. While it may speed up DNS resolution, it can cause issues with HTTPRoute

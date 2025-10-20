@@ -90,7 +90,7 @@ spec:
                   code: true
                   value: >
                     {{ (index $clusterValues "global") | toJson }}
-                - name: .name
+                - name: "{{ .name }}"
                   code: true
                   value: >
                     {{ (index $clusterValues .name) | toJson }}

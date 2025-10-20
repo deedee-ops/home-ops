@@ -39,7 +39,7 @@ values:
     enabled: true
     bbr: true
   bgpControlPlane:
-    enabled: true
+    enabled: false
   bpf:
     datapathMode: netkit
     masquerade: true
@@ -128,7 +128,7 @@ values:
   kubeProxyReplacement: true
   kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
   l2announcements:
-    enabled: true
+    enabled: false
   loadBalancer:
     algorithm: maglev
     mode: dsr
