@@ -32,7 +32,7 @@ local global = std.extVar('global');
             {
               type: 'ResponseHeaderModifier',
               responseHeaderModifier: {
-                add: [
+                set: [
                   {
                     name: 'Content-Security-Policy',
                     value: "default-src 'self' 'unsafe-inline' data:; object-src 'none'; connect-src 'self' https://auth.%s;" % global.rootDomain,
