@@ -8,7 +8,7 @@
       "externalLB": "10.100.10.10"
     },
     "tls": {
-      "clusterIssuer": "letsencrypt-staging"
+      "clusterIssuer": "letsencrypt-production"
     },
     "enabledApps": [
       "argocd/argo-cd",
