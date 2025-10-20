@@ -16,7 +16,8 @@
       "kube-system/coredns",
       "kube-system/spegel",
       "network/certificates",
-      "network/envoy-gateway"
+      "network/envoy-gateway",
+      "network/external-dns-unifi"
     ]
   }
 }

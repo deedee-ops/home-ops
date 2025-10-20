@@ -4,8 +4,13 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: envoy-internal
+  annotations:
+    external-dns.alpha.kubernetes.io/target: internal.rzegocki.dev
 spec:
   gatewayClassName: envoy
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: internal.rzegocki.dev
   listeners:
     - name: http
       protocol: HTTP
