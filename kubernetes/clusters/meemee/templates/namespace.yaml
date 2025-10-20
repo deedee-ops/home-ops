@@ -1,0 +1,12 @@
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/namespace-v1.json
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: network
+  labels:
+    # since it's one-node cluster we need hostPort to expose gateway
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
