@@ -14,6 +14,7 @@ local global = std.extVar('global');
     infrastructure: {
       annotations: {
         'external-dns.alpha.kubernetes.io/hostname': 'internal.%s' % global.rootDomain,
+        'lbipam.cilium.io/ips': '10.100.10.10',
       },
     },
     listeners: [
