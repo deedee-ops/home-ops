@@ -5,6 +5,9 @@ name: envoy-gateway
 repoURL: oci://mirror.gcr.io/envoyproxy/gateway-helm
 version: 1.5.3
 psp: restricted
+syncOptions:
+  # CRDs are enormous
+  - ServerSideApply=true
 
 values:
   global:
