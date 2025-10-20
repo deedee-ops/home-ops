@@ -6,15 +6,15 @@ local global = std.extVar('global');
   metadata: {
     name: 'envoy-internal',
     annotations: {
-      'external-dns.alpha.kubernetes.io/target': 'internal.%s' % global.rootDomain,
+      'external-dns.alpha.kubernetes.io/target': '%s-internal.%s' % [global.clusterName, global.rootDomain],
     },
   },
   spec: {
     gatewayClassName: 'envoy',
     infrastructure: {
       annotations: {
-        'external-dns.alpha.kubernetes.io/hostname': 'internal.%s' % global.rootDomain,
-        'lbipam.cilium.io/ips': '10.100.10.10',
+        'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
+        'lbipam.cilium.io/ips': global.ips.internalLB,
       },
     },
     listeners: [
