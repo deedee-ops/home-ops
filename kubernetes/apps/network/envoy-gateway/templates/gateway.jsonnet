@@ -11,7 +11,7 @@ local global = std.extVar('global');
       },
     },
     spec: {
-      gatewayClassName: 'envoy',
+      gatewayClassName: 'envoy-internal',
       infrastructure: {
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-internal.%s' % [global.clusterName, global.rootDomain],
@@ -62,7 +62,7 @@ local global = std.extVar('global');
       },
     },
     spec: {
-      gatewayClassName: 'envoy',
+      gatewayClassName: 'envoy-external',
       infrastructure: {
         annotations: {
           'external-dns.alpha.kubernetes.io/hostname': '%s-external.%s' % [global.clusterName, global.rootDomain],
