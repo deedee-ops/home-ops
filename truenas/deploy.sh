@@ -27,7 +27,7 @@ fi
 
 sops_cmd="sops"
 if ! command -v sops &> /dev/null; then
-  sops_cmd="docker run --rm -v ${SOPS_AGE_KEY_FILE}:${SOPS_AGE_KEY_FILE} -v ${HOSTS_DIR}:${HOSTS_DIR} ghcr.io/getsops/sops:v3.11.0-alpine "
+  sops_cmd="docker run --rm -e SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE} -v ${SOPS_AGE_KEY_FILE}:${SOPS_AGE_KEY_FILE} -v ${HOSTS_DIR}:${HOSTS_DIR} ghcr.io/getsops/sops:v3.11.0-alpine"
 fi
 
 if ! test -f "$SOPS_AGE_KEY_FILE"; then
