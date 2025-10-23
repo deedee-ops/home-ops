@@ -36,7 +36,7 @@ if ! test -f "$SOPS_AGE_KEY_FILE"; then
 fi
 
 # prepare compose files and envs for komodo
-mkdir -p "$TARGET_DIR/stacks/komodo"
+mkdir -p "$TARGET_DIR/stacks/komodo" "$TARGET_DIR/volumes/komodo"
 cp "$KOMODO_STACK_DIR/"* "$TARGET_DIR/stacks/komodo/"
 
 if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
