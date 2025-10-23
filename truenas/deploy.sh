@@ -39,8 +39,6 @@ fi
 mkdir -p "$TARGET_DIR/stacks/komodo"
 cp "$KOMODO_STACK_DIR/"* "$TARGET_DIR/stacks/komodo/"
 
-eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml")\"" > "$TARGET_DIR/stacks/komodo/compose.yaml"
-
 if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
   $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
 fi
@@ -48,6 +46,9 @@ fi
 if test -f "$HOSTS_DIR/$CONTEXT/secrets.sops.toml"; then
   $sops_cmd -d "$HOSTS_DIR/$CONTEXT/secrets.sops.toml" > "$TARGET_DIR/stacks/komodo/secrets.toml"
 fi
+
+source "$TARGET_DIR/stacks/komodo/override.env"
+eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml")\"" > "$TARGET_DIR/stacks/komodo/compose.yaml"
 
 # configure periphery
 cat <<EOF> /etc/systemd/system/periphery.service
