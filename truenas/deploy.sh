@@ -43,6 +43,10 @@ if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
   $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
 fi
 
+if test -f "$HOSTS_DIR/$CONTEXT/secrets.sops.toml"; then
+  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/secrets.sops.toml" > "$TARGET_DIR/stacks/komodo/secrets.toml"
+fi
+
 # configure periphery
 cat <<EOF> /etc/systemd/system/periphery.service
 [Unit]
@@ -52,7 +56,7 @@ Description=Agent to connect with Komodo Core
 Environment="HOME=${TARGET_DIR}"
 Environment="PERIPHERY_ROOT_DIRECTORY=${TARGET_DIR}"
 EnvironmentFile="${TARGET_DIR}/stacks/komodo/override.env"
-ExecStart=/bin/sh -lc "${TARGET_DIR}/periphery --config-path ${TARGET_DIR}/periphery.config.toml"
+ExecStart=${TARGET_DIR}/periphery --config-path ${TARGET_DIR}/periphery.config.toml
 Restart=on-failure
 TimeoutStartSec=0
 
@@ -62,7 +66,8 @@ EOF
 
 cp "${SCRIPT_DIR}/periphery.config.toml" "${TARGET_DIR}/periphery.config.toml"
 
-curl -sSL -o "${TARGET_DIR}/periphery" "https://github.com/moghtech/komodo/releases/download/v1.19.5/periphery-x86_64"
+version="$(curl https://api.github.com/repos/moghtech/komodo/releases/latest | jq -r .tag_name)"
+curl -sSL -o "${TARGET_DIR}/periphery" "https://github.com/moghtech/komodo/releases/download/${version}/periphery-x86_64"
 chmod +x "${TARGET_DIR}/periphery"
 
 systemctl daemon-reload

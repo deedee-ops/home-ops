@@ -9,7 +9,7 @@ keys:
       - &meemee age1ls53g22c75czpfshaf5yvzn7zmdk4gp6ylgdca3r0rxl9era5d6s0slsda
 
 creation_rules:
-  - path_regex: docker/hosts/meemee/.*\.sops\.env$
+  - path_regex: docker/hosts/meemee/.*\.sops\.(env|toml)$
     key_groups:
       - age:
           - *ajgon
