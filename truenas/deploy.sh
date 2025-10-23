@@ -25,8 +25,9 @@ if ! test -d "$TARGET_DIR"; then
   exit 1
 fi
 
+sops_cmd="sops"
 if ! command -v sops &> /dev/null; then
-  alias sops="docker run --rm -it ghcr.io/getsops/sops:v3.11.0-alpine"
+  sops_cmd="docker run --rm -it ghcr.io/getsops/sops:v3.11.0-alpine --"
 fi
 
 if ! test -f "$SOPS_AGE_KEY_FILE"; then
@@ -46,7 +47,7 @@ find "$SEARCH_DIR" -type f -name "compose.yaml" | sort | while read -r compose_f
     cp "$stack_dir/"* "$TARGET_DIR/stacks/$stack_name/"
 
     if test -f "$HOSTS_DIR/$CONTEXT/$stack_name.sops.env"; then
-      sops -d "$HOSTS_DIR/$CONTEXT/$stack_name.sops.env" > "$TARGET_DIR/stacks/$stack_name/override.env"
+      $sops_cmd -d "$HOSTS_DIR/$CONTEXT/$stack_name.sops.env" > "$TARGET_DIR/stacks/$stack_name/override.env"
     fi
 done
 
