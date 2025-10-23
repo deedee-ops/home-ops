@@ -1,0 +1,16 @@
+---
+# To get a new key from remote SSH machine, invoke:
+# nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
+
+keys:
+  - users:
+      - &ajgon age13s2dafyr9sfltp8heujttxug4v4m3qhj7sxzqrj6x6x3cu5n29uqfvj62l
+  - hosts:
+      - &meemee age1ls53g22c75czpfshaf5yvzn7zmdk4gp6ylgdca3r0rxl9era5d6s0slsda
+
+creation_rules:
+  - path_regex: docker/hosts/meemee/.*\.sops\.env$
+    key_groups:
+      - age:
+          - *ajgon
+          - *meemee
