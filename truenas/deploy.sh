@@ -7,7 +7,7 @@ CONTEXT="$1"
 TARGET_DIR="$2"
 
 HOSTS_DIR="$(realpath "$SCRIPT_DIR/../docker/hosts")"
-SEARCH_DIR="$(realpath "$SCRIPT_DIR/../docker/stacks")"
+KOMODO_STACK_DIR="$(realpath "$SCRIPT_DIR/../docker/stacks/komodo")"
 SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE:-/etc/age/keys.txt}
 
 if test -z "$CONTEXT"; then
@@ -35,21 +35,13 @@ if ! test -f "$SOPS_AGE_KEY_FILE"; then
     exit 1
 fi
 
-# prepare compose files and envs
-find "$SEARCH_DIR" -type f -name "compose.yaml" | sort | while read -r compose_file; do
-    # Get the directory containing the docker-compose.yml file
-    stack_dir=$(dirname "$compose_file")
-    stack_name=$(basename "$stack_dir")
+# prepare compose files and envs for komodo
+mkdir -p "$TARGET_DIR/stacks/komodo"
+cp "$KOMODO_STACK_DIR/"* "$TARGET_DIR/stacks/komodo/"
 
-    echo "Processing directory: $stack_dir"
-
-    mkdir -p "$TARGET_DIR/stacks/$stack_name"
-    cp "$stack_dir/"* "$TARGET_DIR/stacks/$stack_name/"
-
-    if test -f "$HOSTS_DIR/$CONTEXT/$stack_name.sops.env"; then
-      $sops_cmd -d "$HOSTS_DIR/$CONTEXT/$stack_name.sops.env" > "$TARGET_DIR/stacks/$stack_name/override.env"
-    fi
-done
+if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
+  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
+fi
 
 # configure periphery
 cat <<EOF> /etc/systemd/system/periphery.service
