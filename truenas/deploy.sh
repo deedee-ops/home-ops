@@ -43,8 +43,8 @@ if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
   $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
 fi
 
-if test -f "$HOSTS_DIR/$CONTEXT/secrets.sops.toml"; then
-  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/secrets.sops.toml" > "$TARGET_DIR/volumes/komodo/secrets.toml"
+if test -f "$HOSTS_DIR/$CONTEXT/komodo.config.sops.toml"; then
+  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
 fi
 
 source "$TARGET_DIR/stacks/komodo/override.env"
