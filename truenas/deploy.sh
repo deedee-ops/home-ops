@@ -39,12 +39,12 @@ fi
 mkdir -p "$TARGET_DIR/stacks/komodo" "$TARGET_DIR/volumes/komodo"
 cp "$KOMODO_STACK_DIR/"* "$TARGET_DIR/stacks/komodo/"
 
-if test -f "$HOSTS_DIR/$CONTEXT/komodo.sops.env"; then
-  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
+if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env"; then
+  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env" > "$TARGET_DIR/stacks/komodo/override.env"
 fi
 
-if test -f "$HOSTS_DIR/$CONTEXT/komodo.config.sops.toml"; then
-  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/komodo.config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
+if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml"; then
+  $sops_cmd -d "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
 fi
 
 source "$TARGET_DIR/stacks/komodo/override.env"

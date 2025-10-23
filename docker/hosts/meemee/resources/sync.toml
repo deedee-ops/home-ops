@@ -1,0 +1,9 @@
+[[resource_sync]]
+name = "gitops"
+[resource_sync.config]
+repo = "deedee-ops/home-ops"
+branch = "master"
+webhook_enabled = false
+resource_path = [
+  "docker/hosts/meemee/resources"
+]
