@@ -47,6 +47,7 @@ if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml"; then
   $sops_cmd -d "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
 fi
 
+export PERIPHERY_ROOT_DIRECTORY="${TARGET_DIR}"
 source "$TARGET_DIR/stacks/komodo/override.env"
 eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml")\"" > "$TARGET_DIR/stacks/komodo/compose.yaml"
 
