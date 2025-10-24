@@ -2,7 +2,6 @@
 services:
   traefik:
     env_file:
-      - ./compose.env
       - ./override.env
     image: traefik:3.5.3
     container_name: traefik
