@@ -1,13 +1,13 @@
 [[stack]]
-name = "minio"
+name = "rustfs"
 [stack.config]
 server = "meemee"
 auto_update = true
-repo = "deedee-ops/k8s-gitops"
+repo = "deedee-ops/home-ops"
 branch = "master"
 reclone = true
 webhook_enabled = false
-run_directory = "docker/stacks/minio"
+run_directory = "docker/stacks/rustfs"
 environment = """
 S3_DATA_DIRECTORY=/mnt/fast/s3
 """
