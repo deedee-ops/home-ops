@@ -3,7 +3,7 @@ name = "node-exporter"
 [stack.config]
 server = "meemee"
 auto_update = true
-repo = "deedee-ops/k8s-gitops"
+repo = "deedee-ops/home-ops"
 branch = "master"
 reclone = true
 webhook_enabled = false
