@@ -11,27 +11,5 @@ run_directory = "docker/stacks/traefik"
 pre_deploy.command = """
 "${PERIPHERY_ROOT_DIRECTORY}/sops" -d "${HOSTS_DIR}/meemee/secrets/traefik.sops.env" > override.env
 
-sh -c 'cat <<EOF> config/extra/truenas.yaml
----
-http:
-  routers:
-    truenas:
-      rule: "Host(`truenas.rzegocki.dev`)"
-      entryPoints:
-        - https
-      service: truenas
-      tls: {}
-
-  services:
-    truenas:
-      loadBalancer:
-        servers:
-          - url: "https://host.docker.internal:444"
-        passHostHeader: true
-        serversTransport: insecureSkipVerifyTransport
-
-  serversTransports:
-    insecureSkipVerifyTransport:
-      insecureSkipVerify: true
-'
+cp -r "${HOSTS_DIR}/meemee/overlays/traefik/"* .
 """
