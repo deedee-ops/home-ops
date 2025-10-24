@@ -11,5 +11,5 @@ run_directory = "docker/stacks/traefik"
 pre_deploy.command = """
 "${PERIPHERY_ROOT_DIRECTORY}/sops" -d "../../meemee/secrets/traefik.sops.env" > override.env
 
-cp -r "../../meemee/overlays/traefik/"* .
+cp -r "../../hosts/meemee/overlays/traefik/"* .
 """
