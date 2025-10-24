@@ -10,6 +10,8 @@ webhook_enabled = false
 run_directory = "docker/stacks/rustfs"
 environment = """
 S3_DATA_DIRECTORY=/mnt/fast/s3
+S3_HOST=s3.rzegocki.dev
+S3_UI_HOST=rustfs.rzegocki.dev
 """
 pre_deploy.command = """
 "${PERIPHERY_ROOT_DIRECTORY}/sops" -d "../../hosts/meemee/secrets/rustfs.sops.env" > override.env
