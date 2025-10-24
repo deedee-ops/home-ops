@@ -8,4 +8,6 @@ branch = "master"
 reclone = true
 webhook_enabled = false
 run_directory = "docker/stacks/traefik"
-
+pre_deploy.command = """
+/app/sops -d ../../hosts/meemee/secrets/traefik.sops.env > override.env
+"""
