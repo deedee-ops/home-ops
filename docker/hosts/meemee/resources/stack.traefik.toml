@@ -9,5 +9,10 @@ reclone = true
 webhook_enabled = false
 run_directory = "docker/stacks/traefik"
 pre_deploy.command = """
-/app/sops -d ../../hosts/meemee/secrets/traefik.sops.env > override.env
+sops_cmd="sops"
+if ! command -v sops &> /dev/null; then
+  sops_cmd="docker run --rm -e SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE} -v ${SOPS_AGE_KEY_FILE}:${SOPS_AGE_KEY_FILE} -v ${HOSTS_DIR}:${HOSTS_DIR} ghcr.io/getsops/sops:v3.11.0-alpine"
+fi
+
+sops -d "${HOSTS_DIR}/meemee/secrets/traefik.sops.env > override.env
 """

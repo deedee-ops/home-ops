@@ -59,7 +59,9 @@ Description=Agent to connect with Komodo Core
 
 [Service]
 Environment="HOME=${TARGET_DIR}"
+Environment="HOSTS_DIR=${HOSTS_DIR}"
 Environment="PERIPHERY_ROOT_DIRECTORY=${TARGET_DIR}"
+Environment="SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE}"
 ExecStart=${TARGET_DIR}/periphery --config-path ${TARGET_DIR}/periphery.config.toml
 Restart=on-failure
 TimeoutStartSec=0
