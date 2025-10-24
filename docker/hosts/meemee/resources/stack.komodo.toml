@@ -1,0 +1,10 @@
+[[stack]]
+name = "komodo"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/home-ops"
+branch = "master"
+reclone = true
+webhook_enabled = false
+run_directory = "/mnt/fast/docker/stacks/komodo"
