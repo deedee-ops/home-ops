@@ -20,13 +20,9 @@ services:
 
   core:
     image: ghcr.io/moghtech/komodo-core:1.19.5
-    labels:
-      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
     depends_on:
       - mongo
-    ports:
-      - 9120:9120
     env_file:
       - ./compose.env
       - ./override.env
@@ -40,3 +36,12 @@ services:
       KOMODO_DATABASE_PASSWORD: ${KOMODO_DB_PASSWORD}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    # traefik
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+      traefik.enable: "true"
+      traefik.http.services.komodo.loadbalancer.server.port: "9000"
+      traefik.http.routers.komodo.entrypoints: https
+      traefik.http.routers.komodo.rule: Host(`komodo.rzegocki.dev`)
+      traefik.http.routers.komodo.service: komodo
+      traefik.http.routers.komodo.tls: true
