@@ -79,6 +79,7 @@ version="$(curl -sSL https://api.github.com/repos/getsops/sops/releases/latest |
 curl -sSL -o "${TARGET_DIR}/sops" "https://github.com/getsops/sops/releases/download/${version}/sops-${version}.linux.amd64"
 chmod +x "${TARGET_DIR}/periphery"
 
-
 systemctl daemon-reload
 systemctl restart periphery.service
+
+cd "${TARGET_DIR}/stacks/komodo" && docker compose -p komodo -f compose.yaml up -d
