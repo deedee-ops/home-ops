@@ -58,7 +58,6 @@ Description=Agent to connect with Komodo Core
 [Service]
 Environment="HOME=${TARGET_DIR}"
 Environment="PERIPHERY_ROOT_DIRECTORY=${TARGET_DIR}"
-EnvironmentFile="${TARGET_DIR}/stacks/komodo/override.env"
 ExecStart=${TARGET_DIR}/periphery --config-path ${TARGET_DIR}/periphery.config.toml
 Restart=on-failure
 TimeoutStartSec=0
