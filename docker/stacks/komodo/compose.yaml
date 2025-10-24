@@ -32,6 +32,7 @@ services:
       - ./override.env
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/config.toml:/config/config.toml"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/backups:/backups"
     environment:
       KOMODO_DATABASE_ADDRESS: mongo:27017
       KOMODO_DATABASE_USERNAME: ${KOMODO_DB_USERNAME}

@@ -1,0 +1,5 @@
+[[server]]
+name = "meemee"
+[server.config]
+address = "https://host.docker.internal:8120"
+enabled = true

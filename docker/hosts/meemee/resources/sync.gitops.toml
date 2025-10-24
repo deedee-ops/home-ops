@@ -4,6 +4,7 @@ name = "gitops"
 repo = "deedee-ops/home-ops"
 branch = "master"
 webhook_enabled = false
+delete = true
 resource_path = [
   "docker/hosts/meemee/resources"
 ]
