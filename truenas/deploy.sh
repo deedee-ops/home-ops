@@ -76,5 +76,10 @@ version="$(curl -sSL https://api.github.com/repos/moghtech/komodo/releases/lates
 curl -sSL -o "${TARGET_DIR}/periphery" "https://github.com/moghtech/komodo/releases/download/${version}/periphery-x86_64"
 chmod +x "${TARGET_DIR}/periphery"
 
+version="$(curl -sSL https://api.github.com/repos/getsops/sops/releases/latest | jq -r .tag_name)"
+curl -sSL -o "${TARGET_DIR}/sops" "https://github.com/getsops/sops/releases/download/${version}/sops-${version}.linux.amd64"
+chmod +x "${TARGET_DIR}/periphery"
+
+
 systemctl daemon-reload
 systemctl restart periphery.service

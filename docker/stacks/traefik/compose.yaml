@@ -5,6 +5,7 @@ services:
       - ./override.env
     image: traefik:3.5.3
     container_name: traefik
+    network_mode: host
     restart: always
     environment:
       TZ: Europe/Warsaw
