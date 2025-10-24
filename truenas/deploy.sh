@@ -50,7 +50,7 @@ fi
 export PERIPHERY_ROOT_DIRECTORY="${TARGET_DIR}"
 export SOPS_AGE_KEY_FILE
 source "$TARGET_DIR/stacks/komodo/override.env"
-eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml")\"" > "$TARGET_DIR/stacks/komodo/compose.yaml"
+eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml" | sed 's@`@#-#@g')\"" | sed 's@#-#@`@g' > "$TARGET_DIR/stacks/komodo/compose.yaml"
 
 # configure periphery
 cat <<EOF> /etc/systemd/system/periphery.service
