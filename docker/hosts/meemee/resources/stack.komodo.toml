@@ -7,4 +7,4 @@ repo = "deedee-ops/home-ops"
 branch = "master"
 reclone = true
 webhook_enabled = false
-run_directory = "/mnt/fast/docker/stacks/komodo"
+run_directory = "docker/stacks/komodo"
