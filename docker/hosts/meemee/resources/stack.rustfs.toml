@@ -10,7 +10,7 @@ webhook_enabled = false
 run_directory = "docker/stacks/rustfs"
 environment = """
 S3_DATA_DIRECTORY=/mnt/fast/s3
-S3_HOST=s3.rzegocki.dev
+S3_HOST=s3new.rzegocki.dev
 S3_UI_HOST=rustfs.rzegocki.dev
 """
 pre_deploy.command = """
