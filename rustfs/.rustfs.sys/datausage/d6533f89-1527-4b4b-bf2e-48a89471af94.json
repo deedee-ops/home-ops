@@ -1,0 +1,19 @@
+{
+  "format_version": 1,
+  "meta": {
+    "disk_id": "d6533f89-1527-4b4b-bf2e-48a89471af94",
+    "pool_index": 0,
+    "set_index": 0,
+    "disk_index": 0
+  },
+  "last_update": {
+    "secs_since_epoch": 1761293240,
+    "nanos_since_epoch": 795921859
+  },
+  "buckets_usage": {},
+  "buckets_count": 0,
+  "objects_total_count": 0,
+  "versions_total_count": 0,
+  "delete_markers_total_count": 0,
+  "objects_total_size": 0
+}
