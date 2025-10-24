@@ -8,6 +8,12 @@ config.schedule = "0 */5 * * * *"
 name = "Sync"
 enabled = true
 executions = [
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "*", enabled = true },
   { execution.type = "RunSync", execution.params.sync = "gitops", enabled = true }
+]
+
+[[procedure.config.stage]]
+name = "Deploy"
+enabled = true
+executions = [
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "*", enabled = true }
 ]
