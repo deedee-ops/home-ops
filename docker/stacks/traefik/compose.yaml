@@ -20,7 +20,3 @@ services:
 configs:
   traefik-config:
     file: ./config/traefik.yaml
-
-volumes:
-  certs:
-    name: certs
