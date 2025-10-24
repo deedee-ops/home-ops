@@ -1,0 +1,13 @@
+[[stack]]
+name = "komodo"
+[stack.config]
+server = "meemee"
+auto_update = true
+repo = "deedee-ops/home-ops"
+branch = "master"
+reclone = true
+webhook_enabled = false
+run_directory = "docker/stacks/komodo"
+pre_deploy.command = """
+"${PERIPHERY_ROOT_DIRECTORY}/sops" -d "../../hosts/meemee/bootstrap/komodo.sops.env" > override.env
+"""
