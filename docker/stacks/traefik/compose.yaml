@@ -1,0 +1,26 @@
+---
+services:
+  traefik:
+    env_file:
+      - ./compose.env
+      - ./override.env
+    image: traefik:3.5.3
+    container_name: traefik
+    restart: always
+    environment:
+      TZ: Europe/Warsaw
+    configs:
+      - source: traefik-config
+        target: /etc/traefik/traefik.yml
+    volumes:
+      - ./config/extra:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/traefik/certs:/certs"
+
+configs:
+  traefik-config:
+    file: ./config/traefik.yaml
+
+volumes:
+  certs:
+    name: certs

@@ -1,0 +1,82 @@
+[[action]]
+name = "Sync sops"
+[action.config]
+run_at_startup = true
+schedule_format = "Cron"
+schedule = "0 0 1 * * *"
+webhook_enabled = false
+file_contents = """
+const VERSION_FILE = "/app/.sops-version";
+const SOPS_FILE = "/app/sops";
+const API_URL = "https://api.github.com/repos/getsops/sops/releases/latest";
+
+async function fetchLatestVersion(): Promise<string> {
+  const res = await fetch(API_URL, {
+    headers: { "User-Agent": "deno" },
+  });
+  if (!res.ok) {
+    throw new Error(`GitHub API request failed: ${res.status}`);
+  }
+  const data = await res.json();
+  if (!data.tag_name) {
+    throw new Error("No tag_name in API response");
+  }
+  return data.tag_name;
+}
+
+async function readLocalVersion(): Promise<string | null> {
+  try {
+    const text = await Deno.readTextFile(VERSION_FILE);
+    return text.trim();
+  } catch {
+    return null; // file missing
+  }
+}
+
+async function writeLocalVersion(version: string): Promise<void> {
+  await Deno.writeTextFile(VERSION_FILE, version + "\n");
+}
+
+async function downloadFile(url: string, dest: string): Promise<void> {
+  const res = await fetch(url, { headers: { "User-Agent": "deno" } });
+  if (!res.ok) {
+    throw new Error(`Download failed: ${res.status}`);
+  }
+
+  const file = await Deno.open(dest, { write: true, create: true, truncate: true });
+  const body = res.body;
+  if (!body) throw new Error("No response body");
+  await body.pipeTo(file.writable);
+}
+
+async function main() {
+  console.log("🔍 Checking latest SOPS version...");
+  const version = await fetchLatestVersion();
+  console.log(`Latest version: ${version}`);
+
+  const localVersion = await readLocalVersion();
+  console.log(`Local version: ${localVersion ?? "none"}`);
+
+  if (localVersion === version) {
+    console.log("✅ Already up to date.");
+    return;
+  }
+
+  console.log("⬇️  Updating to new version...");
+  const downloadUrl = `https://github.com/getsops/sops/releases/download/${version}/sops-${version}.linux.amd64`;
+  console.log(`Downloading from: ${downloadUrl}`);
+
+  await downloadFile(downloadUrl, SOPS_FILE);
+  await Deno.chmod(SOPS_FILE, 0o755);
+  await writeLocalVersion(version);
+
+  console.log(`✅ Updated to ${version}`);
+}
+
+if (import.meta.main) {
+  main().catch((err) => {
+    console.error("❌ Error:", err);
+    Deno.exit(1);
+  });
+}
+"""

@@ -1,0 +1,20 @@
+---
+http:
+  routers:
+    dashboard:
+      rule: Host(`traefik.rzegocki.dev`)
+      service: api@internal
+      entryPoints:
+        - https
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: rzegocki.dev
+            sans:
+              - "*.rzegocki.dev"
+    metrics:
+      rule: Host(`traefik.rzegocki.dev`) && PathPrefix(`/metrics`)
+      service: prometheus@internal
+      entryPoints:
+        - https
+      tls: true

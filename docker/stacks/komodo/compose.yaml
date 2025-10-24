@@ -14,6 +14,7 @@ services:
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/mongo/data:/data/db"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/mongo/config:/data/configdb"
+      - "${SOPS_AGE_KEY_FILE:-/etc/age/keys.txt}:/etc/age/keys.txt"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DB_PASSWORD}
