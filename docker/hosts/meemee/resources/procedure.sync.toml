@@ -1,0 +1,13 @@
+[[procedure]]
+name = "Sync Repositories"
+config.webhook_enabled = false
+config.schedule_format = "Cron"
+config.schedule = "0 */5 * * * *"
+
+[[procedure.config.stage]]
+name = "Sync"
+enabled = true
+executions = [
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = "*", enabled = true },
+  { execution.type = "RunSync", execution.params.sync = "gitops", enabled = true }
+]
