@@ -129,6 +129,7 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
+            pkgs.envconsul
             pkgs.gum
             pkgs.helmfile
             pkgs.jq
@@ -155,8 +156,7 @@
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
             export ROOT_DIR="$(git rev-parse --show-toplevel)"
-
-            source .env
+            export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
 
             export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
             export VAULT_ADDR=https://vault.rzegocki.dev

@@ -10,7 +10,6 @@ talos_dir := justfile_dir() + '/talos'
 cluster_dir := talos_dir + '/' + cluster
 
 kubectl_cmd := 'kubectl --kubeconfig=' + cluster_dir + '/kubeconfig'
-# talosctl_cmd := 'talosctl --talosconfig=' + cluster_dir + '/talosconfig'
 controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 nodes_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'"
 
