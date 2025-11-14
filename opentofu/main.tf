@@ -12,12 +12,22 @@ terraform {
   }
   required_version = ">= 1.6.0"
 
-  backend "s3" {
-    bucket                      = "states"
-    endpoint                    = "https://s3.rzegocki.dev"
-    key                         = "opentofu/k8s/terraform.tfstate"
-    region                      = "us-east-1"
-    skip_credentials_validation = true
-    use_path_style              = true
+  backend "local" {
+    path = "terraform.tfstate"
+  }
+
+  encryption {
+    key_provider "pbkdf2" "tofu_state_password" {
+      passphrase = var.tofu_state_password
+    }
+
+    method "aes_gcm" "tofu_state_password" {
+      keys = key_provider.pbkdf2.tofu_state_password
+    }
+
+    state {
+      method   = method.aes_gcm.tofu_state_password
+      enforced = true
+    }
   }
 }

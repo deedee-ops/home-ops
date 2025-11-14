@@ -11,8 +11,8 @@ cluster_dir := talos_dir + '/' + cluster
 
 kubectl_cmd := 'kubectl --kubeconfig=' + cluster_dir + '/kubeconfig'
 # talosctl_cmd := 'talosctl --talosconfig=' + cluster_dir + '/talosconfig'
-controller := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'")
-nodes := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'")
+controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
+nodes_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'"
 
 [private]
 default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
@@ -20,7 +20,7 @@ default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
 [doc('Install Talos')]
 talos:
     just log info "Running stage..." "stage" "$0"
-    for n in {{ nodes }}; do \
+    for n in {{ shell(nodes_cmd) }}; do \
         if ! op=$(just talos apply-node "$n" --insecure 2>&1); then \
             if [[ "$op" == *"certificate required"* ]]; then \
                 just log info "Talos already configured, skipping apply of config" "stage" "$0" "node" "$n"; \
@@ -33,7 +33,7 @@ talos:
 [doc('Install Kubernetes')]
 k8s $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     just log info "Running stage..." "stage" "$0"
-    until op=$(talosctl -n "{{ controller }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
+    until op=$(talosctl -n "{{ shell(controller_cmd) }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
         just log info "Kubernetes bootstrap in progress. Retrying in 5 seconds..." "stage" "$0"; \
         sleep 5; \
     done
@@ -41,11 +41,11 @@ k8s $TALOSCONFIG=(cluster_dir + "/talosconfig"):
 [doc('Fetch kubeconfig')]
 kubeconfig $TALOSCONFIG=(cluster_dir + "/talosconfig") lb="cilium":
     just log info "Running stage..." "stage" "$0"
-    if ! talosctl kubeconfig -n "{{ controller }}" -f --force-context-name {{ cluster }} {{ cluster_dir }}; then \
+    if ! talosctl kubeconfig -n "{{ shell(controller_cmd) }}" -f --force-context-name {{ cluster }} {{ cluster_dir }}; then \
         just log fatal "Failed to fetch kubeconfig" "stage" "$0"; \
     fi
     if [[ "{{ lb }}" != "cilium" ]]; then \
-        if ! {{ kubectl_cmd }} config set-cluster {{ cluster }} --server "https://{{ controller }}:6443"; then \
+        if ! {{ kubectl_cmd }} config set-cluster {{ cluster }} --server "https://{{ shell(controller_cmd) }}:6443"; then \
             just log fatal "Failed to set kubectl cluster server address" "stage" "$0"; \
         fi; \
     fi
