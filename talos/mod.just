@@ -1,12 +1,13 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+# cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+cluster := "deedee"
 
 talos_dir := justfile_dir() + '/talos'
 cluster_dir := talos_dir + '/' + cluster
 
-controller := shell("talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'")
+controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 
 [private]
 default:
@@ -17,11 +18,11 @@ apply-node node $TALOSCONFIG=(cluster_dir + "/talosconfig") *args:
     just talos render-config "{{ node }}" | talosctl -n "{{ node }}" apply-config -f /dev/stdin {{ args }}
 
 [doc('Download Talos machine image')]
-download-image version schematic:
+download-image version schematic=shell("just talos gen-schematic-id"):
     gum spin --title "Downloading Talos {{ version }} ..." -- \
     curl -sfL --remove-on-error --retry 5 --retry-delay 5 --retry-all-errors \
         -o "{{ talos_dir }}/talos-{{ version }}-{{ replace_regex(schematic, '^(.{8}).*', '$1') }}.iso" \
-        "https://factory.talos.dev/image/{{ schematic }}/{{ version }}/metal-amd64.iso"
+        "https://talos.crypt.rzegocki.dev/image/{{ schematic }}/v{{ version }}/metal-amd64.iso"
     just log info "Downloaded Talos" version "{{ version }}" schematic "{{ schematic }}"
 
 [doc('Generate schematic ID from Talos schematic')]
@@ -51,7 +52,7 @@ shutdown-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
 
 [doc('Upgrade Kubernetes version on the cluster')]
 upgrade-k8s version $TALOSCONFIG=(cluster_dir + "/talosconfig"):
-    talosctl -n "{{ controller }}" upgrade-k8s --to {{ version }}
+    talosctl -n "{{ shell(controller_cmd) }}" upgrade-k8s --to {{ version }}
 
 [doc('Upgrade Talos version on a node')]
 upgrade-node node $TALOSCONFIG=(cluster_dir + "/talosconfig"):
