@@ -17,3 +17,7 @@ creation_rules:
       - age:
           - *ajgon
           - *meemee
+  - path_regex: scripts/.*\.sops\.env$
+    key_groups:
+      - age:
+          - *ajgon

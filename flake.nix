@@ -48,7 +48,7 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "1password-cli" ];
+          config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "vault" ];
         };
       in
       {
@@ -129,7 +129,6 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
-            pkgs._1password-cli
             pkgs.gum
             pkgs.helmfile
             pkgs.jq
@@ -141,7 +140,9 @@
             pkgs.minijinja
             pkgs.opentofu
             pkgs.popeye
+            pkgs.sops
             pkgs.talosctl
+            pkgs.vault
             pkgs.yamlfmt
             pkgs.yq-go
 
@@ -155,20 +156,20 @@
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
             export ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-            if [[ ! -e "$ROOT_DIR/.current-cluster" || ! -s "$ROOT_DIR/.current-cluster" ]]; then
-              source "$ROOT_DIR/scripts/_lib.sh"
-              echo -e "\e[31mWorking cluster not set.\e[0m"
-              local clusters=($(ls -1 --color=never "$ROOT_DIR/kubernetes/clusters"))
-              export CURRENT_CLUSTER=$(choose_option "''${clusters[@]}")
-              echo -n "$CURRENT_CLUSTER" > "$ROOT_DIR/.current-cluster"
-            else
-              export CURRENT_CLUSTER="$(cat "$ROOT_DIR/.current-cluster")"
-            fi
-
             source .env
 
-            #export AWS_ACCESS_KEY_ID="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_ACCESS_KEY_ID") | .value')"
-            #export AWS_SECRET_ACCESS_KEY="$(bws secret list | jq -r '.[] | select(.key == "TOFU_AWS_SECRET_ACCESS_KEY") | .value')"
+            export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
+            export VAULT_ADDR=https://vault.rzegocki.dev
+            export $(${pkgs.lib.getExe pkgs.sops} -d scripts/vault.sops.env | xargs)
+
+            if [ -f "$ROOT_DIR/.current-cluster" ]; then
+              export KUBECONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
+              export TALOSCONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
+            fi
+
+            # opentofu
+            ${pkgs.lib.getExe pkgs.vault} kv get -field=TOFU_TFVARS opentofu/state > "$ROOT_DIR/opentofu/terraform.tfvars"
+            export TF_VAR_tofu_state_password="$(${pkgs.lib.getExe pkgs.vault} kv get -field=TF_VAR_tofu_state_password opentofu/state)"
           '';
         };
       }

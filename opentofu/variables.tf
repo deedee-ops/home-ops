@@ -1,3 +1,9 @@
+variable "tofu_state_password" {
+  description = "Decryption password for tofu state"
+  type        = string
+  sensitive   = true
+}
+
 variable "cloudflare_account_id" {
   description = "Account ID for Cloudflare account"
   type        = string
