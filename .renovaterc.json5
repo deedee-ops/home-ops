@@ -21,13 +21,6 @@
   ],
   dependencyDashboardTitle: "Renovate Dashboard 🤖",
   suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
-  ignorePaths: ["kubernetes/**/*.tmpl.*"],
-  "helm-values": {
-    managerFilePatterns: ["(^|/)kubernetes/.+/values.*\\.ya?ml$"],
-  },
-  kubernetes: {
-    managerFilePatterns: ["(^|/)kubernetes/.+\\.ya?ml$"],
-  },
   packageRules: [
     {
       matchDatasources: ["terraform-provider", "terraform-module"],
