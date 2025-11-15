@@ -5,6 +5,7 @@ kubeconfig
 talosconfig
 secrets.env
 keys.txt
+talos/**/*.iso
 
 .terraform
 .terraform.lock.hcl

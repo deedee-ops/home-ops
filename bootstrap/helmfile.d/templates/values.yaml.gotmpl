@@ -1,5 +1,6 @@
 {{- $base := (fromYaml (readFile (printf "../../../kubernetes/apps/%s/%s/app.yaml" .Release.Namespace .Release.Name))).values }}
-{{- $cluster := (index (fromYaml (readFile (printf "../../../kubernetes/clusters/%s/values.yaml" .Release.KubeContext))) .Release.Name)}}
+{{- $globals := (fromYaml (readFile (printf "../../../kubernetes/clusters/%s/globals.json" .Release.KubeContext)))}}
+{{- $cluster := (index (fromYaml (tpl (readFile (printf "../../../kubernetes/clusters/%s/values.yaml" .Release.KubeContext)) $globals)) .Release.Name)}}
 {{- if $cluster }}
 {{ mustMergeOverwrite $base $cluster | toYaml }}
 {{- else }}

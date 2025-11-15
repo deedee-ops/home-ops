@@ -1,0 +1,19 @@
+---
+argo-cd:
+  configs:
+    cm:
+      url: "https://argocd.{{ .global.rootDomain }}"
+
+cilium:
+  cluster:
+    name: "{{ .global.clusterName }}"
+  custom:
+    bgpRouter:
+      name: unifi
+      ip: "{{ .global.ips.k8sGateway }}"
+    pools:
+      - "{{ .global.ips.k8sCIDR }}"
+  k8sServiceHost: "{{ .global.ips.k8sVIP }}"
+  k8sServicePort: "6443"
+  l2announcements:
+    enabled: true

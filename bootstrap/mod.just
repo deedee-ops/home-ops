@@ -13,8 +13,10 @@ kubectl_cmd := 'kubectl --kubeconfig=' + cluster_dir + '/kubeconfig'
 controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 nodes_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'"
 
+export TALOSCONFIG := cluster_dir + "/talosconfig"
+
 [private]
-default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
+default: talos k8s kubeconfig wait resources crds apps
 
 [doc('Install Talos')]
 talos:
@@ -30,7 +32,7 @@ talos:
     done
 
 [doc('Install Kubernetes')]
-k8s $TALOSCONFIG=(cluster_dir + "/talosconfig"):
+k8s:
     just log info "Running stage..." "stage" "$0"
     until op=$(talosctl -n "{{ shell(controller_cmd) }}" bootstrap 2>&1 || true) && [[ "$op" == *"AlreadyExists"* ]]; do \
         just log info "Kubernetes bootstrap in progress. Retrying in 5 seconds..." "stage" "$0"; \
@@ -38,15 +40,10 @@ k8s $TALOSCONFIG=(cluster_dir + "/talosconfig"):
     done
 
 [doc('Fetch kubeconfig')]
-kubeconfig $TALOSCONFIG=(cluster_dir + "/talosconfig") lb="cilium":
+kubeconfig lb="cilium":
     just log info "Running stage..." "stage" "$0"
     if ! talosctl kubeconfig -n "{{ shell(controller_cmd) }}" -f --force-context-name {{ cluster }} {{ cluster_dir }}; then \
         just log fatal "Failed to fetch kubeconfig" "stage" "$0"; \
-    fi
-    if [[ "{{ lb }}" != "cilium" ]]; then \
-        if ! {{ kubectl_cmd }} config set-cluster {{ cluster }} --server "https://{{ shell(controller_cmd) }}:6443"; then \
-            just log fatal "Failed to set kubectl cluster server address" "stage" "$0"; \
-        fi; \
     fi
 
 [doc('Wait for nodes to be not-ready')]
@@ -62,7 +59,7 @@ wait:
 [doc('Apply Kubernetes resources')]
 resources:
     just log info "Running stage..." "stage" "$0"
-    if ! just template "{{ bootstrap_dir }}/resources.yaml.j2" | {{ kubectl_cmd }} apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
+    if ! just template kubernetes "{{ bootstrap_dir }}/resources.yaml.j2" | {{ kubectl_cmd }} apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
         just log fatal "Failed to apply resources" "stage" "$0"; \
     fi;
 

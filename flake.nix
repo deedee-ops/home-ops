@@ -165,6 +165,7 @@
             if [ -f "$ROOT_DIR/.current-cluster" ]; then
               export KUBECONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
               export TALOSCONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
+              ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "talos/$(cat "$ROOT_DIR/.current-cluster")" > "$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
             fi
 
             # opentofu

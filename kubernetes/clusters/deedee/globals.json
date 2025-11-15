@@ -1,0 +1,19 @@
+{
+  "global": {
+    "clusterName": "deedee",
+    "rootDomain": "rzegocki.dev",
+    "ips": {
+      "internalLB": "192.168.42.18",
+      "externalLB": "192.168.42.19",
+      "k8sCIDR": "192.168.42.0/24",
+      "k8sVIP": "192.168.42.20",
+      "k8sGateway": "192.168.42.1"
+    },
+    "tls": {
+      "clusterIssuer": "letsencrypt-production"
+    },
+    "enabledApps": [
+      "argocd/argo-cd"
+    ]
+  }
+}

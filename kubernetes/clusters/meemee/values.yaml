@@ -5,7 +5,7 @@
 # So any value in this file or globals.json, can be expanded in the file itself.
 vars:
   network:
-    k8sIP: 10.100.10.10
+    k8sVIP: 10.100.10.10
 argo-cd:
   configs:
     cm:
@@ -34,8 +34,8 @@ cilium:
     tunnelProtocol: geneve
   custom:
     pools:
-      - "{{ .vars.network.k8sIP }}/29"
-  k8sServiceHost: "{{ .vars.network.k8sIP }}"
+      - "{{ .vars.network.k8sCIDR }}"
+  k8sServiceHost: "{{ .vars.network.k8sVIP }}"
   k8sServicePort: "6443"
   l2announcements:
     enabled: true
