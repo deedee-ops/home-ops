@@ -83,22 +83,3 @@ releases:
           - >-
             until kubectl get crd clusterimagepolicies.policy.sigstore.dev &>/dev/null; do sleep 5; done
         showlogs: true
-  - name: argo-cd
-    namespace: argocd
-    chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
-    version: 9.1.3
-    values:
-      - ./templates/values.yaml.gotmpl
-    needs:
-      - cosign-system/policy-controller
-    hooks:
-      - events:
-          - "presync"
-        command: bash
-        args:
-          - -c
-          - >-
-            kubectl apply --server-side --field-manager=bootstrap -n argocd
-            --filename ../../kubernetes/apps/argocd/argo-cd/templates/ciliumnetworkpolicy.yaml
-            --wait=true
-        showlogs: true
