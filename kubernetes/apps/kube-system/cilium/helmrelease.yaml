@@ -1,0 +1,155 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cilium
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: cilium
+  interval: 1h
+  values:
+    autoDirectNodeRoutes: true
+    bandwidthManager:
+      enabled: true
+      bbr: true
+    bgpControlPlane:
+      enabled: true
+    bpf:
+      datapathMode: netkit
+      masquerade: true
+      preallocateMaps: true
+
+      # breaks dnsproxy
+      # tproxy: true
+
+    bpfClockProbe: true
+    cgroup:
+      automount:
+        enabled: false
+      hostRoot: /sys/fs/cgroup
+
+    # for multus
+    cni:
+      exclusive: false
+
+    dashboards:
+      enabled: true
+    devices: eth+
+
+    enableIPv4BIGTCP: true
+    endpointRoutes:
+      enabled: true
+    envoy:
+      enabled: false
+    gatewayAPI:
+      enabled: false
+    hubble:
+      enabled: true
+      metrics:
+        enabled:
+          - dns:query
+          - drop
+          - tcp
+          - flow
+          - port-distribution
+          - icmp
+          - http
+        dashboards:
+          enabled: true
+        serviceMonitor:
+          enabled: true
+      relay:
+        enabled: true
+        rollOutPods: true
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            memory: "512Mi"
+        prometheus:
+          serviceMonitor:
+            enabled: true
+      ui:
+        enabled: true
+        rollOutPods: true
+        backend:
+          # https://github.com/cilium/hubble-ui/issues/853
+          # livenessProbe:
+          #   enabled: true
+          # readinessProbe:
+          #   enabled: true
+          resources: &uiresources
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              memory: "1Gi"
+        frontend:
+          resources: *uiresources
+    ipam:
+      mode: kubernetes
+    ipv4NativeRoutingCIDR: 172.30.0.0/16
+    k8sServiceHost: 127.0.0.1
+    k8sServicePort: 7445
+    kubeProxyReplacement: true
+    kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
+    l2announcements:
+      enabled: false
+    loadBalancer:
+      algorithm: maglev
+      mode: dsr
+    localRedirectPolicy: true
+    operator:
+      enabled: true
+      dashboards:
+        enabled: true
+      prometheus:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+      replicas: 2
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+        limits:
+          memory: "1Gi"
+      rollOutPods: true
+    pmtuDiscovery:
+      enabled: true
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        trustCRDsExist: true
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "256Mi"
+      limits:
+        memory: "2Gi"
+    rollOutCiliumPods: true
+    routingMode: native
+    securityContext:
+      capabilities:
+        ciliumAgent:
+          - BPF
+          - CHOWN
+          - DAC_OVERRIDE
+          - FOWNER
+          - IPC_LOCK
+          - KILL
+          - NET_ADMIN
+          - NET_RAW
+          - PERFMON
+          - SETGID
+          - SETUID
+          - SYS_ADMIN
+          - SYS_RESOURCE
+        cleanCiliumState:
+          - NET_ADMIN
+          - SYS_ADMIN
+          - SYS_RESOURCE

@@ -2,22 +2,21 @@ set positional-arguments := true
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+export CLUSTER := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+export TALOSCONFIG := cluster_dir + "/talosconfig"
+export KUBECONFIG := cluster_dir + "/kubeconfig"
 
 bootstrap_dir := justfile_dir() + '/bootstrap'
 kubernetes_dir := justfile_dir() + '/kubernetes'
 talos_dir := justfile_dir() + '/talos'
-cluster_dir := talos_dir + '/' + cluster
+cluster_dir := talos_dir + '/' + CLUSTER
 
 kubectl_cmd := 'kubectl --kubeconfig=' + cluster_dir + '/kubeconfig'
 controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 nodes_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.nodes | join (\" \")'"
 
-export TALOSCONFIG := cluster_dir + "/talosconfig"
-export KUBECONFIG := cluster_dir + "/kubeconfig"
-
 [private]
-default: talos k8s (kubeconfig "node") wait resources crds apps kubeconfig
+default: talos k8s (kubeconfig "node") wait namespaces resources crds apps kubeconfig
 
 [doc('Install Talos')]
 talos:
@@ -43,11 +42,11 @@ k8s:
 [doc('Fetch kubeconfig')]
 kubeconfig lb="cilium":
     just log info "Running stage..." "stage" "$0"
-    if ! talosctl kubeconfig -n "{{ shell(controller_cmd) }}" -f --force-context-name {{ cluster }} $KUBECONFIG; then \
+    if ! talosctl kubeconfig -n "{{ shell(controller_cmd) }}" -f --force-context-name $CLUSTER $KUBECONFIG; then \
         just log fatal "Failed to fetch kubeconfig" "stage" "$0"; \
     fi
     if [[ "{{ lb }}" != "cilium" ]]; then \
-        if ! kubectl config set-cluster {{ cluster }} --server "https://{{ shell(controller_cmd) }}:6443"; then \
+        if ! kubectl config set-cluster $CLUSTER --server "https://{{ shell(controller_cmd) }}:6443"; then \
             just log fatal "Failed to set kubectl cluster server address" "stage" "$0"; \
         fi; \
     fi
@@ -61,6 +60,15 @@ wait:
             sleep 5; \
         done \
     fi
+
+[doc('Apply Kubernetes namespaces')]
+namespaces:
+    just log info "Running stage..." "stage" "$0"
+    find "{{ kubernetes_dir }}/clusters/$CLUSTER/apps" -mindepth 1 -maxdepth 1 -type d | while IFS= read -r dir; do \
+        if ! kustomize build "$dir" | yq ea -e 'select(.kind == "Namespace")' | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
+            just log fatal "Failed to apply namespace" "stage" "$0" "namespace" "$(basename "$dir")"; \
+        fi; \
+    done
 
 [doc('Apply Kubernetes resources')]
 resources:
@@ -79,6 +87,6 @@ crds:
 [doc('Apply Helmfile Apps')]
 apps:
     just log info "Running stage..." "stage" "$0"
-    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync --hide-notes --kube-context "{{ cluster }}"; then \
+    if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/01-apps.yaml" sync --hide-notes; then \
         just log fatal "Failed to sync helmfile" "stage" "$0"; \
     fi

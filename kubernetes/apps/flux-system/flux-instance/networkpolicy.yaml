@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: flux-instance-egress-internal
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: flux
+    egress:
+      - toEntities:
+          - kube-apiserver
+      - toEndpoints:
+          - {}
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: flux-instance-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/component: source-controller
+    egress:
+      - toFQDNs:
+          # signatures
+          - matchName: tuf-repo-cdn.sigstore.dev
+          # gitops repo
+          - matchName: github.com
+          # helm charts
+          - matchName: ghcr.io
+          - matchName: mirror.gcr.io
+          - matchName: pkg-containers.githubusercontent.com
+          - matchName: quay.io
+          - matchName: registry.developers.crunchydata.com
+          - matchPattern: "cdn*.quay.io"
+        toPorts:
+          - ports:
+              - port: "443"

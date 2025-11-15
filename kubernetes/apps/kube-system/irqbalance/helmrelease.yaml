@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: irqbalance
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: irqbalance
+  interval: 1h
+  values:
+    controllers:
+      main:
+        type: daemonset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/irqbalance
+              tag: 1.9.4@sha256:86f83ccf82033339f19981697f947d96194539d6b130fa5a4336e887461fe7dc
+            env:
+              IRQBALANCE_BANNED_CPULIST: 8-15 # 8-15 are E-cores
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 128Mi
+            securityContext:
+              privileged: true
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      hostIPC: true
+      hostPID: true
+    persistence:
+      run:
+        type: emptyDir
+        globalMounts:
+          - path: /run/irqbalance
