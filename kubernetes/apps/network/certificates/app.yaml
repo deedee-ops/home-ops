@@ -1,7 +1,0 @@
----
-# yaml-language-server: $schema=../../../../schemas/argocd.json
-namespace: network
-name: certificates
-psp: restricted
-
-# vim:ft=yaml
