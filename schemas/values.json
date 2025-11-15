@@ -7,7 +7,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=cert-manager/cert-manager",
-      "$ref": "https://raw.githubusercontent.com/cert-manager/cert-manager/refs/tags/v1.18.1/deploy/charts/cert-manager/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/cert-manager/cert-manager/refs/tags/v1.18.3/deploy/charts/cert-manager/values.schema.json"
     },
     "cilium": {
       "type": "object",
