@@ -36,7 +36,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=stakater/Reloader",
-      "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.4/deployments/kubernetes/chart/reloader/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.10/deployments/kubernetes/chart/reloader/values.schema.json"
     },
 
     "authelia": {
