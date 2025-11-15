@@ -1,72 +1,12 @@
 ---
-# yamllint disable rule:line-length
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/namespace-v1.json
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: kube-system
-  labels:
-    pod-security.kubernetes.io/enforce: privileged
-    pod-security.kubernetes.io/audit: privileged
-    pod-security.kubernetes.io/warn: privileged
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/namespace-v1.json
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: argocd
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/namespace-v1.json
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: cosign-system
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/namespace-v1.json
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: external-secrets
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/secret-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/secret-v1.json
 apiVersion: v1
 kind: Secret
 metadata:
-  name: onepassword-secret
+  name: vault-secret
   namespace: external-secrets
 stringData:
-  1password-credentials.json: op://{{ ENV.CLUSTER_NAME }}/1password/OP_CREDENTIALS_JSON_B64
-  token: op://{{ ENV.CLUSTER_NAME }}/1password/OP_CONNECT_TOKEN
----
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.1/secret-v1.json
-apiVersion: v1
-kind: Secret
-metadata:
-  name: argocd-secret
-  namespace: argocd
-stringData:
-  admin.password: op://{{ ENV.CLUSTER_NAME }}/kubernetes/ARGOCD_ADMIN_PASSWORD_ENCRYPTED
-  admin.passwordMtime: "2025-10-19T09:16:23Z"
-  oidc.authelia.clientID: op://{{ ENV.CLUSTER_NAME }}/kubernetes/ARGOCD_OIDC_CLIENT_ID
-  oidc.authelia.clientSecret: op://{{ ENV.CLUSTER_NAME }}/kubernetes/ARGOCD_OIDC_CLIENT_SECRET
-  server.secretkey: op://{{ ENV.CLUSTER_NAME }}/kubernetes/ARGOCD_SERVER_SECRETKEY
-  webhook.github.secret: op://{{ ENV.CLUSTER_NAME }}/kubernetes/ARGOCD_WEBHOOK_GITHUB_SECRET
-  # vim:ft=yaml
+  token: "{{ ENV.VAULT_TOKEN }}"
+
+# vim:ft=yaml

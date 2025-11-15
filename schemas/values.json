@@ -7,25 +7,25 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=cert-manager/cert-manager",
-      "$ref": "https://raw.githubusercontent.com/cert-manager/cert-manager/refs/tags/v1.18.1/deploy/charts/cert-manager/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/cert-manager/cert-manager/refs/tags/v1.19.1/deploy/charts/cert-manager/values.schema.json"
     },
     "cilium": {
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=cilium/cilium",
-      "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.5/install/kubernetes/cilium/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.10/install/kubernetes/cilium/values.schema.json"
     },
     "external-dns": {
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=kubernetes-sigs/external-dns",
-      "$ref": "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.17.0/charts/external-dns/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.19.0/charts/external-dns/values.schema.json"
     },
     "external-secrets": {
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=external-secrets/external-secrets",
-      "$ref": "https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v0.18.1/deploy/charts/external-secrets/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v1.0.0/deploy/charts/external-secrets/values.schema.json"
     },
     "policy-controller": {
       "type": "object",
@@ -36,7 +36,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=stakater/Reloader",
-      "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.4/deployments/kubernetes/chart/reloader/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/stakater/Reloader/refs/tags/v1.4.10/deployments/kubernetes/chart/reloader/values.schema.json"
     },
 
     "authelia": {

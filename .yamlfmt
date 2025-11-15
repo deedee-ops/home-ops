@@ -10,6 +10,7 @@ exclude:
   - ".direnv/**/*.yaml"
   - ".direnv/**/*.yaml.j2"
   - ".pre-commit-config.yaml"
+  - "talos/*/schematic.yaml.j2"
 formatter:
   type: basic
   disable_alias_key_correction: true
