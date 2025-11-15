@@ -8,7 +8,7 @@ releases:
   - name: cilium
     namespace: kube-system
     chart: oci://ghcr.io/home-operations/charts-mirror/cilium
-    version: 1.18.2
+    version: 1.18.4
     values:
       - ./templates/values.yaml.gotmpl
       - hubble: # hubble wouldn't work at this stage
@@ -50,7 +50,7 @@ releases:
   - name: spegel
     namespace: kube-system
     chart: oci://ghcr.io/spegel-org/helm-charts/spegel
-    version: 0.4.0
+    version: 0.5.1
     values:
       - ./templates/values.yaml.gotmpl
     needs:
@@ -86,7 +86,7 @@ releases:
   - name: argo-cd
     namespace: argocd
     chart: oci://ghcr.io/argoproj/argo-helm/argo-cd
-    version: 8.6.4
+    version: 9.1.3
     values:
       - ./templates/values.yaml.gotmpl
     needs:

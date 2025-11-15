@@ -129,6 +129,7 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
+            pkgs.envconsul
             pkgs.gum
             pkgs.helmfile
             pkgs.jq
@@ -155,8 +156,7 @@
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
             export ROOT_DIR="$(git rev-parse --show-toplevel)"
-
-            source .env
+            export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
 
             export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
             export VAULT_ADDR=https://vault.rzegocki.dev
@@ -165,11 +165,12 @@
             if [ -f "$ROOT_DIR/.current-cluster" ]; then
               export KUBECONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
               export TALOSCONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
+              ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "$(cat "$ROOT_DIR/.current-cluster")/talos" > "$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
             fi
 
             # opentofu
-            ${pkgs.lib.getExe pkgs.vault} kv get -field=TOFU_TFVARS opentofu/state > "$ROOT_DIR/opentofu/terraform.tfvars"
-            export TF_VAR_tofu_state_password="$(${pkgs.lib.getExe pkgs.vault} kv get -field=TF_VAR_tofu_state_password opentofu/state)"
+            ${pkgs.lib.getExe pkgs.vault} kv get -field=TOFU_TFVARS global/opentofu > "$ROOT_DIR/opentofu/terraform.tfvars"
+            export TF_VAR_tofu_state_password="$(${pkgs.lib.getExe pkgs.vault} kv get -field=TF_VAR_tofu_state_password global/opentofu)"
           '';
         };
       }
