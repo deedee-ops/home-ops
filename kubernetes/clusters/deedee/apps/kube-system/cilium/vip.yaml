@@ -1,0 +1,19 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/service-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-api
+  annotations:
+    lbipam.cilium.io/ips: 192.168.42.20
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    k8s-app: kube-apiserver
+    tier: control-plane
+  ports:
+    - port: 6443

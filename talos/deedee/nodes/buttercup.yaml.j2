@@ -11,7 +11,7 @@ machine:
     hostname: buttercup
     interfaces:
       - deviceSelector:
-          busPath: 1-*  # blossom
+          busPath: 1-* # blossom
           driver: thunderbolt-net
         dhcp: false
         mtu: 65520
@@ -21,7 +21,7 @@ machine:
           - network: 169.254.42.21/32
             metric: 2048
       - deviceSelector:
-          busPath: 0-*  # bubbles
+          busPath: 0-* # bubbles
           driver: thunderbolt-net
         dhcp: false
         mtu: 65520
@@ -31,5 +31,4 @@ machine:
           - network: 169.254.42.22/32
             metric: 2048
   type: controlplane
-
-# vim:ft=yaml
+  # vim:ft=yaml

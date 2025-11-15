@@ -1,0 +1,1 @@
+{{ exec "yq" (list ".spec.values.instance.sync.path = \"kubernetes/clusters/\" + env(CLUSTER) + \"/bootstrap\" | select(.kind == \"HelmRelease\").spec.values" "../../../kubernetes/apps/flux-system/flux-instance/helmrelease.yaml") }}

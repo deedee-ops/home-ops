@@ -9,7 +9,7 @@ area/docker:
 area/docs:
   - changed-files:
       - any-glob-to-any-file:
-          - "README.md"
+          - "**/README.md"
           - "docs/**/*.md"
 area/github:
   - changed-files:

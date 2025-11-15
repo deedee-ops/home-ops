@@ -130,6 +130,7 @@
         devShells.default = pkgs.mkShell {
           buildInputs = self.checks.${system}.pre-commit-check.enabledPackages ++ [
             pkgs.envconsul
+            pkgs.fluxcd
             pkgs.gum
             pkgs.helmfile
             pkgs.jq
