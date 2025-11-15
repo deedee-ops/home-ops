@@ -7,7 +7,7 @@ services:
       - ./compose.env
       - ./override.env
       - .env # dynamically created by stacks
-    image: traefik:3.5.3
+    image: traefik:v3.6.1
     container_name: traefik
     restart: always
     environment:
