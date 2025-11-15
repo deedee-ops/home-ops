@@ -20,7 +20,7 @@ name: Renovate
       logLevel:
         description: Log Level
         type: choice
-        default: debug
+        default: info
         options:
           - debug
           - info

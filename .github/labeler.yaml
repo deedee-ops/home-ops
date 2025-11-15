@@ -3,6 +3,9 @@
 area/bootstrap:
   - changed-files:
       - any-glob-to-any-file: "bootstrap/**/*"
+area/docker:
+  - changed-files:
+      - any-glob-to-any-file: "docker/**/*"
 area/docs:
   - changed-files:
       - any-glob-to-any-file:
@@ -14,6 +17,9 @@ area/github:
 area/kubernetes:
   - changed-files:
       - any-glob-to-any-file: "kubernetes/**/*"
+area/opentofu:
+  - changed-files:
+      - any-glob-to-any-file: "opentofu/**/*"
 area/renovate:
   - changed-files:
       - any-glob-to-any-file:
@@ -28,8 +34,3 @@ area/scripts:
 area/talos:
   - changed-files:
       - any-glob-to-any-file: "talos/**/*"
-area/taskfile:
-  - changed-files:
-      - any-glob-to-any-file:
-          - ".taskfiles/**/*"
-          - "Taskfile.yaml"

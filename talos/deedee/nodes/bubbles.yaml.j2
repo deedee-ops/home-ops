@@ -1,0 +1,35 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.11.5/pkg/machinery/config/schemas/config.schema.json
+# yamllint enable rule:line-length
+
+version: v1alpha1
+
+machine:
+  network:
+    hostname: bubbles
+    interfaces:
+      - deviceSelector:
+          busPath: 0-*  # blossom
+          driver: thunderbolt-net
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 169.254.42.22/32
+        routes:
+          - network: 169.254.42.21/32
+            metric: 2048
+      - deviceSelector:
+          busPath: 1-*  # buttercup
+          driver: thunderbolt-net
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 169.254.42.22/32
+        routes:
+          - network: 169.254.42.23/32
+            metric: 2048
+  type: controlplane
+
+# vim:ft=yaml
