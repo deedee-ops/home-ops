@@ -13,7 +13,7 @@
       "type": "object",
       "additionalProperties": false,
       "x-renovate": "datasource=github-releases depName=cilium/cilium",
-      "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.5/install/kubernetes/cilium/values.schema.json"
+      "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.10/install/kubernetes/cilium/values.schema.json"
     },
     "external-dns": {
       "type": "object",
