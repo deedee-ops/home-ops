@@ -1,15 +1,15 @@
 ---
 # yamllint disable rule:line-length
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.11.3/pkg/machinery/config/schemas/config.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/tags/v1.11.5/pkg/machinery/config/schemas/config.schema.json
 # yamllint enable rule:line-length
 
 version: v1alpha1
 machine:
   ca:
-    crt: op://meemee/talos/.machine.ca.crt
+    crt: '{{ ENV[".machine.ca.crt"] }}'
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://meemee/talos/.machine.ca.key
+    key: '{{ ENV[".machine.ca.key"] }}'
     # {% endif %}
 
   features:
@@ -74,24 +74,24 @@ machine:
         dhcp: true
   nodeLabels:
     topology.kubernetes.io/region: homelab
-    topology.kubernetes.io/zone: meemee
+    topology.kubernetes.io/zone: leelee
   sysctls:
     net.ipv4.ip_unprivileged_port_start: "0" # cilium envoy gateway nodeport
-  token: op://meemee/talos/.machine.token
+  token: '{{ ENV[".machine.token"] }}'
 
 cluster:
   ca:
-    crt: op://meemee/talos/.cluster.ca.crt
+    crt: '{{ ENV[".cluster.ca.crt"] }}'
     # {% if ENV.IS_CONTROLPLANE %}
-    key: op://meemee/talos/.cluster.ca.key
+    key: '{{ ENV[".cluster.ca.key"] }}'
     # {% endif %}
 
-  clusterName: meemee
+  clusterName: leelee
   controlPlane:
     endpoint: https://10.100.10.10:6443
   discovery:
     enabled: false
-  id: op://meemee/talos/.cluster.id
+  id: '{{ ENV[".cluster.id"] }}'
   network:
     cni:
       name: none
@@ -100,13 +100,13 @@ cluster:
       - 172.30.0.0/16
     serviceSubnets:
       - 172.31.0.0/16
-  secret: op://meemee/talos/.cluster.secret
-  token: op://meemee/talos/.cluster.token
+  secret: '{{ ENV[".cluster.secret"] }}'
+  token: '{{ ENV[".cluster.token"] }}'
 
   # {% if ENV.IS_CONTROLPLANE %}
   aggregatorCA:
-    crt: op://meemee/talos/.cluster.aggregatorCA.crt
-    key: op://meemee/talos/.cluster.aggregatorCA.key
+    crt: '{{ ENV[".cluster.aggregatorCA.crt"] }}'
+    key: '{{ ENV[".cluster.aggregatorCA.key"] }}'
   allowSchedulingOnControlPlanes: true
   apiServer:
     admissionControl:
@@ -148,8 +148,8 @@ cluster:
     advertisedSubnets:
       - 10.100.0.0/16
     ca:
-      crt: op://meemee/talos/.cluster.etcd.ca.crt
-      key: op://meemee/talos/.cluster.etcd.ca.key
+      crt: '{{ ENV[".cluster.etcd.ca.crt"] }}'
+      key: '{{ ENV[".cluster.etcd.ca.key"] }}'
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
@@ -176,9 +176,9 @@ cluster:
     extraArgs:
       bind-address: 0.0.0.0
     image: registry.k8s.io/kube-scheduler:v1.34.1
-  secretboxEncryptionSecret: op://meemee/talos/.cluster.secretboxEncryptionSecret
+  secretboxEncryptionSecret: '{{ ENV[".cluster.secretboxEncryptionSecret"] }}'
   serviceAccount:
-    key: op://meemee/talos/.cluster.serviceAccount.key
+    key: '{{ ENV[".cluster.serviceAccount.key"] }}'
     # {% endif %}
 
 ---
