@@ -43,7 +43,7 @@ machine:
           cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
           device_ownership_from_security_context = true
   install:
-    image: factory.talos.dev/metal-installer/8070936d5c98057c94a856ea7a523b4ed336cfa2fdb5ba821e1873bfef2f1845:v1.11.3
+    image: factory.talos.dev/metal-installer/8070936d5c98057c94a856ea7a523b4ed336cfa2fdb5ba821e1873bfef2f1845:v1.11.5
     wipe: false
     extraKernelArgs:
       - -init_on_alloc
