@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cert-manager
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: cert-manager
+  interval: 1h
+  values:
+    podLabels:
+      egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/nas: "true"
+    cainjector:
+      podLabels:
+        egress.cilium.io/kube-apiserver: "true"
+    crds:
+      enabled: true
+    prometheus:
+      enabled: true
+      servicemonitor:
+        enabled: true
+    webhook:
+      replicaCount: 2
+      podDisruptionBudget:
+        enabled: true
+      podLabels:
+        egress.cilium.io/kube-apiserver: "true"
