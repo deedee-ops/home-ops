@@ -13,10 +13,16 @@ specs:
           - cluster
   - endpointSelector:
       matchLabels:
-        egress.cilium.io: kube-apiserver
+        egress.cilium.io/kube-apiserver: "true"
     egress:
       - toEntities:
           - kube-apiserver
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/nas: "true"
+    egress:
+      - toCIDRSet:
+          - cidr: 192.168.42.10/32
   - endpointSelector: {}
     egress:
       - toEndpoints:

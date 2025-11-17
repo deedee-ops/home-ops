@@ -25,6 +25,6 @@ spec:
               name: flux-operator
   values:
     commonLabels:
-      egress.cilium.io: kube-apiserver
+      egress.cilium.io/kube-apiserver: "true"
     serviceMonitor:
       create: true
