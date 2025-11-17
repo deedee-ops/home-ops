@@ -11,13 +11,14 @@ spec:
   interval: 1h
   values:
     podLabels:
-      egress.cilium.io: kube-apiserver
+      egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/nas: "true"
     leaderElect: true
     serviceMonitor:
       enabled: true
     certController:
       podLabels:
-        egress.cilium.io: kube-apiserver
+        egress.cilium.io/kube-apiserver: "true"
       serviceMonitor:
         enabled: true
     webhook:
