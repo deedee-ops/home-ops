@@ -10,6 +10,13 @@ listener "tcp" {
   tls_disable = 1
 }
 
+listener "tcp" {
+  address = "0.0.0.0:443"
+  tls_cert_file = "/vault/file/cert.pem"
+  tls_key_file  = "/vault/file/key.pem"
+  tls_min_version = "tls13"
+}
+
 api_addr     = "http://127.0.0.1:8200"
 cluster_addr = "http://127.0.0.1:8201"
 

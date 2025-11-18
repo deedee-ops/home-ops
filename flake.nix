@@ -3,7 +3,7 @@
 
   nixConfig = {
     substituters = [
-      "https://s3.rzegocki.dev/nix?priority=30"
+      "https://s3.ajgon.casa/nix?priority=30"
       "https://cache.nixos.org"
     ];
     trusted-public-keys = [
@@ -160,7 +160,7 @@
             export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
 
             export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
-            export VAULT_ADDR=https://vault.rzegocki.dev
+            export VAULT_ADDR=https://vault.ajgon.casa
             export $(${pkgs.lib.getExe pkgs.sops} -d scripts/vault.sops.env | xargs)
 
             if [ -f "$ROOT_DIR/.current-cluster" ]; then

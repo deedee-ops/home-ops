@@ -19,6 +19,8 @@ services:
       traefik.http.routers.registry.rule: "Host(`registry.${ROOT_DOMAIN}`) && PathPrefix(`/v2`)"
       traefik.http.routers.registry.service: registry
       traefik.http.routers.registry.tls: true
+      traefik.http.routers.registry.tls.certresolver: vault-ecdsa
+      traefik.http.routers.registry.tls.domains[0].main: 'registry.${ROOT_DOMAIN}'
     # security
     cap_drop:
       - all
@@ -42,6 +44,8 @@ services:
       traefik.http.routers.registry-ui.rule: "Host(`registry.${ROOT_DOMAIN}`) && !PathPrefix(`/v2`)"
       traefik.http.routers.registry-ui.service: registry-ui
       traefik.http.routers.registry-ui.tls: true
+      traefik.http.routers.registry-ui.tls.certresolver: vault-ecdsa
+      traefik.http.routers.registry-ui.tls.domains[0].main: 'registry.${ROOT_DOMAIN}'
     # security
     cap_drop:
       - all

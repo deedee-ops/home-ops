@@ -28,6 +28,8 @@ services:
       traefik.http.routers.s3.rule: Host(`s3.${ROOT_DOMAIN}`)
       traefik.http.routers.s3.service: s3
       traefik.http.routers.s3.tls: true
+      traefik.http.routers.s3.tls.certresolver: vault-ecdsa
+      traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
       traefik.http.routers.s3.middlewares: nix-compress,nix-encoding
       # Dashboard
       traefik.http.services.rustfs.loadbalancer.server.port: "9001"
@@ -35,6 +37,8 @@ services:
       traefik.http.routers.rustfs.rule: Host(`rustfs.${ROOT_DOMAIN}`)
       traefik.http.routers.rustfs.service: rustfs
       traefik.http.routers.rustfs.tls: true
+      traefik.http.routers.rustfs.tls.certresolver: vault-ecdsa
+      traefik.http.routers.rustfs.tls.domains[0].main: 'rustfs.${ROOT_DOMAIN}'
       # Hack for nix-cache to avoid double zstd encoding - without this
       # rustfs will return zstd-compressed response of actual zstd file
       # causing "input compression not recognized" errors on nix
