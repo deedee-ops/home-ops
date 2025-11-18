@@ -2,7 +2,7 @@
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
-  vault1:
+  vault:
     image: hashicorp/vault:1.21.0@sha256:62dd55c9ccbdc0af0a9269e87481a64650258907434d5ddb5e795e2eb2ac5780
     container_name: vault
     restart: unless-stopped
@@ -17,6 +17,8 @@ services:
       - internal
     environment:
       VAULT_ADDR: http://127.0.0.1:8200
+    # ports:
+    #   - 8200:8200
     # security
     cap_add:
       - CAP_IPC_LOCK
@@ -28,6 +30,8 @@ services:
       traefik.http.routers.vault.rule: Host(`vault.${ROOT_DOMAIN}`)
       traefik.http.routers.vault.service: vault
       traefik.http.routers.vault.tls: true
+      traefik.http.routers.vault.tls.certresolver: vault-ecdsa
+      traefik.http.routers.vault.tls.domains[0].main: 'vault.${ROOT_DOMAIN}'
     post_start:
       - command: >-
           sh -c "sleep 5 &&

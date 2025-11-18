@@ -37,6 +37,7 @@ services:
       traefik.http.routers.matchbox.tls: true
       traefik.http.routers.matchbox.tls.certresolver: vault-rsa
       traefik.http.routers.matchbox.tls.options: rsa-kex@file
+      traefik.http.routers.matchbox.tls.domains[0].main: 'matchbox.${ROOT_DOMAIN}'
     # security
     cap_drop:
       - all

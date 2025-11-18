@@ -31,17 +31,19 @@ providers:
 certificatesResolvers:
   vault-ecdsa:
     acme:
-      storage: /certs/acme-ecdsa.json
-      # caServer: 'https://vault.{{ env "ROOT_DOMAIN" }}/v1/pki_int/acme/directory'
-      caServer: 'http://vault:8200/v1/pki_int/acme/directory'
+      storage: /certs/vault-ecdsa.json
+      caServer: 'https://vault/v1/pki_traefik/acme/directory'
+      caCertificates:
+        - /config/cert.pem
       httpChallenge:
         entryPoint: http
       keyType: EC384
   vault-rsa:
     acme:
-      storage: /certs/acme-rsa.json
-      # caServer: 'https://vault.{{ env "ROOT_DOMAIN" }}/v1/pki_int/acme/directory'
-      caServer: 'http://vault:8200/v1/pki_int/acme/directory'
+      storage: /certs/vault-rsa.json
+      caServer: 'https://vault/v1/pki_traefik/acme/directory'
+      caCertificates:
+        - /config/cert.pem
       httpChallenge:
         entryPoint: http
       keyType: RSA4096

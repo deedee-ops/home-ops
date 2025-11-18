@@ -6,7 +6,7 @@
       matchDatasources: ["docker"],
       matchPackageNames: [
         "/factory\\.talos\\.dev/",
-        "/talos\\.crypt\\.rzegocki\\.dev/",
+        "/talos\\.ajgon\\.casa/",
       ],
       overridePackageName: "ghcr.io/siderolabs/installer",
     },

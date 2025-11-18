@@ -24,12 +24,12 @@ download-image version schematic=shell("just talos gen-schematic-id"):
     gum spin --title "Downloading Talos {{ version }} ..." -- \
     curl -sfL --remove-on-error --retry 5 --retry-delay 5 --retry-all-errors \
         -o "{{ talos_dir }}/talos-{{ version }}-{{ replace_regex(schematic, '^(.{8}).*', '$1') }}.iso" \
-        "https://talos.crypt.rzegocki.dev/image/{{ schematic }}/v{{ version }}/metal-amd64-secureboot.iso"
+        "https://talos.ajgon.casa/image/{{ schematic }}/v{{ version }}/metal-amd64-secureboot.iso"
     just log info "Downloaded Talos" version "{{ version }}" schematic "{{ schematic }}"
 
 [doc('Generate schematic ID from Talos schematic')]
 gen-schematic-id:
-    curl -sX POST --data-binary @<(just template talos "{{ cluster_dir }}/schematic.yaml.j2") "https://talos.crypt.rzegocki.dev/schematics" | jq -r '.id'
+    curl -sX POST --data-binary @<(just template talos "{{ cluster_dir }}/schematic.yaml.j2") "https://talos.ajgon.casa/schematics" | jq -r '.id'
 
 [doc('Reboot a node')]
 reboot-node node:
