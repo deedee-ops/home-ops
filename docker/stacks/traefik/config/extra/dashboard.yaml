@@ -8,19 +8,11 @@ http:
       entryPoints:
         - https
       tls:
-        certResolver: letsencrypt-ecdsa
-        domains:
-          - main: '{{ env "ROOT_DOMAIN" }}'
-            sans:
-              - '*.{{ env "ROOT_DOMAIN" }}'
+        certResolver: vault-ecdsa
     metrics:
       rule: 'Host(`traefik.{{ env "ROOT_DOMAIN" }}`) && PathPrefix(`/metrics`)'
       service: prometheus@internal
       entryPoints:
         - https
       tls:
-        certResolver: letsencrypt-ecdsa
-        domains:
-          - main: '{{ env "ROOT_DOMAIN" }}'
-            sans:
-              - '*.{{ env "ROOT_DOMAIN" }}'
+        certResolver: vault-ecdsa

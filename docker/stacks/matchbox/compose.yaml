@@ -32,12 +32,11 @@ services:
       traefik.enable: "true"
       traefik.http.services.matchbox.loadbalancer.server.port: "8080"
       traefik.http.routers.matchbox.entrypoints: https
-      traefik.http.routers.matchbox.rule: Host(`matchbox.crypt.${ROOT_DOMAIN}`)
+      traefik.http.routers.matchbox.rule: Host(`matchbox.${ROOT_DOMAIN}`)
       traefik.http.routers.matchbox.service: matchbox
       traefik.http.routers.matchbox.tls: true
-      traefik.http.routers.matchbox.tls.certresolver: letsencrypt-rsa
+      traefik.http.routers.matchbox.tls.certresolver: vault-rsa
       traefik.http.routers.matchbox.tls.options: rsa-kex@file
-      traefik.http.routers.matchbox.tls.domains[0].main: '*.crypt.${ROOT_DOMAIN}'
     # security
     cap_drop:
       - all

@@ -42,12 +42,11 @@ services:
       traefik.enable: "true"
       traefik.http.services.talos-factory.loadbalancer.server.port: "8080"
       traefik.http.routers.talos-factory.entrypoints: https
-      traefik.http.routers.talos-factory.rule: Host(`talos.crypt.${ROOT_DOMAIN}`)
+      traefik.http.routers.talos-factory.rule: Host(`talos.${ROOT_DOMAIN}`)
       traefik.http.routers.talos-factory.service: talos-factory
       traefik.http.routers.talos-factory.tls: true
-      traefik.http.routers.talos-factory.tls.certresolver: letsencrypt-rsa
+      traefik.http.routers.talos-factory.tls.certresolver: vault-rsa
       traefik.http.routers.talos-factory.tls.options: rsa-kex@file
-      traefik.http.routers.talos-factory.tls.domains[0].main: '*.crypt.${ROOT_DOMAIN}'
     # security
     cap_drop:
       - all

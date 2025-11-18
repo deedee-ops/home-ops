@@ -89,7 +89,7 @@ WantedBy=default.target
 EOF
 
 systemctl daemon-reload
-systemctl restart periphery.service
+systemctl enable --now periphery.service
 
 docker network create internal || true
 
