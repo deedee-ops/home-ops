@@ -50,6 +50,8 @@ services:
       traefik.http.routers.komodo.rule: Host(`komodo.${ROOT_DOMAIN}`)
       traefik.http.routers.komodo.service: komodo
       traefik.http.routers.komodo.tls: true
+      traefik.http.routers.komodo.tls.certresolver: vault-ecdsa
+      traefik.http.routers.komodo.tls.domains[0].main: 'komodo.${ROOT_DOMAIN}'
 
 networks:
   internal:

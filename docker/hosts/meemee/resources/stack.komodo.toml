@@ -13,4 +13,6 @@ ROOT_DOMAIN="[[ROOT_DOMAIN]]"
 """
 pre_deploy.command = """
 "${PERIPHERY_ROOT_DIRECTORY}/sops" -d "../../hosts/meemee/bootstrap/komodo.sops.env" > override.env
+echo '' >> .env
+cat override.env >> .env
 """
