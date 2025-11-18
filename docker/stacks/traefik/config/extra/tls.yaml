@@ -4,11 +4,7 @@ tls:
   stores:
     default:
       defaultGeneratedCert:
-        resolver: letsencrypt-ecdsa
-        domain:
-          main: '{{ env "ROOT_DOMAIN" }}'
-          sans:
-            - '*.{{ env "ROOT_DOMAIN" }}'
+        resolver: vault-ecdsa
   options:
     rsa-kex:
       maxVersion: VersionTLS12

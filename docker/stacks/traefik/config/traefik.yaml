@@ -29,25 +29,21 @@ providers:
   file:
     directory: /config
 certificatesResolvers:
-  letsencrypt-ecdsa:
+  vault-ecdsa:
     acme:
       storage: /certs/acme-ecdsa.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      dnsChallenge:
-        provider: cloudflare
-        delayBeforeCheck: 5s
-        resolvers:
-          - 1.1.1.1:53
+      # caServer: 'https://vault.{{ env "ROOT_DOMAIN" }}/v1/pki_int/acme/directory'
+      caServer: 'http://vault:8200/v1/pki_int/acme/directory'
+      httpChallenge:
+        entryPoint: http
       keyType: EC384
-  letsencrypt-rsa:
+  vault-rsa:
     acme:
       storage: /certs/acme-rsa.json
-      caServer: https://acme-v02.api.letsencrypt.org/directory
-      dnsChallenge:
-        provider: cloudflare
-        delayBeforeCheck: 5s
-        resolvers:
-          - 1.1.1.1:53
+      # caServer: 'https://vault.{{ env "ROOT_DOMAIN" }}/v1/pki_int/acme/directory'
+      caServer: 'http://vault:8200/v1/pki_int/acme/directory'
+      httpChallenge:
+        entryPoint: http
       keyType: RSA4096
 
 metrics:
