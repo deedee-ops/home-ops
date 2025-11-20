@@ -10,3 +10,6 @@ spec:
     schedule: 0 */8 * * *
   repository:
     repository: volsync-maintenance-secret
+  containerSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
