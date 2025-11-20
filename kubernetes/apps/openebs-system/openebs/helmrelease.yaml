@@ -12,6 +12,8 @@ spec:
   values:
     preUpgradeHook:
       enabled: false
+      podLabels:
+        egress.cilium.io/kube-apiserver: "true"
     localpv-provisioner:
       analytics:
         enabled: false

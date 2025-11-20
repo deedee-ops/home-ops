@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cilium-app
+  name: cilium
 spec:
   interval: 1h
   path: ./kubernetes/apps/kube-system/cilium
@@ -22,7 +22,7 @@ metadata:
   name: cilium-config
 spec:
   dependsOn:
-    - name: cilium-app
+    - name: cilium
       namespace: kube-system
   interval: 15m
   path: ./kubernetes/clusters/deedee/apps/kube-system/cilium
