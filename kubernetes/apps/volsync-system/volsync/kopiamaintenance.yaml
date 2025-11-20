@@ -10,3 +10,12 @@ spec:
     schedule: 0 */8 * * *
   repository:
     repository: volsync-maintenance-secret
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
