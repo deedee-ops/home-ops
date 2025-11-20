@@ -9,6 +9,29 @@ spec:
     kind: OCIRepository
     name: openebs
   interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # Add security contexts
+            patch: |-
+              - op: add
+                path: /spec/template/spec/securityContext
+                value:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                  runAsGroup: 1000
+                  seccompProfile:
+                    type: RuntimeDefault
+              - op: add
+                path: /spec/template/spec/containers/0/securityContext
+                value:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+            target:
+              kind: Deployment
+              name: openebs-localpv-provisioner
   values:
     preUpgradeHook:
       enabled: false
@@ -31,8 +54,6 @@ spec:
       helperPod:
         image:
           registry: quay.io/
-      securityContext: {} # TODO: add securityContext
-      podSecurityContext: {} # TODO: add podSecurityContext
     openebs-crds:
       csi:
         volumeSnapshots:
