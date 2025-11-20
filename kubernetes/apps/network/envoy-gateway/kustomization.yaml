@@ -2,8 +2,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: network
 resources:
-  - ./_namespace.yaml
-  - ./envoy-gateway.yaml
-  - ./smtp-relay.yaml
+  - ./certificate.yaml
+  - ./envoy.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
