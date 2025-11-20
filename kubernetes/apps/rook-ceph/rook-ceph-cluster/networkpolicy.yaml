@@ -3,7 +3,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: enable-ceph-traffic
+  name: rook-ceph-egress-ceph-cidr
   namespace: rook-ceph
 spec:
   endpointSelector: {}

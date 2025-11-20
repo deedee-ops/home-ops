@@ -10,12 +10,12 @@ spec:
     name: cert-manager
   interval: 1h
   values:
-    podLabels:
-      egress.cilium.io/kube-apiserver: "true"
-      egress.cilium.io/nas: "true"
     cainjector:
-      podLabels:
+      podLabels: &egress
         egress.cilium.io/kube-apiserver: "true"
+    podLabels:
+      <<: *egress
+      egress.cilium.io/nas: "true"
     crds:
       enabled: true
     prometheus:
@@ -26,5 +26,4 @@ spec:
       replicaCount: 2
       podDisruptionBudget:
         enabled: true
-      podLabels:
-        egress.cilium.io/kube-apiserver: "true"
+      podLabels: *egress

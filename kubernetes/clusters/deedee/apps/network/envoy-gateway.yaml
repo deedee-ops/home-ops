@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: envoy-gateway
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/network/envoy-gateway
+  prune: true
+  postBuild:
+    substitute:
+      LB_EXTERNAL_IP: 192.168.42.31
+      LB_INTERNAL_IP: 192.168.42.30
+      ROOT_DOMAIN: ajgon.casa
+      VAULT_SIGNING_ROLE: ajgon-casa
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: network
+  wait: false

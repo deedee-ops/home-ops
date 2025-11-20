@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: "${VAULT_SIGNING_ROLE}"
+spec:
+  secretName: "${VAULT_SIGNING_ROLE}-tls"
+  issuerRef:
+    name: vault
+    kind: ClusterIssuer
+  commonName: "${ROOT_DOMAIN}"
+  dnsNames:
+    - "${ROOT_DOMAIN}"
+    - "*.${ROOT_DOMAIN}"
