@@ -5,7 +5,8 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 mod bootstrap "bootstrap"
 # manage talos cluster
 mod talos "talos"
-# mod kube "kubernetes"
+# manage kubernetes cluster
+mod kube "kubernetes"
 
 cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
 [private]
