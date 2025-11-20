@@ -12,7 +12,7 @@ spec:
   interval: 1h
   values:
     controllers:
-      smtp-relay:
+      main:
         replicas: 2
         strategy: RollingUpdate
         containers:
@@ -58,7 +58,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
     service:
-      app:
+      main:
         ports:
           smtp:
             port: *port

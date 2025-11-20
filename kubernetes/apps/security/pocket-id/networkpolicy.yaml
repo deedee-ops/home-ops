@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: pocket-id-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: pocket-id
+    egress:
+      - toFQDNs:
+          - matchName: download.maxmind.com
+          - matchPattern: mm-prod-geoip-databases.*.r2.cloudflarestorage.com
+        toPorts:
+          - ports:
+              - port: "443"
