@@ -3,12 +3,12 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: volsync-app
+  name: volsync
 spec:
   dependsOn:
-    - name: openebs-app
+    - name: openebs
       namespace: openebs-system
-    - name: snapshot-controller-app
+    - name: snapshot-controller
       namespace: kube-system
   interval: 1h
   path: ./kubernetes/apps/volsync-system/volsync
