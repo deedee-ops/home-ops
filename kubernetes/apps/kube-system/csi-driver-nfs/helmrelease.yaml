@@ -16,7 +16,7 @@ spec:
       create: true
       name: nfs-csi
       parameters:
-        server: 192.168.42.10
+        server: nas.internal
         share: "/mnt/tank/backups/kubernetes/${CLUSTER}"
       mountOptions:
         - nfsvers=4.2

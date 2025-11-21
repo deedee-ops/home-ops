@@ -1,6 +1,6 @@
 # Vault
 
-## Configuring OIDC
+## OIDC
 
 ```bash
 vault auth enable oidc
@@ -21,12 +21,11 @@ vault write auth/oidc/role/oidc-default \
   token_policies="default" \
   oidc_scopes="openid profile email groups"
 
-tee admin.json <<EOF
+vault policy write admin - << EOF
 path "*" {
   capabilities = ["sudo","read","create","update","delete","list","patch"]
 }
 EOF
-vault policy write admin admin.json
 
 vault write identity/group name="oidc-admins" policies="admin" type="external"
 # note the id
@@ -35,4 +34,15 @@ vault auth list
 # note accessor
 
 vault write identity/group-alias name="admins" mount_accessor="<noted accessor>" canonical_id="<noted id>"
+```
+
+## Metrics
+
+```bash
+vault policy write metrics - << EOF
+path "/sys/metrics" {
+  capabilities = ["read"]
+}
+EOF
+vault token create -orphan -ttl=87600h -policy=metrics
 ```

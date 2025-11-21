@@ -6,3 +6,4 @@ namespace: observability
 resources:
   - ./_namespace.yaml
   - ./keda.yaml
+  - ./kube-prometheus-stack.yaml

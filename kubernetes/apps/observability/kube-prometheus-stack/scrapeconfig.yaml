@@ -1,0 +1,109 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: node-exporter
+spec:
+  scheme: HTTP
+  staticConfigs:
+    - targets:
+        - nas.internal:9100
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: node-exporter
+    - action: replace
+      targetLabel: node
+      replacement: nas
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: smartctl-exporter
+spec:
+  scheme: HTTP
+  staticConfigs:
+    - targets:
+        - nas.internal:9633
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: smartctl-exporter
+    - action: replace
+      targetLabel: node
+      replacement: nas
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: jetkvm
+spec:
+  scheme: HTTP
+  staticConfigs:
+    - targets:
+        - kvm.internal
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: jetkvm
+    - action: replace
+      targetLabel: node
+      replacement: jetkvm
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: traefik
+spec:
+  scheme: HTTPS
+  tlsConfig:
+    ca:
+      secret:
+        key: HOMELAB_CA_BUNDLE
+        name: prometheus-secret
+  staticConfigs:
+    - targets:
+        - "traefik.${ROOT_DOMAIN}"
+  metricsPath: /metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: traefik
+    - action: replace
+      targetLabel: node
+      replacement: nas
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: vault
+spec:
+  scheme: HTTPS
+  authorization:
+    credentials:
+      key: PROMETHEUS_VAULT_TOKEN
+      name: prometheus-secret
+  tlsConfig:
+    ca:
+      secret:
+        key: HOMELAB_CA_BUNDLE
+        name: prometheus-secret
+  staticConfigs:
+    - targets:
+        - "vault.${ROOT_DOMAIN}"
+  metricsPath: /v1/sys/metrics
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: vault
+    - action: replace
+      targetLabel: node
+      replacement: nas

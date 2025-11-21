@@ -19,6 +19,10 @@ releases:
     namespace: external-secrets
     chart: oci://ghcr.io/external-secrets/charts/external-secrets
     version: 1.1.0
+  - name: grafana-operator
+    namespace: observability
+    chart: oci://ghcr.io/grafana/helm-charts/grafana-operator
+    version: v5.20.0
   - name: keda
     namespace: observability
     chart: oci://ghcr.io/home-operations/charts-mirror/keda

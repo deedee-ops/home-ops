@@ -23,6 +23,6 @@ cluster_addr = "http://127.0.0.1:8201"
 log_level = "info"
 
 telemetry {
-  prometheus_retention_time = "30s"
+  prometheus_retention_time = "24h"
   disable_hostname          = true
 }
