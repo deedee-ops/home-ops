@@ -18,6 +18,8 @@ services:
       - internal
     environment:
       VAULT_ADDR: http://127.0.0.1:8200
+    extra_hosts:
+      - "pocket-id.security.svc.cluster.local:host-gateway"
     # ports:
     #   - 8200:8200
     # security

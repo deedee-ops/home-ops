@@ -40,6 +40,7 @@ services:
     #   - 9120:9120
     extra_hosts:
       - "host.docker.internal:host-gateway"
+      - "pocket-id.security.svc.cluster.local:host-gateway"
     networks:
       - default
       - internal
