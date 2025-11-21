@@ -19,6 +19,7 @@ spec:
               repository: ghcr.io/pocket-id/pocket-id
               tag: v1.15.0@sha256:92a5624ea14dc96e91ef236950d4d858e97119ce811075648ffd8343e364735d
             env:
+              ALLOW_USER_SIGNUPS: "disabled"
               ANALYTICS_DISABLED: "true"
               APP_URL: "https://id.${ROOT_DOMAIN}"
               DB_CONNECTION_STRING: /config/pocket-id.db
