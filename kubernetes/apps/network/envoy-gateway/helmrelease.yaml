@@ -28,4 +28,6 @@ spec:
               type: GatewayNamespace
     deployment:
       pod:
-        labels: *egress
+        labels:
+          <<: *egress
+          app.kubernetes.io/managed-by: envoy-gateway

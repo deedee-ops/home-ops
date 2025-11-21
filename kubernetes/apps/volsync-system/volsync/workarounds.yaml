@@ -130,7 +130,7 @@ spec:
                 csi: Object.spec.template.spec.volumes.csi{
                   driver: "nfs.csi.k8s.io",
                   volumeAttributes: Object.spec.template.spec.volumes.csi.volumeAttributes{
-                    server: "192.168.42.10",
+                    server: "nas.internal",
                     share: "/mnt/tank/backups/kubernetes/${CLUSTER}"
                   }
                 }

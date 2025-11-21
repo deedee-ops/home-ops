@@ -26,6 +26,7 @@ spec:
               EMAILS_VERIFIED: "true"
               EMAIL_LOGIN_NOTIFICATION_ENABLED: "true"
               GEOLITE_DB_PATH: /data/GeoLite2-City.mmdb
+              INTERNAL_APP_URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local"
               KEYS_STORAGE: database
               LOG_JSON: "true"
               METRICS_ENABLED: "true"
@@ -84,13 +85,6 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
-    service:
-      main:
-        ports:
-          http:
-            port: *http
-          metrics:
-            port: *metrics
     route:
       main:
         hostnames:
@@ -98,6 +92,17 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+    service:
+      main:
+        ports:
+          http:
+            port: *http
+          metrics:
+            port: *metrics
+    serviceMonitor:
+      main:
+        endpoints:
+          - port: metrics
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
