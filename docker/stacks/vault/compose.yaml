@@ -13,6 +13,7 @@ services:
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/vault/file:/vault/file"
       - "./override.env:/secrets/override.env"
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
     networks:
       - internal
     environment:
