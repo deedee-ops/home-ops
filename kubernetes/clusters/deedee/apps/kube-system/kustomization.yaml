@@ -6,6 +6,7 @@ namespace: kube-system
 resources:
   - ./_namespace.yaml
   - ./cilium.yaml
+  - ./csi-driver-nfs.yaml
   - ./coredns.yaml
   - ./irqbalance.yaml
   - ./snapshot-controller.yaml
