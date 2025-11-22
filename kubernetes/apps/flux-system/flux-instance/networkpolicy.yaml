@@ -31,14 +31,16 @@ specs:
           - matchName: github.com
 
           # helm charts
+          ## fluentbit
+          - matchName: cr.fluentbit.io
           ## github
           - matchName: ghcr.io
           - matchName: pkg-containers.githubusercontent.com
+          ## google container registry
+          - matchName: mirror.gcr.io
           ## microsoft azure
           - matchName: gsoci.azurecr.io
           - matchPattern: "*.blob.core.windows.net"
-          ## google container registry
-          - matchName: mirror.gcr.io
           ## quay
           - matchName: quay.io
           - matchPattern: "cdn*.quay.io"
