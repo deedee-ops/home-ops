@@ -10,6 +10,7 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
   - ./fluent-bit.yaml
+  - ./intel-gpu-resource-driver.yaml
   - ./irqbalance.yaml
   - ./metrics-server.yaml
   - ./reloader.yaml
