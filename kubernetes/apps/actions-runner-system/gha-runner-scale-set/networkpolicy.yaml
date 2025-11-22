@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: home-ops-runner-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: home-ops-runner
+    egress:
+      - toFQDNs:
+          # must be repeated as they're used by another policy
+          - matchName: api.github.com
+          - matchName: broker.actions.githubusercontent.com
+
+          - matchName: github.com
+          - matchPattern: "*.github.com"
+          - matchPattern: "*.actions.githubusercontent.com"
+          - matchPattern: '*.blob.core.windows.net'
+        toPorts:
+          - ports:
+              - port: "443"
