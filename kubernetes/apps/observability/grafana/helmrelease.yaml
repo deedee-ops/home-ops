@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: grafana-operator
+  interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # Properly resolve DNS domains for cilium policies
+            patch: |-
+              - op: add
+                path: /spec/template/spec/dnsConfig
+                value:
+                  options:
+                    - name: ndots
+                      value: "1"
+            target:
+              kind: Deployment
+              name: grafana-operator
+  values:
+    dashboard:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    podLabels:
+      egress.cilium.io/kube-apiserver: "true"
