@@ -81,11 +81,6 @@ machine:
           hardwareAddr: 48:21:0b:51:*
         dhcp: true
         # mtu: 9000
-        vlans:
-          - # IOT
-            vlanId: 4
-            dhcp: false
-            # mtu: 9000
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: homelab
