@@ -56,6 +56,8 @@ spec:
               limits:
                 memory: 256Mi
     defaultPodOptions:
+      labels:
+        egress.cilium.io/envoy: "true"
       dnsConfig:
         options:
           - name: ndots
@@ -84,12 +86,29 @@ spec:
                 originRequest:
                   http2Origin: true
                   originServerName: external.${ROOT_DOMAIN}
+                  caPool: /etc/cloudflared/ca.pem
                 service: https://envoy-external.network.svc.cluster.local:443
               - service: http_status:404
+          ca.pem: |-
+            -----BEGIN CERTIFICATE-----
+            MIIClDCCAhqgAwIBAgIUOfIRdHEUj5dZX1nj+QCHnTSx/pMwCgYIKoZIzj0EAwIw
+            eTELMAkGA1UEBhMCUEwxFDASBgNVBAgMC21hbG9wb2xza2llMQ8wDQYDVQQHDAZL
+            cmFrb3cxEDAOBgNVBAoMB2hvbWVsYWIxEDAOBgNVBAMMB1Jvb3QgQ0ExHzAdBgkq
+            hkiG9w0BCQEWEGlnb3JAcnplZ29ja2kucGwwHhcNMjUxMTE3MjAyNDMxWhcNMzUx
+            MTE1MjAyNDMxWjB5MQswCQYDVQQGEwJQTDEUMBIGA1UECAwLbWFsb3BvbHNraWUx
+            DzANBgNVBAcMBktyYWtvdzEQMA4GA1UECgwHaG9tZWxhYjEQMA4GA1UEAwwHUm9v
+            dCBDQTEfMB0GCSqGSIb3DQEJARYQaWdvckByemVnb2NraS5wbDB2MBAGByqGSM49
+            AgEGBSuBBAAiA2IABP8xPh+ljvtqRZqdCegByaeqYe3gAc6kNxo3vEtp+dcwwZz6
+            w+liyGQUfDlResruYE2YZZfWVMjZv+GG1afM3jOFIhPYPBZo2bbBshBcXflfASQ8
+            d4EJSNMqUwC8OxuzsKNjMGEwHQYDVR0OBBYEFO+sxaxJd7J/Dohxd0y/Z6lWYE43
+            MB8GA1UdIwQYMBaAFO+sxaxJd7J/Dohxd0y/Z6lWYE43MA8GA1UdEwEB/wQFMAMB
+            Af8wDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMCA2gAMGUCMQCetLE7ep2PmTix
+            WsTVZdp4hOxK0ewV+fHBQcV6Ra9rdPW/AAp4kNML1AdKjG+Kh3sCMGW7Oy8yuX4J
+            UiFH8cVR77uVAAP0OfMsKezfDUSIadbDZCJfzkkKwDYrZMQFw1BjqA==
+            -----END CERTIFICATE-----
     persistence:
       config-file:
         type: configMap
         identifier: config
         globalMounts:
-          - path: /etc/cloudflared/config.yaml
-            subPath: config.yaml
+          - path: /etc/cloudflared
