@@ -1,0 +1,25 @@
+---
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+
+metrics: true
+
+storage:
+  type: sqlite
+  caching: true
+  path: ${GATUS_CONFIG_PATH}/gatus.db
+
+ui:
+  title: Status | Gatus
+  header: Status
+  link: https://github.com/deedee-ops
+  buttons:
+    - name: Github
+      link: https://github.com/ajgon
+    - name: Homelab
+      link: https://github.com/deedee-ops/home-ops
+
+web:
+  port: ${GATUS_WEB_PORT}

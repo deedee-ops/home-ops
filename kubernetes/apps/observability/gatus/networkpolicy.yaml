@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gatus-egress-external
+  namespace: rook-ceph
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: gatus
+  egress:
+    - toCIDRSet:
+        - cidr: 1.1.1.1/32
+      toPorts:
+        - ports:
+            - port: "53"
+    - toFQDNs:
+        - matchPattern: "*.${ROOT_DOMAIN}"
+      toPorts:
+        - ports:
+            - port: "443"
