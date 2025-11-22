@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: observability
 resources:
-  - ./_namespace.yaml
-  - ./blackbox-exporter.yaml
-  - ./keda.yaml
-  - ./kube-prometheus-stack.yaml
-  - ./silence-operator.yaml
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml
+  - ./silences.yaml
