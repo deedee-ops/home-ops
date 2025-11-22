@@ -6,6 +6,7 @@ namespace: observability
 resources:
   - ./_namespace.yaml
   - ./blackbox-exporter.yaml
+  - ./grafana.yaml
   - ./keda.yaml
   - ./kube-prometheus-stack.yaml
   - ./silence-operator.yaml

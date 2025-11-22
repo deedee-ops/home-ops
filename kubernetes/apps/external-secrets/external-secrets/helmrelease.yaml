@@ -16,6 +16,8 @@ spec:
     leaderElect: true
     serviceMonitor:
       enabled: true
+    grafanaDashboard:
+      enabled: true
     certController:
       podLabels:
         egress.cilium.io/kube-apiserver: "true"
