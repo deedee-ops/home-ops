@@ -8,6 +8,7 @@ resources:
   - ./cilium.yaml
   - ./coredns.yaml
   - ./csi-driver-nfs.yaml
+  - ./fluent-bit.yaml
   - ./irqbalance.yaml
   - ./metrics-server.yaml
   - ./smartctl-exporter.yaml
