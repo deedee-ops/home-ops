@@ -29,13 +29,18 @@ specs:
           - matchName: tuf-repo-cdn.sigstore.dev
           # gitops repo
           - matchName: github.com
+
           # helm charts
+          ## github
           - matchName: ghcr.io
-          - matchName: gsoci.azurecr.io
-          - matchName: mirror.gcr.io
           - matchName: pkg-containers.githubusercontent.com
+          ## microsoft azure
+          - matchName: gsoci.azurecr.io
+          - matchPattern: "*.blob.core.windows.net"
+          ## google container registry
+          - matchName: mirror.gcr.io
+          ## quay
           - matchName: quay.io
-          - matchName: registry.developers.crunchydata.com
           - matchPattern: "cdn*.quay.io"
         toPorts:
           - ports:
