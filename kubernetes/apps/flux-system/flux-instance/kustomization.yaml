@@ -7,4 +7,5 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./podmonitor.yaml
   - ./prometheusrule.yaml
