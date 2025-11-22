@@ -10,5 +10,18 @@ metadata:
   namespace: external-secrets
 stringData:
   token: "{{ ENV.VAULT_TOKEN }}"
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-tunnel-id-secret
+  namespace: network
+stringData:
+  CLOUDFLARE_TUNNEL_ID: "{{ ENV.CLOUDFLARE_TUNNEL_ID }}"
+  ROOT_DOMAIN: "{{ ENV.ROOT_DOMAIN }}"
 
 # vim:ft=yaml
