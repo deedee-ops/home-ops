@@ -13,6 +13,10 @@ spec:
     fullnameOverride: *app
     podLabels:
       egress.cilium.io/kube-apiserver: "true"
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
     provider:
       name: webhook
       webhook:
