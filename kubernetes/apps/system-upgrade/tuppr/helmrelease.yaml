@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tuppr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: tuppr
+  interval: 1h
+  values:
+    replicaCount: 2
+    monitoring:
+      serviceMonitor:
+        enabled: true
+    podLabels:
+      egress.cilium.io/kube-apiserver: "true"
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 65532
+      fsGroup: 65532
+      seccompProfile:
+        type: RuntimeDefault
