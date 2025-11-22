@@ -9,6 +9,7 @@ resources:
   - ./coredns.yaml
   - ./csi-driver-nfs.yaml
   - ./irqbalance.yaml
+  - ./metrics-server.yaml
   - ./smartctl-exporter.yaml
   - ./snapshot-controller.yaml
   - ./spegel.yaml
