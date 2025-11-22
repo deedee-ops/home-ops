@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: silence-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: silence-operator
+  interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # Add security contexts
+            patch: |-
+              - op: add
+                path: /spec/template/metadata/labels/egress.cilium.io~1kube-apiserver
+                value: "true"
+            target:
+              kind: Deployment
+              name: silence-operator
+  values:
+    alertmanagerAddress: http://kube-prometheus-stack-alertmanager.observability.svc.cluster.local:9093
+    networkPolicy:
+      enabled: false
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      seccompProfile:
+        type: RuntimeDefault
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
