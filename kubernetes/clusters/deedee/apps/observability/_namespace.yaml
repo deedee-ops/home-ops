@@ -18,7 +18,7 @@ metadata:
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: enable-inner-communication
+  name: observability-inner-communication
   namespace: _
 spec:
   endpointSelector: {}
