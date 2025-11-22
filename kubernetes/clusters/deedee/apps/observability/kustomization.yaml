@@ -9,6 +9,7 @@ resources:
   - ./gatus.yaml
   - ./grafana.yaml
   - ./keda.yaml
+  - ./kromgo.yaml
   - ./kube-prometheus-stack.yaml
   - ./silence-operator.yaml
   - ./unpoller.yaml

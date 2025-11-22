@@ -15,9 +15,9 @@ resource "cloudflare_ruleset" "external_ingress" {
       action_parameters = {
         ruleset = "current"
       }
-      description = "Allow access to Kromgo for GitHub"
+      description = "Allow access to kromgo API"
       enabled     = true
-      expression  = "(http.host eq \"kromgo.${each.key}\") and (ip.geoip.asnum eq 36459)"
+      expression  = "(http.host eq \"kromgo.${each.key}\")"
 
       logging = {
         enabled = true
