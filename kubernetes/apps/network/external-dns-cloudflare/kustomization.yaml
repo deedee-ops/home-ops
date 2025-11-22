@@ -2,10 +2,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: network
 resources:
-  - ./_namespace.yaml
-  - ./envoy-gateway.yaml
-  - ./external-dns-cloudflare.yaml
-  - ./external-dns-unifi.yaml
-  - ./smtp-relay.yaml
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
+  - ./prometheusrule.yaml
