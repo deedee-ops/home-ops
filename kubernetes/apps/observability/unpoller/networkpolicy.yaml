@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: unpoller-egress-gateway
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: unpoller
+    egress:
+      - toFQDNs:
+          - matchName: unifi.internal
+        toPorts:
+          - ports:
+              - port: "443"

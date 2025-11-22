@@ -9,3 +9,4 @@ resources:
   - ./keda.yaml
   - ./kube-prometheus-stack.yaml
   - ./silence-operator.yaml
+  - ./unpoller.yaml
