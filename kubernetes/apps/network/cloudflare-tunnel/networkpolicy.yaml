@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: cloudflare-tunnel-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: cloudflare-tunnel
+    egress:
+      # https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/configure-tunnels/tunnel-with-firewall/
+      - toFQDNs:
+          - matchName: region1.v2.argotunnel.com
+          - matchName: region2.v2.argotunnel.com
+        toPorts:
+          - ports:
+              - port: "7844"
+      - icmps:
+          - fields:
+              - family: IPv4
+                type: 8
+              - family: IPv4
+                type: 0
+        toFQDNs:
+          - matchName: region1.v2.argotunnel.com
+          - matchName: region2.v2.argotunnel.com

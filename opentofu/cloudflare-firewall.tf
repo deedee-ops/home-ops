@@ -15,9 +15,9 @@ resource "cloudflare_ruleset" "external_ingress" {
       action_parameters = {
         ruleset = "current"
       }
-      description = "Allow access to ArgoCD webhook for GitHub"
+      description = "Allow access to Kromgo for GitHub"
       enabled     = true
-      expression  = "(http.host eq \"argocd.${each.key}\") and (ip.geoip.asnum eq 36459) and (http.request.uri.path eq \"/api/webhook\")"
+      expression  = "(http.host eq \"kromgo.${each.key}\") and (ip.geoip.asnum eq 36459)"
 
       logging = {
         enabled = true
