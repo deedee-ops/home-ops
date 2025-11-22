@@ -25,7 +25,7 @@ spec:
           filters:
             - type: ResponseHeaderModifier
               responseHeaderModifier:
-                add:
+                set:
                   - name: Content-Security-Policy
                     value: >-
                       default-src 'self' 'unsafe-inline' data:; object-src 'none';

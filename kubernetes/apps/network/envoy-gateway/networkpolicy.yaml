@@ -13,3 +13,21 @@ specs:
           - cluster
       - toEndpoints:
           - {}
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: envoy-egress-label
+specs:
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/envoy: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: envoy
+        toPorts:
+          - ports:
+              - port: "10080"
+              - port: "10443"

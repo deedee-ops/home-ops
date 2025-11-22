@@ -1,0 +1,53 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/serviceaccount-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gatus
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrole-rbac-v1.json
+# yamllint enable rule:line-length
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gatus
+rules:
+  - apiGroups:
+      - "gateway.networking.k8s.io"
+    resources:
+      - "gateways"
+      - "httproutes"
+    verbs:
+      - "get"
+      - "watch"
+      - "list"
+  - apiGroups:
+      - ""
+    resources:
+      - "services"
+    verbs:
+      - "get"
+      - "watch"
+      - "list"
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrolebinding-rbac-v1.json
+# yamllint enable rule:line-length
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gatus
+roleRef:
+  kind: ClusterRole
+  name: gatus
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: gatus
+    namespace: observability

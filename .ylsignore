@@ -1,3 +1,4 @@
-talos/*/schematic.yaml.j2
-talos/*/machineconfig.yaml.j2
+kubernetes/apps/observability/gatus/resources/config.yaml
 kubernetes/clusters/*/values.yaml
+talos/*/machineconfig.yaml.j2
+talos/*/schematic.yaml.j2
