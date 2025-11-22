@@ -11,6 +11,10 @@ helmDefaults:
     - -c
     - yq ea -e 'select(.kind == "CustomResourceDefinition")'
 releases:
+  - name: actions-runner-controller
+    namespace: actions-runner-system
+    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+    version: 0.13.0
   - name: envoy-gateway
     namespace: network
     chart: oci://mirror.gcr.io/envoyproxy/gateway-helm

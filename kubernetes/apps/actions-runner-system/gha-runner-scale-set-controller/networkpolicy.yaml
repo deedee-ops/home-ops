@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: gha-runner-scale-set-controller-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: gha-rs-controller
+    egress:
+      - toFQDNs:
+          - matchName: api.github.com
+          - matchName: broker.actions.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"

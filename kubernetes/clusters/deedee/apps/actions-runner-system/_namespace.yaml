@@ -1,0 +1,15 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/namespace-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: _
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  labels:
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: baseline

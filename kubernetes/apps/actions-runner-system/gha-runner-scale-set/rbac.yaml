@@ -1,0 +1,38 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/serviceaccount-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: home-ops-runner
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrolebinding-rbac-v1.json
+# yamllint enable rule:line-length
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: home-ops-runner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: home-ops-runner
+    namespace: actions-runner-system
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/talos.dev/serviceaccount_v1alpha1.json
+# yamllint enable rule:line-length
+apiVersion: talos.dev/v1alpha1
+kind: ServiceAccount
+metadata:
+  name: home-ops-runner
+spec:
+  roles:
+    - os:admin
