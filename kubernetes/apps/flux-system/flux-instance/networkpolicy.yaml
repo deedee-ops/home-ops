@@ -18,7 +18,7 @@ specs:
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-  name: flux-instance-egress-external
+  name: flux-instance-source-egress-external
 specs:
   - endpointSelector:
       matchLabels:
@@ -44,6 +44,23 @@ specs:
           ## quay
           - matchName: quay.io
           - matchPattern: "cdn*.quay.io"
+        toPorts:
+          - ports:
+              - port: "443"
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: flux-instance-notification-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/component: notification-controller
+    egress:
+      - toFQDNs:
+          # reconcilation status
+          - matchName: api.github.com
         toPorts:
           - ports:
               - port: "443"
