@@ -13,6 +13,7 @@ spec:
   postBuild:
     substitute:
       CLUSTER: deedee
+      ROOT_DOMAIN: ajgon.casa
   prune: true
   sourceRef:
     kind: GitRepository
