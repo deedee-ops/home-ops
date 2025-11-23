@@ -15,22 +15,42 @@ specs:
           - matchName: broker.actions.githubusercontent.com
 
           # for actions themselves
-          - matchName: github.com
+          - matchName: "github.com"
           - matchPattern: "*.github.com"
           - matchPattern: "*.actions.githubusercontent.com"
-          - matchPattern: '*.blob.core.windows.net'
+          - matchPattern: "*.blob.core.windows.net"
 
           # for actions workloads
           - matchName: "archive.ubuntu.com"
+          - matchName: "cache.garnix.io"
+          - matchName: "crates.io"
+          - matchName: "deploy-rs.cachix.org"
+          - matchName: "downloads.sourceforge.net"
           - matchName: "electron-dl.todoist.net"
-          - matchName: "install.determinate.systems"
+          - matchName: "nix-community.cachix.org"
+          - matchName: "nixos.org"
+          - matchName: "obsidian.md"
           - matchName: "ppa.launchpadcontent.net"
+          - matchName: "proxy.golang.org"
+          - matchName: "raw.githubusercontent.com"
+          - matchName: "registry.npmjs.org"
+          - matchName: "release-assets.actions.githubusercontent.com"
           - matchName: "s3.ajgon.casa"
+          - matchName: "static.rust-lang.org"
+          - matchName: "storage.googleapis.com"
+          - matchName: "sum.golang.org"
+          - matchPattern: "*.dl.sourceforge.net"
           - matchPattern: "*.install.determinate.systems"
           - matchPattern: "*.nixos.org"
           - matchPattern: "*.s3.dualstack.us-east-2.amazonaws.com"
           - matchPattern: "*.swim.install.determinate.systems"
+          - matchPattern: "stable.*.discordapp.net"
+        toPorts:
+          - ports:
+              - port: "443"
+      - toFQDNs:
+          # for actions workloads
+          - matchName: "archive.ubuntu.com"
         toPorts:
           - ports:
               - port: "80"
-              - port: "443"

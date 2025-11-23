@@ -1,0 +1,63 @@
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
+# yamllint enable rule:line-length
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: github-workflow-dnsconfig
+spec:
+  policyName: github-workflow-dnsconfig
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicy-admissionregistration-v1beta1.json
+# yamllint enable rule:line-length
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: github-workflow-dnsconfig
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  matchConditions:
+    - name: has-workflow-name-prefix
+      expression: >-
+        object.metadata.name.startsWith("home-ops-runner-")
+    - name: has-workflow-name-suffix
+      expression: >-
+        object.metadata.name.endsWith("-workflow")
+    - name: has-actions-runner-system-namespace
+      expression: >-
+        object.metadata.namespace == "actions-runner-system"
+  failurePolicy: Fail
+  reinvocationPolicy: IfNeeded
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          [
+            JSONPatch{
+              op: "add", path: "/spec/dnsConfig",
+              value: Object.spec.template.spec.dnsConfig{
+                options: [Object.spec.template.spec.dnsConfig.options{
+                  name: "ndots",
+                  value: "1"
+                }]
+              }
+            },
+            JSONPatch{
+              op: "add", path: "/metadata/labels/app.kubernetes.io~1name",
+              value: "home-ops-runner"
+            }
+          ]

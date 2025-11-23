@@ -35,6 +35,9 @@ spec:
             - name: ndots
               value: "1"
     template:
+      metadata:
+        labels:
+          egress.cilium.io/kube-apiserver: "true"
       spec:
         containers:
           - name: runner

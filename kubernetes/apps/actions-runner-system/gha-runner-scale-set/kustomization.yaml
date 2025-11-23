@@ -8,3 +8,4 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./rbac.yaml
+  - ./workarounds.yaml
