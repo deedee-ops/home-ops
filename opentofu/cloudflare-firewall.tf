@@ -24,6 +24,19 @@ resource "cloudflare_ruleset" "external_ingress" {
       }
     },
     {
+      action = "skip"
+      action_parameters = {
+        ruleset = "current"
+      }
+      description = "Allow GitHub (36459) and myself (12887) access to flux webhook"
+      enabled     = true
+      expression  = "(http.host eq \"flux-webhook.${each.key}\") and (ip.geoip.asnum in {12887 36459}) and starts_with(http.request.uri.path, \"/hook\")"
+
+      logging = {
+        enabled = true
+      }
+    },
+    {
       action      = "block"
       description = "Block everything else"
       enabled     = true
