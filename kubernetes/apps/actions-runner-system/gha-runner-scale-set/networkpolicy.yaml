@@ -14,10 +14,23 @@ specs:
           - matchName: api.github.com
           - matchName: broker.actions.githubusercontent.com
 
+          # for actions themselves
           - matchName: github.com
           - matchPattern: "*.github.com"
           - matchPattern: "*.actions.githubusercontent.com"
           - matchPattern: '*.blob.core.windows.net'
+
+          # for actions workloads
+          - matchName: "archive.ubuntu.com"
+          - matchName: "electron-dl.todoist.net"
+          - matchName: "install.determinate.systems"
+          - matchName: "ppa.launchpadcontent.net"
+          - matchName: "s3.ajgon.casa"
+          - matchPattern: "*.install.determinate.systems"
+          - matchPattern: "*.nixos.org"
+          - matchPattern: "*.s3.dualstack.us-east-2.amazonaws.com"
+          - matchPattern: "*.swim.install.determinate.systems"
         toPorts:
           - ports:
+              - port: "80"
               - port: "443"

@@ -8,7 +8,7 @@
 
 ### My Home Operations Repository ☸
 
-_... managed with [Flux](https://fluxcd.io/), [Renovate](https://github.com/renovatebot/renovate) and [GitHub Actions](https://github.com/features/actions)_ 🤖
+_... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenTofu](https://opentofu.org/), [Renovate](https://github.com/renovatebot/renovate) and [GitHub Actions](https://github.com/features/actions)_ 🤖
 
 </div>
 
