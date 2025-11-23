@@ -5,8 +5,10 @@ name: Update nix packages for development
   workflow_dispatch:
   schedule:
     - cron: "30 0 * * 1" # Every Monday at 0:30
+
 permissions:
   contents: write
+
 jobs:
   main:
     runs-on: ubuntu-latest

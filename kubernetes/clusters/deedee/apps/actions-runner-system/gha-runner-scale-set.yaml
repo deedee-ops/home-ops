@@ -7,6 +7,8 @@ metadata:
 spec:
   dependsOn:
     - name: gha-runner-scale-set-controller
+    - name: openebs
+      namespace: openebs-system
   interval: 1h
   path: ./kubernetes/apps/actions-runner-system/gha-runner-scale-set
   prune: true

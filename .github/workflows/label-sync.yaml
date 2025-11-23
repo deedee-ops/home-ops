@@ -10,8 +10,10 @@ name: Label Sync
       - ".github/labels.yaml"
   schedule:
     - cron: "0 0 * * *" # Every day at midnight
+
 permissions:
   issues: write
+
 jobs:
   main:
     name: Label Sync - Sync Labels

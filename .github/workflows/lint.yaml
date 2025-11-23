@@ -9,8 +9,10 @@ name: Lint everything
   push:
     branches:
       - "renovate/*"
+
 permissions:
   contents: write
+
 jobs:
   main:
     runs-on: ubuntu-latest

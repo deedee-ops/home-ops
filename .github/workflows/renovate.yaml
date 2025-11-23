@@ -29,10 +29,13 @@ name: Renovate
         description: Renovate Version
         default: latest
         required: true
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
   cancel-in-progress: true
+
 permissions: {}
+
 jobs:
   main:
     name: Renovate
