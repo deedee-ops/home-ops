@@ -1,0 +1,212 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: davis
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: davis
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image: &img
+              repository: ghcr.io/tchapi/davis
+              tag: 5.3.0@sha256:bae9b2a6b7677a3fd219cf8131be4e7a68043d09bb77104e6a9b5466086b2402
+            env: &env
+              ADMIN_AUTH_BYPASS: "true"
+              APP_ENV: prod
+              APP_TIMEZONE: &tz "Europe/Warsaw"
+              AUTH_METHOD: Basic"
+              AUTH_REALM: SabreDAV
+              BIRTHDAY_REMINDER_OFFSET: "false"
+              CALDAV_ENABLED: "false"
+              CARDDAV_ENABLED: "true"
+              DATABASE_DRIVER: sqlite
+              DATABASE_URL: sqlite:////config/davis-database.db
+              INVITE_FROM_ADDRESS: "${CLUSTER_NAME}@${ROOT_DOMAIN}"
+              LOG_FILE_PATH: "/tmp/davis.log"
+              MAILER_DSN: "smtp://smtp-relay.network.svc.cluster.local:25"
+              SYMFONY_TRUSTED_PROXIES: &proxies "172.30.0.0/16"
+              TRUSTED_HOSTS: "davis.${ROOT_DOMAIN}"
+              TRUSTED_PROXIES: *proxies
+              TZ: *tz
+              UMASK: "0002"
+              WEBDAV_ENABLED: "false"
+            envFrom: &envFrom
+              - secretRef:
+                  name: "davis-secret"
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: "50m"
+                memory: "128Mi"
+              limits:
+                cpu: "1000m"
+                memory: "512Mi"
+          caddy:
+            image:
+              repository: caddy
+              tag: "2.10.2@sha256:cef7fe17d4df3b0843eae25bed319d6140b1a7bb13ccef076f5f1783d5bca9b1"
+            args:
+              - caddy
+              - run
+              - --config
+              - /config/Caddyfile
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - NET_BIND_SERVICE
+            resources:
+              requests:
+                cpu: "5m"
+                memory: "128Mi"
+              limits:
+                cpu: "1000m"
+                memory: "512Mi"
+        initContainers:
+          01-public:
+            image: *img
+            command:
+              - "/bin/sh"
+              - "-c"
+              - "cp -r /var/www/davis/public /web"
+            env: *env
+            envFrom: *envFrom
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
+          02-db-migrate:
+            image: *img
+            command:
+              - "/var/www/davis/bin/console"
+              - "doctrine:migrations:migrate"
+              - "--no-interaction"
+            env: *env
+            envFrom: *envFrom
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 82 # php-fpm server
+        runAsGroup: 82
+        fsGroup: 82
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 8080
+    route:
+      app: &route
+        hostnames:
+          - "davis.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+      dav:
+        <<: *route
+        rules:
+          - backendRefs:
+              - kind: Service
+                name: davis
+                port: 8080
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /dav
+              - path:
+                  type: PathPrefix
+                  value: /.well-known
+
+    configMaps:
+      caddy:
+        enabled: true
+        data:
+          Caddyfile: |
+            {
+              log {
+                level info
+                output stderr
+                format console
+              }
+              http_port 8080
+              https_port 8443
+              servers {
+                trusted_proxies static 172.30.0.0/16
+                trusted_proxies_strict
+              }
+            }
+            davis.${ROOT_DOMAIN}:8080 {
+              log
+              header -Server
+              header -X-Powered-By
+              redir /.well-known/carddav /dav/ 301
+              redir /.well-known/caldav /dav/ 301
+              root * /var/www/davis/public
+              encode zstd gzip
+              php_fastcgi 127.0.0.1:9000 {
+                trusted_proxies 172.30.0.0/16
+              }
+              file_server {
+                hide .git .gitignore
+              }
+            }
+    persistence:
+      caddy:
+        type: configMap
+        identifier: caddy
+        advancedMounts:
+          main:
+            caddy:
+              - subPath: Caddyfile
+                path: /config/Caddyfile
+      config:
+        existingClaim: "davis"
+        advancedMounts:
+          main:
+            app:
+              - path: /config
+            02-db-migrate:
+              - path: /config
+      tmp:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - subPath: tmp
+            path: /tmp
+        advancedMounts:
+          main:
+            app:
+              - subPath: public
+                path: /var/www/davis/public
+              - subPath: cache
+                path: /var/www/davis/var/cache
+            caddy: &public
+              - subPath: public
+                path: /var/www/davis/public
+            01-public:
+              - path: /web
+            02-db-migrate: *public
