@@ -31,6 +31,8 @@ specs:
           - matchName: github.com
 
           # helm charts
+          ## codeberg
+          - matchName: codeberg.org
           ## fluentbit
           - matchName: cr.fluentbit.io
           ## github

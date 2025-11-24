@@ -132,6 +132,12 @@ spec:
       external-dns.alpha.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: "${LB_INTERNAL_IP}"
   listeners:
+    - name: ssh
+      protocol: TCP
+      port: 22
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: http
       protocol: HTTP
       port: 80
@@ -219,7 +225,8 @@ spec:
       add:
         - name: "Content-Security-Policy"
           value: >-
-            default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' data: mediastream: blob: wss:;
+            default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
+            data: mediastream: blob: wss: *.${ROOT_DOMAIN};
             object-src 'none';"
         - name: "Strict-Transport-Security"
           value: "max-age=31536000; includeSubDomains"

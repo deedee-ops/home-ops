@@ -9,3 +9,4 @@ resources:
   - ./_namespace.yaml
   - ./atuin.yaml
   - ./davis.yaml
+  - ./forgejo.yaml
