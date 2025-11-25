@@ -34,6 +34,7 @@ services:
       - "registry:5000/talos/cache"
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/talos-factory/config:/config:ro"
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
     tmpfs:
       - /tmp:mode=755,uid=1000,gid=1000
     networks:

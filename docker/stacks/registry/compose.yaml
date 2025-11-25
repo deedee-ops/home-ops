@@ -12,6 +12,8 @@ services:
       - override.env
     networks:
       - internal
+    volumes:
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
     labels:
       traefik.enable: "true"
       traefik.http.services.registry.loadbalancer.server.port: "5000"
