@@ -10,3 +10,4 @@ resources:
   - ./atuin.yaml
   - ./davis.yaml
   - ./forgejo.yaml
+  - ./stirlingpdf.yaml
