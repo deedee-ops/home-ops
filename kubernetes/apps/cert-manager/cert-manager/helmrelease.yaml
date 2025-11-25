@@ -22,6 +22,9 @@ spec:
       enabled: true
       servicemonitor:
         enabled: true
+    startupapicheck:
+      podLabels: &egress
+        egress.cilium.io/kube-apiserver: "true"
     webhook:
       replicaCount: 2
       podDisruptionBudget:

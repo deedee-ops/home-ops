@@ -62,6 +62,16 @@ releases:
     needs:
       - kube-system/coredns
 
+  # cert manager provisions CRDs dynamically, and we need them for envoy to boot early
+  - name: cert-manager
+    namespace: cert-manager
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.19.1
+    values:
+      - ./templates/values.yaml.gotmpl
+    needs:
+      - kube-system/spegel
+
   - name: flux-operator
     namespace: flux-system
     chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
@@ -69,7 +79,7 @@ releases:
     values:
       - ./templates/values.yaml.gotmpl
     needs:
-      - kube-system/spegel
+      - cert-manager/cert-manager
 
   - name: flux-instance
     namespace: flux-system
@@ -79,3 +89,16 @@ releases:
       - ./templates/flux-values.yaml.gotmpl
     needs:
       - flux-system/flux-operator
+    hooks:
+      - # Apply Network policy to allow flux instance fetch everything else
+        command: kubectl
+        args:
+          - apply
+          - --namespace=flux-system
+          - --server-side
+          - --field-manager=kustomize-controller
+          - --filename
+          - ../../kubernetes/apps/flux-system/flux-instance/networkpolicy.yaml
+        events:
+          - cleanup
+        showlogs: true
