@@ -34,6 +34,9 @@ spec:
           options:
             - name: ndots
               value: "1"
+    controllerServiceAccount:
+      name: gha-runner-scale-set-controller
+      namespace: actions-runner-system
     template:
       metadata:
         labels:
