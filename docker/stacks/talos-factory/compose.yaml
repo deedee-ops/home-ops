@@ -11,7 +11,7 @@ services:
       - compose.env
     command:
       - "-external-url"
-      - "https://talos.crypt.${ROOT_DOMAIN}"
+      - "https://talos.${ROOT_DOMAIN}"
       - "-cache-signing-key-path"
       - "/config/cache-signing-key.key"
       - "-secureboot"

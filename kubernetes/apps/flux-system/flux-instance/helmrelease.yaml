@@ -34,8 +34,8 @@ spec:
         patches:
           - patch: |-
               - op: add
-                path: /spec/template/metadata/labels/egress.cilium.io
-                value: kube-apiserver
+                path: /spec/template/metadata/labels/egress.cilium.io~1kube-apiserver
+                value: "true"
             target:
               kind: Deployment
               name: (kustomize-controller|helm-controller|source-controller|notification-controller)

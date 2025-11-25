@@ -27,7 +27,7 @@ certificatesResolvers:
   vault-ecdsa:
     acme:
       storage: /certs/vault-ecdsa.json
-      caServer: 'https://vault/v1/pki_traefik/acme/directory'
+      caServer: 'https://vault/v1/pki_int_traefik/acme/directory'
       caCertificates:
         - /config/cert.pem
       httpChallenge:
@@ -36,7 +36,7 @@ certificatesResolvers:
   vault-rsa:
     acme:
       storage: /certs/vault-rsa.json
-      caServer: 'https://vault/v1/pki_traefik/acme/directory'
+      caServer: 'https://vault/v1/pki_fallback_int_traefik/acme/directory'
       caCertificates:
         - /config/cert.pem
       httpChallenge:
