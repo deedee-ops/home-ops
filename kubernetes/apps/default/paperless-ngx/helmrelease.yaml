@@ -1,0 +1,228 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-ngx
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: paperless-ngx
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image: &img
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.20.0@sha256:8ffd737c69a569bbdadc118e7f54b0b1050ffac2868fdf9e390a68cb7c82a79d
+            env:
+              PAPERLESS_ACCOUNT_EMAIL_VERIFICATION: "true"
+              PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
+              PAPERLESS_CONSUMER_POLLING: "60" # ionotify doesn't work over NFS
+              PAPERLESS_CONSUMER_RECURSIVE: "true"
+              PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+              PAPERLESS_CONSUMPTION_DIR: &consume "/data/consume"
+              PAPERLESS_DATA_DIR: &data "/config"
+              PAPERLESS_DATE_ORDER: "YMD"
+              PAPERLESS_DATE_PARSER_LANGUAGES: "pl+en"
+              PAPERLESS_DISABLE_REGULAR_LOGIN: "false"
+              PAPERLESS_EXPORT_DIR: &export "/data/export"
+              PAPERLESS_MEDIA_ROOT: &media "/data/media"
+              PAPERLESS_OCR_LANGUAGE: "eng+pol"
+              PAPERLESS_OCR_USER_ARGS: "{\"invalidate_digital_signatures\": true}"
+              PAPERLESS_PORT: &port 80
+              PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
+              PAPERLESS_REDIS: "unix:///sockets/redis.sock"
+              PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: "true"
+              PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
+              PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
+              PAPERLESS_SUPERVISORD_WORKING_DIR: "/tmp"
+              PAPERLESS_TASK_WORKERS: "2"
+              PAPERLESS_TIKA_ENABLED: "1"
+              PAPERLESS_TIKA_ENDPOINT: "http://localhost:9998"
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://localhost:3000"
+              PAPERLESS_TIME_ZONE: &tz Europe/Warsaw
+              PAPERLESS_TRASH_DIR: &trash "/data/trash"
+              PAPERLESS_TRUSTED_PROXIES: "172.30.0.0/16"
+              PAPERLESS_URL: "https://paperless.${ROOT_DOMAIN}"
+              USERMAP_UID: 1000
+              USERMAP_GID: 1000
+              TZ: *tz
+            envFrom:
+              - secretRef:
+                  name: "paperless-ngx-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+              readiness:
+                enabled: true
+              startup: # in case of large DB migrations
+                <<: *probes
+                spec:
+                  periodSeconds: 1
+                  failureThreshold: 300
+                  initialDelaySeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2048Mi
+          redis:
+            image:
+              repository: "public.ecr.aws/docker/library/redis"
+              tag: "8.4.0-bookworm@sha256:43355efd22490e31ca14b9d569367d05121e2be61fd8e47937563ae2a80952ae"
+            # save and appendonly options forcibly disable RDB and AOF persistence entirely
+            command:
+              - "redis-server"
+              - "--save"
+              - "''"
+              - "--appendonly"
+              - "no"
+              - "--port"
+              - "0"
+              - "--bind"
+              - "127.0.0.1"
+              - "--unixsocket"
+              - "/sockets/redis.sock"
+              - "--unixsocketperm"
+              - "700"
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "32Mi"
+              limits:
+                cpu: "1000m"
+                memory: "512Mi"
+          tika:
+            image:
+              repository: docker.io/apache/tika
+              tag: 3.2.3.0@sha256:c0154cb95587cde64be74f35ada1a2bd7892219f3f0ac3c9dc6cab34046b3573
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "256Mi"
+              limits:
+                cpu: "1000m"
+                memory: "1Gi"
+            probes:
+              liveness: &tikaProbes
+                enabled: true
+                spec:
+                  tcpSocket:
+                    port: 9998
+              readiness: *tikaProbes
+          gotenberg:
+            image:
+              repository: "docker.io/gotenberg/gotenberg"
+              tag: "8.25.0@sha256:e304e45acee3c400f8ef76afa195c76b1d0eaf0ab6fe9651e305067ab6a1560c"
+            command:
+              - "gotenberg"
+              - "--chromium-disable-javascript=true"
+              - "--chromium-allow-list=file:///tmp/.*"
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "10m"
+              limits:
+                cpu: "500m"
+                memory: "256Mi"
+            probes:
+              liveness: &gotenProbes
+                enabled: true
+                spec:
+                  tcpSocket:
+                    port: 3000
+              readiness: *gotenProbes
+        initContainers:
+          01-download-languages:
+            image: *img
+            command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                cp -r /usr/share/tesseract-ocr/5/tessdata/* /tessdata/
+                curl -o /tessdata/pol.traineddata \
+                https://raw.githubusercontent.com/tesseract-ocr/tessdata/refs/heads/main/pol.traineddata
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "paperless.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      data:
+        existingClaim: paperless-ngx
+        advancedMounts:
+          main:
+            app:
+              - subPath: "consume"
+                path: *consume
+              - subPath: "data"
+                path: *data
+              - subPath: "export"
+                path: *export
+              - subPath: "media"
+                path: *media
+              - subPath: "trash"
+                path: *trash
+      tmp:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 128Mi
+        globalMounts:
+          - subPath: tmp
+            path: /tmp
+        advancedMounts:
+          main:
+            app:
+              - subPath: "run"
+                path: "/run"
+              - subPath: "apt"
+                path: "/var/lib/apt"
+              - subPath: tessdata
+                path: /usr/share/tesseract-ocr/5/tessdata
+              - &sockdir
+                subPath: "sockets"
+                path: "/sockets"
+            redis:
+              - *sockdir
+            01-download-languages:
+              - subPath: tessdata
+                path: /tessdata

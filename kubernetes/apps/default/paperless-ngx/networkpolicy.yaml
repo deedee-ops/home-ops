@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: paperless-ngx-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: paperless-ngx
+    egress:
+      - toFQDNs:
+          - matchName: raw.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"
