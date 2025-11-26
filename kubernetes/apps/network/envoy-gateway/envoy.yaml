@@ -227,6 +227,7 @@ spec:
           value: >-
             default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
             data: mediastream: blob: wss: *.${ROOT_DOMAIN};
+            connect-src 'self' data: mediastream: blob: wss: *.${ROOT_DOMAIN} https://cdn.jsdelivr.net;
             object-src 'none';"
         - name: "Strict-Transport-Security"
           value: "max-age=31536000; includeSubDomains"

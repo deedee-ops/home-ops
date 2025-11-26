@@ -16,15 +16,15 @@ spec:
         type: statefulset
         containers:
           app:
-            image:
+            image: &img
               repository: ghcr.io/stirling-tools/stirling-pdf
-              tag: 1.6.0-fat@sha256:6a98563e829ac87bc54e116ba0003f4a4379febc6745608132d48f4fb22b6c02
+              tag: 2.0.0-fat@sha256:0a91df5b82fd33c0deeeea1460a00bec425976ca7439941f503c0a1fc1e409e3
             env:
               ALLOW_GOOGLE_VISIBILITY: "false"
               DISABLE_ADDITIONAL_FEATURES: "true"
               DISABLE_PIXEL: "true"
               DOCKER_ENABLE_SECURITY: "false"
-              LANGS: en_GB
+              LANGS: "en_US,pl_PL"
               SECURITY_ENABLE_LOGIN: "false"
               SHOW_SURVEY: "false"
               SYSTEM_DEFAULTLOCALE: en-US
@@ -62,6 +62,19 @@ spec:
               requests:
                 cpu: 5m
                 memory: 10M
+          02-prepare-nginx:
+            image: *img
+            command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                cp -r /etc/nginx/* /nginx/
+                mkdir -p /var/lib/nginx/logs /var/lib/nginx/tmp
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
         statefulset:
           volumeClaimTemplates:
             - name: data
@@ -88,9 +101,9 @@ spec:
             value: "1"
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 102
+        runAsGroup: 103
+        fsGroup: 103
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -119,3 +132,12 @@ spec:
                 path: /tmp
               - subPath: logs
                 path: /logs
+              - subPath: nginx-conf
+                path: /etc/nginx
+              - subPath: nginx-data
+                path: /var/lib/nginx
+            02-prepare-nginx:
+              - subPath: nginx-conf
+                path: /nginx
+              - subPath: nginx-data
+                path: /var/lib/nginx
