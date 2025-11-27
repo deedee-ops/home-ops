@@ -19,7 +19,6 @@ spec:
       ROOT_DOMAIN: ajgon.casa
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_PUID: "82"
-      VOLSYNC_PGID: "82"
   prune: true
   sourceRef:
     kind: GitRepository
