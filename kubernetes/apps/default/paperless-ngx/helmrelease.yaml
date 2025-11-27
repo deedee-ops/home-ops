@@ -24,7 +24,7 @@ spec:
               PAPERLESS_CONSUMER_POLLING: "60" # ionotify doesn't work over NFS
               PAPERLESS_CONSUMER_RECURSIVE: "true"
               PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
-              PAPERLESS_CONSUMPTION_DIR: &consume "/data/consume"
+              PAPERLESS_CONSUMPTION_DIR: "/sync/consume"
               PAPERLESS_DATA_DIR: &data "/config"
               PAPERLESS_DATE_ORDER: "YMD"
               PAPERLESS_DATE_PARSER_LANGUAGES: "pl+en"
@@ -192,8 +192,6 @@ spec:
         advancedMounts:
           main:
             app:
-              - subPath: "consume"
-                path: *consume
               - subPath: "data"
                 path: *data
               - subPath: "export"
@@ -202,6 +200,18 @@ spec:
                 path: *media
               - subPath: "trash"
                 path: *trash
+      sync:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media/sync/paperless-ngx"
+        advancedMounts:
+          main:
+            app:
+              - path: "/sync"
       tmp:
         type: emptyDir
         medium: Memory

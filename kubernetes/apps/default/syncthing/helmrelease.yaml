@@ -91,6 +91,18 @@ spec:
             01-set-config:
               - path: /config
                 subPath: config
+      external-sync:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media/sync"
+        advancedMounts:
+          main:
+            app:
+              - path: "/sync"
       tmp:
         type: emptyDir
         medium: Memory
