@@ -154,6 +154,12 @@ spec:
         certificateRefs:
           - kind: Secret
             name: "${VAULT_SIGNING_ROLE}-tls"
+    - name: syncthing
+      protocol: UDP
+      port: 22000
+      allowedRoutes:
+        namespaces:
+          from: All
 ---
 # yamllint disable-line rule:line-length
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/envoypatchpolicy_v1alpha1.json

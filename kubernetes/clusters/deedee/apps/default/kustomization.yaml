@@ -12,3 +12,4 @@ resources:
   - ./forgejo.yaml
   - ./paperless-ngx.yaml
   - ./stirlingpdf.yaml
+  - ./syncthing.yaml
