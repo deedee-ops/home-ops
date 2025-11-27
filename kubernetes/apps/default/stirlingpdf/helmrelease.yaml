@@ -111,7 +111,8 @@ spec:
       app:
         ports:
           http:
-            port: 8080
+            targetPort: 8080
+            port: 80
     route:
       app:
         hostnames:

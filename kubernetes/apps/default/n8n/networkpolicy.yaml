@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: n8n-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: n8n
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: forgejo
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: paperless-ngx
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: stirlingpdf
+      - toFQDNs:
+          - matchName: license.n8n.io
+          # community modes
+          - matchName: registry.npmjs.org
+          # google drive
+          - matchName: oauth2.googleapis.com
+          - matchName: www.googleapis.com
+          # dropbox
+          - matchName: api.dropboxapi.com
+          - matchName: content.dropboxapi.com
+          # todoist
+          - matchName: api.todoist.com
+        toPorts:
+          - ports:
+              - port: "443"
+      - toFQDNs:
+          - matchName: imap.migadu.com
+        toPorts:
+          - ports:
+              - port: "993"
+      - toFQDNs:
+          - matchName: smtp.migadu.com
+        toPorts:
+          - ports:
+              - port: "465"
