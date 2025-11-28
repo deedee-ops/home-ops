@@ -18,7 +18,7 @@ spec:
             image:
               # https://github.com/pocket-id/pocket-id/issues/1120
               repository: ghcr.io/deedee-ops/pocket-id
-              tag: v1.15.0@sha256:1bc56a486b20907da3e3d7feaa1ecde30ff6749c9d668167d9793b2510fe2da5
+              tag: v1.15.0@sha256:f97d18e275f7987f38b6f559a0f25b721abb448581cac31257d061a1eea0d522
             env:
               ALLOW_USER_SIGNUPS: "disabled"
               ANALYTICS_DISABLED: "true"
