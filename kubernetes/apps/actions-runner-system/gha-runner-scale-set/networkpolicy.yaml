@@ -36,6 +36,7 @@ specs:
           - matchName: "registry.npmjs.org"
           - matchName: "release-assets.actions.githubusercontent.com"
           - matchName: "s3.ajgon.casa"
+          - matchName: "static.crates.io"
           - matchName: "static.rust-lang.org"
           - matchName: "storage.googleapis.com"
           - matchName: "sum.golang.org"
