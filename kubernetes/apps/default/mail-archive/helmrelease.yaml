@@ -1,0 +1,226 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mail-archive
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: mail-archive
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: roundcube/roundcubemail
+              tag: "1.6.11-apache-nonroot@sha256:53e327599000fb65c6500acff5b27e5e9fdd50a5d781154530c0763a1bff0e25"
+            env:
+              ROUNDCUBEMAIL_DB_TYPE: "sqlite"
+              ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot"
+              ROUNDCUBEMAIL_DEFAULT_PORT: "143"
+              ROUNDCUBEMAIL_PLUGINS: "hide_blockquote,identicon,zipdownload"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false # roundcube uses it's own codebase directory for writes
+              capabilities:
+                drop:
+                  - ALL
+              runAsUser: 33
+              runAsGroup: 33
+              fsGroup: 33
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1024Mi
+          dovecot:
+            image:
+              repository: ghcr.io/slusarz/dovecot-fts-flatcurve
+              tag: "v1.0.5@sha256:3a11df7028e476e2c0b971907cb48a525d37276961bcc44bfb7360f49950236c"
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+              runAsUser: 1000
+              runAsGroup: 1000
+              fsGroup: 1000
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 256Mi
+          tika:
+            image:
+              repository: docker.io/apache/tika
+              tag: 3.2.3.0@sha256:c0154cb95587cde64be74f35ada1a2bd7892219f3f0ac3c9dc6cab34046b3573
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "256Mi"
+              limits:
+                cpu: "1000m"
+                memory: "1Gi"
+            probes:
+              liveness: &tikaProbes
+                enabled: true
+                spec:
+                  tcpSocket:
+                    port: 9998
+              readiness: *tikaProbes
+
+      imapsync:
+        type: cronjob
+        cronjob:
+          schedule: "30 * * * *" # every hour
+          successfulJobsHistory: 0
+          failedJobsHistory: 5
+          concurrencyPolicy: Forbid
+
+        containers:
+          sync:
+            image:
+              repository: gilleslamiral/imapsync
+              tag: "2.306@sha256:5f4fa6e58c66a412edb23f2ebf6ef5d301cbe4883417f218b5ece913edb6c950"
+              pullPolicy: IfNotPresent
+            command:
+              - sh
+              - /imapsync.sh
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              runAsGroup: 1000
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 64Mi
+              limits:
+                memory: 1Gi
+
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          securityContext:
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile:
+              type: RuntimeDefault
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: main
+        ports:
+          http:
+            port: 80
+            targetPort: 8000
+      dovecot:
+        controller: main
+        ports:
+          imap:
+            port: 143
+    route:
+      app:
+        rules:
+          - backendRefs:
+              - name: mail-archive-app
+                namespace: default
+                port: 80
+        hostnames:
+          - "mail.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: "mail-archive"
+        advancedMounts:
+          main:
+            app:
+              - subPath: "roundube"
+                path: /var/roundcube/db
+            dovecot:
+              - subPath: "mail"
+                path: /srv/mail
+      dovecot-config:
+        type: configMap
+        name: mail-archive-configmap
+        advancedMounts:
+          main:
+            dovecot:
+              - subPath: "dovecot.conf"
+                path: /etc/dovecot/dovecot.conf
+                readOnly: true
+          imapsync:
+            sync:
+              - subPath: "imapsync.sh"
+                path: /imapsync.sh
+      dovecot-password:
+        type: secret
+        name: mail-archive-secret
+        advancedMounts:
+          main:
+            dovecot:
+              - subPath: "DOVECOT_PASSWD"
+                path: /etc/dovecot/passwd
+                readOnly: true
+          imapsync:
+            sync:
+              - path: /secrets
+      imapsync:
+        existingClaim: "mail-archive-sync"
+        advancedMounts:
+          imapsync:
+            sync:
+              - path: /data
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - subPath: tmp
+            path: /tmp
+          - subPath: vartmp
+            path: /var/tmp
+        advancedMounts:
+          main:
+            dovecot:
+              - subPath: dovecot-run
+                path: /run/dovecot
+              - subPath: dovecot-lib
+                path: /usr/local/var/lib

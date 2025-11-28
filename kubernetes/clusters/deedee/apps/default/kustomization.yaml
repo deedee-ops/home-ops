@@ -10,6 +10,7 @@ resources:
   - ./atuin.yaml
   - ./davis.yaml
   - ./forgejo.yaml
+  - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
   - ./stirlingpdf.yaml
