@@ -32,3 +32,11 @@ specs:
         toPorts:
           - ports:
               - port: "80"
+      # via envoy, when pods use id.${ROOT_DOMAIN}
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: network
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+        toPorts:
+          - ports:
+              - port: "10443"
