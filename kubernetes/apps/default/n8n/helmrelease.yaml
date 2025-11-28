@@ -36,7 +36,7 @@ spec:
               N8N_RUNNERS_ENABLED: "true"
               N8N_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               N8N_SMTP_PORT: "25"
-              N8N_SMTP_SENDER: "homelab@${ROOT_DOMAIN}"
+              N8N_SMTP_SENDER: "deedee@${ROOT_DOMAIN}"
               N8N_SMTP_SSL: "false"
               N8N_TEMPLATES_ENABLED: "false"
               N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
@@ -94,7 +94,7 @@ spec:
               - "-c"
               - |
                 # c_rehash needs writable certificates dir, so configmap mount won't work
-                cp /certs/homelab.crt /opt/custom-certificates
+                cp /certs/* /opt/custom-certificates
 
                 cp -r /usr/local/lib/node_modules/n8n/dist/* /n8n/
                 sh /security-patches.sh
@@ -150,7 +150,7 @@ spec:
                 path: /security-patches.sh
       root-ca:
         type: secret
-        name: n8n-certs
+        name: homelab-root-ca.crt
         advancedMounts:
           main:
             01-security-patches:

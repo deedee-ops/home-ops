@@ -22,6 +22,7 @@ spec:
   path: ./kubernetes/apps/cert-manager/cert-manager
   postBuild:
     substitute:
+      CA_BUNDLE: "${CA_BUNDLE}"
       VAULT_SIGNING_ROLE: ajgon-casa
       VAULT_HOST: "vault.${ROOT_DOMAIN}"
   prune: true

@@ -26,7 +26,6 @@ spec:
               EMAILS_VERIFIED: "true"
               EMAIL_LOGIN_NOTIFICATION_ENABLED: "true"
               GEOLITE_DB_PATH: /data/GeoLite2-City.mmdb
-              INTERNAL_APP_URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local"
               KEYS_STORAGE: database
               LOG_JSON: "true"
               METRICS_ENABLED: "true"

@@ -48,6 +48,7 @@ spec:
               PAPERLESS_TRASH_DIR: &trash "/data/trash"
               PAPERLESS_TRUSTED_PROXIES: "172.30.0.0/16"
               PAPERLESS_URL: "https://paperless.${ROOT_DOMAIN}"
+              REQUESTS_CA_BUNDLE: /etc/ssl/certs/homelab.crt
               USERMAP_UID: 1000
               USERMAP_GID: 1000
               TZ: *tz
@@ -200,6 +201,14 @@ spec:
                 path: *media
               - subPath: "trash"
                 path: *trash
+      root-ca:
+        type: secret
+        name: homelab-root-ca.crt
+        advancedMounts:
+          main:
+            app:
+              - path: /etc/ssl/certs/homelab.crt
+                subPath: ca.crt
       sync:
         type: custom
         volumeSpec:

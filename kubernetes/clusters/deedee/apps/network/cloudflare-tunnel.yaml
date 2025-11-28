@@ -8,6 +8,8 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/network/cloudflare-tunnel
   postBuild:
+    substitute:
+      CA_BUNDLE: "${CA_BUNDLE}"
     substituteFrom:
       - kind: Secret
         name: cloudflare-tunnel-id-secret

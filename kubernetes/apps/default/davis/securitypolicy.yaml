@@ -11,7 +11,13 @@ spec:
       name: davis-app
   oidc:
     provider:
-      issuer: "http://pocket-id.security.svc.cluster.local"
+      issuer: "https://id.ajgon.casa"
+      backendRefs:
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: pocket-id
+          namespace: security
+          port: 443
     clientIDRef:
       group: ""
       kind: Secret

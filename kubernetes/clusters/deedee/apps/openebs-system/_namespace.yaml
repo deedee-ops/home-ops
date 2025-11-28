@@ -13,3 +13,16 @@ metadata:
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/secret-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: Secret
+metadata:
+  name: homelab-root-ca.crt
+  namespace: _
+type: Opaque
+data:
+  ca.crt: "${CA_BUNDLE}"

@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/backend_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: pocket-id
+spec:
+  endpoints:
+    - fqdn:
+        hostname: "id.${ROOT_DOMAIN}"
+        port: 443
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/backendtlspolicy_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
+metadata:
+  name: pocket-id
+spec:
+  targetRefs:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+      name: pocket-id
+  validation:
+    caCertificateRefs:
+      - name: homelab-root-ca.crt
+        kind: Secret
+        group: ""
+    hostname: "id.${ROOT_DOMAIN}"
