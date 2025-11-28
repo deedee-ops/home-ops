@@ -12,7 +12,7 @@ spec:
     substitute:
       LB_EXTERNAL_IP: 192.168.42.31
       LB_INTERNAL_IP: 192.168.42.30
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VAULT_SIGNING_ROLE: ajgon-casa
   sourceRef:
     kind: GitRepository

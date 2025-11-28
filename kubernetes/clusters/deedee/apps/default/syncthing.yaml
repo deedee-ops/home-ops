@@ -16,7 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: syncthing
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 10Gi
   prune: true
   sourceRef:

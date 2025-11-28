@@ -11,6 +11,9 @@ spec:
   deletionPolicy: WaitForTermination
   interval: 1h
   path: ./kubernetes/clusters/deedee/apps
+  postBuild:
+    substitute:
+      ROOT_DOMAIN: ajgon.casa
   prune: true
   sourceRef:
     kind: GitRepository

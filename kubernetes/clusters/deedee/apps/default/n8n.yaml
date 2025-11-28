@@ -16,7 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: n8n
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:

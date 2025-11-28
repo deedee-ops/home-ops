@@ -16,7 +16,7 @@ spec:
     substitute:
       APP: davis
       CLUSTER_NAME: deedee
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_PUID: "82"
   prune: true

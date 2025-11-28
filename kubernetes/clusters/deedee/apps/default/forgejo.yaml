@@ -16,7 +16,7 @@ spec:
     substitute:
       APP: forgejo
       CLUSTER_NAME: deedee
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 25Gi
   prune: true
   sourceRef:

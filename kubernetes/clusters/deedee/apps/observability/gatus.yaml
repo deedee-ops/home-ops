@@ -12,7 +12,7 @@ spec:
   path: ./kubernetes/apps/observability/gatus
   postBuild:
     substitute:
-      ROOT_DOMAIN: ajgon.casa
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository

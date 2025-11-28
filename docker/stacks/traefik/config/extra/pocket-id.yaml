@@ -13,7 +13,7 @@ http:
     pocket-id:
       loadBalancer:
         servers:
-          - url: https://id.ajgon.casa
+          - url: 'https://id.{{ env "ROOT_DOMAIN" }}'
             preservePath: true
         passHostHeader: false
         serversTransport: "pocket-id@file"

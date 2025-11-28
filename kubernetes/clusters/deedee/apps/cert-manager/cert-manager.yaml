@@ -23,6 +23,7 @@ spec:
   postBuild:
     substitute:
       VAULT_SIGNING_ROLE: ajgon-casa
+      VAULT_HOST: "vault.${ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository
