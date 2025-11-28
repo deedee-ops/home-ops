@@ -18,6 +18,14 @@ specs:
       - toEndpoints:
           - matchLabels:
               app.kubernetes.io/name: stirlingpdf
+      # via envoy, [git|paperless|pdf].${ROOT_DOMAIN}
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: network
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+        toPorts:
+          - ports:
+              - port: "10443"
       - toFQDNs:
           - matchName: license.n8n.io
           # community modes

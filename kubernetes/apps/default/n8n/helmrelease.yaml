@@ -93,7 +93,10 @@ spec:
               - "/bin/sh"
               - "-c"
               - |
-                cp -r /usr/local/lib/node_modules/n8n/* /n8n/
+                # c_rehash needs writable certificates dir, so configmap mount won't work
+                cp /certs/homelab.crt /opt/custom-certificates
+
+                cp -r /usr/local/lib/node_modules/n8n/dist/* /n8n/
                 sh /security-patches.sh
             securityContext: *sc
             resources:
@@ -145,6 +148,13 @@ spec:
             01-security-patches:
               - subPath: security-patches.sh
                 path: /security-patches.sh
+      root-ca:
+        type: secret
+        name: n8n-certs
+        advancedMounts:
+          main:
+            01-security-patches:
+              - path: /certs
       sync-source:
         type: custom
         volumeSpec:
@@ -176,9 +186,13 @@ spec:
             01-security-patches:
               - subPath: n8n
                 path: /n8n
+              - subPath: certs
+                path: /opt/custom-certificates
             app:
               - subPath: n8n
-                path: /usr/local/lib/node_modules/n8n
+                path: /usr/local/lib/node_modules/n8n/dist
+              - subPath: certs
+                path: /opt/custom-certificates
         globalMounts:
           - subPath: cache
             path: /home/node/.cache
