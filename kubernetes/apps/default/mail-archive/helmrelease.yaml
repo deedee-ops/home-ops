@@ -13,6 +13,9 @@ spec:
   values:
     controllers:
       main:
+        pod:
+          labels:
+            egress.cilium.io/auth: "true"
         containers:
           app:
             image:
@@ -20,7 +23,7 @@ spec:
               tag: "1.6.11-apache-nonroot@sha256:53e327599000fb65c6500acff5b27e5e9fdd50a5d781154530c0763a1bff0e25"
             env:
               ROUNDCUBEMAIL_DB_TYPE: "sqlite"
-              ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot"
+              ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot.default.svc.cluster.local"
               ROUNDCUBEMAIL_DEFAULT_PORT: "143"
               ROUNDCUBEMAIL_PLUGINS: "hide_blockquote,identicon,zipdownload"
             probes:
@@ -204,6 +207,30 @@ spec:
           imapsync:
             sync:
               - path: /secrets
+      extra-configs:
+        type: secret
+        name: mail-archive-configs-secret
+        advancedMounts:
+          main:
+            app:
+              - subPath: roundcube.oauth.inc.php
+                path: /var/roundcube/config/roundcube.oauth.inc.php
+                readOnly: true
+            dovecot:
+              - subPath: dovecot.oauth.conf
+                path: /etc/dovecot/dovecot.oauth.conf
+                readOnly: true
+      homelab-ca:
+        type: secret
+        name: homelab-root-ca.crt
+        advancedMounts:
+          main:
+            app:
+              - path: /etc/ssl/certs/ca-certificates.crt
+                subPath: ca.crt
+            dovecot:
+              - path: /etc/ssl/certs/ca-certificates.crt
+                subPath: ca.crt
       imapsync:
         existingClaim: "mail-archive-sync"
         advancedMounts:

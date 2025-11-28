@@ -1,3 +1,5 @@
+#!/bin/sh
+
 imapsync \
   --host1 imap.migadu.com \
   --user1 "$(cat /secrets/SOURCE_USER)" \
