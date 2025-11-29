@@ -13,5 +13,5 @@ resources:
   - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
-  - ./stirlingpdf.yaml
+  - ./bentopdf.yaml
   - ./syncthing.yaml
