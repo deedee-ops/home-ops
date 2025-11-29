@@ -5,6 +5,9 @@ kind: Kustomization
 metadata:
   name: cloudflare-tunnel
 spec:
+  dependsOn:
+    - name: external-dns-cloudflare
+      namespace: network
   interval: 1h
   path: ./kubernetes/apps/network/cloudflare-tunnel
   postBuild:

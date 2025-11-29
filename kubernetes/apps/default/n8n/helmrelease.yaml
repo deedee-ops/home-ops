@@ -34,6 +34,7 @@ spec:
               N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
               N8N_LISTEN_ADDRESS: "0.0.0.0"
               N8N_METRICS: "true"
+              N8N_PORT: &port 80
               N8N_RUNNERS_ENABLED: "true"
               N8N_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               N8N_SMTP_PORT: "25"
@@ -53,7 +54,7 @@ spec:
                 spec: &spec
                   httpGet:
                     path: /healthz
-                    port: &port 5678
+                    port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
@@ -105,6 +106,8 @@ spec:
                 cpu: 5m
                 memory: 10M
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots
@@ -124,8 +127,7 @@ spec:
       app:
         ports:
           http:
-            targetPort: *port
-            port: 80
+            port: *port
     serviceMonitor:
       app:
         endpoints:

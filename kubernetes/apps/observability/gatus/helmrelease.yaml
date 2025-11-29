@@ -76,6 +76,8 @@ spec:
               accessMode: ReadWriteOnce
               size: 5Gi
     defaultPodOptions:
+      automountServiceAccountToken: true # gatus-sidecar
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

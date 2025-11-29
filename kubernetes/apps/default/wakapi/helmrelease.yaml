@@ -56,7 +56,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 128Mi
+                memory: 256Mi
             securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -76,6 +76,8 @@ spec:
                   name: "wakapi-secret"
             securityContext: *sc
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

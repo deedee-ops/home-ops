@@ -27,7 +27,7 @@ spec:
               TUNNEL_TRANSPORT_PROTOCOL: quic # http2
             envFrom:
               - secretRef:
-                  name: "{{ .Release.Name }}-secret"
+                  name: "cloudflare-tunnel-secret"
             args:
               - tunnel
               - run
@@ -56,6 +56,8 @@ spec:
               limits:
                 memory: 256Mi
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       labels:
         egress.cilium.io/envoy: "true"
       dnsConfig:

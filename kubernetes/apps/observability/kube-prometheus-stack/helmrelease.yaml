@@ -17,6 +17,9 @@ spec:
       route:
         main:
           enabled: true
+          annotations:
+            gatus.home-operations.com/endpoint: |
+              name: alertmanager
           hostnames:
             - "alertmanager.${ROOT_DOMAIN}"
           parentRefs:
@@ -76,6 +79,9 @@ spec:
       route:
         main:
           enabled: true
+          annotations:
+            gatus.home-operations.com/endpoint: |
+              name: prometheus
           hostnames:
             - "prometheus.${ROOT_DOMAIN}"
           parentRefs:

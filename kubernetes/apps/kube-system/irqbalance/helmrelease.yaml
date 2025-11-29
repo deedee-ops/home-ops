@@ -30,6 +30,7 @@ spec:
               privileged: true
     defaultPodOptions:
       automountServiceAccountToken: false
+      enableServiceLinks: false
       hostIPC: true
       hostPID: true
     persistence:

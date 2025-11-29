@@ -46,6 +46,8 @@ spec:
               limits:
                 memory: 2048Mi
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -58,7 +60,8 @@ spec:
       app:
         ports:
           http:
-            port: *port
+            port: 80
+            targetPort: *port
           sync:
             protocol: UDP
             port: &sync 22000
@@ -68,6 +71,9 @@ spec:
           - port: http
     route:
       app:
+        annotations:
+          gatus.home-operations.com/endpoint: |
+            name: syncthing
         hostnames:
           - "syncthing.${ROOT_DOMAIN}"
         parentRefs:
@@ -78,6 +84,7 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+            sectionName: syncthing
         rules:
           - backendRefs:
               - name: syncthing

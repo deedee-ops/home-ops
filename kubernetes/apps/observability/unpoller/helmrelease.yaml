@@ -21,12 +21,12 @@ spec:
             env:
               TZ: Europe/Warsaw
               UP_UNIFI_DEFAULT_ROLE: homelab
-              UP_UNIFI_DEFAULT_URL: https://192.168.1.1
+              UP_UNIFI_DEFAULT_URL: https://unifi.internal
               UP_PROMETHEUS_HTTP_LISTEN: 0.0.0.0:80
               UP_INFLUXDB_DISABLE: true
             envFrom:
               - secretRef:
-                  name: "{{ .Release.Name }}-secret"
+                  name: "unpoller-secret"
             probes:
               liveness: &probes
                 enabled: true
@@ -52,6 +52,8 @@ spec:
               limits:
                 memory: 128Mi
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

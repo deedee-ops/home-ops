@@ -56,7 +56,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 1024Mi
+                memory: 2048Mi
         initContainers:
           01-set-config:
             image:
@@ -74,6 +74,8 @@ spec:
                 cpu: 5m
                 memory: 10M
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots
@@ -98,6 +100,9 @@ spec:
             port: *http
     route:
       app: &route
+        annotations:
+          gatus.home-operations.com/endpoint: |
+            name: forgejo
         hostnames:
           - "git.${ROOT_DOMAIN}"
         parentRefs:
@@ -108,6 +113,7 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+            sectionName: ssh
         rules:
           - backendRefs:
               - name: forgejo
@@ -116,6 +122,8 @@ spec:
       # https://codeberg.org/forgejo/forgejo/issues/3342
       oauth:
         <<: *route
+        annotations:
+          gatus.home-operations.com/enabled: "false"
         rules:
           - matches:
               - path:

@@ -33,6 +33,8 @@ spec:
                 cpu: "1000m"
                 memory: "512Mi"
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 101

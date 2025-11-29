@@ -142,6 +142,8 @@ spec:
               type: RuntimeDefault
 
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       securityContext:
         runAsNonRoot: true
         fsGroupChangePolicy: OnRootMismatch

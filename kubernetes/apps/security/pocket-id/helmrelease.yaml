@@ -95,7 +95,7 @@ spec:
             port: *http
     persistence:
       config:
-        existingClaim: "{{ .Release.Name }}"
+        existingClaim: pocket-id
         globalMounts:
           - path: /config
             subPath: config
