@@ -8,10 +8,11 @@ components:
 resources:
   - ./_namespace.yaml
   - ./atuin.yaml
+  - ./bentopdf.yaml
   - ./davis.yaml
   - ./forgejo.yaml
   - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
-  - ./bentopdf.yaml
   - ./syncthing.yaml
+  - ./wakapi.yaml

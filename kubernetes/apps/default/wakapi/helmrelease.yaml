@@ -1,0 +1,117 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: wakapi
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: wakapi
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/muety/wakapi
+              tag: 2.16.1@sha256:d26b5d9e786dd69c0602271a8d4560142f515f8680cd38db371b41e761d2f266
+            env:
+              ENVIRONMENT: "prod"
+              WAKAPI_ALLOW_SIGNUP: "false"
+              WAKAPI_BASE_PATH: "/"
+              WAKAPI_DATA_RETENTION_MONTHS: "-1"
+              WAKAPI_DB_TYPE: "sqlite3"
+              WAKAPI_DISABLE_FRONTPAGE: "true"
+              WAKAPI_ENABLE_PPROF: "false"
+              WAKAPI_EXPOSE_METRICS: "true"
+              WAKAPI_IMPORT_ENABLED: "true"
+              WAKAPI_INVITE_CODES: "false"
+              WAKAPI_LEADERBOARD_ENABLED: "false"
+              WAKAPI_LISTEN_IPV4: "0.0.0.0"
+              WAKAPI_LISTEN_IPV6: "-"
+              WAKAPI_LISTEN_SOCKET: "-"
+              WAKAPI_MAIL_ENABLED: "true"
+              WAKAPI_MAIL_SKIP_VERIFY_MX_RECORD: "true"
+              WAKAPI_MAIL_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
+              WAKAPI_MAIL_SMTP_PORT: "25"
+              WAKAPI_MAIL_SMTP_TLS: "false"
+              WAKAPI_MAX_INACTIVE_MONTHS: "-1"
+              WAKAPI_OIDC_PROVIDERS_0_DISPLAY_NAME: "Pocket ID"
+              WAKAPI_OIDC_PROVIDERS_0_ENDPOINT: "https://id.${ROOT_DOMAIN}"
+              WAKAPI_OIDC_PROVIDERS_0_NAME: "pocket-id"
+              WAKAPI_PORT: "80"
+              WAKAPI_PUBLIC_URL: "https://wakapi.${ROOT_DOMAIN}"
+              WAKAPI_QUICK_START: "false"
+              WAKAPI_SENTRY_TRACING: "false"
+              WAKAPI_SUPPORT_CONTACT: "deedee@${ROOT_DOMAIN}"
+              WAKAPI_TRUST_REVERSE_PROXY_IPS: "172.30.0.0/16"
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "wakapi-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: &port 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2048Mi
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "wakapi.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      data:
+        existingClaim: wakapi
+      root-ca:
+        type: secret
+        name: homelab-root-ca.crt
+        advancedMounts:
+          main:
+            app:
+              - path: /etc/ssl/certs/ca-certificates.crt
+                subPath: ca.crt
