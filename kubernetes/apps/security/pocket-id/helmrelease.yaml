@@ -29,10 +29,6 @@ spec:
               GEOLITE_DB_PATH: /data/GeoLite2-City.mmdb
               KEYS_STORAGE: database
               LOG_JSON: "true"
-              METRICS_ENABLED: "true"
-              OTEL_EXPORTER_PROMETHEUS_HOST: 0.0.0.0
-              OTEL_EXPORTER_PROMETHEUS_PORT: &metrics 9464
-              OTEL_METRICS_EXPORTER: prometheus
               PORT: &http 80
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
               SMTP_HOST: "smtp-relay.network.svc.cluster.local"
@@ -97,12 +93,6 @@ spec:
         ports:
           http:
             port: *http
-          metrics:
-            port: *metrics
-    serviceMonitor:
-      main:
-        endpoints:
-          - port: metrics
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"

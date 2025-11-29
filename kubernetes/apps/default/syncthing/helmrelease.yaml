@@ -62,6 +62,10 @@ spec:
           sync:
             protocol: UDP
             port: &sync 22000
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: http
     route:
       app:
         hostnames:

@@ -33,6 +33,7 @@ spec:
               N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "false"
               N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
               N8N_LISTEN_ADDRESS: "0.0.0.0"
+              N8N_METRICS: "true"
               N8N_RUNNERS_ENABLED: "true"
               N8N_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               N8N_SMTP_PORT: "25"
@@ -125,6 +126,10 @@ spec:
           http:
             targetPort: *port
             port: 80
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: http
     route:
       app:
         hostnames:
