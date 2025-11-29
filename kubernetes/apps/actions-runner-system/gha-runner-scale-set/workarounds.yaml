@@ -31,12 +31,6 @@ spec:
         resources:
           - pods
   matchConditions:
-    - name: has-workflow-name-prefix
-      expression: >-
-        object.metadata.name.startsWith("home-ops-runner-")
-    - name: has-workflow-name-suffix
-      expression: >-
-        object.metadata.name.endsWith("-workflow")
     - name: has-actions-runner-system-namespace
       expression: >-
         object.metadata.namespace == "actions-runner-system"
@@ -55,9 +49,5 @@ spec:
                   value: "1"
                 }]
               }
-            },
-            JSONPatch{
-              op: "add", path: "/metadata/labels/app.kubernetes.io~1name",
-              value: "home-ops-runner"
             }
           ]

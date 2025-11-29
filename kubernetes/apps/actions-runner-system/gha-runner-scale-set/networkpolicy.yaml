@@ -3,11 +3,9 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
-  name: home-ops-runner-egress-external
+  name: gha-runner-scale-set-egress-external
 specs:
-  - endpointSelector:
-      matchLabels:
-        app.kubernetes.io/name: home-ops-runner
+  - endpointSelector: {}
     egress:
       - toFQDNs:
           # must be repeated as they're used by another policy
@@ -23,7 +21,9 @@ specs:
           # for actions workloads
           - matchName: "archive.ubuntu.com"
           - matchName: "cache.garnix.io"
+          - matchName: "cdn.jsdelivr.net"
           - matchName: "crates.io"
+          - matchName: "github-contributions.vercel.app"
           - matchName: "deploy-rs.cachix.org"
           - matchName: "downloads.sourceforge.net"
           - matchName: "electron-dl.todoist.net"
@@ -40,6 +40,7 @@ specs:
           - matchName: "static.rust-lang.org"
           - matchName: "storage.googleapis.com"
           - matchName: "sum.golang.org"
+          - matchName: "wakapi.ajgon.casa"
           - matchPattern: "*.dl.sourceforge.net"
           - matchPattern: "*.install.determinate.systems"
           - matchPattern: "*.nixos.org"
@@ -55,3 +56,19 @@ specs:
         toPorts:
           - ports:
               - port: "80"
+      # labeling pods in runners is PITA, easier to add them here
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: envoy
+        toPorts:
+          - ports:
+              - port: "10080"
+              - port: "10443"
+      # via envoy, when pods use ${ROOT_DOMAIN}
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: network
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+        toPorts:
+          - ports:
+              - port: "10443"

@@ -10,16 +10,16 @@ metadata:
 ---
 # yamllint disable rule:line-length
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrolebinding-rbac-v1.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/rolebinding-rbac-v1.json
 # yamllint enable rule:line-length
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
   name: home-ops-runner
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
+  kind: Role
+  name: github-runners
 subjects:
   - kind: ServiceAccount
     name: home-ops-runner
@@ -36,3 +36,81 @@ metadata:
 spec:
   roles:
     - os:admin
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/serviceaccount-v1.json
+# yamllint enable rule:line-length
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ajgon-runner
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/rolebinding-rbac-v1.json
+# yamllint enable rule:line-length
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ajgon-runner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: github-runners
+subjects:
+  - kind: ServiceAccount
+    name: ajgon-runner
+    namespace: actions-runner-system
+---
+# yamllint disable rule:line-length
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/role-rbac-v1.json
+# yamllint enable rule:line-length
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: github-runners
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+    verbs:
+      - create
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "batch"
+    resources:
+      - jobs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - create
+      - delete
+      - get
+      - list
