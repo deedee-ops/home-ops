@@ -1,0 +1,48 @@
+---
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/borgmatic-collective/borgmatic/main/borgmatic/config/schema.yaml
+# yamllint enable rule:line-length
+
+# location
+source_directories:
+  - /mnt/tank/backups
+repositories:
+  - path: "${BORGMATIC_HOMELAB_REPO_BORGBASE_EU}"
+    label: borgbase-homelab-eu
+  - path: "${BORGMATIC_HOMELAB_REPO_BORGBASE_US}"
+    label: borgbase-homelab-us
+
+exclude_caches: true
+exclude_if_present:
+  - .nobackup
+
+# directories
+user_runtime_directory: /config/homelab/runtime
+user_state_directory: /config/homelab/state
+temporary_directory: /config/homelab/tmp
+borg_base_directory: /config/homelab/borg
+
+# storage
+encryption_passphrase: "${BORGMATIC_HOMELAB_ENCRYPTION_PASSPHRASE}"
+retries: 5
+compression: auto,zstd
+ssh_command: ssh -i /config/homelab/ssh.key -o StrictHostKeyChecking=no
+lock_wait: 5
+archive_name_format: 'homelab-{now:%Y-%m-%d-%H%M%S}'
+
+# retention
+keep_daily: 7
+keep_weekly: 4
+keep_monthly: 6
+keep_yearly: 3
+
+# consistency
+checks:
+  - name: repository
+    frequency: "2 weeks"
+  - name: archives
+    frequency: always
+check_last: 3
+
+healthchecks:
+  ping_url: "${BORGMATIC_HOMELAB_HC_PING_URL}"

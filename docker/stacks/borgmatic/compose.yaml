@@ -10,6 +10,8 @@ services:
       - ./compose.env
       - ./override.env
     configs:
+      - source: homelab
+        target: /etc/borgmatic.d/homelab.yaml
       - source: legacy
         target: /etc/borgmatic.d/legacy.yaml
       - source: nas
@@ -19,6 +21,8 @@ services:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/borgmatic/config:/config"
 
 configs:
+  homelab:
+    file: ./config/homelab.yaml
   legacy:
     file: ./config/legacy.yaml
   nas:
