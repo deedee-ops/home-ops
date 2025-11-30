@@ -99,6 +99,8 @@ releases:
           - --field-manager=kustomize-controller
           - --filename
           - ../../kubernetes/apps/flux-system/flux-instance/networkpolicy.yaml
+          - --filename
+          - ../../kubernetes/apps/kube-system/cilium/globalpolicy.yaml
         events:
           - cleanup
         showlogs: true
