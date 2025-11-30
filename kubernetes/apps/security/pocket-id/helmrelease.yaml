@@ -16,9 +16,8 @@ spec:
         containers:
           app:
             image:
-              # https://github.com/pocket-id/pocket-id/issues/1120
-              repository: ghcr.io/deedee-ops/pocket-id
-              tag: v1.15.0@sha256:f97d18e275f7987f38b6f559a0f25b721abb448581cac31257d061a1eea0d522
+              repository: ghcr.io/pocket-id/pocket-id
+              tag: v1.15.0@sha256:92a5624ea14dc96e91ef236950d4d858e97119ce811075648ffd8343e364735d
             env:
               ALLOW_USER_SIGNUPS: "disabled"
               ANALYTICS_DISABLED: "true"
