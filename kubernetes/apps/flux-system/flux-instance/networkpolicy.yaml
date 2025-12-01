@@ -66,3 +66,34 @@ specs:
         toPorts:
           - ports:
               - port: "443"
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: flux-instance-kustomize-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/component: kustomize-controller
+    egress:
+      - toFQDNs:
+          - matchName: github.com
+          - matchName: release-assets.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: flux-instance-notification-egress-observability
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/component: notification-controller
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: alertmanager
