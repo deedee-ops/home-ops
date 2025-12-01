@@ -10,6 +10,7 @@ resources:
   - ./atuin.yaml
   - ./bentopdf.yaml
   - ./davis.yaml
+  - ./firefly.yaml
   - ./forgejo.yaml
   - ./mail-archive.yaml
   - ./n8n.yaml

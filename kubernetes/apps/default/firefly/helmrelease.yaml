@@ -1,0 +1,163 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: firefly
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: firefly
+  interval: 1h
+  values:
+    controllers:
+      main:
+        pod:
+          labels:
+            egress.cilium.io/smtp-relay: "true"
+        containers:
+          app:
+            image:
+              repository: fireflyiii/core
+              tag: version-6.4.9@sha256:5252c462d3c1ed337dc87482c95bc62c25153d2a71ab87aed1c7e67e4a85d850
+            env:
+              APP_URL: "https://firefly.${ROOT_DOMAIN}"
+              AUTHENTICATION_GUARD: "remote_user_guard"
+              AUTHENTICATION_GUARD_EMAIL: "HTTP_REMOTE_EMAIL"
+              AUTHENTICATION_GUARD_HEADER: "HTTP_REMOTE_EMAIL"
+              CACHE_DRIVER: "file"
+              DB_CONNECTION: "sqlite"
+              ENABLE_EXCHANGE_RATES: "true"
+              ENABLE_EXTERNAL_RATES: "true"
+              MAIL_ENCRYPTION: "null"
+              MAIL_FROM: "deedee@${ROOT_DOMAIN}"
+              MAIL_HOST: "smtp-relay.network.svc.cluster.local"
+              MAIL_MAILER: "smtp"
+              MAIL_PORT: "25"
+              SESSION_DRIVER: "file"
+              SEND_TELEMETRY: "false"
+              SITE_OWNER: "ajgon@${ROOT_DOMAIN}"
+              TRUSTED_PROXIES: "**"
+              TZ: Europe/Warsaw
+              APP_KEY:
+                secretKeyRef:
+                  name: firefly-secret
+                  key: APP_KEY
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 8080
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  periodSeconds: 1
+                  failureThreshold: 300
+                  initialDelaySeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false # s6 nonsense :-(
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 512Mi
+      cron:
+        type: cronjob
+        cronjob:
+          schedule: "0 0 * * *" # every day
+          successfulJobsHistory: 0
+          failedJobsHistory: 5
+          concurrencyPolicy: Forbid
+
+        containers:
+          sync:
+            image:
+              repository: ghcr.io/home-operations/busybox
+              tag: 1.37.0@sha256:026ed7273270ec08f6902b4ae8334c23b473e5394bec3bbbdbfe580c710d50bc
+              pullPolicy: IfNotPresent
+            command:
+              - sh
+              - /firefly-cron.sh
+            securityContext:
+              <<: *sc
+              readOnlyRootFilesystem: true
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 32Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 33
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 5
+    service:
+      app:
+        controller: main
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "firefly.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: firefly
+                namespace: default
+                port: 8080
+            filters:
+              # hardcode user email effectively disabling authentication on firefly side,
+              # and delegate it to security policy
+              # workaround, until OIDC is implemented
+              # https://github.com/firefly-iii/firefly-iii/issues/10662
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: Remote-Email
+                      value: "ajgon@${ROOT_DOMAIN}"
+    persistence:
+      data:
+        existingClaim: "firefly"
+        advancedMounts:
+          main:
+            app:
+              - subPath: cache
+                path: /var/www/html/storage/framework/cache/
+              - subPath: database
+                path: /var/www/html/storage/database/
+      cron:
+        type: secret
+        name: firefly-secret
+        advancedMounts:
+          cron:
+            sync:
+              - subPath: firefly-cron.sh
+                path: /firefly-cron.sh
