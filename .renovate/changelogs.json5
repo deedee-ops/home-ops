@@ -7,6 +7,11 @@
       changelogUrl: "https://github.com/cloudflare/cloudflared/blob/master/RELEASE_NOTES",
     },
     {
+      description: "Changelog URL for prompp",
+      matchPackageNames: ["/prompp/"],
+      changelogUrl: "https://github.com/deckhouse/prompp/blob/pp/CHANGELOG.md",
+    },
+    {
       description: "Changelog URL for Spegel",
       matchPackageNames: ["/spegel/"],
       changelogUrl: "https://github.com/spegel-org/spegel/blob/main/CHANGELOG.md",
