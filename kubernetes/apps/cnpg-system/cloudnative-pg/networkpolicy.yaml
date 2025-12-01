@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: cpng-egress-clusters
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: cloudnative-pg
+    egress:
+      - toEndpoints:
+          - matchExpressions:
+              - key: cnpg.io/jobRole
+                operator: In
+                values:
+                  - initdb
+                  - join
+                  - full-recovery
+      - toEndpoints:
+          - matchExpressions:
+              - key: cnpg.io/podRole
+                operator: In
+                values:
+                  - instance
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cpng-egress-internal
+spec:
+  endpointSelector: {}
+  egress:
+    - toEndpoints:
+        - {}

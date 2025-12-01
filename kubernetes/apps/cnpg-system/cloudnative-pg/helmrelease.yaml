@@ -1,0 +1,23 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudnative-pg
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: cloudnative-pg
+  interval: 1h
+  values:
+    crds:
+      create: true
+    config:
+      create: true
+      secret: false
+      name: cnpg-controller-configmap
+      data:
+        ENABLE_INSTANCE_MANAGER_INPLACE_UPDATES: "true"
+    podLabels:
+      egress.cilium.io/kube-apiserver: "true"
