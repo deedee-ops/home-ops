@@ -56,12 +56,12 @@ spec:
               - secretRef:
                   name: "paperless-ngx-secret"
             probes:
-              liveness: &probes
+              liveness:
                 enabled: true
               readiness:
                 enabled: true
               startup: # in case of large DB migrations
-                <<: *probes
+                enabled: true
                 spec:
                   periodSeconds: 1
                   failureThreshold: 300

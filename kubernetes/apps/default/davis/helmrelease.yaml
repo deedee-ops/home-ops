@@ -85,13 +85,11 @@ spec:
               - "/bin/sh"
               - "-c"
               - "cp -r /var/www/davis/public /web"
-            env: *env
-            envFrom: *envFrom
             securityContext: *sc
             resources:
               requests:
                 cpu: 5m
-                memory: 10M
+                memory: 16Mi
           02-db-migrate:
             image: *img
             command:
@@ -104,7 +102,7 @@ spec:
             resources:
               requests:
                 cpu: 5m
-                memory: 10M
+                memory: 16Mi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false

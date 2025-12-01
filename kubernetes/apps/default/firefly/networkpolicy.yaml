@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: firefly-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/controller: cron
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: firefly
+        toPorts:
+          - ports:
+              - port: "8080"
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: firefly
+    egress:
+      - toFQDNs:
+          - matchName: ff3exchangerates.z6.web.core.windows.net
+        toPorts:
+          - ports:
+              - port: "443"
