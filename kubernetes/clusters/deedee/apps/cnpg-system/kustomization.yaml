@@ -8,3 +8,4 @@ components:
 resources:
   - ./_namespace.yaml
   - ./cloudnative-pg.yaml
+  - ./plugin-barman-cloud.yaml
