@@ -30,6 +30,7 @@ _... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenT
 [![Pod-Count](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_pod_count%3Fformat%3Dendpoint&style=flat-square&label=Pods)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
 [![CPU-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_cpu_usage%3Fformat%3Dendpoint&style=flat-square&label=CPU)](https://github.com/kashalls/kromgo/)&nbsp;&nbsp;
 [![Memory-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_memory_usage%3Fformat%3Dendpoint&style=flat-square&label=Memory)](https://github.com/kashalls/kromgo/)&nbsp;
+[![Alerts](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_alert_count%3Fformat%3Dendpoint&style=flat-square&label=Alerts)](https://github.com/kashalls/kromgo/)&nbsp;
 
 </div>
 <!-- markdownlint-enable MD013 MD033 -->
