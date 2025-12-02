@@ -39,10 +39,6 @@ releases:
     namespace: observability
     chart: oci://gsoci.azurecr.io/charts/giantswarm/silence-operator
     version: 0.20.0
-  - name: tupr
-    namespace: system-upgrade
-    chart: oci://ghcr.io/home-operations/charts/tuppr
-    version: 0.0.43
   - name: volsync
     namespace: volsync-system
     chart: oci://ghcr.io/home-operations/charts-mirror/volsync-perfectra1n

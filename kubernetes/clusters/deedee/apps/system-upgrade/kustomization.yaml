@@ -8,3 +8,4 @@ components:
 resources:
   - ./_namespace.yaml
   - ./tuppr.yaml
+  - ./upgrades.yaml
