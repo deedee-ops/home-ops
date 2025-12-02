@@ -169,6 +169,7 @@ spec:
             value: "1"
       labels:
         egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

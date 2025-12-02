@@ -1,0 +1,328 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: immich
+  interval: 1h
+  # Immich is a beast
+  values:
+    controllers:
+      main:
+        pod: &pod
+          labels:
+            egress.cilium.io/auth: "true"
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: immich-gpu
+        containers:
+          app:
+            image: &img
+              repository: ghcr.io/immich-app/immich-server
+              tag: v2.3.1@sha256:f8d06a32b1b2a81053d78e40bf8e35236b9faefb5c3903ce9ca8712c9ed78445
+            env: &env
+              IMMICH_API_METRICS_PORT: &apiPort 8081
+              IMMICH_CONFIG_FILE: /config/config.yaml
+              IMMICH_ENV: &appEnv production
+              IMMICH_HOST: "0.0.0.0"
+              IMMICH_MACHINE_LEARNING_URL: "http://immich-machinelearning.immich-system.svc.cluster.local:3003"
+              IMMICH_PORT: &port 80
+              IMMICH_TELEMETRY_INCLUDE: "all" # enable metrics expose, not for calling home
+              IMMICH_TRUSTED_PROXIES: "172.30.0.0/24"
+              IMMICH_WORKERS_INCLUDE: "api"
+              NODE_ENV: *appEnv
+              NODE_EXTRA_CA_CERTS: /certs/homelab.pem
+              REDIS_HOSTNAME: immich-valkey.immich-system.svc.cluster.local
+              DB_DATABASE_NAME: &dbname
+                secretKeyRef:
+                  name: immich-db-app
+                  key: dbname
+              DB_HOSTNAME: &dbhost
+                secretKeyRef:
+                  name: immich-db-app
+                  key: host
+              DB_PASSWORD: &dbpass
+                secretKeyRef:
+                  name: immich-db-app
+                  key: password
+              DB_USERNAME: &dbuser
+                secretKeyRef:
+                  name: immich-db-app
+                  key: username
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/server/ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 10
+              readiness: *probes
+              startup: *probes
+            resources: &resources
+              claims:
+                - name: gpu
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+      microservices:
+        pod: *pod
+        replicas: 3
+        containers:
+          app:
+            image: *img
+            env:
+              <<: *env
+              IMMICH_WORKERS_INCLUDE: "microservices"
+              IMMICH_MICROSERVICES_METRICS_PORT: &msPort 8081
+            probes:
+              liveness: &msProbes
+                enabled: true
+                spec:
+                  tcpSocket:
+                    port: *msPort
+              readiness: *msProbes
+            resources: *resources
+            securityContext: *sc
+      machinelearning:
+        type: statefulset
+        strategy: RollingUpdate
+        replicas: 3
+        pod:
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          resourceClaims:
+            - name: gpu
+              resourceClaimTemplateName: immich-gpu
+        containers:
+          app:
+            image:
+              repository: ghcr.io/immich-app/immich-machine-learning
+              tag: v2.3.1@sha256:379e31b8c75107b0af8141904baa8cc933d7454b88fdb204265ef11749d7d908
+            env:
+              MACHINE_LEARNING_HTTP_KEEPALIVE_TIMEOUT_S: "0" # https://github.com/immich-app/immich/discussions/12064
+              TRANSFORMERS_CACHE: /cache
+              HF_XET_CACHE: /cache/huggingface-xet
+              MPLCONFIGDIR: /cache/matplotlib-config
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &mlport 3003
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 10
+              readiness: *probes
+              startup: *probes
+            resources: *resources
+            securityContext: *sc
+        statefulset:
+          volumeClaimTemplates:
+            - name: cache
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 10Gi
+              advancedMounts:
+                app:
+                  - path: /cache
+      dbbackup:
+        containers:
+          app:
+            image:
+              repository: prodrigestivill/postgres-backup-local
+              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
+            env:
+              BACKUP_DIR: "/backups"
+              BACKUP_KEEP_DAYS: "14"
+              BACKUP_KEEP_WEEKS: "0"
+              BACKUP_KEEP_MONTHS: "0"
+              BACKUP_KEEP_MINS: "240"
+              HEALTHCHECK_PORT: "8080"
+              SCHEDULE: "@hourly"
+              POSTGRES_EXTRA_OPTS: "-b -C -c -Z6 --inserts"
+              POSTGRES_DB: *dbname
+              POSTGRES_HOST: *dbhost
+              POSTGRES_PASSWORD: *dbpass
+              POSTGRES_USER: *dbuser
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 10
+              readiness: *probes
+            securityContext:
+              <<: *sc
+              runAsUser: 999
+      valkey:
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: docker.io/valkey/valkey
+              tag: 9.0.0-alpine@sha256:b4ee67d73e00393e712accc72cfd7003b87d0fcd63f0eba798b23251bfc9c394
+            probes:
+              liveness: &vprobes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - "valkey-cli ping | grep PONG"
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *vprobes
+              startup: *vprobes
+            securityContext: *sc
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 1Gi
+              advancedMounts:
+                app:
+                  - path: /data
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: *port
+          metrics:
+            port: *apiPort
+      microservices:
+        controller: microservices
+        ports:
+          metrics:
+            port: *msPort
+      machinelearning:
+        controller: machinelearning
+        ports:
+          ml-api:
+            port: *mlport
+      valkey:
+        controller: valkey
+        ports:
+          redis:
+            port: 6379
+    serviceMonitor:
+      main:
+        serviceName: main
+        endpoints:
+          - port: metrics
+      microservices:
+        serviceName: microservices
+        endpoints:
+          - port: metrics
+    route:
+      app:
+        hostnames:
+          - "immich.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: immich-main
+                namespace: immich-system
+                port: 80
+    persistence:
+      config:
+        type: secret
+        name: immich-secret
+        advancedMounts:
+          main: &configMount
+            app:
+              - subPath: config.yaml
+                path: /config/config.yaml
+          microservices: *configMount
+      data:
+        existingClaim: immich
+        advancedMounts:
+          main: &dataMount
+            app:
+              - subPath: server-data
+                path: /data
+          microservices: *dataMount
+      dbbackup:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/backups/kubernetes/${CLUSTER}/databases/immich"
+        advancedMounts:
+          dbbackup:
+            app:
+              - path: "/backups"
+      homelab-ca:
+        type: secret
+        name: homelab-root-ca.crt
+        advancedMounts:
+          main: &certMount
+            app:
+              - path: /certs/homelab.pem
+                subPath: ca.crt
+          microservices: *certMount
+      photos:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/private/Photos"
+        advancedMounts:
+          main: &photosMount
+            app:
+              - path: "/photos"
+                readOnly: true
+          microservices: *photosMount
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          machinelearning:
+            app:
+              - subPath: machinelearning
+                path: /tmp

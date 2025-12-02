@@ -1,0 +1,23 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/barmancloud.cnpg.io/objectstore_v1.json
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: immich-db-store
+spec:
+  configuration:
+    destinationPath: s3://databases/
+    endpointURL: https://s3.${ROOT_DOMAIN}
+    endpointCA:
+      name: homelab-root-ca.crt
+      key: ca.crt
+    s3Credentials:
+      accessKeyId:
+        name: immich-db-store-secret
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: immich-db-store-secret
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: gzip
