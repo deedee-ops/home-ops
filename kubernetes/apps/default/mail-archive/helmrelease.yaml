@@ -108,7 +108,7 @@ spec:
           sync:
             image:
               repository: gilleslamiral/imapsync
-              tag: "2.306@sha256:5f4fa6e58c66a412edb23f2ebf6ef5d301cbe4883417f218b5ece913edb6c950"
+              tag: "2.319@sha256:161336e1a6db587bc42ea1126cfc9b6afa67ea92b408ea4c4454f7f771561aa4"
               pullPolicy: IfNotPresent
             command:
               - sh
