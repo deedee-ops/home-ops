@@ -102,7 +102,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/backups/kubernetes/${CLUSTER}"
+              share: "/mnt/tank/backups/kubernetes/${CLUSTER}/kopia"
         globalMounts:
           - path: /repository
       tmpfs:
