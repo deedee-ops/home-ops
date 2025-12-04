@@ -3,7 +3,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   rustfs:
-    image: rustfs/rustfs:latest@sha256:b7b5e62a24e5318a6c755afed4065b039c718f6009bd25827b8b9386ad6e5a5b
+    image: rustfs/rustfs:latest@sha256:bcfab636510b3d85565c8a21f78a8b7791167c36bf82f9749ce8e8a88238a1a9
     container_name: rustfs
     user: "1000:1000"
     restart: unless-stopped
