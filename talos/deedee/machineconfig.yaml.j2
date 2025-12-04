@@ -78,10 +78,20 @@ machine:
         - 192.168.42.0/26
   network:
     interfaces:
-      - deviceSelector:
-          hardwareAddr: 48:21:0b:51:*
+      - interface: bond0
+        bond:
+          deviceSelectors:
+            - physical: true
+              hardwareAddr: 48:21:0b:51:*
+          mode: active-backup
         dhcp: true
-        # mtu: 9000
+        vlans:
+          - # IOT
+            vlanId: 4
+            dhcp: false
+          - # VPN
+            vlanId: 69
+            dhcp: false
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: homelab
@@ -99,7 +109,7 @@ machine:
     net.ipv4.tcp_fastopen: "3" # Send and accept data in the opening SYN packet
     net.ipv4.tcp_mtu_probing: "1" # Enable MTU probing in case of ICMP blackholes
     net.ipv4.tcp_window_scaling: "1" # Enable TCP window scaling to go beyond 64KB receive windows
-    net.ipv6.conf.all.disable_ipv6: "1" # Not used, causes lot of headaches
+    # net.ipv6.conf.all.disable_ipv6: "1" # Not used, causes lot of headaches
     sunrpc.tcp_max_slot_table_entries: "128" # Faster NFS
     sunrpc.tcp_slot_table_entries: "128" # Faster NFS
     user.max_user_namespaces: "11255" # User Namespaces
