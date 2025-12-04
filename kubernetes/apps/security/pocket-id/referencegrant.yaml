@@ -19,6 +19,21 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: ReferenceGrant
 metadata:
+  name: pocket-id-media
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: media
+  to:
+    - group: gateway.envoyproxy.io
+      kind: Backend
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/referencegrant_v1beta1.json
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
   name: pocket-id-observability
 spec:
   from:

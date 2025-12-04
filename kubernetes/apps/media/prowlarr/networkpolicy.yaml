@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: prowlarr-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: prowlarr
+    egress:
+      - toFQDNs:
+          - matchName: api.althub.co.za
+          - matchName: indexers.prowlarr.com
+        toPorts:
+          - ports:
+              - port: "443"
