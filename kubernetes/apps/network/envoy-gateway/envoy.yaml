@@ -235,7 +235,7 @@ spec:
             data: mediastream: blob: wss: *.${ROOT_DOMAIN};
             connect-src 'self' data: mediastream: blob: wss: *.${ROOT_DOMAIN} https://cdn.jsdelivr.net
             https://tiles.immich.cloud https://static.immich.cloud;
-            object-src 'self';"
+            object-src 'self';
         - name: "Strict-Transport-Security"
           value: "max-age=31536000; includeSubDomains"
   http2:
