@@ -13,7 +13,7 @@ spec:
   # Immich is a beast
   values:
     controllers:
-      main:
+      api:
         pod: &pod
           labels:
             egress.cilium.io/auth: "true"
@@ -157,7 +157,7 @@ spec:
               tag: 0.23.1@sha256:4f6a56a4c135d0a22a5971daf43ff22ea53b131d765671967d803bd5db75cf05
             env:
               ALBUM_LEVELS: "1"
-              API_URL: http://immich-main.immich-system.svc.cluster.local/api/
+              API_URL: http://immich-api.immich-system.svc.cluster.local/api/
               IGNORE: "__Videos"
               MODE: CREATE
               READ_ALBUM_PROPERTIES: "True"
@@ -256,8 +256,8 @@ spec:
         seccompProfile:
           type: RuntimeDefault
     service:
-      main:
-        controller: main
+      api:
+        controller: api
         ports:
           http:
             port: *port
@@ -279,8 +279,8 @@ spec:
           redis:
             port: 6379
     serviceMonitor:
-      main:
-        serviceName: main
+      api:
+        serviceName: api
         endpoints:
           - port: metrics
       microservices:
@@ -296,7 +296,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - name: immich-main
+              - name: immich-api
                 namespace: immich-system
                 port: 80
     persistence:
@@ -304,7 +304,7 @@ spec:
         type: secret
         name: immich-secret
         advancedMounts:
-          main: &configMount
+          api: &configMount
             app:
               - subPath: config.yaml
                 path: /config/config.yaml
@@ -312,7 +312,7 @@ spec:
       data:
         existingClaim: immich
         advancedMounts:
-          main: &dataMount
+          api: &dataMount
             app:
               - subPath: server-data
                 path: /data
@@ -333,7 +333,7 @@ spec:
         type: secret
         name: homelab-root-ca.crt
         advancedMounts:
-          main: &certMount
+          api: &certMount
             app:
               - path: /certs/homelab.pem
                 subPath: ca.crt
@@ -347,7 +347,7 @@ spec:
               server: nas.internal
               share: "/mnt/tank/private/Photos"
         advancedMounts:
-          main: &photosMount
+          api: &photosMount
             app:
               - path: "/photos"
                 readOnly: true
