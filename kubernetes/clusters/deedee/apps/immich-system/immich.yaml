@@ -12,6 +12,8 @@ spec:
   dependsOn:
     - name: database
       namespace: immich-system
+    - name: intel-gpu-resource-driver
+      namespace: kube-system
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
@@ -25,6 +27,7 @@ spec:
       VOLSYNC_ACCESSMODES: ReadWriteMany
       VOLSYNC_STORAGECLASS: ceph-filesystem
       VOLSYNC_SNAPSHOTCLASS: csi-ceph-filesystem
+      VOLSYNC_SCHEDULE: "0 1 * * *"
   prune: true
   sourceRef:
     kind: GitRepository
