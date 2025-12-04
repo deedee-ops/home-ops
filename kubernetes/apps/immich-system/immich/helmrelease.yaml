@@ -143,6 +143,39 @@ spec:
               advancedMounts:
                 app:
                   - path: /cache
+      album-creator:
+        type: cronjob
+        cronjob:
+          schedule: "0 0 * * *" # every day
+          successfulJobsHistory: 0
+          failedJobsHistory: 5
+          concurrencyPolicy: Forbid
+        containers:
+          app:
+            image:
+              repository: ghcr.io/salvoxia/immich-folder-album-creator
+              tag: 0.23.1@sha256:4f6a56a4c135d0a22a5971daf43ff22ea53b131d765671967d803bd5db75cf05
+            env:
+              ALBUM_LEVELS: "1"
+              API_URL: http://immich-main.immich-system.svc.cluster.local/api/
+              IGNORE: "__Videos"
+              MODE: CREATE
+              READ_ALBUM_PROPERTIES: "True"
+              ROOT_PATH: /photos
+              SET_ALBUM_THUMBNAIL: random
+              SYNC_MODE: "1"
+              UNATTENDED: "1"
+              TZ: Europe/Warsaw
+              API_KEY:
+                secretKeyRef:
+                  name: immich-secret
+                  key: IMMICH_ALBUM_CREATOR_API_KEY
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 512Mi # Python .__.
       dbbackup:
         containers:
           app:
@@ -319,9 +352,14 @@ spec:
               - path: "/photos"
                 readOnly: true
           microservices: *photosMount
+          album-creator: *photosMount
       tmp:
         type: emptyDir
         advancedMounts:
+          album-creator:
+            app:
+              - subPath: album-creator
+                path: /tmp
           machinelearning:
             app:
               - subPath: machinelearning
