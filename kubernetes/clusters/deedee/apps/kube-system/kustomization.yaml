@@ -15,6 +15,7 @@ resources:
   - ./intel-gpu-resource-driver.yaml
   - ./irqbalance.yaml
   - ./metrics-server.yaml
+  - ./multus.yaml
   - ./reloader.yaml
   - ./smartctl-exporter.yaml
   - ./snapshot-controller.yaml
