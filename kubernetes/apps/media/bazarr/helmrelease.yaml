@@ -1,0 +1,96 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bazarr
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bazarr
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/bazarr
+              tag: 1.5.3@sha256:2f1c32cb1420b2e56f60cfdf7823737eb501fdb2c13669429d23ab3a02e9ad90
+            env:
+              BAZARR__PORT: &port 80
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "bazarr-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "bazarr.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+    persistence:
+      config:
+        existingClaim: bazarr
+      media:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media"
+        globalMounts:
+          - path: /data
+      scripts:
+        type: configMap
+        name: bazarr-configmap
+        defaultMode: 0775
+        globalMounts:
+          - readOnly: true
+      tmp:
+        type: emptyDir

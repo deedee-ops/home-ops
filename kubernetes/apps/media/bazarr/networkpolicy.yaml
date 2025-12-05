@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: bazarr-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: bazarr
+    egress:
+      - toFQDNs:
+          - matchName: api.github.com
+          - matchName: raw.githubusercontent.com
+          # subtitles
+          - matchName: api.opensubtitles.com
+          - matchName: www.napiprojekt.pl
+        toPorts:
+          - ports:
+              - port: "443"
+      - toFQDNs:
+          - matchName: napiprojekt.pl
+          - matchName: napisy24.pl
+        toPorts:
+          - ports:
+              - port: "80"
