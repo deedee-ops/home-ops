@@ -11,6 +11,7 @@ specs:
     egress:
       - toFQDNs:
           - matchName: api.althub.co.za
+          - matchName: discord.com
           - matchName: indexers.prowlarr.com
         toPorts:
           - ports:
