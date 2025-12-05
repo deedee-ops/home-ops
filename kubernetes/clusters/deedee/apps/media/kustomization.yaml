@@ -10,4 +10,5 @@ resources:
   - ./nzbget.yaml
   - ./prowlarr.yaml
   - ./radarr.yaml
+  - ./recyclarr.yaml
   - ./sonarr.yaml
