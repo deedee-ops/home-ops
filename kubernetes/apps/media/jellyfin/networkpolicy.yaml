@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: jellyfin-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: jellyfin
+    egress:
+      - toFQDNs:
+          # general
+          - matchName: repo.jellyfin.org
+          - matchPattern: "*.mirror.jellyfin.org"
+          # metadata
+          - matchName: api.themoviedb.org
+          - matchName: image.tmdb.org
+          - matchName: m.media-amazon.com
+          - matchName: assets.fanart.tv
+          - matchName: webservice.fanart.tv
+          - matchName: www.omdbapi.com
+          # plugins
+          - matchName: cdn.jsdelivr.net
+          - matchName: github.com
+          - matchName: intro-skipper.org
+          - matchName: raw.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"

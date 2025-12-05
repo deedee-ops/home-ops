@@ -8,6 +8,7 @@ components:
 resources:
   - ./_namespace.yaml
   - ./bazarr.yaml
+  - ./jellyfin.yaml
   - ./nzbget.yaml
   - ./prowlarr.yaml
   - ./radarr.yaml
