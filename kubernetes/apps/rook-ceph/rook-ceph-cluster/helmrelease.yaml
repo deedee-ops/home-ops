@@ -49,8 +49,6 @@ spec:
       dataDirHostPath: /var/mnt/rook-ceph
       mgr:
         modules:
-          - name: diskprediction_local
-            enabled: true
           - name: insights
             enabled: true
           - name: pg_autoscaler

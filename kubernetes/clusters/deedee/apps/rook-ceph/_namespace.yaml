@@ -14,20 +14,6 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/warn: privileged
 ---
-# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: rook-ceph-egress-kube-apiserver
-  namespace: _
-spec:
-  endpointSelector: {}
-  egress:
-    - toEntities:
-        - kube-apiserver
-    - toEndpoints:
-        - {}
----
 # yamllint disable rule:line-length
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/secret-v1.json
