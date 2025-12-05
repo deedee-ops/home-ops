@@ -2,11 +2,9 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: media
-components:
-  - ../../../../components/alerts
 resources:
-  - ./_namespace.yaml
-  - ./nzbget.yaml
-  - ./prowlarr.yaml
-  - ./radarr.yaml
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
+  - ./securitypolicy.yaml
