@@ -10,3 +10,4 @@ resources:
   - ./nzbget.yaml
   - ./prowlarr.yaml
   - ./radarr.yaml
+  - ./sonarr.yaml

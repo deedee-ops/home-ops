@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: sonarr-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: sonarr
+    egress:
+      - toFQDNs:
+          - matchName: api.althub.co.za
+          - matchName: artworks.thetvdb.com
+          - matchName: discord.com
+          - matchName: services.sonarr.tv
+          - matchName: skyhook.sonarr.tv
+          - matchName: thexem.info
+        toPorts:
+          - ports:
+              - port: "443"
