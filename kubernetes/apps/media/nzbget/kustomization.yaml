@@ -5,6 +5,4 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  # - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./securitypolicy.yaml

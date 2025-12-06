@@ -12,6 +12,7 @@ spec:
   path: ./kubernetes/apps/observability/victoria-logs
   postBuild:
     substitute:
+      APP: victoria-logs
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

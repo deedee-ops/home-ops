@@ -3,12 +3,13 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
-  name: prowlarr
+  name: ${APP}
 spec:
   targetRefs:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      name: prowlarr
+      name: ${APP}
+      sectionName: ${AUTHSECTION:=null}
   oidc:
     provider:
       issuer: "https://id.ajgon.casa"
@@ -21,10 +22,10 @@ spec:
     clientIDRef:
       group: ""
       kind: Secret
-      name: prowlarr-secret
+      name: ${APP}-secret
     clientSecret:
       group: ""
       kind: Secret
-      name: prowlarr-secret
-    redirectURL: "https://prowlarr.${ROOT_DOMAIN}/oauth2/callback"
+      name: ${APP}-secret
+    redirectURL: "https://${APP}.${ROOT_DOMAIN}/oauth2/callback"
     logoutPath: "/logout"

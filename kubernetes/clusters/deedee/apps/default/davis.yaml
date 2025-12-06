@@ -6,6 +6,7 @@ metadata:
   name: davis
 spec:
   components:
+    - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
@@ -15,6 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: davis
+      AUTHSECTION: app
       CLUSTER_NAME: deedee
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
