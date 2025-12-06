@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../components/nfs-scaler
+    - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
@@ -16,6 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: syncthing
+      MAINROUTE: syncthing-app
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 10Gi
   prune: true

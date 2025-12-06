@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: victoria-logs
 spec:
+  components:
+    - ../../../components/oidc
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -12,7 +14,10 @@ spec:
   path: ./kubernetes/apps/observability/victoria-logs
   postBuild:
     substitute:
+      APP: victoria-logs
+      MAINROUTE: victoria-logs-server
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      ROOT_SUBDOMAIN: logs
   prune: true
   sourceRef:
     kind: GitRepository
