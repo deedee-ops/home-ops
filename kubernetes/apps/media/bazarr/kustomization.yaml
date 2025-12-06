@@ -7,7 +7,6 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./securitypolicy.yaml
 configMapGenerator:
   - name: bazarr-configmap
     files:

@@ -121,21 +121,26 @@ spec:
             port: 80
             targetPort: 8080
     route:
-      app: &route
+      app:
         annotations:
-          gatus.home-operations.com/endpoint: |
-            name: davis
+          gatus.home-operations.com/enabled: "false"
         hostnames:
           - "davis.${ROOT_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
-      dav:
-        <<: *route
-        annotations:
-          gatus.home-operations.com/enabled: "false"
         rules:
-          - backendRefs:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: davis
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+          - name: dav
+            backendRefs:
               - kind: Service
                 name: davis
                 port: 80
