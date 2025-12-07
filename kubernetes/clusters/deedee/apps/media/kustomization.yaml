@@ -14,3 +14,4 @@ resources:
   - ./radarr.yaml
   - ./recyclarr.yaml
   - ./sonarr.yaml
+  - ./unpackerr.yaml
