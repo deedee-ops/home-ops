@@ -76,7 +76,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 2048Mi
+                memory: 8192Mi
           redis:
             image:
               repository: "public.ecr.aws/docker/library/redis"
@@ -227,24 +227,31 @@ spec:
       tmp:
         type: emptyDir
         medium: Memory
-        sizeLimit: 128Mi
-        globalMounts:
-          - subPath: tmp
-            path: /tmp
+        sizeLimit: 2Gi
         advancedMounts:
           main:
             app:
-              - subPath: "run"
-                path: "/run"
-              - subPath: "apt"
-                path: "/var/lib/apt"
+              - subPath: run
+                path: /run
+              - subPath: apt
+                path: /var/lib/apt
               - subPath: tessdata
                 path: /usr/share/tesseract-ocr/5/tessdata
               - &sockdir
-                subPath: "sockets"
-                path: "/sockets"
+                subPath: sockets
+                path: /sockets
+              - subPath: tmp-app
+                path: /tmp
+            gotenberg:
+              - subPath: tmp-gotenberg
+                path: /tmp
             redis:
               - *sockdir
+              - subPath: tmp-redis
+                path: /tmp
+            tika:
+              - subPath: tmp-tika
+                path: /tmp
             01-download-languages:
               - subPath: tessdata
                 path: /tessdata
