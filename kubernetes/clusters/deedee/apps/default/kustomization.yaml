@@ -12,6 +12,7 @@ resources:
   - ./davis.yaml
   - ./firefly.yaml
   - ./forgejo.yaml
+  - ./fusion.yaml
   - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
