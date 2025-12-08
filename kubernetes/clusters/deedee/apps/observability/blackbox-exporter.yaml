@@ -6,6 +6,7 @@ metadata:
   name: blackbox-exporter
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/observability/blackbox-exporter
   prune: true
   sourceRef:

@@ -8,6 +8,7 @@ spec:
   interval: 1h
   path: ./kubernetes/apps/kube-system/descheduler
   prune: true
+  patches: []
   sourceRef:
     kind: GitRepository
     name: flux-system

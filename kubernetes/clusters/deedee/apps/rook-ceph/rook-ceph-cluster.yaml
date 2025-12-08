@@ -24,6 +24,7 @@ spec:
       failed: status.ceph.health == 'HEALTH_ERR'
       current: status.ceph.health in ['HEALTH_OK', 'HEALTH_WARN']
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/rook-ceph/rook-ceph-cluster
   postBuild:
     substitute:

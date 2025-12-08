@@ -11,6 +11,7 @@ spec:
   dependsOn:
     - name: volsync
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/volsync-system/kopia
   postBuild:
     substitute:

@@ -9,7 +9,6 @@ spec:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
       name: ${APP}
-      sectionName: ${AUTHSECTION:=null}
   oidc:
     provider:
       issuer: "https://id.ajgon.casa"

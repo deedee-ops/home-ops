@@ -9,6 +9,7 @@ spec:
     - name: external-dns-cloudflare
       namespace: network
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/network/cloudflare-tunnel
   postBuild:
     substitute:

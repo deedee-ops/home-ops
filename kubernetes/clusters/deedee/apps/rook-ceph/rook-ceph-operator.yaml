@@ -6,6 +6,7 @@ metadata:
   name: rook-ceph-operator
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/rook-ceph/rook-ceph-operator
   prune: true
   sourceRef:

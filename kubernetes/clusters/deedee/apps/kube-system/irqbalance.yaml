@@ -6,6 +6,7 @@ metadata:
   name: irqbalance
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/irqbalance
   prune: true
   sourceRef:

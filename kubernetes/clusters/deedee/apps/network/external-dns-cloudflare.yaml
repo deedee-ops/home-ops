@@ -14,6 +14,7 @@ spec:
       kind: CustomResourceDefinition
       name: dnsendpoints.externaldns.k8s.io
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/network/external-dns-cloudflare
   postBuild:
     substitute:

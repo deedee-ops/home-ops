@@ -6,6 +6,7 @@ metadata:
   name: bentopdf
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/default/bentopdf
   postBuild:
     substitute:

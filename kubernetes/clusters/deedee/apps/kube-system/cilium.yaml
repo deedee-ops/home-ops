@@ -6,6 +6,7 @@ metadata:
   name: cilium
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/cilium
   prune: true
   sourceRef:
@@ -25,6 +26,7 @@ spec:
     - name: cilium
       namespace: kube-system
   interval: 1h
+  patches: []
   path: ./kubernetes/clusters/deedee/apps/kube-system/cilium
   prune: true
   sourceRef:

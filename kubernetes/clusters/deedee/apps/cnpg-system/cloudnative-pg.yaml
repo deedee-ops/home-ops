@@ -6,6 +6,7 @@ metadata:
   name: cloudnative-pg
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/cnpg-system/cloudnative-pg
   prune: true
   sourceRef:

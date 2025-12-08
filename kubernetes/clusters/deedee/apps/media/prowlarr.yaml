@@ -18,6 +18,14 @@ spec:
       APP: prowlarr
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
+  patches:
+    - patch: |-
+        - op: add
+          path: /spec/targetRefs/0/sectionName
+          value: app
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
   prune: true
   sourceRef:
     kind: GitRepository

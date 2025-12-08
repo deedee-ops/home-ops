@@ -9,6 +9,7 @@ spec:
     - name: cloudnative-pg
       namespace: cnpg-system
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/cnpg-system/plugin-barman-cloud
   prune: true
   sourceRef:

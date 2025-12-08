@@ -6,6 +6,7 @@ metadata:
   name: kromgo
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/observability/kromgo
   postBuild:
     substitute:

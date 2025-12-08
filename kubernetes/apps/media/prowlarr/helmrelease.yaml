@@ -80,6 +80,25 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        rules:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: prowlarr
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+          - name: api
+            backendRefs:
+              - kind: Service
+                name: prowlarr
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
     persistence:
       config:
         existingClaim: prowlarr

@@ -6,6 +6,7 @@ metadata:
   name: envoy-gateway
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/network/envoy-gateway
   prune: true
   postBuild:

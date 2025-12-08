@@ -9,6 +9,7 @@ spec:
     - name: victoria-logs
       namespace: observability
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/fluent-bit
   prune: true
   sourceRef:

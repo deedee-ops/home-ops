@@ -9,6 +9,7 @@ spec:
   dependsOn:
     - name: flux-operator
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/flux-system/flux-instance
   postBuild:
     substitute:

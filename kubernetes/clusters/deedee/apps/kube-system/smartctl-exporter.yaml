@@ -6,6 +6,7 @@ metadata:
   name: smartctl-exporter
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/smartctl-exporter
   prune: true
   sourceRef:

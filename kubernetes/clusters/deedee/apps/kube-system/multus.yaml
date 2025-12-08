@@ -14,6 +14,7 @@ spec:
       kind: CustomResourceDefinition
       name: network-attachment-definitions.k8s.cni.cncf.io
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/multus
   prune: true
   sourceRef:
@@ -33,6 +34,7 @@ spec:
     - name: multus
       namespace: kube-system
   interval: 1h
+  patches: []
   path: ./kubernetes/clusters/deedee/apps/kube-system/multus
   prune: true
   sourceRef:

@@ -11,6 +11,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/default/wakapi
   postBuild:
     substitute:

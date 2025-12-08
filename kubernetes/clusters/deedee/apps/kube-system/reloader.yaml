@@ -6,6 +6,7 @@ metadata:
   name: reloader
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/kube-system/reloader
   prune: true
   sourceRef:

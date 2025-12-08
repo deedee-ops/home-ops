@@ -6,6 +6,7 @@ metadata:
   name: gha-runner-scale-set-controller
 spec:
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/actions-runner-system/gha-runner-scale-set-controller
   prune: true
   sourceRef:

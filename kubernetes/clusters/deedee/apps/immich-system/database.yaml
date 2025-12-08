@@ -14,6 +14,7 @@ spec:
       inProgress: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
       current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/immich-system/database
   postBuild:
     substitute:

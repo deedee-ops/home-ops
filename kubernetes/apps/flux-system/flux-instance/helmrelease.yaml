@@ -34,6 +34,13 @@ spec:
         patches:
           - patch: |-
               - op: add
+                path: /spec/patches
+                value: []
+            target:
+              kind: Kustomization
+              name: flux-system
+          - patch: |-
+              - op: add
                 path: /spec/template/metadata/labels/egress.cilium.io~1kube-apiserver
                 value: "true"
             target:
