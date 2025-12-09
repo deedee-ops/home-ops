@@ -7,6 +7,11 @@
       changelogUrl: "https://github.com/cloudflare/cloudflared/blob/master/RELEASE_NOTES",
     },
     {
+      description: "Changelog URL for cloudnative-pg",
+      matchPackageNames: ["/cloudnative-pg/"],
+      changelogUrl: "https://github.com/cloudnative-pg/cloudnative-pg/releases/latest",
+    },
+    {
       description: "Changelog URL for prompp",
       matchPackageNames: ["/prompp/"],
       changelogUrl: "https://github.com/deckhouse/prompp/blob/pp/CHANGELOG.md",
