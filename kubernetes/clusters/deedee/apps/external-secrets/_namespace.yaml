@@ -1,8 +1,5 @@
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/namespace-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/namespace-v1.json
 apiVersion: v1
 kind: Namespace
 metadata:

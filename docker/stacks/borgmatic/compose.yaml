@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   borgmatic:
     image: ghcr.io/borgmatic-collective/borgmatic:2.0.11@sha256:1f267fced0496b53f82b32e0e56933ab0a44a82ed834573baad1cb7372171dba

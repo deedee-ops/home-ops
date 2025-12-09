@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
+# yaml-language-server: $schema=https://json.schemastore.org/traefik-v3.json
 tls:
   stores:
     default:

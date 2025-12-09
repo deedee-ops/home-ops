@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/custom/markdownlint.config.json
 default: true
 MD013:
   line_length: 120

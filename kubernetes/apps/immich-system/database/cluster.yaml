@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://deedee-ops.github.io/schemas/postgresql.cnpg.io/cluster_v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/postgresql.cnpg.io/cluster_v1.json
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -8,10 +8,8 @@ metadata:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
   instances: 3
-  # yamllint disable rule:line-length
   # renovate: datasource=docker depName=ghcr.io/tensorchord/cloudnative-pgvecto.rs versioning=redhat
   imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:18.0-0.5.3@sha256:267f6cbb32af6e109e138a143c7e9dd5d44d68433ec2303f0c30e745c788d1a9"
-  # yamllint enable rule:line-length
   enableSuperuserAccess: false
   inheritedMetadata:
     labels:

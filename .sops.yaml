@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/chri11g6/sops-schema/refs/heads/master/sops.schema.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/custom/sops.config.json
 #
 # To get a new key from remote SSH machine, invoke:
 # nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'

@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   talos-factory:
     image: ghcr.io/siderolabs/image-factory:v0.8.4-12-gd1bec57@sha256:698b0820a0f46d384c7b202fa859c0620dd3954a50ccf94a729b2b991c974e4a

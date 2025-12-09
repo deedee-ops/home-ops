@@ -1,7 +1,5 @@
 ---
-# yamllint disable rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/borgmatic-collective/borgmatic/main/borgmatic/config/schema.yaml
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/borgmatic.config.json
 
 # location
 source_directories:
