@@ -41,3 +41,13 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+    - toCIDRSet:
+        - cidr: 1.1.1.1/32
+        - cidr: 8.8.8.8/32
+        - cidr: 9.9.9.9/32
+      icmps:
+        - fields:
+            - family: IPv4
+              type: 8
+            - family: IPv4
+              type: 0
