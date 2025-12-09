@@ -3,12 +3,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: openebs
+  name: blackbox-exporter-lan
 spec:
   interval: 15m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 4.4.0
-  url: oci://ghcr.io/openebs/charts/openebs
+    tag: 11.6.0
+  url: oci://ghcr.io/prometheus-community/charts/prometheus-blackbox-exporter

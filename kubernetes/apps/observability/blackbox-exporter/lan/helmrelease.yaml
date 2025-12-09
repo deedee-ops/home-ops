@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackbox-exporter-lan
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: blackbox-exporter-lan
+  interval: 1h
+  values:
+    fullnameOverride: blackbox-exporter-lan
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+    config:
+      modules:
+        https:
+          prober: http
+          timeout: 5s
+          http:
+            valid_status_codes:
+              - 200
+              - 401
+              - 403
+              - 404
+            valid_http_versions:
+              - HTTP/1.1
+              - HTTP/2.0
+            follow_redirects: true
+            preferred_ip_protocol: ip4
+            fail_if_ssl: false
+            fail_if_not_ssl: true
+        icmp:
+          prober: icmp
+          timeout: 5s
+          icmp:
+            preferred_ip_protocol: ip4
+        tcp_connect:
+          prober: tcp
+          timeout: 5s
+          tcp:
+            preferred_ip_protocol: ip4
+    serviceMonitor:
+      enabled: true
+      selfMonitor:
+        enabled: true
+    prometheusRule:
+      enabled: true
+      rules:
+        - alert: BlackboxProbeFailed
+          expr: |-
+            probe_success{service="blackbox-exporter-lan"} == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: |-
+              The probe targeting {{ $labels.instance }} is currently having connectivity issues
+    extraVolumes:
+      - name: root-ca
+        secret:
+          defaultMode: 420
+          secretName: homelab-root-ca.crt
+    extraVolumeMounts:
+      - name: root-ca
+        mountPath: /etc/ssl/certs/homelab.crt
+        subPath: ca.crt

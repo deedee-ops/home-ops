@@ -3,26 +3,32 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: blackbox-exporter
+  name: blackbox-exporter-vpn
 spec:
   chartRef:
     kind: OCIRepository
-    name: blackbox-exporter
+    name: blackbox-exporter-vpn
   interval: 1h
   values:
-    fullnameOverride: blackbox-exporter
+    fullnameOverride: blackbox-exporter-vpn
+    strategy:
+      type: Recreate
+    podAnnotations:
+      k8s.v1.cni.cncf.io/networks: |-
+        [{
+          "name": "vpn",
+          "namespace": "kube-system",
+          "ips": ["192.168.69.10/24"],
+          "mac": "02:00:c0:a8:45:0a"
+        }]
     securityContext:
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
       seccompProfile:
         type: RuntimeDefault
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
     config:
       modules:
-        http:
+        https:
           prober: http
           timeout: 5s
           http: &http
@@ -35,17 +41,13 @@ spec:
               - HTTP/2.0
             follow_redirects: true
             preferred_ip_protocol: ip4
-            fail_if_ssl: true
-            fail_if_not_ssl: false
-        https:
-          prober: http
-          timeout: 5s
-          http:
-            <<: *http
             fail_if_ssl: false
             fail_if_not_ssl: true
-            tls_config:
-              insecure_skip_verify: true
+        icmp:
+          prober: icmp
+          timeout: 5s
+          icmp:
+            preferred_ip_protocol: ip4
         tcp_connect:
           prober: tcp
           timeout: 5s
@@ -58,12 +60,21 @@ spec:
     prometheusRule:
       enabled: true
       rules:
-        - alert: BlackboxProbeFailed
+        - alert: VpnProbeFailed
           expr: |-
-            probe_success{service="blackbox-exporter"} == 0
+            probe_success{service="blackbox-exporter-vpn"} == 0
           for: 15m
           labels:
             severity: critical
           annotations:
             summary: |-
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: blackbox-exporter-vpn
+            patch: |-
+              - op: remove
+                path: /spec/strategy/rollingUpdate

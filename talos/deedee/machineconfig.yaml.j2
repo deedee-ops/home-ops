@@ -105,9 +105,11 @@ machine:
     net.ipv4.neigh.default.gc_thresh1: "4096" # ARP neighbor GC thresholds
     net.ipv4.neigh.default.gc_thresh2: "8192" # ARP neighbor GC thresholds
     net.ipv4.neigh.default.gc_thresh3: "16384" # ARP neighbor GC thresholds
+    net.ipv4.ping_group_range: "0 2147483647" # allow unprivileged PINGs
     net.ipv4.tcp_congestion_control: bbr # Use BBR congestion control for fast, low-latency delivery
     net.ipv4.tcp_fastopen: "3" # Send and accept data in the opening SYN packet
     net.ipv4.tcp_mtu_probing: "1" # Enable MTU probing in case of ICMP blackholes
+    net.ipv4.tcp_slow_start_after_idle: "0" # Handle traffic bursts better
     net.ipv4.tcp_window_scaling: "1" # Enable TCP window scaling to go beyond 64KB receive windows
     # net.ipv6.conf.all.disable_ipv6: "1" # Not used, causes lot of headaches
     sunrpc.tcp_max_slot_table_entries: "128" # Faster NFS

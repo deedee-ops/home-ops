@@ -3,53 +3,65 @@
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
-  name: home-http
+  name: lan-icmp
 spec:
-  module: http
+  module: icmp
   prober:
-    url: blackbox-exporter.observability.svc.cluster.local:9115
+    url: blackbox-exporter-lan.observability.svc.cluster.local:9115
   targets:
     staticConfig:
       static:
-        - http://kvm.internal
+        - kvm.internal
+        - nas.internal
+        - unifi.internal
   metricRelabelings:
     - targetLabel: service
-      replacement: blackbox-exporter
+      replacement: blackbox-exporter-lan
       action: replace
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/probe_v1.json
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
-  name: home-https
+  name: lan-https
 spec:
   module: https
   prober:
-    url: blackbox-exporter.observability.svc.cluster.local:9115
+    url: blackbox-exporter-lan.observability.svc.cluster.local:9115
   targets:
     staticConfig:
       static:
-        - https://nas.internal:444
-        - https://unifi.internal
+        - https://kvm.${ROOT_DOMAIN}
+        - https://unifi.${ROOT_DOMAIN}
+        # docker on nas
+        - https://komodo.${ROOT_DOMAIN}
+        - https://matchbox.${ROOT_DOMAIN}
+        - https://nas.${ROOT_DOMAIN}
+        - https://registry.${ROOT_DOMAIN}
+        - https://rustfs.${ROOT_DOMAIN}
+        - https://s3.${ROOT_DOMAIN}
+        - https://talos.${ROOT_DOMAIN}
+        - https://traefik.${ROOT_DOMAIN}
+        - https://vault.${ROOT_DOMAIN}
   metricRelabelings:
     - targetLabel: service
-      replacement: blackbox-exporter
+      replacement: blackbox-exporter-lan
       action: replace
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/probe_v1.json
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
-  name: home-tcp
+  name: lan-tcp
 spec:
   module: tcp_connect
   prober:
-    url: blackbox-exporter.observability.svc.cluster.local:9115
+    url: blackbox-exporter-lan.observability.svc.cluster.local:9115
   targets:
     staticConfig:
       static:
         - nas.internal:2049
   metricRelabelings:
     - targetLabel: service
-      replacement: blackbox-exporter
+      replacement: blackbox-exporter-lan
       action: replace
