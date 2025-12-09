@@ -335,7 +335,7 @@ spec:
           api: &certMount
             app:
               - path: /certs/homelab.pem
-                subPath: ca.crt
+                subPath: ec.crt
           microservices: *certMount
       photos:
         type: custom

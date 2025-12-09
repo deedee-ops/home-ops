@@ -101,7 +101,7 @@ spec:
         name: homelab-root-ca.crt
         globalMounts:
           - path: /usr/local/share/ca-certificates/homelab.crt
-            subPath: ca.crt
+            subPath: ec.crt
       media:
         type: custom
         volumeSpec:

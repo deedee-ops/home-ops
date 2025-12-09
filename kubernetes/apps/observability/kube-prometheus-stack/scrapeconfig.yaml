@@ -66,8 +66,8 @@ spec:
   tlsConfig:
     ca:
       secret:
-        key: HOMELAB_CA_BUNDLE
-        name: prometheus-secret
+        key: ec.crt
+        name: homelab-root-ca.crt
   staticConfigs:
     - targets:
         - "traefik.${ROOT_DOMAIN}"
@@ -94,8 +94,8 @@ spec:
   tlsConfig:
     ca:
       secret:
-        key: HOMELAB_CA_BUNDLE
-        name: prometheus-secret
+        key: ec.crt
+        name: homelab-root-ca.crt
   staticConfigs:
     - targets:
         - "vault.${ROOT_DOMAIN}"

@@ -71,5 +71,8 @@ spec:
           secretName: homelab-root-ca.crt
     extraVolumeMounts:
       - name: root-ca
-        mountPath: /etc/ssl/certs/homelab.crt
-        subPath: ca.crt
+        mountPath: /etc/ssl/certs/homelab-ec.crt
+        subPath: ec.crt
+      - name: root-ca
+        mountPath: /etc/ssl/certs/homelab-rsa.crt
+        subPath: rsa.crt

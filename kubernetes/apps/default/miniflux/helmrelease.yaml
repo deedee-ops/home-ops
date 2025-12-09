@@ -140,7 +140,7 @@ spec:
           main:
             app:
               - path: /etc/ssl/certs/homelab.crt
-                subPath: ca.crt
+                subPath: ec.crt
       tmp:
         type: emptyDir
         medium: Memory

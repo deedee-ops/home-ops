@@ -121,4 +121,4 @@ spec:
           main:
             app:
               - path: /etc/ssl/certs/ca-certificates.crt
-                subPath: ca.crt
+                subPath: ec.crt

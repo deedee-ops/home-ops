@@ -97,7 +97,7 @@ spec:
         name: homelab-root-ca.crt
         globalMounts:
           - path: /etc/cloudflared/ca.crt
-            subPath: ca.crt
+            subPath: ec.crt
       config-file:
         type: configMap
         identifier: config

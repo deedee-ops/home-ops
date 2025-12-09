@@ -161,7 +161,8 @@ spec:
         advancedMounts:
           main:
             01-security-patches:
-              - path: /certs
+              - path: /certs/ca.crt
+                subPath: ec.crt
       sync-source:
         type: custom
         volumeSpec:
