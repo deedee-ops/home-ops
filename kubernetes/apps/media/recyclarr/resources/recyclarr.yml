@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/recyclarr.config.json
 # ref: https://drfrankenstein.co.uk/recyclarr-trash-guide-automation-microguide/
 # ref: https://recyclarr.dev/wiki/guide-configs/
 sonarr:

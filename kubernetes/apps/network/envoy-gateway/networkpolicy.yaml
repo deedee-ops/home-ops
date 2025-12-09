@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumnetworkpolicy_v2.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
 apiVersion: "cilium.io/v2"
 kind: CiliumNetworkPolicy
 metadata:
@@ -14,7 +14,7 @@ specs:
       - toEndpoints:
           - {}
 ---
-# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
 apiVersion: "cilium.io/v2"
 kind: CiliumClusterwideNetworkPolicy
 metadata:

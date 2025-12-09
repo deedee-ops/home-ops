@@ -1,17 +1,11 @@
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/serviceaccount-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/serviceaccount-v1.json
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: home-ops-runner
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/rolebinding-rbac-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/rolebinding-rbac-v1.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -25,10 +19,7 @@ subjects:
     name: home-ops-runner
     namespace: actions-runner-system
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrolebinding-rbac-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/clusterrolebinding-rbac-v1.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -42,10 +33,7 @@ subjects:
     name: home-ops-runner
     namespace: actions-runner-system
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/talos.dev/serviceaccount_v1alpha1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/talos.dev/serviceaccount_v1alpha1.json
 apiVersion: talos.dev/v1alpha1
 kind: ServiceAccount
 metadata:
@@ -54,19 +42,13 @@ spec:
   roles:
     - os:admin
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/serviceaccount-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/serviceaccount-v1.json
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ajgon-runner
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/rolebinding-rbac-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/rolebinding-rbac-v1.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -80,10 +62,7 @@ subjects:
     name: ajgon-runner
     namespace: actions-runner-system
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/role-rbac-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/role-rbac-v1.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -139,10 +118,7 @@ rules:
       - get
       - list
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/clusterrole-rbac-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/clusterrole-rbac-v1.json
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

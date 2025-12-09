@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/barmancloud.cnpg.io/objectstore_v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/barmancloud.cnpg.io/objectstore_v1.json
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:

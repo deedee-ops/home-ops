@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadatasource_v1beta1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadatasource_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:
@@ -16,8 +15,7 @@ spec:
     isDefault: true
     url: http://prometheus-operated.observability.svc.cluster.local:9090
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadatasource_v1beta1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadatasource_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDatasource
 metadata:

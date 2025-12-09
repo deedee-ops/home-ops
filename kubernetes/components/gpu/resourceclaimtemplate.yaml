@@ -1,8 +1,5 @@
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/resourceclaimtemplate-resource-v1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/resourceclaimtemplate-resource-v1.json
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:

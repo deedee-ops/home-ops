@@ -39,3 +39,5 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - name: Run linters
         run: "nix flake check -L"
+        env:
+          YLS_RESOLVE_URLS: "1"

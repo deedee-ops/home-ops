@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kashalls/kromgo/main/config.schema.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/kromgo.config.json
 badge:
   font: Verdana.ttf
   size: 12

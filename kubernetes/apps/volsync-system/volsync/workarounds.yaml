@@ -1,8 +1,6 @@
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -10,10 +8,7 @@ metadata:
 spec:
   policyName: volsync-mover-jitter
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicy-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicy
 metadata:
@@ -67,10 +62,8 @@ spec:
             }
           ]
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -78,10 +71,7 @@ metadata:
 spec:
   policyName: volsync-mover-nfs
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicy-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicy
 metadata:
@@ -138,10 +128,8 @@ spec:
             }
           ]
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -149,10 +137,7 @@ metadata:
 spec:
   policyName: kopia-maintenance-nfs
 ---
-# yamllint disable rule:line-length
-# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-# yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.34.2/mutatingadmissionpolicy-admissionregistration-v1beta1.json
-# yamllint enable rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1beta1.json
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingAdmissionPolicy
 metadata:

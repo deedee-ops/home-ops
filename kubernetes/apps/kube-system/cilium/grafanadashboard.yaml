@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadashboard_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
@@ -17,8 +16,7 @@ spec:
     name: cilium-dashboard
     key: cilium-dashboard.json
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadashboard_v1beta1.json
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:

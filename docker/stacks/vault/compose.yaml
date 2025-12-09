@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   vault:
     image: hashicorp/vault:1.21.1@sha256:f4e2687b72858a9e2160c344c9fa1ef74c07f21a89a8c00534ab64d3f187b927

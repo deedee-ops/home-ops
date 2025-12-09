@@ -1,6 +1,5 @@
 ---
-# yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/tuppr.home-operations.com/kubernetesupgrade_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/tuppr.home-operations.com/kubernetesupgrade_v1alpha1.json
 apiVersion: tuppr.home-operations.com/v1alpha1
 kind: KubernetesUpgrade
 metadata:
