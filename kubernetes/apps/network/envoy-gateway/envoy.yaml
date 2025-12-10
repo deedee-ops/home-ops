@@ -225,15 +225,6 @@ spec:
   headers:
     lateResponseHeaders:
       add:
-        # - name: "Content-Security-Policy"
-        #   value: >-
-        #     default-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline'
-        #     data: mediastream: blob: wss: *.${ROOT_DOMAIN};
-        #     connect-src 'self' data: mediastream: blob: wss: *.${ROOT_DOMAIN} https://cdn.jsdelivr.net
-        #     https://tiles.immich.cloud https://static.immich.cloud;
-        #     img-src 'self' data: blob: *.${ROOT_DOMAIN} https://repo.jellyfin.org https://cdn.jsdelivr.net;
-        #     style-src 'self' 'unsafe-inline' data: blob: *.${ROOT_DOMAIN} https://cdn.jsdelivr.net;
-        #     object-src 'self';
         - name: "Strict-Transport-Security"
           value: "max-age=31536000; includeSubDomains"
   http2:

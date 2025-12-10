@@ -25,6 +25,7 @@ specs:
           - matchName: github.com
           - matchName: intro-skipper.org
           - matchName: raw.githubusercontent.com
+          - matchName: www.iamparadox.dev
         toPorts:
           - ports:
               - port: "443"
