@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/observability.giantswarm.io/silence_v1alpha2.json
+apiVersion: observability.giantswarm.io/v1alpha2
+kind: Silence
+metadata:
+  name: nas-arc-doing-its-job
+spec:
+  matchers:
+    - name: alertname
+      value: NodeMemoryHighUtilization
+    - name: node
+      value: nas

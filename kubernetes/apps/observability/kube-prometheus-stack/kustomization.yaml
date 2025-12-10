@@ -11,3 +11,4 @@ resources:
   - ./ocirepository.yaml
   - ./scrapeconfig.yaml
   - ./securitypolicy.yaml
+  - ./silence.yaml
