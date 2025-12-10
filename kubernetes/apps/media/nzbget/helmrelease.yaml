@@ -75,6 +75,21 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        rules:
+          - backendRefs:
+              - name: nzbget
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        img-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
     persistence:
       config:
         existingClaim: nzbget

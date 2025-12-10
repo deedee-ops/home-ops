@@ -31,7 +31,10 @@ spec:
                 set:
                   - name: Content-Security-Policy
                     value: >-
-                      default-src 'self' 'unsafe-inline' data:; object-src 'none';
+                      default-src 'self';
+                      object-src 'none';
+                      script-src 'self' 'unsafe-inline';
+                      style-src 'self' 'unsafe-inline';
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager
@@ -93,7 +96,10 @@ spec:
                 set:
                   - name: Content-Security-Policy
                     value: >-
-                      default-src 'self' 'unsafe-inline' data:; object-src 'none';
+                      default-src 'self';
+                      object-src 'none';
+                      script-src 'self' 'unsafe-inline';
+                      style-src 'self' 'unsafe-inline';
       prometheusSpec:
         externalUrl: https://prometheus.turbo.ac
         version: v2.55.1 # override 'unsupported Prometheus version' error

@@ -136,6 +136,15 @@ spec:
               - path:
                   type: PathPrefix
                   value: /
+            filters: &filters
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        style-src 'self' 'unsafe-inline';
           - name: dav
             backendRefs:
               - kind: Service
@@ -148,6 +157,7 @@ spec:
               - path:
                   type: PathPrefix
                   value: /.well-known
+            filters: *filters
 
     configMaps:
       caddy:

@@ -76,6 +76,14 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
     persistence:
       config-file:
         type: configMap

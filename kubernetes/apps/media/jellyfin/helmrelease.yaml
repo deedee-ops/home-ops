@@ -92,6 +92,20 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        rules:
+          - backendRefs:
+              - name: jellyfin
+                port: 8096
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' blob:;
+                        style-src 'self' 'unsafe-inline';
     persistence:
       config:
         existingClaim: jellyfin
