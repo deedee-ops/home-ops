@@ -295,8 +295,19 @@ spec:
         rules:
           - backendRefs:
               - name: immich-api
-                namespace: immich-system
                 port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        connect-src 'self' https://tiles.immich.cloud https://static.immich.cloud;
+                        img-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+                        style-src 'self' 'unsafe-inline';
     persistence:
       config:
         type: secret

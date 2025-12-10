@@ -98,7 +98,7 @@ spec:
           http:
             port: *http
     route:
-      app: &route
+      app:
         annotations:
           gatus.home-operations.com/endpoint: |
             name: forgejo
@@ -107,23 +107,22 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
-      ssh:
-        kind: TCPRoute
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-            sectionName: ssh
         rules:
           - backendRefs:
               - name: forgejo
-                port: *ssh
-      # https://codeberg.org/forgejo/forgejo/issues/10066
-      # https://codeberg.org/forgejo/forgejo/issues/3342
-      oauth:
-        <<: *route
-        annotations:
-          gatus.home-operations.com/enabled: "false"
-        rules:
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
+          # https://codeberg.org/forgejo/forgejo/issues/10066
+          # https://codeberg.org/forgejo/forgejo/issues/3342
           - matches:
               - path:
                   type: PathPrefix
@@ -135,6 +134,16 @@ spec:
                   path:
                     type: ReplaceFullPath
                     replaceFullPath: "/user/oauth2/Pocket ID"
+      ssh:
+        kind: TCPRoute
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: ssh
+        rules:
+          - backendRefs:
+              - name: forgejo
+                port: *ssh
 
     persistence:
       config:

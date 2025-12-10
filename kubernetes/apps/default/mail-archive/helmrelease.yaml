@@ -167,6 +167,16 @@ spec:
               - name: mail-archive-app
                 namespace: default
                 port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
         hostnames:
           - "mail.${ROOT_DOMAIN}"
         parentRefs:

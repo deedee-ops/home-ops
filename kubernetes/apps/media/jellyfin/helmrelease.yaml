@@ -92,6 +92,23 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
+        rules:
+          - backendRefs:
+              - name: jellyfin
+                port: 8096
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        font-src 'self' https://fonts.gstatic.com;
+                        img-src 'self' https://cdn.jsdelivr.net https://raw.githubusercontent.com
+                        https://repo.jellyfin.org;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net;
+                        style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
     persistence:
       config:
         existingClaim: jellyfin

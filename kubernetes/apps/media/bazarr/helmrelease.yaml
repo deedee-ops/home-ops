@@ -82,6 +82,17 @@ spec:
               - path:
                   type: PathPrefix
                   value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        font-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
           - name: api
             backendRefs:
               - kind: Service

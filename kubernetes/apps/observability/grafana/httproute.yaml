@@ -14,3 +14,13 @@ spec:
     - backendRefs:
         - name: grafana-service
           port: 3000
+      filters:
+        - type: ResponseHeaderModifier
+          responseHeaderModifier:
+            set:
+              - name: Content-Security-Policy
+                value: >-
+                  default-src 'self' data:;
+                  object-src 'none';
+                  script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                  style-src 'self' 'unsafe-inline';
