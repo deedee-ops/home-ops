@@ -29,6 +29,7 @@ spec:
               KEYS_STORAGE: database
               LOG_JSON: "true"
               PORT: &http 80
+              SESSION_DURATION: 10080 # 1 week
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
               SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               SMTP_PORT: "25"
