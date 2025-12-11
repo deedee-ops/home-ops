@@ -12,4 +12,5 @@ resources:
   - ./prowlarr.yaml
   - ./radarr.yaml
   - ./recyclarr.yaml
+  - ./sabnzbd.yaml
   - ./sonarr.yaml
