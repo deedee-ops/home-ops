@@ -1,0 +1,121 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sabnzbd
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: sabnzbd
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/sabnzbd
+              tag: 4.5.5@sha256:da57e01cdebc547852b6df85c8df8c0e4d87792742c7608c5590dc653b184e8c
+            env:
+              SABNZBD__PORT: &port 80
+              SABNZBD__HOST_WHITELIST_ENTRIES: "sabnzbd.${ROOT_DOMAIN}"
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "sabnzbd-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api?mode=version
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 100m
+    defaultPodOptions:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "vpn",
+            "namespace": "kube-system",
+            "ips": ["192.168.69.11/24"],
+            "mac": "02:00:c0:a8:45:0b"
+          }]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "sabnzbd.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: sabnzbd
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+          - name: api
+            backendRefs:
+              - kind: Service
+                name: sabnzbd
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /api
+    persistence:
+      config:
+        existingClaim: sabnzbd
+      media:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media/usenet"
+        globalMounts:
+          - path: /data/usenet
+      tmp:
+        type: emptyDir
