@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../components/gpu
-    - ../../../components/nfs-scaler
     - ../../../components/volsync
   dependsOn:
     - name: database
