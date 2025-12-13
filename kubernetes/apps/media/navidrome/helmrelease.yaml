@@ -34,9 +34,6 @@ spec:
               ND_SESSIONTIMEOUT: "30m"
               ND_TRANSCODINGCACHESIZE: "100MB"
               TZ: Europe/Warsaw
-            envFrom:
-              - secretRef:
-                  name: "navidrome-secret"
             probes:
               liveness: &probes
                 enabled: true
