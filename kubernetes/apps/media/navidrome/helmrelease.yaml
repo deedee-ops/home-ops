@@ -109,6 +109,8 @@ spec:
                       value: >-
                         default-src 'self';
                         object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
           - name: api
             backendRefs:
               - kind: Service
