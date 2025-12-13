@@ -37,6 +37,7 @@ specs:
           - matchName: "pypi.org"
           - matchName: "raw.githubusercontent.com"
           - matchName: "registry.npmjs.org"
+          - matchName: "broker.actions.githubusercontent.com"
           - matchName: "release-assets.actions.githubusercontent.com"
           - matchName: "release-assets.githubusercontent.com"
           - matchName: "s3.ajgon.casa"
