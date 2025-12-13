@@ -9,6 +9,7 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./prometheusrule.yaml
   - ./scrapeconfig.yaml
   - ./securitypolicy.yaml
   - ./silence.yaml
