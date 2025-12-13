@@ -97,17 +97,17 @@ spec:
               # and delegate it to security policy
               # workaround, until OIDC is implemented
               # https://github.com/navidrome/navidrome/issues/2394
-              # - type: RequestHeaderModifier
-              #   requestHeaderModifier:
-              #     add:
-              #       - name: Remote-User
-              #         value: "ajgon"
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: Remote-User
+                      value: "ajgon"
               - type: ResponseHeaderModifier
                 responseHeaderModifier:
                   set:
                     - name: Content-Security-Policy
                       value: >-
-                        default-src 'self';
+                        default-src 'self' data:;
                         object-src 'none';
                         script-src 'self' 'unsafe-inline';
                         style-src 'self' 'unsafe-inline';
