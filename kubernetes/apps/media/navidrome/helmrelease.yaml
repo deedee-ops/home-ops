@@ -27,10 +27,9 @@ spec:
               ND_MUSICFOLDER: "/data"
               ND_PID_ALBUM: "folder"
               ND_PORT: &port 80
-              ND_REVERSEPROXYUSERHEADER: "Remote-User"
-              ND_REVERSEPROXYWHITELIST: "172.30.0.0/16"
+              ND_EXTAUTH_USERHEADER: "Remote-User"
+              ND_EXTAUTH_TRUSTEDSOURCES: "172.30.0.0/16"
               ND_SCANINTERVAL: "1m"
-              ND_SCANNER_GROUPALBUMRELEASES: "true"
               ND_SESSIONTIMEOUT: "30m"
               ND_TRANSCODINGCACHESIZE: "100MB"
               TZ: Europe/Warsaw
