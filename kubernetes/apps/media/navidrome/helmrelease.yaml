@@ -1,0 +1,138 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: navidrome
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: navidrome
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/navidrome/navidrome
+              tag: 0.59.0@sha256:4edc8a1de3e042f30b78a478325839f4395177eb8201c27543dccc0eba674f23
+            env:
+              ND_BASEURL: "/"
+              ND_COVERARTPRIORITY: "folder.*, cover.*, front.*"
+              ND_DATAFOLDER: "/config"
+              ND_DEFAULTLANGUAGE: "en"
+              ND_ENABLEINSIGHTSCOLLECTOR: "false"
+              ND_LOGLEVEL: "info"
+              ND_MUSICFOLDER: "/data"
+              ND_PID_ALBUM: "folder"
+              ND_PORT: &port 80
+              ND_EXTAUTH_USERHEADER: "Remote-User"
+              ND_EXTAUTH_TRUSTEDSOURCES: "172.30.0.0/16"
+              ND_SCANINTERVAL: "1m"
+              ND_SESSIONTIMEOUT: "30m"
+              ND_TRANSCODINGCACHESIZE: "100MB"
+              TZ: Europe/Warsaw
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "navidrome.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: navidrome
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              # hardcode user email effectively disabling authentication on firefly side,
+              # and delegate it to security policy
+              # workaround, until OIDC is implemented
+              # https://github.com/navidrome/navidrome/issues/2394
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: Remote-User
+                      value: "ajgon"
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
+          - name: api
+            backendRefs:
+              - kind: Service
+                name: navidrome
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /rest
+    persistence:
+      config:
+        existingClaim: navidrome
+      media:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media/media/music"
+        globalMounts:
+          - path: /data
+            readOnly: true
+      tmp:
+        type: emptyDir

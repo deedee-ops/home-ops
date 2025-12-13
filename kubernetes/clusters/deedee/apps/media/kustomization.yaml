@@ -9,6 +9,7 @@ resources:
   - ./_namespace.yaml
   - ./bazarr.yaml
   - ./jellyfin.yaml
+  - ./navidrome.yaml
   - ./prowlarr.yaml
   - ./radarr.yaml
   - ./recyclarr.yaml
