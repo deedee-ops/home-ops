@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: navidrome
+spec:
+  components:
+    - ../../../components/oidc
+    - ../../../components/nfs-scaler
+    - ../../../components/volsync
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  path: ./kubernetes/apps/media/navidrome
+  postBuild:
+    substitute:
+      APP: navidrome
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      VOLSYNC_CAPACITY: 5Gi
+  patches:
+    - patch: |-
+        - op: add
+          path: /spec/targetRefs/0/sectionName
+          value: app
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
