@@ -15,6 +15,8 @@ specs:
           # subtitles
           - matchName: api.opensubtitles.com
           - matchName: www.napiprojekt.pl
+          # translations
+          - matchName: generativelanguage.googleapis.com
         toPorts:
           - ports:
               - port: "443"
