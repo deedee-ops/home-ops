@@ -5,7 +5,7 @@
 Provision:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/deedee-ops/home-ops/refs/heads/master/scripts/nas/deploy-truenas.sh | bash -s meemee /mnt/apps/docker
+curl -sSL https://raw.githubusercontent.com/deedee-ops/home-ops/refs/heads/master/scripts/nas/deploy-truenas.sh | bash -s meemee /mnt/apps/docker --init
 ```
 
 Add custom APP YAML, with following contents:

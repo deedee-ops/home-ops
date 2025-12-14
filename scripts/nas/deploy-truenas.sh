@@ -3,6 +3,7 @@ set -e
 
 CONTEXT="${1:-meemee}"
 TARGET_DIR="${2:-/mnt/apps/docker}"
+INITPARAM="$3"
 SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE:-"${TARGET_DIR}/age-keys.txt"}
 
 mkdir -p "$TARGET_DIR/stacks" "$TARGET_DIR/volumes/komodo"
@@ -38,27 +39,29 @@ if [ ! -f "${TARGET_DIR}/sops" ] || [[ "sha256:$(sha256sum "${TARGET_DIR}/sops" 
   chmod +x "${TARGET_DIR}/sops"
 fi
 
-rm -rf "$TARGET_DIR/stacks/komodo" || true
-git clone https://github.com/deedee-ops/home-ops "$TARGET_DIR/stacks/komodo"
+if [[ "${INITPARAM}" == "--init" ]]; then
+  rm -rf "$TARGET_DIR/stacks/komodo" || true
+  git clone https://github.com/deedee-ops/home-ops "$TARGET_DIR/stacks/komodo"
 
-KOMODO_STACK_DIR="$TARGET_DIR/stacks/komodo/docker/stacks/komodo"
-HOSTS_DIR="$TARGET_DIR/stacks/komodo/docker/hosts"
+  KOMODO_STACK_DIR="$TARGET_DIR/stacks/komodo/docker/stacks/komodo"
+  HOSTS_DIR="$TARGET_DIR/stacks/komodo/docker/hosts"
 
-if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env"; then
-  "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env" > "$KOMODO_STACK_DIR/override.env"
+  if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env"; then
+    "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/komodo.sops.env" > "$KOMODO_STACK_DIR/override.env"
+  fi
+
+  if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml"; then
+    "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
+  fi
+
+  export PERIPHERY_ROOT_DIRECTORY="${TARGET_DIR}"
+
+  # shellcheck source=/dev/null
+  source "${KOMODO_STACK_DIR}/override.env"
+
+  eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml" | sed 's@`@#-#@g')\"" | sed 's@#-#@`@g' > /tmp/kcompose.yaml
+  mv /tmp/kcompose.yaml "$KOMODO_STACK_DIR/compose.yaml"
 fi
-
-if test -f "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml"; then
-  "${TARGET_DIR}/sops" -d "$HOSTS_DIR/$CONTEXT/bootstrap/config.sops.toml" > "$TARGET_DIR/volumes/komodo/config.toml"
-fi
-
-export PERIPHERY_ROOT_DIRECTORY="${TARGET_DIR}"
-
-# shellcheck source=/dev/null
-source "${KOMODO_STACK_DIR}/override.env"
-
-eval "echo \"$(cat "$KOMODO_STACK_DIR/compose.yaml" | sed 's@`@#-#@g')\"" | sed 's@#-#@`@g' > /tmp/kcompose.yaml
-mv /tmp/kcompose.yaml "$KOMODO_STACK_DIR/compose.yaml"
 
 cp "${TARGET_DIR}/stacks/komodo/scripts/nas/periphery.config.toml" "${TARGET_DIR}/periphery.config.toml"
 
@@ -72,7 +75,7 @@ fi
 ln -s "${TARGET_DIR}" /etc/komodo
 
 # configure periphery
-cat <<EOF> /etc/systemd/system/periphery.service
+cat <<EOF | tee /etc/systemd/system/periphery.service
 [Unit]
 Description=Agent to connect with Komodo Core
 
@@ -91,8 +94,10 @@ EOF
 systemctl daemon-reload
 systemctl enable --now periphery.service
 
-docker network create internal || true
+if [[ "${INITPARAM}" == "--init" ]]; then
+  docker network create internal || true
 
-cd "${KOMODO_STACK_DIR}" && docker compose -p komodo -f compose.yaml up -d
+  cd "${KOMODO_STACK_DIR}" && docker compose -p komodo -f compose.yaml up -d
+fi
 
 # vim:ft=bash
