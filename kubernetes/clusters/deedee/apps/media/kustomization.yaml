@@ -10,6 +10,7 @@ resources:
   - ./bazarr.yaml
   - ./jellyfin.yaml
   - ./navidrome.yaml
+  - ./pinchflat.yaml
   - ./prowlarr.yaml
   - ./radarr.yaml
   - ./recyclarr.yaml

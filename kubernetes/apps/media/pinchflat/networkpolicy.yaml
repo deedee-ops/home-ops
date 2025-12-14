@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: pinchflat-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: pinchflat
+    egress:
+      - toFQDNs:
+          - matchName: api.github.com
+          - matchName: github.com
+          - matchName: i.ytimg.com
+          - matchName: release-assets.githubusercontent.com
+          - matchName: sponsor.ajay.app
+          - matchName: www.youtube.com
+          - matchPattern: '*.googleusercontent.com'
+          - matchPattern: '*.googlevideo.com'
+        toPorts:
+          - ports:
+              - port: "443"
