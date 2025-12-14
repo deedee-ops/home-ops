@@ -31,12 +31,13 @@ services:
       traefik.http.routers.vault.service: vault
       traefik.http.routers.vault.tls: true
       traefik.http.routers.vault.tls.certresolver: vault-ecdsa
-      traefik.http.routers.vault.tls.domains[0].main: 'vault.${ROOT_DOMAIN}'
+      traefik.http.routers.vault.tls.domains[0].main: "vault.${ROOT_DOMAIN}"
     post_start:
       - command: >-
-          sh -c "sleep 5 &&
-          vault operator unseal $(cat /secrets/override.env | sed -E 's@[^=]*=\"?([^\"]+)\"?@\\1@')"
-          || true
+          sh -c "
+          while ! vault operator unseal $(cat /secrets/override.env | sed -E 's@[^=]*=\"?([^\"]+)\"?@\\1@'); do
+          sleep 1;
+          done"
 
 configs:
   vault-config:
