@@ -29,7 +29,6 @@ services:
       traefik.http.routers.s3.tls: true
       traefik.http.routers.s3.tls.certresolver: vault-ecdsa
       traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
-      traefik.http.routers.s3.middlewares: nix-compress,nix-encoding
       # Dashboard
       traefik.http.services.rustfs.loadbalancer.server.port: "9001"
       traefik.http.routers.rustfs.entrypoints: https
@@ -43,14 +42,13 @@ services:
       # causing "input compression not recognized" errors on nix
       # Also removes `aws-chunked` content-encoding header, which also causes issues
       traefik.http.routers.s3-nix.entrypoints: https
-      traefik.http.routers.s3-nix.rule: Host(`s3.${ROOT_DOMAIN}`) && PathPrefix(`/nix`)
+      traefik.http.routers.s3-nix.rule: >-
+        Host(`s3.${ROOT_DOMAIN}`) && PathPrefix(`/nix/nar`) && !HeaderRegexp(`Authorization`, `^AWS4-HMAC-SHA256 .*$`)
       traefik.http.routers.s3-nix.service: s3
       traefik.http.routers.s3-nix.tls: true
       traefik.http.routers.s3-nix.tls.certresolver: vault-ecdsa
       traefik.http.routers.s3-nix.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
-      traefik.http.routers.s3-nix.middlewares: nix-compress,nix-encoding
-      traefik.http.middlewares.nix-compress.compress.encodings: "gzip, br"
-      traefik.http.middlewares.nix-encoding.headers.customrequestheaders.Accept-Encoding: ""
+      traefik.http.routers.s3-nix.middlewares: nix-encoding
       traefik.http.middlewares.nix-encoding.headers.customresponseheaders.Content-Encoding: ""
 
 networks:
