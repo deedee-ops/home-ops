@@ -38,7 +38,7 @@ spec:
       enabled: true
     devices: bond+
 
-    enableIPv4BIGTCP: true
+    enableIPv4BIGTCP: false # enable for jumbo frames
     endpointRoutes:
       enabled: true
     envoy:
