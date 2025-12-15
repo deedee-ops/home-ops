@@ -17,7 +17,7 @@ spec:
           app:
             image: &img
               repository: docker.n8n.io/n8nio/n8n
-              tag: stable@sha256:4571f82bc16be9979bb262db4a9a2d782e6059724272b605845347a0f840deb1
+              tag: stable@sha256:e3a4256dd2aa3b987e10da3c1194081575933987b26a604a4f52d2bdd62a5b72
             env:
               DB_SQLITE_POOL_SIZE: "1000"
               DB_SQLITE_VACUUM_ON_STARTUP: "true"
@@ -34,6 +34,7 @@ spec:
               N8N_LISTEN_ADDRESS: "0.0.0.0"
               N8N_METRICS: "true"
               N8N_PORT: &port 80
+              N8N_RESTRICT_FILE_ACCESS_TO: "/sync"
               N8N_RUNNERS_ENABLED: "true"
               N8N_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               N8N_SMTP_PORT: "25"
@@ -41,6 +42,7 @@ spec:
               N8N_SMTP_SSL: "false"
               N8N_TEMPLATES_ENABLED: "false"
               N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+              NODES_EXCLUDE: "[]"
               WEBHOOK_URL: "https://n8n.${ROOT_DOMAIN}"
               TZ: *tz
             envFrom:
