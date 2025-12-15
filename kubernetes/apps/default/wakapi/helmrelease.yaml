@@ -48,9 +48,18 @@ spec:
               WAKAPI_SUPPORT_CONTACT: "deedee@${ROOT_DOMAIN}"
               WAKAPI_TRUST_REVERSE_PROXY_IPS: "172.30.0.0/16"
               TZ: Europe/Warsaw
-            envFrom:
-              - secretRef:
-                  name: "wakapi-secret"
+              WAKAPI_OIDC_PROVIDERS_0_CLIENT_ID:
+                secretKeyRef:
+                  name: wakapi-secret
+                  key: WAKAPI_OIDC_PROVIDERS_0_CLIENT_ID
+              WAKAPI_OIDC_PROVIDERS_0_CLIENT_SECRET:
+                secretKeyRef:
+                  name: wakapi-secret
+                  key: WAKAPI_OIDC_PROVIDERS_0_CLIENT_SECRET
+              WAKAPI_PASSWORD_SALT:
+                secretKeyRef:
+                  name: wakapi-secret
+                  key: WAKAPI_PASSWORD_SALT
             resources:
               requests:
                 cpu: 10m
@@ -70,9 +79,10 @@ spec:
               WAKA_LISTEN_ADDRESS: "0.0.0.0:9212"
               WAKA_SCRAPE_URI: "http://localhost/api/compat/wakatime/v1"
               WAKA_USER: "ajgon"
-            envFrom:
-              - secretRef:
-                  name: "wakapi-secret"
+              WAKA_API_KEY:
+                secretKeyRef:
+                  name: wakapi-secret
+                  key: WAKA_API_KEY
             securityContext: *sc
     defaultPodOptions:
       automountServiceAccountToken: false
