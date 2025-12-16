@@ -26,11 +26,28 @@ spec:
   values:
     commonLabels:
       egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/auth: "true"
+    extraArgs:
+      - "--web-config=/etc/flux-operator/web/config.yaml"
+    extraVolumeMounts:
+      - name: web-config
+        mountPath: /etc/flux-operator/web
+        readOnly: true
+      - mountPath: /etc/ssl/certs/homelab.pem
+        name: root-ca
+        subPath: ec.crt
+    extraVolumes:
+      - name: web-config
+        secret:
+          secretName: flux-operator-web-config-secret
+      - name: root-ca
+        secret:
+          secretName: homelab-root-ca.crt
     resources:
       limits:
         cpu: 2000m
         memory: 1Gi
-      requests: # @schema default: {"cpu":"100m","memory":"64Mi"}
+      requests:
         cpu: 100m
         memory: 64Mi
     securityContext:
@@ -44,3 +61,7 @@ spec:
         type: "RuntimeDefault"
     serviceMonitor:
       create: true
+    web:
+      enabled: true
+      networkPolicy:
+        create: false
