@@ -92,6 +92,29 @@ machine:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: homelab
     topology.kubernetes.io/zone: deedee
+  registries:
+    mirrors:
+      docker.io:
+        endpoints:
+          - http://nas.internal:5000
+      codeberg.org:
+        endpoints:
+          - http://nas.internal:5001
+      ghcr.io:
+        endpoints:
+          - http://nas.internal:5002
+      gsoci.azurecr.io:
+        endpoints:
+          - http://nas.internal:5003
+      mirror.gcr.io:
+        endpoints:
+          - http://nas.internal:5004
+      quay.io:
+        endpoints:
+          - http://nas.internal:5005
+      registry.k8s.io:
+        endpoints:
+          - http://nas.internal:5006
   sysctls:
     fs.inotify.max_user_instances: "8192" # More inotify events
     fs.inotify.max_user_watches: "1048576" # More inotify events

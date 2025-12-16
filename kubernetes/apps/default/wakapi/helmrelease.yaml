@@ -73,7 +73,7 @@ spec:
                   - ALL
           metrics:
             image:
-              repository: macropower/wakatime-exporter
+              repository: docker.io/macropower/wakatime-exporter
               tag: 0.1.0@sha256:dbb05debb7854396c4db3da962f1c9acf3e117e755cc26808f6da518ee5ba7ee
             env:
               WAKA_LISTEN_ADDRESS: "0.0.0.0:9212"
