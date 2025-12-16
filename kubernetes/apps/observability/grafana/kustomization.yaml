@@ -8,7 +8,6 @@ resources:
   - ./grafanadashboard.yaml
   - ./grafanadatasource.yaml
   - ./helmrelease.yaml
-  - ./httproute.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./servicemonitor.yaml
