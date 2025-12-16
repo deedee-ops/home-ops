@@ -78,7 +78,7 @@ spec:
                 memory: 8192Mi
           redis:
             image:
-              repository: "public.ecr.aws/docker/library/redis"
+              repository: "docker.io/library/redis"
               tag: "8.4.0-bookworm@sha256:3906b477e4b60250660573105110c28bfce93b01243eab37610a484daebceb04"
             # save and appendonly options forcibly disable RDB and AOF persistence entirely
             command:

@@ -1,0 +1,72 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  registry-docker-io: &service
+    image: public.ecr.aws/docker/library/registry:3.0.0@sha256:cd92709b4191c5779cd7215ccd695db6c54652e7a62843197e367427efb84d0e
+    container_name: registry-docker-io
+    user: "1000:1000"
+    restart: unless-stopped
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-docker-io
+    env_file:
+      - registry.env
+      - override.env
+    ports:
+      - "5000:5000"
+    volumes:
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  registry-codeberg-org:
+    <<: *service
+    container_name: registry-codeberg-org
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://codeberg.org
+      REGISTRY_STORAGE_S3_BUCKET: registry-codeberg-org
+    ports:
+      - "5001:5000"
+  registry-ghcr-io:
+    <<: *service
+    container_name: registry-ghcr-io
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://ghcr.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-ghcr-io
+    ports:
+      - "5002:5000"
+  registry-gsoci-azurecr-io:
+    <<: *service
+    container_name: registry-gsoci-azurecr-io
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://gsoci.azurecr.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-gsoci-azurecr-io
+    ports:
+      - "5003:5000"
+  registry-mirror-gcr-io:
+    <<: *service
+    container_name: registry-mirror-gcr-io
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://mirror.gcr.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-mirror-gcr-io
+    ports:
+      - "5004:5000"
+  registry-quay-io:
+    <<: *service
+    container_name: registry-quay-io
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://quay.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-quay-io
+    ports:
+      - "5005:5000"
+  registry-registry-k8s-io:
+    <<: *service
+    container_name: registry-registry-k8s-io
+    environment:
+      REGISTRY_PROXY_REMOTEURL: https://registry.k8s.io
+      REGISTRY_STORAGE_S3_BUCKET: registry-registry-k8s-io
+    ports:
+      - "5006:5000"

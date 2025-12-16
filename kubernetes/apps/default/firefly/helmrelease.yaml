@@ -18,7 +18,7 @@ spec:
         containers:
           app:
             image:
-              repository: fireflyiii/core
+              repository: docker.io/fireflyiii/core
               tag: version-6.4.9@sha256:5252c462d3c1ed337dc87482c95bc62c25153d2a71ab87aed1c7e67e4a85d850
             env:
               APP_URL: "https://firefly.${ROOT_DOMAIN}"

@@ -12,6 +12,8 @@ spec:
   values:
     fullnameOverride: victoria-logs
     server:
+      image:
+        repository: docker.io/victoriametrics/victoria-logs
       persistentVolume:
         enabled: true
         storageClassName: ceph-block

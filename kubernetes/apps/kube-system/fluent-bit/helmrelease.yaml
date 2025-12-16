@@ -86,6 +86,8 @@ spec:
           log_response_payload false
     dashboards:
       enabled: true
+    image:
+      repository: ghcr.io/fluent/fluent-bit
     podSecurityContext:
       seccompProfile:
         type: RuntimeDefault

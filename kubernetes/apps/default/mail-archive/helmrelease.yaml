@@ -18,7 +18,7 @@ spec:
         containers:
           app:
             image:
-              repository: roundcube/roundcubemail
+              repository: docker.io/roundcube/roundcubemail
               tag: "1.6.12-apache-nonroot@sha256:bc55ca8ecfd0657878cc36e93b4bbfb3b37de50935f1a6e20f2c2bc41b8ed1c8"
             env:
               ROUNDCUBEMAIL_DB_TYPE: "sqlite"
@@ -106,7 +106,7 @@ spec:
         containers:
           sync:
             image:
-              repository: gilleslamiral/imapsync
+              repository: docker.io/gilleslamiral/imapsync
               tag: "2.319@sha256:161336e1a6db587bc42ea1126cfc9b6afa67ea92b408ea4c4454f7f771561aa4"
               pullPolicy: IfNotPresent
             command:

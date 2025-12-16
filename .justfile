@@ -8,7 +8,7 @@ mod talos "talos"
 # manage kubernetes cluster
 mod kube "kubernetes"
 
-cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || (touch " + justfile_dir() + "/.current-cluster && just cluster)")
 [private]
 default:
     just -l
