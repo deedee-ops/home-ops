@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  cameras:
+    image: "registry.${ROOT_DOMAIN}/home/cameras"
+    container_name: cameras
+    restart: unless-stopped
+    env_file:
+      - ./compose.env
+    ports:
+      - "5101:5101"
+      - "5104:5104"
+      - "5105:5105"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
