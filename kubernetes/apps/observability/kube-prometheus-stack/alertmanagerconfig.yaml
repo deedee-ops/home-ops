@@ -28,6 +28,7 @@ spec:
             value: Watchdog
             matchType: =
       - receiver: email
+        continue: true
         matchers:
           - name: severity
             value: critical|error|warning

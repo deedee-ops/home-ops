@@ -24,6 +24,7 @@ specs:
         app.kubernetes.io/name: alertmanager
     egress:
       - toFQDNs:
+          - matchName: api.pushover.net
           - matchName: hc-ping.com
         toPorts:
           - ports:
