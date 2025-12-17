@@ -12,7 +12,7 @@ spec:
       sectionName: app
   oidc:
     provider:
-      issuer: "https://id.ajgon.casa"
+      issuer: "https://id.${ROOT_DOMAIN}"
       backendRefs:
         - group: gateway.envoyproxy.io
           kind: Backend
