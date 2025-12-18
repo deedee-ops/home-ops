@@ -1,0 +1,191 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: frigate
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: frigate
+  interval: 1h
+  values:
+    controllers:
+      main:
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/blakeblackshear/frigate
+              tag: 0.16.3@sha256:cf4305d9f1c673d71c4d0fab30ca56ca05ac91168711a74ee7867a4691a7ad02
+            env:
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: frigate-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/version
+                    port: &port 5000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false # s6 :-(
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                memory: 8Gi
+              claims:
+                - name: gpu
+        initContainers:
+          01-set-config:
+            image:
+              repository: ghcr.io/home-operations/busybox
+              tag: 1.37.0@sha256:026ed7273270ec08f6902b4ae8334c23b473e5394bec3bbbdbfe580c710d50bc
+            command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                cp /config.yaml /config
+            securityContext:
+              <<: *sc
+              readOnlyRootFilesystem: true
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
+        statefulset:
+          volumeClaimTemplates:
+            - name: cameras
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 100Gi
+              advancedMounts:
+                app:
+                  - path: /media/frigate
+    defaultPodOptions:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      hostUsers: false
+      resourceClaims:
+        - name: gpu
+          resourceClaimTemplateName: frigate-gpu
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            appProtocol: kubernetes.io/wss
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "frigate.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: frigate
+                port: 80
+    configMaps:
+      s6-hacks:
+        data:
+          log-prepare.run: |-
+            #!/command/with-contenv bash
+            # shellcheck shell=bash
+            # Prepare the logs folder for s6-log
+
+            set -o errexit -o nounset -o pipefail
+
+            mkdir -p /dev/shm/logs/frigate
+            mkdir -p /dev/shm/logs/go2rtc
+            mkdir -p /dev/shm/logs/nginx
+            mkdir -p /dev/shm/logs/certsync
+            chmod -R a+w /dev/shm/logs
+          frigate.run: |-
+            #!/command/with-contenv bash
+            # shellcheck shell=bash
+            # Start the Frigate service
+
+            set -o errexit -o nounset -o pipefail
+
+            # opt out of openvino telemetry
+            if [ -e /usr/local/bin/opt_in_out ]; then
+              /usr/local/bin/opt_in_out --opt_out > /dev/null 2>&1
+            fi
+
+            # Logs should be sent to stdout so that s6 can collect them
+
+            # Tell S6-Overlay not to restart this service
+            s6-svc -O .
+
+            function set_libva_version() {
+                local ffmpeg_path
+                ffmpeg_path=$(python3 /usr/local/ffmpeg/get_ffmpeg_path.py)
+                LIBAVFORMAT_VERSION_MAJOR=$("$ffmpeg_path" -version | grep -Po "libavformat\W+\K\d+")
+                export LIBAVFORMAT_VERSION_MAJOR
+            }
+
+            echo "[INFO] Preparing Frigate..."
+            set_libva_version
+
+            echo "[INFO] Starting Frigate..."
+
+            cd /opt/frigate || echo "[ERROR] Failed to change working directory to /opt/frigate"
+
+            # Replace the bash process with the Frigate process, redirecting stderr to stdout
+            exec python3 -u -m frigate > /tmp/frigate.log 2>&1
+          s6-applyuidgid: |-
+            #!/command/with-contenv bash
+            # just shut up, please
+    persistence:
+      config:
+        existingClaim: frigate
+      configfile:
+        type: configMap
+        name: frigate-configmap
+        advancedMounts:
+          main:
+            01-set-config:
+              - subPath: config.yaml
+                path: /config.yaml
+      cache:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        globalMounts:
+          - path: /dev/shm
+      s6-hacks:
+        type: configMap
+        identifier: s6-hacks
+        defaultMode: 0755
+        globalMounts:
+          - subPath: frigate.run
+            path: /etc/s6-overlay/s6-rc.d/frigate/run
+          - subPath: log-prepare.run
+            path: /etc/s6-overlay/s6-rc.d/log-prepare/run
+          - subPath: s6-applyuidgid
+            path: /command/s6-applyuidgid
+      tmp:
+        type: emptyDir

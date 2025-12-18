@@ -1,0 +1,148 @@
+---
+auth:
+  enabled: false
+
+detect:
+  enabled: true
+
+database:
+  path: /config/frigate.db
+
+mqtt:
+  enabled: false
+
+detectors:
+  ov:
+    type: openvino
+    device: GPU
+
+model:
+  model_type: yolo-generic
+  width: 320
+  height: 320
+  input_tensor: nchw
+  input_dtype: float
+  path: /config/model_cache/yolo9-t-320.onnx
+  labelmap_path: /labelmap/coco-80.txt
+
+ffmpeg:
+  hwaccel_args: preset-intel-qsv-h264
+
+record:
+  enabled: true
+  retain:
+    days: 7
+    mode: all
+  detections:
+    retain:
+      days: 14
+      mode: active_objects
+
+review:
+  alerts:
+    labels: []
+  detections:
+    labels:
+      - person
+      - car
+
+snapshots:
+  enabled: true
+  timestamp: false
+  bounding_box: true
+  crop: false
+  retain:
+    default: 14
+
+lpr:
+  enabled: true
+  min_area: 1500
+  min_plate_length: 4
+
+go2rtc:
+  streams:
+    doorbell_street_record:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=0#video=copy
+    doorbell_street_detect:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=1#video=copy
+    doorbell_alley_record:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=0#video=copy
+    doorbell_alley_detect:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=1#video=copy
+    garage_record:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=0#video=copy
+    garage_detect:
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=1#video=copy
+
+cameras:
+  doorbell_street:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/doorbell_street_detect
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/doorbell_street_record
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+    detect:
+      enabled: false
+    live:
+      streams:
+        main_stream: doorbell_street_record
+        sub_stream: doorbell_street_detect
+    lpr:
+      enabled: true
+
+  doorbell_alley:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/doorbell_alley_detect
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/doorbell_alley_record
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+    detect:
+      height: 352
+      width: 288
+      fps: 5
+    objects:
+      track:
+        - person
+    live:
+      streams:
+        main_stream: doorbell_alley_record
+        sub_stream: doorbell_alley_detect
+    lpr:
+      enabled: true
+
+  garage:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/garage_detect
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/garage_record
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+    detect:
+      height: 352
+      width: 288
+      fps: 5
+    live:
+      streams:
+        main_stream: garage_record
+        sub_stream: garage_detect
+    objects:
+      track:
+        - person
+        - car
+        # https://docs.frigate.video/configuration/license_plate_recognition#model-requirements
+        # - license_plate
+version: 0.16-0

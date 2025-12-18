@@ -1,6 +1,7 @@
 {
   "ignoreFiles": [
     ".github/actionlint.yaml",
+    "kubernetes/apps/home/frigate/resources/config.yaml",
     "kubernetes/apps/observability/gatus/resources/config.yaml",
     "kubernetes/clusters/*/values.yaml",
     "talos/*/machineconfig.yaml.j2",
