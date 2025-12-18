@@ -67,6 +67,8 @@ spec:
                 drop:
                   - ALL
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       labels:
         egress.cilium.io/smtp-relay: "true"
       dnsConfig:

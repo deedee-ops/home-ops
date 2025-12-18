@@ -47,6 +47,8 @@ spec:
               requests:
                 cpu: 100m
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
           [{

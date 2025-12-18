@@ -59,6 +59,8 @@ spec:
                 app:
                   - path: /cache
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

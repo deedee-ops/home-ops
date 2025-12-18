@@ -61,6 +61,8 @@ spec:
                 cpu: 5m
                 memory: 10M
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

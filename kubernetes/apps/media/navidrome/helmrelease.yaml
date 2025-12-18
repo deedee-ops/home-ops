@@ -58,6 +58,8 @@ spec:
               limits:
                 memory: 1Gi
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots

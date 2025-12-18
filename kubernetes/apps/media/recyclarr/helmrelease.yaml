@@ -44,6 +44,8 @@ spec:
         pod:
           restartPolicy: Never
     defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots
