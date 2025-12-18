@@ -81,6 +81,13 @@ machine:
               hardwareAddr: 48:21:0b:51:*
           mode: active-backup
         dhcp: true
+      - interface: bond1
+        bond:
+          deviceSelectors:
+            - physical: true
+              hardwareAddr: 48:21:0b:76:*
+          mode: active-backup
+        dhcp: false
         vlans:
           - # IOT
             vlanId: 4
