@@ -8,5 +8,6 @@ components:
 resources:
   - ./_namespace.yaml
   - ./frigate.yaml
+  - ./home-assistant.yaml
   - ./mosquitto.yaml
   - ./zigbee2mqtt.yaml
