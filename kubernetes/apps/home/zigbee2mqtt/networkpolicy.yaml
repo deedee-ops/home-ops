@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: zigbee2mqtt-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: zigbee2mqtt
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: mosquitto
+        toPorts:
+          - ports:
+              - port: "1883"
