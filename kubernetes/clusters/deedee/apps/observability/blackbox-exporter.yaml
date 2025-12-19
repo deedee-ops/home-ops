@@ -25,6 +25,9 @@ kind: Kustomization
 metadata:
   name: blackbox-exporter-vpn
 spec:
+  dependsOn:
+    - name: multus
+      namespace: kube-system
   interval: 1h
   patches: []
   path: ./kubernetes/apps/observability/blackbox-exporter/vpn
