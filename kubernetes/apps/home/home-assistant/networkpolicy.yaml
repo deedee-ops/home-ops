@@ -1,0 +1,45 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: home-assistant-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: home-assistant
+    egress:
+      - toFQDNs:
+          - matchName: api.github.com
+          - matchName: github.com
+          - matchName: pypi.org
+          - matchName: raw.githubusercontent.com
+          - matchName: release-assets.githubusercontent.com
+          - matchName: unifi.internal
+          - matchName: wheels.home-assistant.io
+          - matchPattern: "*.hacs.xyz"
+        toPorts:
+          - ports:
+              - port: "443"
+      - toFQDNs:
+          - matchName: smtp.migadu.com
+        toPorts:
+          - ports:
+              - port: "465"
+              - port: "587"
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: mosquitto
+        toPorts:
+          - ports:
+              - port: "1883"
+      - toEntities:
+          - world
+        toPorts:
+          - ports:
+              # SSDP
+              - port: "1900"
+                protocol: UDP
+              # mDNS
+              - port: "5353"
+                protocol: UDP
