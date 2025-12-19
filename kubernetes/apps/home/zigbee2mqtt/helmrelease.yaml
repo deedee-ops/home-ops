@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: zigbee2mqtt
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: zigbee2mqtt
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/koenkk/zigbee2mqtt
+              tag: 2.7.1@sha256:163e7351430a95d550d5b1bb958527edc1eff115eb013ca627f3545a192e853f
+            env:
+              TZ: Europe/Warsaw
+              ZIGBEE2MQTT_DATA: /config
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LAST_SEEN: ISO_8601
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_LEVEL: info # debug
+              ZIGBEE2MQTT_CONFIG_ADVANCED_LOG_OUTPUT: '["console"]'
+              ZIGBEE2MQTT_CONFIG_ADVANCED_TRANSMIT_POWER: 20
+              ZIGBEE2MQTT_CONFIG_AVAILABILITY_ACTIVE_TIMEOUT: 60
+              ZIGBEE2MQTT_CONFIG_AVAILABILITY_PASSIVE_TIMEOUT: 2160
+              ZIGBEE2MQTT_CONFIG_DEVICE_OPTIONS_RETAIN: "true"
+              ZIGBEE2MQTT_CONFIG_FRONTEND_ENABLED: true
+              ZIGBEE2MQTT_CONFIG_FRONTEND_PORT: &port 80
+              ZIGBEE2MQTT_CONFIG_FRONTEND_URL: https://zigbee.${ROOT_DOMAIN}
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_ENABLED: true
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_DISCOVERY_TOPIC: homeassistant
+              ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_STATUS_TOPIC: homeassistant/status
+              ZIGBEE2MQTT_CONFIG_MQTT_INCLUDE_DEVICE_INFORMATION: "true"
+              ZIGBEE2MQTT_CONFIG_MQTT_KEEPALIVE: 60
+              ZIGBEE2MQTT_CONFIG_MQTT_REJECT_UNAUTHORIZED: "true"
+              ZIGBEE2MQTT_CONFIG_MQTT_SERVER: mqtt://mosquitto.home.svc.cluster.local:1883
+              ZIGBEE2MQTT_CONFIG_MQTT_VERSION: 5
+              ZIGBEE2MQTT_CONFIG_ONBOARDING: "false"
+              ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: "false"
+              ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
+              ZIGBEE2MQTT_CONFIG_SERIAL_DISABLE_LED: "true"
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: tcp://192.168.4.14:6638
+              ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: ember
+            envFrom:
+              - secretRef:
+                  name: "zigbee2mqtt-secret"
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "iot",
+            "namespace": "kube-system",
+            "ips": ["192.168.4.31/24"],
+            "mac": "02:00:c0:a8:04:1f"
+          }]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "zigbee.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - kind: Service
+                name: zigbee2mqtt
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data: blob:;
+                        img-src 'self' data: https://www.zigbee2mqtt.io;
+                        object-src 'none';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      config:
+        existingClaim: zigbee2mqtt
