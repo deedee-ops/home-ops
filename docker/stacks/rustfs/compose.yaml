@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   rustfs:
-    image: rustfs/rustfs:latest@sha256:8e467b32af3ff83e70c70dddb0c36b5e611f46e89a3075db8770aea4f30b2fe3
+    image: rustfs/rustfs:latest@sha256:b4b638393079ce687546a51a70ecace3070a9cc5f1a4fce65056a6305e30b743
     container_name: rustfs
     user: "1000:1000"
     restart: unless-stopped
