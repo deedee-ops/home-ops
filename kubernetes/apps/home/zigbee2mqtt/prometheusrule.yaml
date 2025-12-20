@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: zigbee2mqtt-rules
+spec:
+  groups:
+    - name: gatus.rules
+      rules:
+        - alert: ZigbeeDeviceWarm
+          expr: |-
+            smlight_device_temp{job="zigbee-device"} > 50
+          for: 5m
+          annotations:
+            summary: >-
+              The {{ $labels.instance }} zigbee device is getting really warm.
+          labels:
+            severity: warning
+        - alert: ZigbeeDeviceHot
+          expr: |-
+            smlight_device_temp{job="zigbee-device"} > 65
+          for: 1m
+          annotations:
+            summary: >-
+              The {{ $labels.instance }} zigbee device is dangerously hot.
+          labels:
+            severity: critical

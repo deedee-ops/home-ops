@@ -7,4 +7,6 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./prometheusrule.yaml
   - ./scaledobject.yaml
+  - ./scrapeconfig.yaml

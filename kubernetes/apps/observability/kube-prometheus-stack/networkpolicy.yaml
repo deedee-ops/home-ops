@@ -65,7 +65,7 @@ specs:
               - port: "9100"
               - port: "9633"
       - toFQDNs:
-          - matchName: kvm.internal
+          - matchPattern: "*.internal"
         toPorts:
           - ports:
               - port: "80"
