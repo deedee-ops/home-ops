@@ -123,15 +123,76 @@ This saves me from having to worry about three things. (1) Dealing with chicken/
 need whether my cluster is online or not and (3) The "hit by a bus factor" - what happens to critical apps
 (e.g. Email, Password Manager, Photos) that my family relies on when I no longer around.
 
-| Service                                   | Use                                                            | Cost           |
-|-------------------------------------------|----------------------------------------------------------------|----------------|
-| [BorgBase](https://www.borgbase.com/)     | Borg Backups                                                   | $80/yr         |
-| [Cloudflare](https://www.cloudflare.com/) | Services exposed externally                                    | Free           |
-| [GitHub](https://github.com/)             | Hosting this repository and continuous integration/deployments | Free           |
-| [Migadu](https://migadu.com/)             | Email hosting                                                  | $19/yr         |
-| [NextDNS](https://nextdns.io/)            | Ad filtering                                                   | ~$20/yr        |
-| [Pushover](https://pushover.net/)         | Kubernetes Alerts and application notifications                | $5 OTP         |
-|                                           |                                                                | Total: ~$10/mo |
+| Service                                     | Use                                                            | Cost           |
+|---------------------------------------------|----------------------------------------------------------------|----------------|
+| [BorgBase](https://www.borgbase.com/)       | Borg Backups                                                   | $80/yr         |
+| [Cloudflare](https://www.cloudflare.com/)   | Services exposed externally                                    | Free           |
+| [GitHub](https://github.com/)               | Hosting this repository and continuous integration/deployments | Free           |
+| [healthchecks.io](https://healthchecks.io/) | Heartbeats monitoring                                          | Free           |
+| [Migadu](https://migadu.com/)               | Email hosting                                                  | $19/yr         |
+| [NextDNS](https://nextdns.io/)              | Ad filtering                                                   | ~$20/yr        |
+| [Pushover](https://pushover.net/)           | Kubernetes Alerts and application notifications                | $5 OTP         |
+|                                             |                                                                | Total: ~$10/mo |
+
+### Networking
+
+<!-- markdownlint-disable MD033 -->
+<details>
+  <summary>Click to see a high-level network diagram</summary>
+
+```mermaid
+graph TD
+    %% Class Definitions
+    classDef wan fill:#f87171,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef core fill:#60a5fa,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef agg fill:#34d399,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef switch fill:#a78bfa,stroke:#fff,stroke-width:2px,color:#fff,font-weight:bold;
+    classDef device fill:#facc15,stroke:#fff,stroke-width:2px,color:#000,font-weight:bold;
+    classDef vlan fill:#1f2937,stroke:#fff,stroke-width:1px,color:#fff,font-size:12px;
+
+    %% Nodes
+    WAN[🛜 netia<br/>1Gbps/300Mbps WAN]:::wan
+    UCG[📦 UCG Ultra]:::core
+    AGG[🔗 USW Pro Max 16 PoE]:::agg
+    NAS[💾 NAS<br/>1 Server]:::device
+    KUBE[☸️ Kubernetes<br/>3 Nodes]:::device
+    SW[🔌 USW Flex 2.5G]:::switch
+    DEV[💻 Devices]:::device
+    WIFI[📶 WiFi Clients]:::device
+
+    %% Subgraph for VLANs
+    subgraph VLANs [VLANs]
+        direction TB
+        HOME[Home Network<br/>192.168.2.0/24]:::vlan
+        IOTNOWAN["IoT Network (No WAN)<br/>192.168.3.0/24"]:::vlan
+        IOTWAN["IoT Network (WAN)<br/>192.168.4.0/24"]:::vlan
+        KUBERNETES[Kubernetes Network<br/>192.168.42.0/24]:::vlan
+        VPN[VPN Network<br/>192.168.69.0/24]:::vlan
+        GUEST[Guest Network<br/>192.168.99.0/24]:::vlan
+        MGMT[Management Network<br/>192.168.254.0/24]:::vlan
+    end
+
+    style VLANs fill:#111,stroke:#fff,stroke-width:2px,rx:0,ry:0,padding:20px;
+
+    %% Links
+    WAN -.->|WAN| UCG
+    UCG --> AGG
+    AGG -- 2x10G LACP --- NAS
+    AGG --> DEV
+    AGG --> WIFI
+    AGG -- 2.5G --- SW
+    SW --> KUBE
+
+    %% Style the bonded links thicker
+    linkStyle 2 stroke-width:4px,stroke:34d399;
+
+    %% Move VLANs below the graph, to the middle
+    KUBE -.-> KUBERNETES
+    linkStyle 7 stroke-width:0,opacity:0;
+```
+
+</details>
+<!-- markdownlint-enable MD033 -->
 
 ---
 
@@ -157,13 +218,14 @@ the DNS records to their respective platforms accordingly.
 </details>
 <!-- markdownlint-enable MD013 MD033 -->
 
-| Device                            | Num | OS Disk Size | Data Disk Size                  | Ram  | OS            | Function                |
-|-----------------------------------|-----|--------------|---------------------------------|------|---------------|-------------------------|
-| Intel NUC12WSHi5                  | 3   | 512GB NVME   | 1TB (rook-ceph)                 | 64GB | Talos         | Kubernetes              |
-| AMD Ryzen + GB B550I Aorus Pro AX | 1   | 1TB SSD      | 2x26TB ZFS (mirrored) + 4TB SSD | 64GB | TrueNAS SCALE | NFS + Backup Server     |
-| JetKVM + AIMOS HDMI KVM Switch    | 1   | -            | -                               | -    | -             | KVM for Kubernetes      |
-| UniFi UCG Ultra                   | 1   | -            | -                               | -    | -             | Router                  |
-| UniFi USW-Pro-Max-16-PoE          | 1   | -            | -                               | -    | -             | 1Gb+2.5Gb PoE Switch    |
+| Device                            | Num | OS Disk Size | Data Disk Size                  | Ram  | OS            | Function             |
+|-----------------------------------|-----|--------------|---------------------------------|------|---------------|----------------------|
+| Intel NUC12WSHi5                  | 3   | 512GB NVME   | 1TB (rook-ceph)                 | 64GB | Talos         | Kubernetes           |
+| AMD Ryzen + GB B550I Aorus Pro AX | 1   | 1TB SSD      | 2x26TB ZFS (mirrored) + 4TB SSD | 64GB | TrueNAS SCALE | NFS + Backup Server  |
+| JetKVM + AIMOS HDMI KVM Switch    | 1   | -            | -                               | -    | -             | KVM for Kubernetes   |
+| UniFi UCG Ultra                   | 1   | -            | -                               | -    | -             | Router               |
+| UniFi USW-Pro-Max-16-PoE          | 1   | -            | -                               | -    | -             | 1Gb+2.5Gb PoE Switch |
+| UniFi Flex Mini 2.5G              | 1   | -            | -                               | -    | -             | 2.5Gb k8s Switch     |
 
 ---
 
