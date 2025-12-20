@@ -50,3 +50,14 @@ spec:
     - name: instance
       value: nas\.internal.*
       matchType: "=~"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/observability.giantswarm.io/silence_v1alpha2.json
+apiVersion: observability.giantswarm.io/v1alpha2
+kind: Silence
+metadata:
+  name: ceph-node-inconsistent-mtu-warning
+spec:
+  matchers:
+    # false positive, as this alert is not limited to ceph interfaces, but checks all of them
+    - name: alertname
+      value: CephNodeInconsistentMTU
