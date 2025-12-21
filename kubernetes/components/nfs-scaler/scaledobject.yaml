@@ -18,6 +18,9 @@ spec:
     - type: prometheus
       metadata:
         serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
-        query: probe_success{instance=~".+:2049"}
+        query: >-
+          probe_success{instance=~".+:2049"} *
+          on() (node_filesystem_mount_info{mountpoint="/mnt/tank", node="nas"} == 1)
+          or on() vector(0)
         threshold: "1"
         ignoreNullValues: "0"
