@@ -3,6 +3,34 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
+  name: nas-rules
+spec:
+  groups:
+    - name: nas.rules
+      rules:
+        - alert: NASTankUnmounted
+          expr: >-
+            up{node="nas",job="node-exporter"} == 1
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/tank", node="nas"})
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: NAS /mnt/tank is not mounted.
+        - alert: NASVMsUnmounted
+          expr: >-
+            up{node="nas",job="node-exporter"} == 1
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/apps/vms", node="nas"})
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: NAS /mnt/apps/vms is not mounted
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
   name: vault-rules
 spec:
   groups:
