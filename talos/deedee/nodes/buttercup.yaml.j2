@@ -3,28 +3,46 @@
 version: v1alpha1
 
 machine:
+  type: controlplane
   network:
     hostname: buttercup
-    interfaces:
-      - deviceSelector:
-          busPath: 1-* # blossom
-          driver: thunderbolt-net
-        dhcp: false
-        mtu: 65520
-        addresses:
-          - 169.254.42.23/32
-        routes:
-          - network: 169.254.42.21/32
-            metric: 2048
-      - deviceSelector:
-          busPath: 0-* # bubbles
-          driver: thunderbolt-net
-        dhcp: false
-        mtu: 65520
-        addresses:
-          - 169.254.42.23/32
-        routes:
-          - network: 169.254.42.22/32
-            metric: 2048
-  type: controlplane
-  # vim:ft=yaml
+# ---
+# apiVersion: v1alpha1
+# kind: HostnameConfig
+# hostname: buttercup
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: tb-blossom
+selector:
+  match: link.bus_path == "1-1.0"
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: tb-blossom
+up: true
+mtu: 65520
+addresses:
+  - address: 169.254.42.23/32
+routes:
+  - destination: 169.254.42.21/32
+    metric: 2048
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: tb-bubbles
+selector:
+  match: link.bus_path == "0-1.0"
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: tb-bubbles
+up: true
+mtu: 65520
+addresses:
+  - address: 169.254.42.23/32
+routes:
+  - destination: 169.254.42.22/32
+    metric: 2048
+
+# vim:ft=yaml

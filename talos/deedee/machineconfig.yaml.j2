@@ -72,30 +72,6 @@ machine:
     nodeIP:
       validSubnets:
         - 192.168.42.0/26
-  network:
-    interfaces:
-      - interface: bond0
-        bond:
-          deviceSelectors:
-            - physical: true
-              hardwareAddr: 48:21:0b:51:*
-          mode: active-backup
-        dhcp: true
-        mtu: 9000
-      - interface: bond1
-        bond:
-          deviceSelectors:
-            - physical: true
-              hardwareAddr: 48:21:0b:76:*
-          mode: active-backup
-        dhcp: false
-        vlans:
-          - # IOT
-            vlanId: 4
-            dhcp: false
-          - # VPN
-            vlanId: 69
-            dhcp: false
   nodeLabels:
     node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: homelab
@@ -365,5 +341,73 @@ certificates: |
   BO5tJL4uoRZ/0L+F5Xrjy6gHxZRPwb5rQ1y8u0gBZxHecB5ryyuzU/pS4VS1It5d
   UVouW8FWN/0O8niGaUA+I0ZL1lBnuIlh/Qek7l09kktk6MKBp4Q7ZhWdZg==
   -----END CERTIFICATE-----
+# main interface for k8s
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: cluster
+selector:
+  match: glob("48:21:0b:51:*", mac(link.permanent_addr))
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: cluster
+wakeOnLAN:
+  enabled: true
+  modes:
+    - magic
+    - unicast
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: cluster
+up: true
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+links:
+  - cluster
+mtu: 9000
+bondMode: active-backup
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: bond0
+# secondary interface for VLANs
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: multus
+selector:
+  match: glob("48:21:0b:76:*", mac(link.permanent_addr))
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: multus
+wakeOnLAN:
+  enabled: true
+  modes:
+    - magic
+    - unicast
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: multus
+up: true
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond1
+links:
+  - multus
+bondMode: active-backup
+---
+apiVersion: v1alpha1
+kind: VLANConfig
+name: bond1.69
+up: true
+vlanID: 69
+parent: multus
 
 # vim:ft=yaml
