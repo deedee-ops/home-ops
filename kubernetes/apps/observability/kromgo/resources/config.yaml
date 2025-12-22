@@ -102,3 +102,12 @@ metrics:
         min: 1
         max: 9999
     title: Alerts
+
+  - name: cluster_power_usage
+    query: round(sum(homeassistant_sensor_power_w{entity=~"sensor.(k8s_.*|nas|switch)_power"}), 0.1)
+    suffix: "w"
+    colors:
+      - {color: "green", min: 0, max: 300}
+      - {color: "orange", min: 301, max: 500}
+      - {color: "red", min: 501, max: 9999}
+    title: Power
