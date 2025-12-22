@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: home-assistant
+spec:
+  endpoints:
+    - port: http
+      path: /api/prometheus
+      authorization:
+        credentials:
+          key: HASS_PROMETHEUS_METRICS_API_KEY
+          name: home-assistant-secret
+  jobLabel: home-assistant
+  namespaceSelector:
+    matchNames:
+      - home
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: home-assistant
+      app.kubernetes.io/name: home-assistant
+      app.kubernetes.io/service: home-assistant
