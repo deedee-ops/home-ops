@@ -19,7 +19,7 @@ log lvl msg *args:
 
 [private]
 template context file *args:
-    envconsul -secret="{{ cluster }}/{{ context }}" -once -no-prefix minijinja-cli --strict "{{ file }}" {{ args }}
+    envconsul -secret="{{ cluster }}/{{ context }}" -once -no-prefix minijinja-cli --strict "{{ file }}" {{ args }} 2> /dev/null
 
 cluster:
   echo -n "$(find "{{ justfile_dir() }}/talos" -mindepth 1 -maxdepth 1 -type d | sed 's@.*/@@g' | xargs gum choose --header 'Cluster?')" > "{{ justfile_dir() }}/.current-cluster"

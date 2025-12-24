@@ -1,0 +1,48 @@
+#!ipxe
+
+set menu-timeout 5000
+
+:start
+menu Boot Menu
+item talos    Talos Linux
+item alpine   Alpine Linux (for debugging)
+item
+item shell                Drop to iPXE shell
+item reboot               Reboot computer
+item
+item --key x exit         Exit iPXE and continue BIOS boot
+choose --timeout ${menu-timeout} --default talos selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+goto start
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+:reboot
+reboot
+
+:exit
+exit
+
+:talos
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+kernel https://talos.ajgon.casa/pxe/4f7de4c4221bd9dde2b558a9655463c23b2173115f2df8d7f84d85af5da14a09/v1.12.0/metal-amd64-secureboot
+boot || goto failed
+goto start
+
+:alpine
+set params alpine_repo=https://dl-cdn.alpinelinux.org/alpine/v3.23/main modules=loop,squashfs modloop=https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/netboot/modloop-lts quiet nomodeset
+kernel https://matchbox.ajgon.casa/assets/vmlinuz-lts ${params}
+initrd https://matchbox.ajgon.casa/assets/initramfs-lts
+boot || goto failed
+goto start

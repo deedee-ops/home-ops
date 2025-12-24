@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     command:
       - "-address=0.0.0.0:8080"
-      - "-assets-path="
+      - "-assets-path=/var/lib/matchbox/assets"
     configs:
       - source: groups-default
         target: /var/lib/matchbox/groups/default.json
@@ -22,9 +22,12 @@ services:
         target: /var/lib/matchbox/profiles/netbootxyz.json
       - source: profiles-talos-nuc-12
         target: /var/lib/matchbox/profiles/talos-nuc-12.json
+      - source: menu-ipxe
+        target: /var/lib/matchbox/assets/menu.ipxe
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/ssl:/etc/matchbox:ro"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/config:/var/lib/matchbox"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/assets:/var/lib/matchbox/assets"
     networks:
       - internal
     labels:
@@ -57,6 +60,8 @@ configs:
     file: ./config/profiles/netbootxyz.json
   profiles-talos-nuc-12:
     file: ./config/profiles/talos-nuc-12.json
+  menu-ipxe:
+    file: ./config/assets/menu.ipxe
 
 networks:
   internal:
