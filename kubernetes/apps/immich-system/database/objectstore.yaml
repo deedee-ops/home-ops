@@ -5,6 +5,7 @@ kind: ObjectStore
 metadata:
   name: immich-db-store
 spec:
+  retentionPolicy: 7d
   configuration:
     destinationPath: s3://databases/
     endpointURL: https://s3.${ROOT_DOMAIN}
