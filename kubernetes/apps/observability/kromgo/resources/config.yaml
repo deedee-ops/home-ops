@@ -40,12 +40,12 @@ metrics:
     colors:
       - color: "green"
         min: 0
-        max: 35
+        max: 40
       - color: "orange"
-        min: 36
+        min: 40.1
         max: 75
       - color: "red"
-        min: 76
+        min: 75.1
         max: 9999
 
   - name: cluster_memory_usage
@@ -56,12 +56,12 @@ metrics:
     colors:
       - color: green
         min: 0
-        max: 35
+        max: 40
       - color: orange
-        min: 36
+        min: 40.1
         max: 75
       - color: red
-        min: 76
+        min: 75.1
         max: 9999
 
   - name: cluster_age_days
@@ -108,6 +108,6 @@ metrics:
     suffix: "w"
     colors:
       - {color: "green", min: 0, max: 300}
-      - {color: "orange", min: 301, max: 500}
-      - {color: "red", min: 501, max: 9999}
+      - {color: "orange", min: 300.1, max: 500}
+      - {color: "red", min: 500.1, max: 9999}
     title: Power
