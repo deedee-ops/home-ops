@@ -1,0 +1,50 @@
+---
+# yamllint disable-line rule:line-length
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1beta1.json
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: tf-runner-dnsconfig
+spec:
+  policyName: tf-runner-dnsconfig
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1beta1.json
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: tf-runner-dnsconfig
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+        resources:
+          - pods
+  matchConditions:
+    - name: has-tf-runner-name-suffix
+      expression: >-
+        object.metadata.name.endsWith("-tf-runner")
+    - name: has-tofu-controller-created-by-labels
+      expression: >-
+        object.metadata.?labels["app.kubernetes.io/created-by"].orValue("") == "tofu-controller"
+  failurePolicy: Fail
+  reinvocationPolicy: IfNeeded
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >-
+          [
+            JSONPatch{
+              op: "add", path: "/spec/dnsConfig",
+              value: Object.spec.template.spec.dnsConfig{
+                options: [Object.spec.template.spec.dnsConfig.options{
+                  name: "ndots",
+                  value: "1"
+                }]
+              }
+            }
+          ]
