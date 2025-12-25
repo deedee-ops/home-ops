@@ -17,5 +17,27 @@ metadata:
 stringData:
   CLOUDFLARE_TUNNEL_ID: "{{ ENV.CLOUDFLARE_TUNNEL_ID }}"
   ROOT_DOMAIN: "{{ ENV.ROOT_DOMAIN }}"
-
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flux-operator-web-config-secret
+  namespace: flux-system
+stringData:
+  config.yaml: |
+    apiVersion: web.fluxcd.controlplane.io/v1
+    kind: Config
+    spec:
+      authentication:
+        oauth2:
+          issuerURL: https://id.{{ ENV.ROOT_DOMAIN }}
+          provider: OIDC
+          clientID: "{{ ENV.FLUX_WEB_CLIENT_ID }}"
+          clientSecret: "{{ ENV.FLUX_WEB_CLIENT_SECRET }}"
+        type: OAuth2
+        impersonation:
+          username: "claims.preferred_username"
+          groups: "claims.groups"
+      baseURL: https://flux.{{ ENV.ROOT_DOMAIN }}
 # vim:ft=yaml

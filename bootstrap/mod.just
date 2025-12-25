@@ -68,6 +68,7 @@ namespaces:
         if ! kustomize build "$dir" | yq ea -e 'select(.kind == "Namespace")' | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
             just log fatal "Failed to apply namespace" "stage" "$0" "namespace" "$(basename "$dir")"; \
         fi; \
+        kubectl apply --namespace "$(basename "$dir")" --server-side --field-manager bootstrap -f "{{ kubernetes_dir }}/components/namespace/certificates.yaml"; \
     done
 
 [doc('Apply Kubernetes resources')]
