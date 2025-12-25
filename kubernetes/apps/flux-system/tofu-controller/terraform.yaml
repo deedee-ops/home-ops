@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/infra.contrib.fluxcd.io/terraform_v1alpha2.json
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: external
+spec:
+  # approvePlan: auto
+  interval: 5m
+  path: ./opentofu/
+  runnerPodTemplate:
+    metadata:
+      labels:
+        egress.cilium.io/kube-apiserver: "true"
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  tfVarsFiles:
+    - /vars/external.tfvars

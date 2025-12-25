@@ -9,3 +9,4 @@ resources:
   - ./_namespace.yaml
   - ./flux-operator.yaml
   - ./flux-instance.yaml
+  - ./tofu-controller.yaml
