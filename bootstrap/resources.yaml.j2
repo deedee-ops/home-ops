@@ -22,15 +22,6 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: vault-global-secret
-  namespace: flux-system
-stringData:
-  token: "{{ ENV.VAULT_TOKEN }}"
----
-# yaml-language-server: $schema=https://schemas.ajgon.casa/secret-v1.json
-apiVersion: v1
-kind: Secret
-metadata:
   name: flux-operator-web-config-secret
   namespace: flux-system
 stringData:
