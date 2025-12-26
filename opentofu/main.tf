@@ -12,22 +12,17 @@ terraform {
   }
   required_version = ">= 1.6.0"
 
-  backend "local" {
-    path = "terraform.tfstate"
-  }
+  backend "s3" {
+    bucket = "states"
+    key    = "opentofu/terraform.tfstate"
+    region = "us-east-1"
 
-  encryption {
-    key_provider "pbkdf2" "tofu_state_password" {
-      passphrase = var.tofu_state_password
-    }
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    use_path_style              = true
 
-    method "aes_gcm" "tofu_state_password" {
-      keys = key_provider.pbkdf2.tofu_state_password
-    }
-
-    state {
-      method   = method.aes_gcm.tofu_state_password
-      enforced = true
+    endpoints = {
+      s3 = "https://s3.ajgon.casa"
     }
   }
 }

@@ -171,7 +171,8 @@
 
             # opentofu
             ${pkgs.lib.getExe pkgs.vault} kv get -field=TOFU_TFVARS global/opentofu > "$ROOT_DIR/opentofu/terraform.tfvars"
-            export TF_VAR_tofu_state_password="$(${pkgs.lib.getExe pkgs.vault} kv get -field=TF_VAR_tofu_state_password global/opentofu)"
+            export AWS_ACCESS_KEY_ID="$(${pkgs.lib.getExe pkgs.vault} kv get -field=AWS_ACCESS_KEY_ID global/opentofu)"
+            export AWS_SECRET_ACCESS_KEY="$(${pkgs.lib.getExe pkgs.vault} kv get -field=AWS_SECRET_ACCESS_KEY global/opentofu)"
           '';
         };
       }

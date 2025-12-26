@@ -9,6 +9,7 @@ talos/**/*.iso
 
 .terraform
 .terraform.lock.hcl
+*.tfstate
 *.tfstate.*
 *.tfvars
 
