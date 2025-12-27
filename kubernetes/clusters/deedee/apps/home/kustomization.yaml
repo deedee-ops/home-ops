@@ -7,7 +7,7 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
-  # - ./frigate.yaml
+  - ./frigate.yaml
   - ./home-assistant.yaml
   - ./mosquitto.yaml
   - ./zigbee2mqtt.yaml
