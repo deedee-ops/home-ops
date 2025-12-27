@@ -116,7 +116,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/media/usenet"
+              share: "/mnt/cache/media/usenet"
         globalMounts:
           - path: /data/usenet
       tmp:

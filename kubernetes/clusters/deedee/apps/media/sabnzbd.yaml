@@ -19,6 +19,7 @@ spec:
   postBuild:
     substitute:
       APP: sabnzbd
+      KEDA_VOLUME: cache
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
   patches:

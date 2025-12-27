@@ -121,7 +121,7 @@ spec:
                   driver: "nfs.csi.k8s.io",
                   volumeAttributes: Object.spec.template.spec.volumes.csi.volumeAttributes{
                     server: "nas.internal",
-                    share: "/mnt/tank/backups/kubernetes/${CLUSTER}/kopia"
+                    share: "/mnt/cache/backups/kubernetes/${CLUSTER}/kopia"
                   }
                 }
               }
@@ -184,7 +184,7 @@ spec:
                   driver: "nfs.csi.k8s.io",
                   volumeAttributes: Object.spec.template.spec.volumes.csi.volumeAttributes{
                     server: "nas.internal",
-                    share: "/mnt/tank/backups/kubernetes/${CLUSTER}/kopia"
+                    share: "/mnt/cache/backups/kubernetes/${CLUSTER}/kopia"
                   }
                 }
               }

@@ -16,6 +16,7 @@ services:
       - source: nas
         target: /etc/borgmatic.d/nas.yaml
     volumes:
+      - /mnt/cache:/mnt/cache:ro
       - /mnt/tank:/mnt/tank:ro
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/borgmatic/config:/config"
 

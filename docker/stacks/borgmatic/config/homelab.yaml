@@ -3,7 +3,7 @@
 
 # location
 source_directories:
-  - /mnt/tank/backups
+  - /mnt/cache/backups
 repositories:
   - path: "${BORGMATIC_HOMELAB_REPO_BORGBASE_EU}"
     label: borgbase-homelab-eu
