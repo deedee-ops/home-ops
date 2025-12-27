@@ -43,7 +43,7 @@ services:
       # Also removes `aws-chunked` content-encoding header, which also causes issues
       traefik.http.routers.s3-nix.entrypoints: https
       traefik.http.routers.s3-nix.rule: >-
-        Host(`s3.${ROOT_DOMAIN}`) && PathPrefix(`/nix/nar`) && !HeaderRegexp(`Authorization`, `^AWS4-HMAC-SHA256 .*$`)
+        Host(`s3.${ROOT_DOMAIN}`) && PathPrefix(`/nix`)
       traefik.http.routers.s3-nix.service: s3
       traefik.http.routers.s3-nix.tls: true
       traefik.http.routers.s3-nix.tls.certresolver: vault-ecdsa
