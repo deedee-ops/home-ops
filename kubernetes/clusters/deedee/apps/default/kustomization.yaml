@@ -9,6 +9,7 @@ resources:
   - ./_namespace.yaml
   - ./atuin.yaml
   - ./bentopdf.yaml
+  - ./crypt.yaml
   - ./davis.yaml
   - ./firefly.yaml
   - ./forgejo.yaml

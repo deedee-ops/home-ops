@@ -1,0 +1,129 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: crypt
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: crypt
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          base:
+            image:
+              repository: registry.${ROOT_DOMAIN}/crypt/crypt-base
+              tag: 1.0.0@sha256:de6c9870c93ea9c310622378b3d41a59e9fcb588ba24e3b546b274d0db4cc453
+            env: &env
+              TZ: Europe/Warsaw
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              runAsUser: 33
+              runAsGroup: 33
+              capabilities:
+                drop:
+                  - ALL
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &basePort 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources: &rs
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1024Mi
+          ui:
+            image:
+              repository: registry.${ROOT_DOMAIN}/crypt/crypt-ui
+              tag: 0.10.9@sha256:0aae0933672c0157f590a2bc5c7b36f7c18a28bd919977f747d9280bb45098cc
+            env: *env
+            securityContext:
+              <<: *sc
+              runAsUser: 1000
+              runAsGroup: 1000
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/healthcheck
+                    port: &uiPort 3000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            resources: *rs
+          mysql:
+            image:
+              repository: registry.${ROOT_DOMAIN}/crypt/crypt-mysql
+              tag: 5.1.73@sha256:7264a2cb83beb530fd7e3344159b81ab184747ba780b80eebab131ed8b813a99
+            env: *env
+            securityContext:
+              <<: *sc
+              runAsUser: 999
+              runAsGroup: 999
+            resources: *rs
+          postgresql:
+            image:
+              repository: registry.${ROOT_DOMAIN}/crypt/crypt-postgresql
+              tag: 8.4.22@sha256:dbd531f388926b4a87feb2803c538c29a2630bb9a6439a02783b016055e9a847
+            env: *env
+            securityContext:
+              <<: *sc
+              runAsUser: 999
+              runAsGroup: 999
+            resources: *rs
+    defaultPodOptions:
+      terminationGracePeriodSeconds: 5
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      base:
+        ports:
+          http:
+            port: *basePort
+      ui:
+        ports:
+          http:
+            port: 80
+            targetPort: *uiPort
+    route:
+      base:
+        hostnames:
+          - "*.crypt.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: crypt-base
+                port: 80
+      ui:
+        hostnames:
+          - "crypt.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: crypt-ui
+                port: 80

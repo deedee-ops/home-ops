@@ -13,3 +13,4 @@ spec:
   dnsNames:
     - "${ROOT_DOMAIN}"
     - "*.${ROOT_DOMAIN}"
+    - "*.crypt.${ROOT_DOMAIN}"
