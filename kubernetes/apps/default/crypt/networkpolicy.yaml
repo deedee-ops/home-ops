@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: crypt-block-all
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: crypt
+    ingress:
+      - fromEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: envoy
+              io.kubernetes.pod.namespace: network
+        toPorts:
+          - ports:
+              - port: "80"
+              - port: "3000"
+    egress:
+      - {}
