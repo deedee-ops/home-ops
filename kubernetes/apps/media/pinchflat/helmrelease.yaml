@@ -118,7 +118,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/media/media/youtube"
+              share: "/mnt/cache/media/media/youtube"
         globalMounts:
           - path: /downloads
       tmp:

@@ -233,7 +233,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/media/sync/paperless-ngx"
+              share: "/mnt/cache/media/sync/paperless-ngx"
         advancedMounts:
           main:
             app:

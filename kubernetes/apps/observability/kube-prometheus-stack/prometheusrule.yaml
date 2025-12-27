@@ -8,6 +8,15 @@ spec:
   groups:
     - name: nas.rules
       rules:
+        - alert: NASCacheUnmounted
+          expr: >-
+            up{node="nas",job="node-exporter"} == 1
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/cache", node="nas"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: NAS /mnt/cache is not mounted.
         - alert: NASTankUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1
