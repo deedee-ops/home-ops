@@ -13,6 +13,7 @@ resources:
   - ./pinchflat.yaml
   - ./prowlarr.yaml
   - ./qbittorrent.yaml
+  - ./qui.yaml
   - ./radarr.yaml
   - ./recyclarr.yaml
   - ./sabnzbd.yaml
