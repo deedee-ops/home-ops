@@ -10,6 +10,13 @@ specs:
         app.kubernetes.io/name: prowlarr
     egress:
       - toFQDNs:
+          - matchName: apibay.org
+          - matchName: eztvx.to
+          - matchName: nyaa.si
+          - matchName: showrss.info
+          - matchName: thepiratebay.org
+          - matchName: yts.lt
+
           - matchName: api.althub.co.za
           - matchName: discord.com
           - matchName: indexers.prowlarr.com
