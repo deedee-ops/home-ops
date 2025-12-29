@@ -56,14 +56,3 @@ spec:
               Vault instance is sealed on {{ $labels.instance }}
                 VALUE = {{ $value }}
                 LABELS = {{ $labels }}
-        - alert: VaultTooManyPendingTokens
-          expr: avg(vault_token_create_count - vault_token_store_count) > 0
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: Vault too many pending tokens (instance {{ $labels.instance }})
-            description: |-
-              Too many pending tokens {{ $labels.instance }}: {{ $value | printf "%.2f"}}%
-                VALUE = {{ $value }}
-                LABELS = {{ $labels }}
