@@ -86,6 +86,7 @@ spec:
         externalTrafficPolicy: Local
         ports:
           http:
+            appProtocol: kubernetes.io/wss
             port: *port
     route:
       app:
