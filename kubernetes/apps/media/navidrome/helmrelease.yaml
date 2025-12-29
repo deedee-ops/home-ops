@@ -95,7 +95,7 @@ spec:
                   type: PathPrefix
                   value: /
             filters:
-              # hardcode user email effectively disabling authentication on firefly side,
+              # hardcode user email effectively disabling authentication on navidrome side,
               # and delegate it to security policy
               # workaround, until OIDC is implemented
               # https://github.com/navidrome/navidrome/issues/2394
@@ -111,6 +111,7 @@ spec:
                       value: >-
                         default-src 'self' data:;
                         object-src 'none';
+                        connect-src 'self' https://id.${ROOT_DOMAIN};
                         script-src 'self' 'unsafe-inline';
                         style-src 'self' 'unsafe-inline';
           - name: api
