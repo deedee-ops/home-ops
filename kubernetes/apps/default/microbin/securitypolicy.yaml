@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/securitypolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: microbin
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: microbin-admin
+  oidc:
+    provider:
+      issuer: "https://id.${ROOT_DOMAIN}"
+      backendRefs:
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: pocket-id
+          namespace: security
+          port: 443
+    clientIDRef:
+      group: ""
+      kind: Secret
+      name: microbin-secret
+    clientSecret:
+      group: ""
+      kind: Secret
+      name: microbin-secret
+    redirectURL: "https://bin.${ROOT_DOMAIN}/admin/oauth2/callback"
+    logoutPath: "/logout"
