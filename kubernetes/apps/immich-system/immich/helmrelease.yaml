@@ -274,7 +274,7 @@ spec:
       valkey:
         controller: valkey
         ports:
-          redis:
+          valkey:
             port: 6379
     serviceMonitor:
       api:

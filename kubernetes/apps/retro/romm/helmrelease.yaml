@@ -32,7 +32,7 @@ spec:
               OIDC_TLS_CACERTFILE: /etc/ssl/certs/homelab.crt
               PLAYMATCH_API_ENABLED: "true"
               REDIS_HOST: localhost
-              REDIS_PORT: "6379"
+              REDIS_PORT: 6379
               RESCAN_ON_FILESYSTEM_CHANGE_DELAY: 5
               ROMM_BASE_PATH: /romm
               ROMM_DB_DRIVER: postgresql
@@ -205,4 +205,4 @@ spec:
                 subPath: tmp
             valkey:
               - path: /data
-                subPath: redis-data
+                subPath: valkey

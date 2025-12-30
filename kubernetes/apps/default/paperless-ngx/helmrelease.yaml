@@ -34,7 +34,7 @@ spec:
               PAPERLESS_OCR_USER_ARGS: "{\"invalidate_digital_signatures\": true}"
               PAPERLESS_PORT: &port 80
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
-              PAPERLESS_REDIS: "unix:///sockets/redis.sock"
+              PAPERLESS_REDIS: "redis://localhost:6379"
               PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: "true"
               PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
               PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
@@ -76,33 +76,26 @@ spec:
                 cpu: 10m
               limits:
                 memory: 8192Mi
-          redis:
+          valkey:
             image:
-              repository: "docker.io/library/redis"
-              tag: "8.4.0-bookworm@sha256:47200b04138293fae39737e50878a238b13ec0781083126b1b0c63cf5d992e8d"
-            # save and appendonly options forcibly disable RDB and AOF persistence entirely
-            command:
-              - "redis-server"
-              - "--save"
-              - "''"
-              - "--appendonly"
-              - "no"
-              - "--port"
-              - "0"
-              - "--bind"
-              - "127.0.0.1"
-              - "--unixsocket"
-              - "/sockets/redis.sock"
-              - "--unixsocketperm"
-              - "700"
+              repository: docker.io/valkey/valkey
+              tag: 9.0.1-alpine@sha256:c106a0c03bcb23cbdf9febe693114cb7800646b11ca8b303aee7409de005faa8
+            probes:
+              liveness: &vprobes
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - "valkey-cli ping | grep PONG"
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *vprobes
             securityContext: *sc
-            resources:
-              requests:
-                cpu: "10m"
-                memory: "32Mi"
-              limits:
-                cpu: "1000m"
-                memory: "512Mi"
           tika:
             image:
               repository: docker.io/apache/tika
@@ -251,17 +244,13 @@ spec:
                 path: /var/lib/apt
               - subPath: tessdata
                 path: /usr/share/tesseract-ocr/5/tessdata
-              - &sockdir
-                subPath: sockets
-                path: /sockets
               - subPath: tmp-app
+                path: /tmp
+            valkey:
+              - subPath: tmp-valkey
                 path: /tmp
             gotenberg:
               - subPath: tmp-gotenberg
-                path: /tmp
-            redis:
-              - *sockdir
-              - subPath: tmp-redis
                 path: /tmp
             tika:
               - subPath: tmp-tika
