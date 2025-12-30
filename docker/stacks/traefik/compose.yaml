@@ -6,7 +6,7 @@ services:
       - ./compose.env
       - ./override.env
       - .env # dynamically created by stacks
-    image: public.ecr.aws/docker/library/traefik:v3.6.6@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
+    image: public.ecr.aws/docker/library/traefik:v3.6.6@sha256:82d3d16dde0474a51fef00b28de143d48b67f7a27453224d5e7b5aaefff26a97
     container_name: traefik
     restart: always
     environment:
