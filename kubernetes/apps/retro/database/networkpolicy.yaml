@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: retro-egress-databases
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: retro-db
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            cnpg.io/cluster: retro-db
