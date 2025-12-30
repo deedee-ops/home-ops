@@ -8,3 +8,4 @@ components:
 resources:
   - ./_namespace.yaml
   - ./database.yaml
+  - ./romm.yaml

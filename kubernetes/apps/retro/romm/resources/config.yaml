@@ -1,0 +1,23 @@
+---
+filesystem:
+  roms_folder: "roms"
+scan:
+  priority:
+    language:
+      - "en"
+      - "pl"
+  media:
+    - box2d
+    - box3d
+    - miximage
+    - physical
+    - screenshot
+    - title_screen
+    - marquee
+    - fanart
+    - bezel
+    - manual
+    - video
+emulatorjs:
+  netplay:
+    enabled: false

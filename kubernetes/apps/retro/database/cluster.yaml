@@ -22,6 +22,7 @@ spec:
     #   database: retro
     recovery:
       source: retro-db-restore
+      database: retro
   postgresql:
     parameters:
       max_connections: "300"
