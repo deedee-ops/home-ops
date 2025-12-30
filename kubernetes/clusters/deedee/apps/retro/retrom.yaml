@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: retrom
+spec:
+  components:
+    - ../../../components/nfs-scaler
+  dependsOn:
+    - name: database
+      namespace: retro
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  patches: []
+  path: ./kubernetes/apps/retro/retrom
+  postBuild:
+    substitute:
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+    substituteFrom:
+      # - kind: Secret
+      #   name: retro-db-app
+      #   optional: false
+      - kind: Secret
+        name: retro-db-store-secret
+        optional: false
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: retro

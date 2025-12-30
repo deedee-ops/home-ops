@@ -1,0 +1,12 @@
+{
+  "connection": {
+    "port": 5101
+  },
+  "contentDirectories": [
+    { "path": "/app/library/", "storageType": "MultiFileGame" }
+  ],
+  "igdb": {
+    "clientId": "${RETRO_IGDB_CLIENT_ID}",
+    "clientSecret": "${RETRO_IGDB_CLIENT_SECRET}"
+  }
+}

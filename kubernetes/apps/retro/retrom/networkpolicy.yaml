@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: retrom-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: retrom
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/component: database
+              app.kubernetes.io/instance: retro-db
+      - toFQDNs:
+          - matchName: id.twitch.tv
+          - matchPattern: "*.igdb.com"
+        toPorts:
+          - ports:
+              - port: "443"
