@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: retro-db
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  instances: 3
+  enableSuperuserAccess: false
+  inheritedMetadata:
+    labels:
+      egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/nas: "true"
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  bootstrap:
+    # initdb:
+    #   database: retro
+    recovery:
+      source: retro-db-restore
+  postgresql:
+    parameters:
+      max_connections: "300"
+      shared_buffers: 512MB
+  monitoring:
+    enablePodMonitor: true
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: retro-db-store
+        serverName: retro-db
+  externalClusters:
+    - name: retro-db-restore
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: retro-db-store
+          serverName: retro-db
