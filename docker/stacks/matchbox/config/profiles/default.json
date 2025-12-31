@@ -1,0 +1,7 @@
+{
+  "id": "default",
+  "name": "default",
+  "boot": {
+    "kernel": "https://matchbox.ajgon.casa/assets/default.ipxe"
+  }
+}

@@ -41,8 +41,8 @@ boot || goto failed
 goto start
 
 :alpine
-set params alpine_repo=https://dl-cdn.alpinelinux.org/alpine/v3.23/main modules=loop,squashfs modloop=https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/netboot/modloop-lts quiet nomodeset
-kernel https://matchbox.ajgon.casa/assets/vmlinuz-lts ${params}
-initrd https://matchbox.ajgon.casa/assets/initramfs-lts
+set params alpine_repo=https://dl-cdn.alpinelinux.org/alpine/v3.23/main modules=loop,squashfs modloop=https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/netboot/modloop-lts quiet nomodeset ${cmdline}
+kernel https://matchbox.ajgon.casa/assets/alpine-kernel ${params}
+initrd https://matchbox.ajgon.casa/assets/alpine-initrd
 boot || goto failed
 goto start

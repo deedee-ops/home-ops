@@ -1,0 +1,49 @@
+#!ipxe
+
+set menu-timeout 5000
+
+:start
+menu Boot Menu
+item alpine   Alpine Linux (for debugging)
+item nixos    NixOS
+item
+item shell                Drop to iPXE shell
+item reboot               Reboot computer
+item
+item --key x exit         Exit iPXE and continue BIOS boot
+choose --timeout ${menu-timeout} --default alpine selected || goto cancel
+set menu-timeout 0
+goto ${selected}
+
+:cancel
+echo You cancelled the menu, dropping you to a shell
+
+:shell
+echo Type 'exit' to get the back to the menu
+shell
+set menu-timeout 0
+goto start
+
+:failed
+echo Booting failed, dropping to shell
+goto shell
+
+:reboot
+reboot
+
+:exit
+exit
+
+:alpine
+set params alpine_repo=https://dl-cdn.alpinelinux.org/alpine/v3.23/main modules=loop,squashfs modloop=https://dl-cdn.alpinelinux.org/alpine/v3.23/releases/x86_64/netboot/modloop-lts quiet nomodeset ${cmdline}
+kernel https://matchbox.ajgon.casa/assets/alpine-kernel ${params}
+initrd https://matchbox.ajgon.casa/assets/alpine-initrd
+boot || goto failed
+goto start
+
+:nixos
+set params init=/nix/store/lillmv6sbjxgyyyn1ilkica21q3hmpya-nixos-system-nixos-kexec-25.11beta-193477.gfedcba/init initrd=initrd-x86_64-linux nohibernate loglevel=4 lsm=landlock,yama,bpf ${cmdline}
+kernel https://matchbox.ajgon.casa/assets/nixos-kernel ${params}
+initrd https://matchbox.ajgon.casa/assets/nixos-initrd
+boot || goto failed
+goto start

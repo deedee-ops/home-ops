@@ -18,12 +18,14 @@ services:
         target: /var/lib/matchbox/groups/deedee-bubbles.json
       - source: groups-deedee-buttercup
         target: /var/lib/matchbox/groups/deedee-buttercup.json
-      - source: profiles-netbootxyz
-        target: /var/lib/matchbox/profiles/netbootxyz.json
+      - source: profiles-default
+        target: /var/lib/matchbox/profiles/default.json
       - source: profiles-talos-nuc-12
         target: /var/lib/matchbox/profiles/talos-nuc-12.json
-      - source: menu-ipxe
-        target: /var/lib/matchbox/assets/menu.ipxe
+      - source: default-ipxe
+        target: /var/lib/matchbox/assets/default.ipxe
+      - source: talos-nuc-12-ipxe
+        target: /var/lib/matchbox/assets/talos-nuc-12.ipxe
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/ssl:/etc/matchbox:ro"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/matchbox/config:/var/lib/matchbox"
@@ -56,12 +58,14 @@ configs:
     file: ./config/groups/deedee-bubbles.json
   groups-deedee-buttercup:
     file: ./config/groups/deedee-buttercup.json
-  profiles-netbootxyz:
-    file: ./config/profiles/netbootxyz.json
+  profiles-default:
+    file: ./config/profiles/default.json
   profiles-talos-nuc-12:
     file: ./config/profiles/talos-nuc-12.json
-  menu-ipxe:
-    file: ./config/assets/menu.ipxe
+  default-ipxe:
+    file: ./config/assets/default.ipxe
+  talos-nuc-12-ipxe:
+    file: ./config/assets/talos-nuc-12.ipxe
 
 networks:
   internal:

@@ -2,6 +2,6 @@
   "id": "talos-nuc-12",
   "name": "talos-nuc-12",
   "boot": {
-    "kernel": "https://matchbox.ajgon.casa/assets/menu.ipxe"
+    "kernel": "https://matchbox.ajgon.casa/assets/talos-nuc-12.ipxe"
   }
 }
