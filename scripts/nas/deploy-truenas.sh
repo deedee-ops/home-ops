@@ -100,4 +100,39 @@ if [[ "${INITPARAM}" == "--init" ]]; then
   cd "${KOMODO_STACK_DIR}" && docker compose -p komodo -f compose.yaml up -d
 fi
 
+# configure exports patcher
+cat <<EOF | tee /etc/systemd/system/nfs-exports-fixer.service
+[Unit]
+Description=Fix NFS exports with custom fsid
+After=nfs-server.service
+Wants=nfs-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/mnt/apps/docker/volumes/truenas/nfs-exports-fixer.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat <<EOF | tee /etc/systemd/system/nfs-exports-watcher.path
+[Unit]
+Description=Monitor NFS exports file for changes
+After=nfs-server.service
+
+[Path]
+PathModified=/etc/exports
+Unit=nfs-exports-fixer.service
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable nfs-exports-fixer.service
+systemctl enable --now nfs-exports-watcher.path
+
+
 # vim:ft=bash
