@@ -1,0 +1,153 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: slskd
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: slskd
+  interval: 1h
+  values:
+    controllers:
+      main:
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/slskd/slskd
+              tag: 0.24.1@sha256:e3635858d9614a2fb811601afca706dbf97a6838b849905c27294cbce71be268
+            env:
+              DOTNET_BUNDLE_EXTRACT_BASE_DIR: /tmp/.net
+              TZ: Europe/Warsaw
+              SLSKD_APP_DIR: /config
+              SLSKD_HTTP_PORT: &port 80
+              SLSKD_NO_AUTH: true
+              SLSKD_NO_HTTPS: true
+              SLSKD_NO_VERSION_CHECK: true
+              SLSKD_SLSK_LISTEN_PORT: 37120
+            envFrom:
+              - secretRef:
+                  name: "slskd-secret"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+        statefulset:
+          volumeClaimTemplates:
+            - name: config
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 5Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "vpn",
+            "namespace": "kube-system",
+            "ips": ["192.168.69.13/24"],
+            "mac": "02:00:c0:a8:45:0d"
+          }]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "soulseek.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - kind: Service
+                name: slskd
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
+    configMaps:
+      config:
+        data:
+          slskd.yml: |-
+            directories:
+              downloads: /data/soulseek/complete
+              incomplete: /data/soulseek/incomplete
+            permissions:
+              file:
+                mode: 750
+            shares:
+              directories:
+                - /data/media/music
+              filters:
+                - \.ini$
+                - Thumbs.db$
+                - \.DS_Store$
+    persistence:
+      config-file:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /config/slskd.yml
+            subPath: slskd.yml
+      media:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/cache/merger"
+        globalMounts:
+          - path: /data
+      tmp:
+        type: emptyDir

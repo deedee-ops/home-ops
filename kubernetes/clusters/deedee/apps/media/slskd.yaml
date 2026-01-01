@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: slskd
+spec:
+  components:
+    - ../../../components/oidc
+    - ../../../components/nfs-scaler
+  dependsOn:
+    - name: multus
+      namespace: kube-system
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/oidc/redirectURL
+          value: "https://soulseek.${ROOT_DOMAIN}/oauth2/callback"
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
+  path: ./kubernetes/apps/media/slskd
+  postBuild:
+    substitute:
+      APP: slskd
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: media
