@@ -247,6 +247,8 @@ spec:
               - subPath: tmp-app
                 path: /tmp
             valkey:
+              - subPath: valkey-data
+                path: /data
               - subPath: tmp-valkey
                 path: /tmp
             gotenberg:
