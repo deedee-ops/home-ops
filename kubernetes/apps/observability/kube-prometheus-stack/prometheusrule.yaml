@@ -17,6 +17,15 @@ spec:
             severity: critical
           annotations:
             summary: NAS /mnt/cache is not mounted.
+        - alert: NASMergerUnmounted
+          expr: >-
+            up{node="nas",job="node-exporter"} == 1
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/cache/merger", node="nas"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: NAS /mnt/cache/merger is not mounted.
         - alert: NASTankUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1

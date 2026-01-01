@@ -120,7 +120,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/media"
+              share: "/mnt/cache/merger"
         globalMounts:
           - path: /data
       tmp:

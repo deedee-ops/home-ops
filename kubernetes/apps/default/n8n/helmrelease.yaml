@@ -185,7 +185,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/media/sync/n8n"
+              share: "/mnt/cache/merger/sync/n8n"
         advancedMounts:
           main:
             app:

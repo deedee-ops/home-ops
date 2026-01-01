@@ -6,7 +6,6 @@ metadata:
   name: n8n
 spec:
   components:
-    - ../../../components/nfs-scaler
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
@@ -17,8 +16,6 @@ spec:
   postBuild:
     substitute:
       APP: n8n
-      KEDA_KIND: StatefulSet
-      KEDA_VOLUME: cache
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 5Gi
   prune: true

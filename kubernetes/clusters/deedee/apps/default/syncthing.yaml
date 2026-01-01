@@ -17,7 +17,6 @@ spec:
   postBuild:
     substitute:
       APP: syncthing
-      KEDA_VOLUME: cache
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 10Gi
   prune: true

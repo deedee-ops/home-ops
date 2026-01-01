@@ -96,7 +96,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/media/torrents"
+              share: "/mnt/cache/merger/torrents"
         globalMounts:
           - path: /data/torrents
       tmp:

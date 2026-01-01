@@ -133,7 +133,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/media/media/music"
+              share: "/mnt/cache/merger/media/music"
         globalMounts:
           - path: /data
             readOnly: true

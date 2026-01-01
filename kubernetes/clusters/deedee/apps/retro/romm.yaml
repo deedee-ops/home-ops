@@ -17,6 +17,7 @@ spec:
   path: ./kubernetes/apps/retro/romm
   postBuild:
     substitute:
+      KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

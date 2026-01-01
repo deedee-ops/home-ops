@@ -3,7 +3,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: ${APP}
+  name: &name n8n
 spec:
   advanced:
     restoreToOriginalReplicaCount: true
@@ -12,15 +12,15 @@ spec:
   maxReplicaCount: 1
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: ${KEDA_KIND:=Deployment}
-    name: ${APP}
+    kind: StatefulSet
+    name: *name
   triggers:
     - type: prometheus
       metadata:
         serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
         query: >-
           probe_success{instance=~".+:2049"} *
-          on() (node_filesystem_mount_info{mountpoint="/mnt/${KEDA_VOLUME:=cache/merger}", node="nas"} == 1)
-          or on() vector(0)
+          on() (node_filesystem_mount_info{mountpoint="/mnt/cache/merger", node="nas"} == 1) *
+          on() (node_filesystem_mount_info{mountpoint="/mnt/tank", node="nas"} == 1)
         threshold: "1"
         ignoreNullValues: "0"
