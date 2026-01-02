@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: ghcr.io/pocket-id/pocket-id
-              tag: v1.16.0@sha256:f8cde808e8e840acda25683fc2168e0206e3f3fb1a48cca89d211aafd87eaeef
+              tag: v2.0.0@sha256:3619fff9999551d618b17225b83f9fb94dab7580188ac9d9971a65b75ba9fe55
             env:
               ALLOW_USER_SIGNUPS: "disabled"
               ANALYTICS_DISABLED: "true"
@@ -26,7 +26,6 @@ spec:
               EMAILS_VERIFIED: "true"
               EMAIL_LOGIN_NOTIFICATION_ENABLED: "true"
               GEOLITE_DB_PATH: /data/GeoLite2-City.mmdb
-              KEYS_STORAGE: database
               LOG_JSON: "true"
               PORT: &http 80
               SESSION_DURATION: 10080 # 1 week
