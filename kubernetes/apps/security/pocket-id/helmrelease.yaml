@@ -104,6 +104,14 @@ spec:
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval';
                         style-src 'self' 'unsafe-inline';
+              - cors:
+                  allowOrigins:
+                    - 'https://*.${ROOT_DOMAIN}'
+                  allowHeaders:
+                    - '*'
+                  allowMethods:
+                    - '*'
+                type: CORS
     service:
       main:
         ports:
