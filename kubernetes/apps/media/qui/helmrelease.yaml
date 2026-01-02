@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/autobrr/qui
-              tag: v1.11.0@sha256:5c7c08d5e8d4c4fe966106b58d3705f19921a69606b3dc4f237009a6c25a0ac7
+              tag: main@sha256:c32ed99bb66b96776e2059881ca55122599b923a36bfc157ed6607ea5c804562
             env:
               QUI__HOST: 0.0.0.0
               QUI__PORT: &port 80
@@ -105,6 +105,16 @@ spec:
     persistence:
       config:
         existingClaim: qui
+      media:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/cache/merger/torrents"
+        globalMounts:
+          - path: /data/torrents
       root-ca:
         type: secret
         name: homelab-root-ca.crt
