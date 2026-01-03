@@ -24,6 +24,7 @@ spec:
               PAPERLESS_CONSUMER_RECURSIVE: "true"
               PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
               PAPERLESS_CONSUMPTION_DIR: "/sync/consume"
+              PAPERLESS_DB_TIMEOUT: 60
               PAPERLESS_DATA_DIR: &data "/config"
               PAPERLESS_DATE_ORDER: "YMD"
               PAPERLESS_DATE_PARSER_LANGUAGES: "pl+en"
