@@ -20,7 +20,7 @@ spec:
         serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
         query: >-
           probe_success{instance=~".+:2049"} *
-          on() (node_filesystem_mount_info{mountpoint="/mnt/${KEDA_VOLUME:=cache/merger}", node="nas"} == 1)
-          or on() vector(0)
+          on() (node_filesystem_mount_info{mountpoint="/mnt/${KEDA_VOLUME:=cache/merger}", node="nas",
+          device="${KEDA_DEVICE:=cache:tank}"} == 1) or on() vector(0)
         threshold: "1"
         ignoreNullValues: "0"

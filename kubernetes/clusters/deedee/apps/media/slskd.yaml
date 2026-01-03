@@ -26,6 +26,7 @@ spec:
   postBuild:
     substitute:
       APP: slskd
+      KEDA_KIND: StatefulSet
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:
