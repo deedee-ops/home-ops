@@ -26,6 +26,7 @@ spec:
               CREATE_ADMIN: "1"
               DATABASE_URL: "postgres://miniflux:miniflux@localhost:5432/miniflux?sslmode=disable"
               LISTEN_ADDR: "0.0.0.0:80"
+              LOG_DATE_TIME: "1"
               OAUTH2_OIDC_DISCOVERY_ENDPOINT: "https://id.${ROOT_DOMAIN}"
               OAUTH2_OIDC_PROVIDER_NAME: "Pocket ID"
               OAUTH2_PROVIDER: oidc
