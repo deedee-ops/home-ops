@@ -123,6 +123,21 @@ spec:
               - path:
                   type: PathPrefix
                   value: /rest
+          - name: api-events-hack
+            backendRefs:
+              - kind: Service
+                name: navidrome
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /api/events
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  add:
+                    - name: Remote-User
+                      value: "ajgon"
     persistence:
       config:
         existingClaim: navidrome
