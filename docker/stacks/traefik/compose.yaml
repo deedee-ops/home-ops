@@ -23,6 +23,7 @@ services:
       - ./config/extra:/config
       - /var/run/docker.sock:/var/run/docker.sock
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/traefik/certs:/certs"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/vault/file/cert.pem:/config/vault-internal.pem"
     networks:
       - default
       - internal

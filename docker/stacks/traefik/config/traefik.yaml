@@ -34,7 +34,7 @@ certificatesResolvers:
       storage: /certs/vault-ecdsa.json
       caServer: 'https://vault/v1/pki_int_traefik/acme/directory'
       caCertificates:
-        - /config/cert.pem
+        - /config/vault-internal.pem
       httpChallenge:
         entryPoint: http
       keyType: EC384
@@ -43,7 +43,7 @@ certificatesResolvers:
       storage: /certs/vault-rsa.json
       caServer: 'https://vault/v1/pki_fallback_int_traefik/acme/directory'
       caCertificates:
-        - /config/cert.pem
+        - /config/vault-internal.pem
       httpChallenge:
         entryPoint: http
       keyType: RSA4096
