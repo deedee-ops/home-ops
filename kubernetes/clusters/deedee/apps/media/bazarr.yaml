@@ -6,7 +6,6 @@ metadata:
   name: bazarr
 spec:
   components:
-    - ../../../components/nfs-scaler
     - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
