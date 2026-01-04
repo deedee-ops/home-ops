@@ -15,7 +15,7 @@ terraform {
   backend "s3" {
     bucket = "states"
     key    = "opentofu/terraform.tfstate"
-    region = "us-east-1"
+    region = "eu-central-1"
 
     skip_credentials_validation = true
     skip_region_validation      = true

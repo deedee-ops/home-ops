@@ -40,6 +40,7 @@ specs:
           - matchName: "broker.actions.githubusercontent.com"
           - matchName: "release-assets.actions.githubusercontent.com"
           - matchName: "release-assets.githubusercontent.com"
+          - matchName: "nix.ajgon.casa"
           - matchName: "s3.ajgon.casa"
           - matchName: "static.crates.io"
           - matchName: "static.rust-lang.org"

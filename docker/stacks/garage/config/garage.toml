@@ -13,6 +13,11 @@ s3_region = "eu-central-1"
 api_bind_addr = "0.0.0.0:3900"
 root_domain = ".s3.ajgon.casa"
 
+[s3_web]
+bind_addr = "0.0.0.0:3902"
+root_domain = ".ajgon.casa"
+index = "index.html"
+
 [k2v_api]
 api_bind_addr = "0.0.0.0:3904"
 

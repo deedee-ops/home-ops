@@ -31,6 +31,14 @@ services:
       traefik.http.routers.s3.tls: true
       traefik.http.routers.s3.tls.certresolver: vault-ecdsa
       traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
+      # nix
+      traefik.http.services.nix.loadbalancer.server.port: "3902"
+      traefik.http.routers.nix.entrypoints: https
+      traefik.http.routers.nix.rule: Host(`nix.${ROOT_DOMAIN}`)
+      traefik.http.routers.nix.service: nix
+      traefik.http.routers.nix.tls: true
+      traefik.http.routers.nix.tls.certresolver: vault-ecdsa
+      traefik.http.routers.nix.tls.domains[0].main: 'nix.${ROOT_DOMAIN}'
   garage-ui:
     image: khairul169/garage-webui:1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
     container_name: garage-ui
@@ -39,6 +47,7 @@ services:
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
+      S3_REGION: "eu-central-1"
     env_file:
       - ./override.env
     configs:

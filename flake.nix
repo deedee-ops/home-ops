@@ -3,7 +3,7 @@
 
   nixConfig = {
     substituters = [
-      "https://s3.ajgon.casa/nix?priority=30"
+      "https://nix.ajgon.casa/?priority=30"
       "https://cache.nixos.org"
     ];
     trusted-public-keys = [
