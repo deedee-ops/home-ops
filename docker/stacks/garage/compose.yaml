@@ -1,0 +1,73 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  garage:
+    image: dxflrs/garage:v2.1.0@sha256:4c9b34c113e61358466e83fd6e7d66e6d18657ede14b776eb78a93ee8da7cf6a
+    container_name: garage
+    user: "1000:1000"
+    restart: unless-stopped
+    configs:
+      - source: garage-toml
+        target: /etc/garage.toml
+    env_file:
+      - ./override.env
+    volumes:
+      - "${S3_DATA_DIRECTORY:-/s3}:/var/lib/garage"
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    # traefik
+    labels:
+      traefik.enable: "true"
+      # S3
+      traefik.http.services.s3.loadbalancer.server.port: "3900"
+      traefik.http.routers.s3.entrypoints: https
+      traefik.http.routers.s3.rule: Host(`s3.${ROOT_DOMAIN}`)
+      traefik.http.routers.s3.service: s3
+      traefik.http.routers.s3.tls: true
+      traefik.http.routers.s3.tls.certresolver: vault-ecdsa
+      traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
+  garage-ui:
+    image: khairul169/garage-webui:1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
+    container_name: garage-ui
+    user: "1000:1000"
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+    env_file:
+      - ./override.env
+    configs:
+      - source: garage-toml
+        target: /etc/garage.toml
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    # traefik
+    labels:
+      traefik.enable: "true"
+      # Dashboard
+      traefik.http.services.garage.loadbalancer.server.port: "3909"
+      traefik.http.routers.garage.entrypoints: https
+      traefik.http.routers.garage.rule: Host(`garage.${ROOT_DOMAIN}`)
+      traefik.http.routers.garage.service: garage
+      traefik.http.routers.garage.tls: true
+      traefik.http.routers.garage.tls.certresolver: vault-ecdsa
+      traefik.http.routers.garage.tls.domains[0].main: 'garage.${ROOT_DOMAIN}'
+
+configs:
+  garage-toml:
+    file: ./config/garage.toml
+
+networks:
+  internal:
+    name: internal
+    external: true
