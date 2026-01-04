@@ -36,11 +36,11 @@ spec:
         - https://kvm.${ROOT_DOMAIN}
         - https://unifi.${ROOT_DOMAIN}
         # docker on nas
+        - https://garage.${ROOT_DOMAIN}
         - https://komodo.${ROOT_DOMAIN}
         - https://matchbox.${ROOT_DOMAIN}
         - https://nas.${ROOT_DOMAIN}
         - https://registry.${ROOT_DOMAIN}
-        - https://rustfs.${ROOT_DOMAIN}
         - https://s3.${ROOT_DOMAIN}
         - https://talos.${ROOT_DOMAIN}
         - https://traefik.${ROOT_DOMAIN}
