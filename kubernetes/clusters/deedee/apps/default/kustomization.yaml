@@ -13,6 +13,7 @@ resources:
   - ./davis.yaml
   - ./firefly.yaml
   - ./forgejo.yaml
+  - ./glance.yaml
   - ./mail-archive.yaml
   - ./microbin.yaml
   - ./miniflux.yaml

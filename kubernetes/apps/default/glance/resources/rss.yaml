@@ -1,0 +1,12 @@
+- name: RSS
+  slug: rss
+  columns:
+    - size: full
+      widgets:
+        - type: rss
+          style: detailed-list
+          limit: 20
+          collapse-after: -1
+          cache: 1h
+          feeds:
+            - $include: secrets/feeds.yaml
