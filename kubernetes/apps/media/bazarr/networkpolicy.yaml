@@ -11,6 +11,7 @@ specs:
     egress:
       - toFQDNs:
           - matchName: api.github.com
+          - matchName: cdn.statically.io
           - matchName: raw.githubusercontent.com
           # subtitles
           - matchName: api.opensubtitles.com
