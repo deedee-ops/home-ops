@@ -15,7 +15,7 @@ spec:
       egress.cilium.io/kube-apiserver: "true"
     image: &image
       repository: ghcr.io/perfectra1n/volsync
-      tag: v0.16.13@sha256:0df9e84d70621761a87121d23d49075743e00128ae5e58aa02f6df66216a813a
+      tag: v0.17.3@sha256:8a72bf1643bd582a16f7493948542264d97144c2962a05d5a8f5dbb3b8e30e84
     kopia: *image
     rclone: *image
     restic: *image
