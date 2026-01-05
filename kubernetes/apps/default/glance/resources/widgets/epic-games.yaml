@@ -1,0 +1,51 @@
+- type: custom-api
+  title: Epic Games
+  cache: 1h
+  url: https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=en&country=PL&allowCountries=PL
+  template: |-
+    <div>
+      {{ if eq .Response.StatusCode 200 }}
+        <div class="horizontal-cards-2">
+          {{ range .JSON.Array "data.Catalog.searchStore.elements" }}
+            {{ $price := .String "price.totalPrice.discountPrice" }}
+            {{ $hasPromo := gt (len (.Array "promotions.promotionalOffers")) 0 }}
+            {{ if and $hasPromo (eq $price "0") }}
+              {{ $gamePage := .String "productSlug" }}
+              {{ if gt (len (.Array "offerMappings")) 0 }}
+                {{ $gamePage = .String "offerMappings.0.pageSlug" }}
+              {{end }}
+              <a href="https://store.epicgames.com/en-US/p/{{ $gamePage }}" target="_blank" class="card">
+                {{ $title := .String "title" }}
+                {{ range .Array "keyImages" }}
+                  {{ if eq (.String "type") "OfferImageWide" }}
+                    <img src="{{ .String "url" }}" alt="{{ $title }}" style="width: 100%; max-width: 300px; height: 150px; object-fit: cover; border-radius: var(--border-radius);">
+                  {{ end }}
+                {{ end }}
+                <div class="card-content">
+                  <span class="size-base color-primary">{{ $title }}</span><br>
+                  <span class="size-h5 color-subdue">
+                    {{ if $hasPromo }}
+                      {{ $promotions := .Array "promotions.promotionalOffers" }}
+                      {{ if gt (len $promotions) 0 }}
+                        {{ $firstPromo := index $promotions 0 }}
+                        {{ $offers := $firstPromo.Array "promotionalOffers" }}
+                        {{ if gt (len $offers) 0 }}
+                          {{ $firstOffer := index $offers 0 }}
+                          Free until {{ slice ($firstOffer.String "endDate") 0 10 }}
+                        {{ else }}
+                          Free this week!
+                        {{ end }}
+                      {{ else }}
+                        Free this week!
+                      {{ end }}
+                    {{ end }}
+                  </span>
+                </div>
+              </a>
+            {{ end }}
+          {{ end }}
+        </div>
+      {{ else }}
+        <p class="color-negative">Error fetching Epic Games data.</p>
+      {{ end }}
+    </div>

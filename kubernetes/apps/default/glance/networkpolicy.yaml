@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: glance-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: glance
+  egress:
+    - toFQDNs:
+        - matchName: api.open-meteo.com
+        - matchName: api.waqi.info
+        - matchName: geocoding-api.open-meteo.com
+        - matchName: github.com
+        - matchName: store-site-backend-static.ak.epicgames.com
+        - matchName: www.reddit.com
+        - matchName: www.youtube.com
+
+        - matchName: blog.nerdz.cloud
+        - matchName: inwestomat.eu
+        - matchName: lowcygier.pl
+        - matchName: morfikov.github.io
+        - matchName: musicforprogramming.net
+      toPorts:
+        - ports:
+            - port: "443"

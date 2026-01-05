@@ -1,0 +1,29 @@
+- name: YouTube
+  slug: youtube
+  define:
+    - &channels
+      cache: 1h
+      style: grid-cards
+      limit: 30
+      collapse-after-rows: 1
+  columns:
+    - size: full
+      widgets:
+        - type: videos
+          title: Tech
+          <<: *channels
+          channels:
+            - $include: secrets/tech.yaml
+
+        - type: videos
+          title: Knowledge
+          <<: *channels
+          channels:
+            - $include: secrets/knowledge.yaml
+
+        - type: videos
+          title: Gaming
+          <<: *channels
+          include-shorts: true # must be true to include livestreams
+          channels:
+            - $include: secrets/gaming.yaml

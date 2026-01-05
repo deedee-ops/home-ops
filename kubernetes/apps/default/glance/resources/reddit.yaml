@@ -1,0 +1,21 @@
+- name: Reddit
+  slug: reddit
+  define:
+    - &subreddit
+      cache: 1h
+      show-thumbnails: true
+      show-flairs: true
+      limit: 20
+      collapse-after: -1
+  columns:
+    - size: full
+      widgets:
+        - type: split-column
+          max-columns: 2
+          widgets:
+            - type: reddit
+              subreddit: selfhosted
+              <<: *subreddit
+            - type: reddit
+              subreddit: datahoarder
+              <<: *subreddit

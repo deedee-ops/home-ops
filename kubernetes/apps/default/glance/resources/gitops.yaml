@@ -1,0 +1,29 @@
+- name: Gitops
+  slug: gitops
+  define:
+    - &feed
+      cache: 1h
+      style: vertical-list
+      limit: 20
+      collapse-after: -1
+  columns:
+    - size: full
+      widgets:
+        - type: split-column
+          max-columns: 3
+          widgets:
+            - type: rss
+              <<: *feed
+              feeds:
+                - url: https://github.com/onedr0p/home-ops/commits.atom?author=onedr0p
+                  title: onedr0p
+            - type: rss
+              <<: *feed
+              feeds:
+                - url: https://github.com/buroa/k8s-gitops/commits.atom?author=buroa
+                  title: buroa
+            - type: rss
+              <<: *feed
+              feeds:
+                - url: https://github.com/joryirving/home-ops/commits.atom?author=joryirving
+                  title: joryirving

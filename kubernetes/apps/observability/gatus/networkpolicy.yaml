@@ -4,7 +4,6 @@ apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: gatus-egress-external
-  namespace: rook-ceph
 spec:
   endpointSelector:
     matchLabels:

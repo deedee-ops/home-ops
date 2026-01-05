@@ -1,0 +1,58 @@
+- name: Home
+  columns:
+    - size: small
+      widgets:
+        - type: calendar
+          first-day-of-week: monday
+        - $include: epic-games.yaml
+
+    - size: full
+      widgets:
+        - type: rss
+          title-url: /rss
+          cache: 1h
+
+          limit: 3
+          collapse-after: -1
+          feeds:
+            - $include: secrets/feeds.yaml
+
+        - type: videos
+          title: YouTube
+          title-url: /youtube
+          cache: 1h
+
+          limit: 10
+          include-shorts: true # must be true to include livestreams
+          channels:
+            - $include: secrets/gaming.yaml
+            - $include: secrets/knowledge.yaml
+            - $include: secrets/tech.yaml
+
+        - type: split-column
+          title: Reddit
+          title-url: /reddit
+          max-columns: 2
+          widgets:
+            - type: reddit
+              cache: 1h
+              subreddit: selfhosted
+              show-thumbnails: true
+              show-flairs: true
+              limit: 3
+            - type: reddit
+              cache: 1h
+              subreddit: datahoarder
+              show-thumbnails: true
+              show-flairs: true
+              limit: 3
+
+    - size: small
+      widgets:
+        - type: clock
+          hour-format: 24h
+        - $include: air-quality.yaml
+        - type: weather
+          location: Krakow, Poland
+          units: metric
+          hour-format: 24h

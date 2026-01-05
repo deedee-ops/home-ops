@@ -1,0 +1,24 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization.json
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
+configMapGenerator:
+  - name: glance-configmap
+    files:
+      - ./resources/widgets/air-quality.yaml
+      - ./resources/widgets/epic-games.yaml
+      - ./resources/gitops.yaml
+      - ./resources/glance.yml
+      - ./resources/home.yaml
+      - ./resources/reddit.yaml
+      - ./resources/rss.yaml
+      - ./resources/youtube.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
