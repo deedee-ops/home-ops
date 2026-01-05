@@ -25,6 +25,7 @@ spec:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 50Gi
       VOLSYNC_ACCESSMODES: ReadWriteMany
+      VOLSYNC_SNAP_ACCESSMODES: ReadOnlyMany
       VOLSYNC_STORAGECLASS: ceph-filesystem
       VOLSYNC_SNAPSHOTCLASS: csi-ceph-filesystem
       VOLSYNC_SCHEDULE: "0 1 * * *"
