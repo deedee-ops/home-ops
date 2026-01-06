@@ -16,7 +16,6 @@ resources:
   - ./glance.yaml
   - ./mail-archive.yaml
   - ./microbin.yaml
-  - ./miniflux.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
   - ./syncthing.yaml
