@@ -24,7 +24,7 @@ spec:
         query: >-
           probe_success{instance=~".+:2049"} *
           on() (node_filesystem_mount_info{mountpoint="/mnt/cache/merger", node="nas", device="cache:tank"} == 1) *
-          ((time() % 86400) / 3600 > bool 8) * ((time() % 86400) / 3600 < bool 21)
+          ((time() % 86400) / 3600 > bool 9) * ((time() % 86400) / 3600 < bool 21)
           or on() vector(0)
         threshold: "1"
         ignoreNullValues: "0"
