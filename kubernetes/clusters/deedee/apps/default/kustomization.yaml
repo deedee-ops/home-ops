@@ -15,7 +15,6 @@ resources:
   - ./forgejo.yaml
   - ./glance.yaml
   - ./mail-archive.yaml
-  - ./microbin.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
   - ./syncthing.yaml
