@@ -14,7 +14,7 @@
       matchStrings: [
         // # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
         // KUBERNETES_VERSION=v1.32.4
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?( repository=(?<registryUrl>\\S+))?\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?(?<currentValue>\\S+)",
+        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?( repository=(?<registryUrl>\\S+))?\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?(?<currentValue>[^@\\n]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?",
 
         // # renovate: datasource=docker depName=ghcr.io/prometheus-operator/prometheus-operator
         // https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.80.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
