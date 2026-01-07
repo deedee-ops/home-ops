@@ -82,8 +82,7 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - name: app
-            backendRefs:
+          - backendRefs:
               - kind: Service
                 name: radarr
                 port: 80

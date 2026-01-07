@@ -12,6 +12,7 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
+  patches: []
   path: ./kubernetes/apps/default/davis
   postBuild:
     substitute:
@@ -20,14 +21,6 @@ spec:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
       VOLSYNC_PUID: "82"
-  patches:
-    - patch: |-
-        - op: add
-          path: /spec/targetRefs/0/sectionName
-          value: app
-      target:
-        group: gateway.envoyproxy.io
-        kind: SecurityPolicy
   prune: true
   sourceRef:
     kind: GitRepository
