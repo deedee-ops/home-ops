@@ -5,16 +5,19 @@ version: v1alpha1
 machine:
   type: controlplane
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: HostnameConfig
 hostname: blossom
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: tb-bubbles
 selector:
   match: link.driver == "thunderbolt-net" && link.bus_path == "1-1.0"
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkConfig
 name: tb-bubbles
@@ -26,12 +29,14 @@ routes:
   - destination: 169.254.42.22/32
     metric: 2048
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: tb-buttercup
 selector:
   match: link.driver == "thunderbolt-net" && link.bus_path == "0-1.0"
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkConfig
 name: tb-buttercup

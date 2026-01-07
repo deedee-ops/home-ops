@@ -257,6 +257,7 @@ cluster:
     key: '{{ ENV[".cluster.serviceAccount.key"] }}'
     # {% endif %}
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VolumeConfig
 name: EPHEMERAL
@@ -266,6 +267,7 @@ provisioning:
   minSize: 128GB
   maxSize: 128GB
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: rook-ceph
@@ -275,6 +277,7 @@ provisioning:
   minSize: 1GB
   maxSize: 1GB
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: extra
@@ -284,6 +287,7 @@ provisioning:
   minSize: 1GB
   grow: true
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: TrustedRootsConfig
 name: homelab-ca
@@ -341,12 +345,14 @@ certificates: |
   -----END CERTIFICATE-----
 # main interface for k8s
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: cluster
 selector:
   match: glob("48:21:0b:51:*", mac(link.permanent_addr))
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: BondConfig
 name: bond0
@@ -355,18 +361,21 @@ links:
 bondMode: active-backup
 mtu: 9000
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: DHCPv4Config
 name: bond0
 clientIdentifier: mac
 # secondary interface for VLANs
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: multus
 selector:
   match: glob("48:21:0b:76:*", mac(link.permanent_addr))
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: BondConfig
 name: bond1
@@ -374,6 +383,7 @@ links:
   - multus
 bondMode: active-backup
 ---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VLANConfig
 name: bond1.69
