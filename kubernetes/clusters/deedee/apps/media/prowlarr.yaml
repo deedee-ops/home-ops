@@ -12,13 +12,20 @@ spec:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  patches: []
   path: ./kubernetes/apps/media/prowlarr
   postBuild:
     substitute:
       APP: prowlarr
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 1Gi
+  patches:
+    - patch: |-
+        - op: add
+          path: /spec/targetRefs/0/sectionName
+          value: app
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
   prune: true
   sourceRef:
     kind: GitRepository
