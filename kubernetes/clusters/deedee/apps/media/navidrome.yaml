@@ -6,7 +6,6 @@ metadata:
   name: navidrome
 spec:
   components:
-    - ../../../components/oidc
     - ../../../components/nfs-scaler
     - ../../../components/volsync
   dependsOn:

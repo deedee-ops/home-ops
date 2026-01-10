@@ -159,7 +159,11 @@
             export ROOT_DIR="$(git rev-parse --show-toplevel)"
             export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
 
-            export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
+            if [ -f /persist/etc/age/keys.txt ]; then
+              export SOPS_AGE_KEY_FILE=/persist/etc/age/keys.txt
+            else
+              export SOPS_AGE_KEY_FILE=/etc/age/keys.txt
+            fi
             export VAULT_ADDR=https://vault.ajgon.casa
             export $(${pkgs.lib.getExe pkgs.sops} -d scripts/vault.sops.env | xargs)
 

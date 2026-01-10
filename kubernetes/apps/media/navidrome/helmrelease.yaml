@@ -27,8 +27,6 @@ spec:
               ND_MUSICFOLDER: "/data"
               ND_PID_ALBUM: "folder"
               ND_PORT: &port 80
-              ND_EXTAUTH_USERHEADER: "Remote-User"
-              ND_EXTAUTH_TRUSTEDSOURCES: "172.30.0.0/16"
               ND_SCANINTERVAL: "1m"
               ND_SESSIONTIMEOUT: "30m"
               ND_TRANSCODINGCACHESIZE: "100MB"
@@ -85,25 +83,10 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - name: app
-            backendRefs:
-              - kind: Service
-                name: navidrome
+          - backendRefs:
+              - name: navidrome
                 port: 80
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /
             filters:
-              # hardcode user email effectively disabling authentication on navidrome side,
-              # and delegate it to security policy
-              # workaround, until OIDC is implemented
-              # https://github.com/navidrome/navidrome/issues/2394
-              - type: RequestHeaderModifier
-                requestHeaderModifier:
-                  add:
-                    - name: Remote-User
-                      value: "ajgon"
               - type: ResponseHeaderModifier
                 responseHeaderModifier:
                   set:
@@ -111,33 +94,8 @@ spec:
                       value: >-
                         default-src 'self' data:;
                         object-src 'none';
-                        connect-src 'self' https://id.${ROOT_DOMAIN};
                         script-src 'self' 'unsafe-inline';
                         style-src 'self' 'unsafe-inline';
-          - name: api
-            backendRefs:
-              - kind: Service
-                name: navidrome
-                port: 80
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /rest
-          - name: api-events-hack
-            backendRefs:
-              - kind: Service
-                name: navidrome
-                port: 80
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /api/events
-            filters:
-              - type: RequestHeaderModifier
-                requestHeaderModifier:
-                  add:
-                    - name: Remote-User
-                      value: "ajgon"
     persistence:
       config:
         existingClaim: navidrome
