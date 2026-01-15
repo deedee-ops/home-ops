@@ -197,7 +197,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/private/Dokumenty"
+              share: "/mnt/tank/documents"
         advancedMounts:
           main:
             app:

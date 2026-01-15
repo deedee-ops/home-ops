@@ -3,6 +3,8 @@
 
 # location
 source_directories:
+  - /mnt/tank/documents
+  - /mnt/tank/photos
   - /mnt/tank/private
 repositories:
   - path: "${BORGMATIC_NAS_REPO_BORGBASE_EU}"

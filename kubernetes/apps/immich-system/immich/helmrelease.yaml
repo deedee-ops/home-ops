@@ -354,7 +354,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/private/Photos"
+              share: "/mnt/tank/photos"
         advancedMounts:
           api: &photosMount
             app:
