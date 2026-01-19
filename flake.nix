@@ -87,7 +87,7 @@
 
             deadnix.enable = true;
             flake-checker.enable = true;
-            nixfmt-rfc-style = {
+            nixfmt = {
               enable = true;
               excludes = [ ".direnv" ];
             };
