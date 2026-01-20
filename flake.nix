@@ -27,6 +27,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    talos-pilot.url = "github:Handfish/talos-pilot";
 
     flake-utils.url = "github:numtide/flake-utils";
     pre-commit-hooks = {
@@ -41,6 +42,7 @@
       flake-utils,
       nixpkgs,
       pre-commit-hooks,
+      talos-pilot,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -91,7 +93,6 @@
               enable = true;
               excludes = [ ".direnv" ];
             };
-            statix.enable = true;
 
             # custom linters
             lint-charts-for-oci = {
@@ -153,6 +154,8 @@
                 pkgs.kubernetes-helmPlugins.helm-diff
               ];
             })
+
+            talos-pilot.packages."${system}".talos-pilot
           ];
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
