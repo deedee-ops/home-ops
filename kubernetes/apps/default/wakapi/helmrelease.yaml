@@ -145,3 +145,6 @@ spec:
             app:
               - path: /etc/ssl/certs/ca-certificates.crt
                 subPath: ec.crt
+      # for sqlite temporary operations
+      tmp:
+        type: emptyDir
