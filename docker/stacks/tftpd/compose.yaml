@@ -6,7 +6,7 @@
 # This is UDP-based protocol, so firewall on port 69 needs to be opened on BOTH client and server.
 services:
   tftpd:
-    image: registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:73cdb789e3198f9df59a78aa4caf5f397cdd798f790565359cee5f47b76795ce
+    image: registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:e1d37a74f872acad436ec4288f5d28f8dd737c663134e4a18cf60e99287a6efe
     container_name: tftpd
     env_file:
       - compose.env
