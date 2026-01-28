@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   borgmatic:
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.0@sha256:b1d4d481007070c24e231526248585714cf290c7d1dcc90ba1647205b8e726ef
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.1@sha256:fb2b879d208cbbbe53334367ec2c32c45bff0a1289f29c7d2ad1a9620117850f
     container_name: borgmatic
     restart: always
     env_file:
