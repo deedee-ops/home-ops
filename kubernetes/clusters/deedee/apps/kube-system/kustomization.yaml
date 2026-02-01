@@ -16,6 +16,7 @@ resources:
   - ./irqbalance.yaml
   - ./metrics-server.yaml
   - ./multus.yaml
+  - ./nfs-pod-monitor.yaml
   - ./reloader.yaml
   - ./smartctl-exporter.yaml
   - ./snapshot-controller.yaml
