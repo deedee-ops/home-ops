@@ -101,7 +101,6 @@ spec:
     loadBalancer:
       algorithm: maglev
       mode: dsr
-      serviceTopology: true
     localRedirectPolicies:
       enabled: true
     operator:
@@ -155,3 +154,6 @@ spec:
           - NET_ADMIN
           - SYS_ADMIN
           - SYS_RESOURCE
+    socketLB:
+      enabled: true
+      hostNamespaceOnly: true
