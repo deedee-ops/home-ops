@@ -17,7 +17,6 @@ spec:
             egress.cilium.io/kube-apiserver: "true"
         replicas: 2
         container:
-          image: mirror.gcr.io/envoyproxy/envoy:v1.37.0
           resources:
             requests:
               cpu: 100m
