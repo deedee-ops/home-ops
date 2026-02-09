@@ -43,6 +43,7 @@ spec:
           k8s-logging.exclude on
           namespace_labels off
           annotations off
+          buffer_size 256k
 
         [FILTER]
           name nest
