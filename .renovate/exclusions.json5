@@ -1,0 +1,11 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      enabled: false,
+      description: "Disable private registry images",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/registry\\.ajgon\\.casa/"],
+    },
+  ],
+}
