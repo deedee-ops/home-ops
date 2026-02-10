@@ -141,6 +141,109 @@ spec:
       namespaceOverride: kube-system
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
+      # monitor flux reconcilations
+      rbac:
+        extraRules:
+          - apiGroups:
+              - helm.toolkit.fluxcd.io
+              - kustomize.toolkit.fluxcd.io
+            resources:
+              - helmreleases
+              - kustomizations
+            verbs:
+              - "list"
+              - "watch"
+      customResourceState:
+        enabled: true
+        config:
+          spec:
+            resources:
+              - groupVersionKind:
+                  group: helm.toolkit.fluxcd.io
+                  version: v2
+                  kind: HelmRelease
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux HelmRelease resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name:
+                            - metadata
+                            - name
+                    labelsFromPath:
+                      exported_namespace:
+                        - metadata
+                        - namespace
+                      ready:
+                        - status
+                        - conditions
+                        - "[type=Ready]"
+                        - status
+                      suspended:
+                        - spec
+                        - suspend
+                      revision:
+                        - status
+                        - history
+                        - "0"
+                        - chartVersion
+                      chart_name:
+                        - status
+                        - history
+                        - "0"
+                        - chartName
+                      chart_app_version:
+                        - status
+                        - history
+                        - "0"
+                        - appVersion
+                      chart_ref_name:
+                        - spec
+                        - chartRef
+                        - name
+                      chart_source_name:
+                        - spec
+                        - chart
+                        - spec
+                        - sourceRef
+                        - name
+              - groupVersionKind:
+                  group: kustomize.toolkit.fluxcd.io
+                  version: v1
+                  kind: Kustomization
+                metricNamePrefix: gotk
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of a Flux Kustomization resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name:
+                            - metadata
+                            - name
+                    labelsFromPath:
+                      exported_namespace:
+                        - metadata
+                        - namespace
+                      ready:
+                        - status
+                        - conditions
+                        - "[type=Ready]"
+                        - status
+                      suspended:
+                        - spec
+                        - suspend
+                      revision:
+                        - status
+                        - lastAppliedRevision
+                      source_name:
+                        - spec
+                        - sourceRef
+                        - name
     grafana:
       enabled: false
       forceDeployDashboards: true

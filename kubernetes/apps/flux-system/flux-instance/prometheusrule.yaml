@@ -28,3 +28,25 @@ spec:
               Flux instance {{ $labels.name }} is not ready
           labels:
             severity: critical
+        - alert: HelmReleaseReconciliationFailure
+          expr: |
+            gotk_resource_info{customresource_kind="HelmRelease", ready!="True"} == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "HelmRelease {{ $labels.name }} in {{ $labels.exported_namespace }} is not ready"
+            description: >-
+              HelmRelease {{ $labels.name }} in namespace {{ $labels.exported_namespace }}
+              has not been ready for more than 5 minutes.
+        - alert: KustomizationReconciliationFailure
+          expr: |
+            gotk_resource_info{customresource_kind="Kustomization", ready!="True"} == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Kustomization {{ $labels.name }} in {{ $labels.exported_namespace }} is not ready"
+            description: >-
+              Kustomization {{ $labels.name }} in namespace {{ $labels.exported_namespace }}
+              has not been ready for more than 5 minutes.
