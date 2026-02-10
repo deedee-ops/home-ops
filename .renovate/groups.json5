@@ -56,6 +56,7 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 5,
+      allowedVersions: "/^v?[0-9]+\\.[0-9]+\\.[0-9]+(\\.[0-9]+)?$/",
     },
     {
       description: "Rook-Ceph Group",
