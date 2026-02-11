@@ -9,7 +9,7 @@ metadata:
 spec:
   instances: 3
   # renovate: depName=ghcr.io/tensorchord/cloudnative-vectorchord versioning=double
-  imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:18.1-1.0.0@sha256:d844a09b25458ecb333208ba256df6baa320714257b9fb91752c2d8e75cc2f60"
+  imageName: "ghcr.io/tensorchord/cloudnative-vectorchord:18.1-1.1.0@sha256:77375191c6f015cb6ae7bf0c8d553cc3c072b277f172c07bd2e080823108f074"
   enableSuperuserAccess: false
   inheritedMetadata:
     labels:
