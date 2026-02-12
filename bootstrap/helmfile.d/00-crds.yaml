@@ -38,7 +38,7 @@ releases:
   - name: silence-operator
     namespace: observability
     chart: oci://gsoci.azurecr.io/charts/giantswarm/silence-operator
-    version: 0.20.0
+    version: 0.20.1
   - name: volsync
     namespace: volsync-system
     chart: oci://ghcr.io/home-operations/charts-mirror/volsync-perfectra1n
