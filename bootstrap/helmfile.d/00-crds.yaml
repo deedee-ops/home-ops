@@ -34,7 +34,7 @@ releases:
   - name: kube-prometheus-stack
     namespace: observability
     chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
-    version: 81.6.2
+    version: 81.6.3
   - name: silence-operator
     namespace: observability
     chart: oci://gsoci.azurecr.io/charts/giantswarm/silence-operator
