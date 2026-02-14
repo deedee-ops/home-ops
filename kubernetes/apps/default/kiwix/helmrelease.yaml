@@ -68,7 +68,7 @@ spec:
           sync:
             image:
               repository: public.ecr.aws/docker/library/ubuntu
-              tag: 24.04@sha256:cd1dba651b3080c3686ecf4e3c4220f026b521fb76978881737d24f200828b2b
+              tag: 26.04@sha256:4095ef613201918336b5d7d00be15d8b09c72ddb77c80bca249c255887a64d87
               pullPolicy: IfNotPresent
             command:
               - sh
