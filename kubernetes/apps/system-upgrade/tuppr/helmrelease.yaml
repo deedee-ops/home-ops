@@ -23,3 +23,12 @@ spec:
       fsGroup: 65532
       seccompProfile:
         type: RuntimeDefault
+    volumeMounts:
+      - mountPath: /etc/ssl/certs/ca-certificates.crt
+        name: root-ca
+        subPath: ec.crt
+    volumes:
+      - name: root-ca
+        secret:
+          defaultMode: 420
+          secretName: homelab-root-ca.crt
