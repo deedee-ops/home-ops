@@ -16,6 +16,7 @@ spec:
         enabled: true
     podLabels:
       egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/nas: "true"
     podSecurityContext:
       runAsNonRoot: true
       runAsUser: 65532
