@@ -14,6 +14,7 @@ resources:
   - ./firefly.yaml
   - ./forgejo.yaml
   - ./glance.yaml
+  - ./kiwix.yaml
   - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
