@@ -1,0 +1,145 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kiwix
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: kiwix
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/kiwix/kiwix-serve
+              tag: 3.8.1@sha256:3d7d791be3543f0e9e26822082cd4466fe5282834d0c1a57f04845bfc552a5f8
+            args:
+              - -i
+              - ipv4
+              - --library
+              - /data/library.xml
+            env:
+              TZ: Europe/Warsaw
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              limits:
+                memory: "4096Mi"
+        initContainers:
+          01-library:
+            image:
+              repository: ghcr.io/kiwix/kiwix-tools
+              tag: 3.8.1@sha256:fa27da5f16717008e1987e4da329ed1cbebaba3a738565387356d0a33b9d8f34
+            command:
+              - /bin/sh
+              - -c
+              - kiwix-manage /data/library.xml add /data/*.zim
+            securityContext: *sc
+      cron:
+        type: cronjob
+        cronjob:
+          schedule: "0 0 25 * *" # every month
+          successfulJobsHistory: 0
+          failedJobsHistory: 5
+          concurrencyPolicy: Forbid
+
+        containers:
+          sync:
+            image:
+              repository: public.ecr.aws/docker/library/ubuntu
+              tag: 24.04@sha256:cd1dba651b3080c3686ecf4e3c4220f026b521fb76978881737d24f200828b2b
+              pullPolicy: IfNotPresent
+            command:
+              - sh
+              - -c
+              - |
+                apt-get update && apt-get install --no-install-recommends wget
+                wget https://raw.githubusercontent.com/jojo2357/kiwix-zim-updater/refs/heads/main/kiwix-zim-updater.sh
+                chmod +x kiwix-zim-updater.sh
+                ./kiwix-zim-updater.sh /data
+            securityContext:
+              <<: *sc
+              readOnlyRootFilesystem: false
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 64Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: main
+        ports:
+          http:
+            targetPort: 8080
+            port: 80
+    route:
+      app:
+        hostnames:
+          - "kiwix.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: kiwix
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          cron:
+            sync:
+              - subPath: tmp
+                path: /tmp
+      zim:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/cache/merger/kiwix"
+        globalMounts:
+          - path: /data

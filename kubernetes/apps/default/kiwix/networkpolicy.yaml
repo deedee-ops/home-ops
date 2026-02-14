@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: kiwix-cron-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/controller: cron
+        app.kubernetes.io/name: kiwix
+    egress:
+      - toFQDNs:
+          - matchName: download.kiwix.org
+          - matchName: library.kiwix.org
+          - matchName: raw.githubusercontent.com
+        toPorts:
+          - ports:
+              - port: "443"
