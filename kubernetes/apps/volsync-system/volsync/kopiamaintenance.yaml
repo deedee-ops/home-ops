@@ -10,6 +10,11 @@ spec:
     schedule: 0 */8 * * *
   repository:
     repository: volsync-maintenance-secret
+  podSecurityContext:
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+    runAsNonRoot: true
+    runAsUser: 1000
   containerSecurityContext:
     readOnlyRootFilesystem: true
     allowPrivilegeEscalation: false
