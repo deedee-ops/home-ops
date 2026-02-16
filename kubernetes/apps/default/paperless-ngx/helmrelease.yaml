@@ -75,6 +75,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
+                memory: 4Gi
               limits:
                 memory: 8192Mi
           valkey:
