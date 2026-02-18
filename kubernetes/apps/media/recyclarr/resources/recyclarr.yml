@@ -19,30 +19,41 @@ sonarr:
     include:
       # TV Shows
       - template: sonarr-quality-definition-series
-      - template: sonarr-v4-custom-formats-web-2160p
-      # alternative also includes 1080p and 720p and is preferable, since on public
-      # trackers 2160p versions are available way later
-      # note - always use base or alternative, never both
-      # - template: sonarr-v4-quality-profile-web-2160p
+      - template: sonarr-v4-quality-profile-web-1080p-alternative
       - template: sonarr-v4-quality-profile-web-2160p-alternative
+      - template: sonarr-v4-custom-formats-web-1080p
+      - template: sonarr-v4-custom-formats-web-2160p
+
       # Anime
       - template: sonarr-quality-definition-anime
-      - template: sonarr-v4-custom-formats-anime
       - template: sonarr-v4-quality-profile-anime
+      - template: sonarr-v4-custom-formats-anime
     custom_formats:
-      - trash_ids:
+      - # FLUX trumps REPACKS
+        trash_ids:
+          - 5d9fd1b1e06cd8a475462f40214b7df6 # FLUX
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 100
+          - name: WEB-2160p
+            score: 100
+          - name: Remux-1080p - Anime
+            score: 100
+      - # Unwanted
+        trash_ids:
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
           - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
           - 06d66ab109d4d2eddb2794d21526d140 # Retags
-          - 1b3994c551cbb92a2c781af061f4ab44 # Scene
         assign_scores_to:
+          - name: WEB-1080p
           - name: WEB-2160p
+          - name: Remux-1080p - Anime
       - trash_ids:
           - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 1000
+            score: 100
 
 radarr:
   movies:
@@ -55,39 +66,20 @@ radarr:
       movie:
         rename: true
         standard: jellyfin-tmdb
-    quality_profiles:
-      - name: Remux + WEB 2160p
-        # include 1080p fallback
-        qualities:
-          - name: Remux-2160p
-          - name: WEB-2160p
-            qualities:
-              - WEBDL-2160p
-              - WEBRip-2160p
-          - name: Bluray-2160p
-          - name: Remux-1080p
-          - name: WEB-1080p
-            qualities:
-              - WEBDL-1080p
-              - WEBRip-1080p
-          - name: Bluray-1080p
-      - name: Remux-1080p - Anime
     include:
       # Movies
-      - template: radarr-custom-formats-remux-web-2160p
-      - template: radarr-quality-definition-movie
-      - template: radarr-quality-profile-remux-web-2160p
+      - template: radarr-quality-definition-sqp-streaming
+      - template: radarr-quality-profile-sqp-1-1080p
+      - template: radarr-quality-profile-sqp-1-2160p-default
+      - template: radarr-custom-formats-sqp-1-1080p
+      - template: radarr-custom-formats-sqp-1-2160p
       # Anime
-      - template: radarr-custom-formats-anime
       - template: radarr-quality-definition-anime
       - template: radarr-quality-profile-anime
+      - template: radarr-custom-formats-anime
     custom_formats:
       - trash_ids:
-          - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
-        assign_scores_to:
-          - name: Remux + WEB 2160p
-            score: 0
-      - trash_ids:
+          - 957d0f44b592285f26449575e8b1167e # Special Edition
           - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
           - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
           - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
@@ -95,9 +87,10 @@ radarr:
           - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
           - f537cf427b64c38c8e36298f657e4828 # Scene
         assign_scores_to:
-          - name: Remux + WEB 2160p
+          - name: SQP-1 (2160p)
+          - name: SQP-1 (1080p)
       - trash_ids:
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 1000
+            score: 100
