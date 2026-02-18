@@ -123,6 +123,7 @@ spec:
             volumeAttributes:
               server: nas.internal
               share: "/mnt/cache/merger/sync"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         advancedMounts:
           main:
             app:

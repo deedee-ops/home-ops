@@ -19,7 +19,8 @@ spec:
         server: nas.internal
         share: "/mnt/cache/backups/kubernetes/${CLUSTER}"
       mountOptions:
-        - nfsvers=4.2
+        - noac
+        - nfsvers=4.1
         - nconnect=16
         - hard
         - noatime

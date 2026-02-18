@@ -98,6 +98,7 @@ spec:
             volumeAttributes:
               server: nas.internal
               share: "/mnt/cache/merger/torrents"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data/torrents
       tmp:

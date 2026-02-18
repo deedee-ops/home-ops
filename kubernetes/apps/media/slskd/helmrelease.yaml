@@ -147,6 +147,7 @@ spec:
             volumeAttributes:
               server: nas.internal
               share: "/mnt/cache/merger"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data
       tmp:
