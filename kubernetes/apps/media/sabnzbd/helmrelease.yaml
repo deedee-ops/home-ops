@@ -57,6 +57,8 @@ spec:
             "ips": ["192.168.69.11/24"],
             "mac": "02:00:c0:a8:45:0b"
           }]
+      labels:
+        egress.cilium.io/smtp-relay: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
