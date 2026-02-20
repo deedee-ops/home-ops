@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/keda.sh/scaledobject_v1alpha1.json
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: &name slskd
+spec:
+  advanced:
+    restoreToOriginalReplicaCount: true
+  cooldownPeriod: 0
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: *name
+  triggers:
+    - type: prometheus
+      metadata:
+        serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
+        # Can't do separate CRON trigger, because prometheus metrics will always win and scale pod back up.
+        # So I need "poor mans cron" in form of prometheus query - time() is in UTC, meaning
+        # between 9am and 10pm in Europe/Warsaw time (or 10am/11pm with daylight savings)
+        query: >-
+          probe_success{instance=~".+:2049"} *
+          on() (node_filesystem_mount_info{mountpoint="/mnt/cache/merger", node="nas", device="cache:tank"} == 1) *
+          ((time() % 86400) / 3600 > bool 9) * ((time() % 86400) / 3600 < bool 21)
+          or on() vector(0)
+        threshold: "1"
+        ignoreNullValues: "0"

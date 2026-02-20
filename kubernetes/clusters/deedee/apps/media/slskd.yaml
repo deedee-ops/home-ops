@@ -7,7 +7,6 @@ metadata:
 spec:
   components:
     - ../../../components/oidc
-    - ../../../components/nfs-scaler
   dependsOn:
     - name: multus
       namespace: kube-system
