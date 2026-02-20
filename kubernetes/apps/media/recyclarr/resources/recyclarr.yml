@@ -7,7 +7,6 @@ sonarr:
     base_url: http://sonarr.media.svc.cluster.local
     api_key: !env_var SONARR_API_KEY
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
     media_naming:
       series: jellyfin-tvdb
       season: default
@@ -16,28 +15,31 @@ sonarr:
         standard: default
         daily: default
         anime: default
-    include:
-      # TV Shows
-      - template: sonarr-quality-definition-series
-      - template: sonarr-v4-quality-profile-web-1080p-alternative
-      - template: sonarr-v4-quality-profile-web-2160p-alternative
-      - template: sonarr-v4-custom-formats-web-1080p
-      - template: sonarr-v4-custom-formats-web-2160p
 
-      # Anime
-      - template: sonarr-quality-definition-anime
-      - template: sonarr-v4-quality-profile-anime
-      - template: sonarr-v4-custom-formats-anime
+    quality_definition:
+      type: series
+
+    quality_profiles:
+      - trash_id: dfa5eaae7894077ad6449169b6eb03e0 # WEB-2160p (Alternative)
+        reset_unmatched_scores:
+          enabled: true
+      - trash_id: 9d142234e45d6143785ac55f5a9e8dc9 # WEB-1080p (Alternative)
+        reset_unmatched_scores:
+          enabled: true
+      - trash_id: 20e0fc959f1f1704bed501f23bdae76f # [Anime] Remux-1080p
+        reset_unmatched_scores:
+          enabled: true
+
     custom_formats:
       - # FLUX trumps REPACKS
         trash_ids:
           - 5d9fd1b1e06cd8a475462f40214b7df6 # FLUX
         assign_scores_to:
-          - name: WEB-1080p
+          - name: "WEB-2160p (Alternative)"
             score: 100
-          - name: WEB-2160p
+          - name: "WEB-1080p (Alternative)"
             score: 100
-          - name: Remux-1080p - Anime
+          - name: "[Anime] Remux-1080p"
             score: 100
       - # Unwanted
         trash_ids:
@@ -60,23 +62,26 @@ radarr:
     base_url: http://radarr.media.svc.cluster.local
     api_key: !env_var RADARR_API_KEY
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
     media_naming:
       folder: jellyfin-tmdb
       movie:
         rename: true
         standard: jellyfin-tmdb
-    include:
-      # Movies
-      - template: radarr-quality-definition-sqp-streaming
-      - template: radarr-quality-profile-sqp-1-1080p
-      - template: radarr-quality-profile-sqp-1-2160p-default
-      - template: radarr-custom-formats-sqp-1-1080p
-      - template: radarr-custom-formats-sqp-1-2160p
-      # Anime
-      - template: radarr-quality-definition-anime
-      - template: radarr-quality-profile-anime
-      - template: radarr-custom-formats-anime
+
+    quality_definition:
+      type: sqp-streaming
+
+    quality_profiles:
+      - trash_id: 5128baeb2b081b72126bc8482b2a86a0 # [SQP] SQP-1 (2160p)
+        reset_unmatched_scores:
+          enabled: true
+      - trash_id: 0896c29d74de619df168d23b98104b22 # [SQP] SQP-1 (1080p)
+        reset_unmatched_scores:
+          enabled: true
+      - trash_id: 722b624f9af1e492284c4bc842153a38 # [Anime] Remux-1080p
+        reset_unmatched_scores:
+          enabled: true
+
     custom_formats:
       - trash_ids:
           - 957d0f44b592285f26449575e8b1167e # Special Edition
@@ -87,10 +92,10 @@ radarr:
           - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
           - f537cf427b64c38c8e36298f657e4828 # Scene
         assign_scores_to:
-          - name: SQP-1 (2160p)
-          - name: SQP-1 (1080p)
+          - name: "[SQP] SQP-1 (2160p)"
+          - name: "[SQP] SQP-1 (1080p)"
       - trash_ids:
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
         assign_scores_to:
-          - name: Remux-1080p - Anime
+          - name: "[Anime] Remux-1080p"
             score: 100
