@@ -11,6 +11,7 @@ resources:
   - ./bentopdf.yaml
   - ./crypt.yaml
   - ./davis.yaml
+  - ./donetick.yaml
   - ./firefly.yaml
   - ./forgejo.yaml
   - ./glance.yaml
