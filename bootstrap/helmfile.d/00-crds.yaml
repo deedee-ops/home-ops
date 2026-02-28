@@ -42,4 +42,4 @@ releases:
   - name: volsync
     namespace: volsync-system
     chart: oci://ghcr.io/home-operations/charts-mirror/volsync-perfectra1n
-    version: 0.18.2
+    version: 0.18.3
