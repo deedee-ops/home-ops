@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: ghcr.io/kiwix/kiwix-serve
-              tag: 3.8.1@sha256:3d7d791be3543f0e9e26822082cd4466fe5282834d0c1a57f04845bfc552a5f8
+              tag: 3.8.1@sha256:31cf060fb4762b8cb5f22931994c5f6cd716440e964132c52a55a16174c6e477
             args:
               - -i
               - ipv4
