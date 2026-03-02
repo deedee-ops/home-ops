@@ -26,14 +26,15 @@ spec:
               - secretRef:
                   name: "smtp-relay-secret"
             probes:
-              readiness: &probes
+              liveness:
                 enabled: true
-                custom: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
                 spec:
-                  httpGet:
-                    path: /metrics
-                    port: *metrics
-              liveness: *probes
+                  failureThreshold: 30
+                  periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
