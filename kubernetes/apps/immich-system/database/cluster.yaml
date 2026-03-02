@@ -36,6 +36,10 @@ spec:
       shared_buffers: 512MB
   monitoring:
     enablePodMonitor: true
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true

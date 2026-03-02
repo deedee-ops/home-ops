@@ -72,6 +72,16 @@ spec:
                   - ALL
       microservices:
         pod:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/controller
+                        operator: In
+                        values:
+                          - microservices
+                  topologyKey: kubernetes.io/hostname
           resourceClaims:
             - name: gpu
               resourceClaimTemplateName: immich-gpu
@@ -99,6 +109,16 @@ spec:
         strategy: RollingUpdate
         replicas: 3
         pod:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: app.kubernetes.io/controller
+                        operator: In
+                        values:
+                          - machinelearning
+                  topologyKey: kubernetes.io/hostname
           dnsConfig:
             options:
               - name: ndots
