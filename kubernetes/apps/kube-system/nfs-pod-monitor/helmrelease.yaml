@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/nfs-pod-monitor
-              tag: latest@sha256:1d7921db5139b10475d23d8f6294fa511725a13693cb831657853923614e69f7
+              tag: latest@sha256:f64d3be0b9673506cbdff9e968d5245d70c2e178439839b359a945c3625a1fb4
             env:
               EXCLUDE_PODS: "volsync-*"
             securityContext:
