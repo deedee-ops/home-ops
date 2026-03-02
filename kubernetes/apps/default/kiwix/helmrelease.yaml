@@ -50,7 +50,7 @@ spec:
           01-library:
             image:
               repository: ghcr.io/kiwix/kiwix-tools
-              tag: 3.8.1@sha256:fa27da5f16717008e1987e4da329ed1cbebaba3a738565387356d0a33b9d8f34
+              tag: 3.8.2@sha256:e72b6817ee5fa2ce0ecc4e2897bbfb676cb120cb122b3ba1d903790c26a612e7
             command:
               - /bin/sh
               - -c
