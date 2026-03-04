@@ -71,7 +71,7 @@ spec:
             port: 80
             targetPort: *port
           sync:
-            protocol: UDP
+            protocol: TCP
             port: &sync 22000
     serviceMonitor:
       app:
@@ -102,7 +102,7 @@ spec:
                         script-src 'self' 'unsafe-inline' 'unsafe-eval';
                         style-src 'self' 'unsafe-inline';
       sync:
-        kind: UDPRoute
+        kind: TCPRoute
         parentRefs:
           - name: envoy-internal
             namespace: network
