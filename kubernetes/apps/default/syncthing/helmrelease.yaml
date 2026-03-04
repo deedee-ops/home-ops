@@ -71,7 +71,7 @@ spec:
             port: 80
             targetPort: *port
           sync:
-            protocol: UDP
+            protocol: TCP
             port: &sync 22000
     serviceMonitor:
       app:

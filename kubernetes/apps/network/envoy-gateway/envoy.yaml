@@ -123,7 +123,7 @@ spec:
           - kind: Secret
             name: "${VAULT_SIGNING_ROLE}-tls"
     - name: syncthing
-      protocol: UDP
+      protocol: TCP
       port: 22000
       allowedRoutes:
         namespaces:
