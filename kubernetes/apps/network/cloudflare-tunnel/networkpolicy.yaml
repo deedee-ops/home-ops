@@ -25,3 +25,8 @@ specs:
         toFQDNs:
           - matchName: region1.v2.argotunnel.com
           - matchName: region2.v2.argotunnel.com
+      - toFQDNs:
+          - matchName: update.argotunnel.com
+        toPorts:
+          - ports:
+              - port: "443"
