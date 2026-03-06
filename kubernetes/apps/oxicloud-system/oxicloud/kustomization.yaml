@@ -2,10 +2,8 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization.json
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: oxicloud-system
-components:
-  - ../../../../components/namespace
 resources:
-  - ./_namespace.yaml
-  - ./database.yaml
-  - ./oxicloud.yaml
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
