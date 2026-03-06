@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: oxicloud-db
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  instances: 3
+  enableSuperuserAccess: false
+  inheritedMetadata:
+    labels:
+      egress.cilium.io/kube-apiserver: "true"
+      egress.cilium.io/nas: "true"
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 10Gi
+    storageClass: ceph-block
+  bootstrap:
+    initdb:
+      database: oxicloud
+  #   recovery:
+  #     source: oxicloud-db-restore
+  #     database: oxicloud
+  postgresql:
+    parameters:
+      max_connections: "300"
+      shared_buffers: 512MB
+  monitoring:
+    enablePodMonitor: true
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: oxicloud-db-store
+        serverName: oxicloud-db
+  externalClusters:
+    - name: oxicloud-db-restore
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: oxicloud-db-store
+          serverName: oxicloud-db
