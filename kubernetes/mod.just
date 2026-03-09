@@ -12,6 +12,10 @@ node-shell node:
     kubectl debug node/{{ node }} -n kube-system -it --image="mirror.gcr.io/alpine:latest" --profile sysadmin
     kubectl delete pod -n kube-system -l app.kubernetes.io/managed-by=kubectl-debug
 
+[doc('Remove all dead pods')]
+cleanup-pods:
+    kubectl delete pods --field-selector='status.phase!=Running,status.phase!=Pending' --all-namespaces
+
 [doc('Sync ExternalSecrets')]
 sync-es:
     kubectl get es --no-headers -A | while read -r ns name _; do \

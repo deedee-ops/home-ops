@@ -87,6 +87,7 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 2,
+      minimumReleaseAge: "1d",
     },
   ],
 }
