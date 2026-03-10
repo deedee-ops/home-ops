@@ -11,3 +11,12 @@ specs:
     egress:
       - toEndpoints:
           - {}
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: pocket-id
+              io.kubernetes.pod.namespace: security
+        toPorts:
+          - ports:
+              - port: "80"
+          - ports:
+              - port: "8080"

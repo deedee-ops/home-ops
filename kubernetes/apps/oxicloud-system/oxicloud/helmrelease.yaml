@@ -20,7 +20,6 @@ spec:
             command:
               - oxicloud
             env:
-              SSL_CERT_FILE: /certs/homelab.pem
               OXICLOUD_STORAGE_PATH: /data
               OXICLOUD_SERVER_PORT: &port 8086 # for some reason port is ignored
               OXICLOUD_SERVER_HOST: 0.0.0.0
@@ -28,9 +27,9 @@ spec:
               OXICLOUD_OIDC_ENABLED: "true"
               OXICLOUD_OIDC_ADMIN_GROUPS: "admins"
               OXICLOUD_OIDC_AUTO_PROVISION: "false"
-              OXICLOUD_OIDC_DISABLE_PASSWORD_LOGIN: "true"
+              OXICLOUD_OIDC_DISABLE_PASSWORD_LOGIN: "false"
               OXICLOUD_OIDC_FRONTEND_URL: https://oxicloud.${ROOT_DOMAIN}
-              OXICLOUD_OIDC_ISSUER_URL: https://id.${ROOT_DOMAIN}
+              OXICLOUD_OIDC_ISSUER_URL: http://pocket-id.security.svc.cluster.local:8080
               OXICLOUD_OIDC_PROVIDER_NAME: "Pocket ID"
               OXICLOUD_OIDC_REDIRECT_URI: https://oxicloud.${ROOT_DOMAIN}/api/auth/oidc/callback
               OXICLOUD_DB_CONNECTION_STRING:
@@ -179,13 +178,5 @@ spec:
           dbbackup:
             app:
               - path: "/backups"
-      homelab-ca:
-        type: secret
-        name: homelab-root-ca.crt
-        advancedMounts:
-          app:
-            app:
-              - path: /certs/homelab.pem
-                subPath: ec.crt
       tmp:
         type: emptyDir
