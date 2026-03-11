@@ -1,0 +1,90 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: discord-bots
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: discord-bots
+  interval: 1h
+  values:
+    controllers:
+      fix-tweet-bot:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/kyrela/fixtweetbot
+              tag: 3.3.7@sha256:dbc0cb76bcb0cb18f2cf10b5f06de3056cce9ccf63af4e2eea038733496b2833
+            env:
+              DATABASE_HOST: localhost
+              DATABASE_PORT: 3306
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: fix-tweet-bot-secret
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: "50m"
+              limits:
+                cpu: "1000m"
+                memory: "512Mi"
+          db:
+            image:
+              repository: docker.io/library/mariadb
+              tag: 12.0@sha256:607835cd628b78e2876f6a586d0ec37b296c47683b31ef750002d3d17d3d8f7a
+            env:
+              TZ: Europe/Warsaw
+              MYSQL_DATABASE:
+                secretKeyRef:
+                  name: fix-tweet-bot-secret
+                  key: DATABASE_NAME
+              MYSQL_PASSWORD:
+                secretKeyRef:
+                  name: fix-tweet-bot-secret
+                  key: DATABASE_PASSWORD
+              MYSQL_ROOT_PASSWORD:
+                secretKeyRef:
+                  name: fix-tweet-bot-secret
+                  key: DATABASE_ROOT_PASSWORD
+              MYSQL_USER:
+                secretKeyRef:
+                  name: fix-tweet-bot-secret
+                  key: DATABASE_USER
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "50m"
+              limits:
+                cpu: "1000m"
+                memory: "1024Mi"
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    persistence:
+      db-data:
+        existingClaim: discord-bots
+        advancedMounts:
+          fix-tweet-bot:
+            db:
+              - path: /var/lib/mysql
+                subPath: fix-tweet-bot-db
