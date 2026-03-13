@@ -18,7 +18,6 @@
 
         // # renovate: datasource=docker depName=ghcr.io/prometheus-operator/prometheus-operator
         // https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.80.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
-        //
         // "x-renovate": "datasource=github-releases depName=cilium/cilium",
         // "$ref": "https://raw.githubusercontent.com/cilium/cilium/refs/tags/v1.17.2/install/kubernetes/cilium/values.schema.json"
         //
@@ -32,26 +31,29 @@
     {
       customType: "regex",
       description: "Process annotated, double-versioned dependencies - left side",
-      fileMatch: [
-        "(^|/).+\\.ya?ml(?:\\.j2)?$",
-      ],
+      fileMatch: ["(^|/).+\\.ya?ml(?:\\.j2)?$"],
       matchStrings: [
-        "renovate: depName=(?<depName>\\S+) versioning=double\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?([^:]+:)?(?<currentValue>[^@\\n:]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?"
+        "renovate: depName=(?<depName>\\S+) versioning=double\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?([^:]+:)?(?<currentValue>[^@\\n:]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?",
       ],
       datasourceTemplate: "docker",
-      versioningTemplate: "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
+      versioningTemplate: "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$",
     },
     {
       customType: "regex",
       description: "Process annotated, double-versioned dependencies - right side",
-      fileMatch: [
-        "(^|/).+\\.ya?ml(?:\\.j2)?$",
-      ],
+      fileMatch: ["(^|/).+\\.ya?ml(?:\\.j2)?$"],
       matchStrings: [
-        "renovate: depName=(?<depName>\\S+) versioning=double\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?([^:]+:)?(?<currentValue>[^@\\n:]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?"
+        "renovate: depName=(?<depName>\\S+) versioning=double\\n[^$\\n]+(:\\s|=)(&\\S+\\s)?([^:]+:)?(?<currentValue>[^@\\n:]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?",
       ],
       datasourceTemplate: "docker",
-      versioningTemplate: "regex:^v?((?<compatibility>.*)-)?(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$"
-    }
+      versioningTemplate: "regex:^v?((?<compatibility>.*)-)?(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?$",
+    },
+    {
+      customType: "regex",
+      description: "Process OCI dependencies",
+      managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
+      matchStrings: ["oci://(?<depName>[^:]+):(?<currentValue>\\S+)"],
+      datasourceTemplate: "docker",
+    },
   ],
 }
