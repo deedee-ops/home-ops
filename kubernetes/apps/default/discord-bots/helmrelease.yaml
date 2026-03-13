@@ -39,7 +39,7 @@ spec:
           db:
             image:
               repository: docker.io/library/mariadb
-              tag: 12.0@sha256:607835cd628b78e2876f6a586d0ec37b296c47683b31ef750002d3d17d3d8f7a
+              tag: 12.2@sha256:b1cb255a9939d28a1856815f0de6046c20c28c21b92a9f2696bc782b247a47ee
             env:
               TZ: Europe/Warsaw
               MYSQL_DATABASE:
