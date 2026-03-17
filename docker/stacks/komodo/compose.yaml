@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   mongo:
-    image: public.ecr.aws/docker/library/mongo:8.2.5@sha256:b80abaeb88da051d51f51a138d6c1a0c72bb39f88a7492d7e88a458dae7e80b5
+    image: public.ecr.aws/docker/library/mongo:8.2.5@sha256:60aa240412f473f672ec8b282fd5651aa156dcc7a220f81f5381ce768ccc3167
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     command: --quiet --wiredTigerCacheSizeGB 0.25
