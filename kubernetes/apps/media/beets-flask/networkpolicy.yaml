@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: beets-flask-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: beets-flask
+    egress:
+      - toFQDNs:
+          - matchName: api.genius.com
+          - matchName: archive.org
+          - matchName: dbpedia.org
+          - matchName: dl-cdn.alpinelinux.org
+          - matchName: files.pythonhosted.org
+          - matchName: itunes.apple.com
+          - matchName: lrclib.net
+          - matchName: musicbrainz.org
+          - matchName: pypi.org
+          - matchName: webservice.fanart.tv
+          - matchName: ws.audioscrobbler.com
+          - matchName: www.tekstowo.pl
+          - matchPattern: "*.archive.org"
+          - matchPattern: "*.ca.archive.org"
+          - matchPattern: "*.mzstatic.com"
+        toPorts:
+          - ports:
+              - port: "443"

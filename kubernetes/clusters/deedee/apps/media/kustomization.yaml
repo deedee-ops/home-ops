@@ -8,6 +8,7 @@ components:
 resources:
   - ./_namespace.yaml
   - ./bazarr.yaml
+  - ./beets-flask.yaml
   - ./jellyfin.yaml
   - ./navidrome.yaml
   - ./pinchflat.yaml
