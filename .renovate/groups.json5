@@ -88,6 +88,7 @@
       },
       minimumGroupSize: 2,
       minimumReleaseAge: "1d",
+      minimumReleaseAgeBehaviour: "timestamp-optional",
     },
   ],
 }

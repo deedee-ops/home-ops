@@ -36,7 +36,7 @@ exit
 
 :talos
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-kernel https://talos.ajgon.casa/pxe/4f7de4c4221bd9dde2b558a9655463c23b2173115f2df8d7f84d85af5da14a09/v1.12.5/metal-amd64-secureboot
+kernel https://talos.ajgon.casa/pxe/33099b32da1366462863d3d952bf759ffe67ec567ac0e654d0e2ed0d9b23522b/v1.12.5/metal-amd64-secureboot
 boot || goto failed
 goto start
 
