@@ -7,6 +7,7 @@ customization:
     - net.ifnames=0                       # Classic ethernet names
     - sysctl.kernel.kexec_load_disabled=1 # kexec makes SecureBoot pointless
     - talos.auditd.disabled=1             # Too much noise
+    - thunderbolt.force_power=1           # Thunderbolt NICs
 
     # in secureboot, talos locks down to "confidentiality" mode by default, which may break cilium
     # more info: https://github.com/siderolabs/talos/pull/8535
@@ -22,6 +23,11 @@ customization:
     - init_on_free=0
     - mitigations=off
     - security=none
+
+    # ASPM breaks NICs
+    - pcie_aspm=off
+    - pcie_port_pm=off
+
   systemExtensions:
     officialExtensions:
       - siderolabs/i915        # Intel iGPU
