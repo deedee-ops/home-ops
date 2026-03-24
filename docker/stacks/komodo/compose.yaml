@@ -18,7 +18,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DB_PASSWORD}
 
   core:
-    image: ghcr.io/moghtech/komodo-core:1.19.5@sha256:a1cceb4f971443b1e9f2a767788f663d0afb6244ee2135f7fe3fd1036af37ade
+    image: ghcr.io/moghtech/komodo-core:2.0.0@sha256:3cc134272b39313ae1fb34ea8a3c8a0c2f629a3c2eeaf71258702159f154f9e9
+    init: true
     restart: unless-stopped
     depends_on:
       - mongo
@@ -29,6 +30,7 @@ services:
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/config.toml:/config/config.toml"
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/backups:/backups"
+      - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/komodo/keys:/config/keys"
       - "${SOPS_AGE_KEY_FILE:-/etc/age/keys.txt}:/etc/age/keys.txt"
       - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
     environment:

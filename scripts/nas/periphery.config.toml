@@ -1,6 +1,9 @@
 port = 8120
 bind_ip = "0.0.0.0"
 
+core_address = "komodo.ajgon.casa"
+connect_as = "meemee"
+
 disable_terminals = true
 disable_container_exec = true
 

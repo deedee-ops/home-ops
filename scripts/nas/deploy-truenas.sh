@@ -3,10 +3,16 @@ set -e
 
 CONTEXT="${1:-meemee}"
 TARGET_DIR="${2:-/mnt/apps/docker}"
-INITPARAM="$3"
+ONBOARDING_KEY="$3"
+INITPARAM="$4"
 SOPS_AGE_KEY_FILE=${SOPS_AGE_KEY_FILE:-"${TARGET_DIR}/age-keys.txt"}
 
 mkdir -p "$TARGET_DIR/stacks" "$TARGET_DIR/volumes/komodo"
+
+if test -z "$ONBOARDING_KEY"; then
+  echo "Error: onboarding key not given"
+  exit 1
+fi
 
 if test -z "$CONTEXT"; then
   echo "Error: context not given"
@@ -64,6 +70,7 @@ if [[ "${INITPARAM}" == "--init" ]]; then
 fi
 
 cp "${TARGET_DIR}/stacks/komodo/scripts/nas/periphery.config.toml" "${TARGET_DIR}/periphery.config.toml"
+echo "onboarding_key = \"${ONBOARDING_KEY}\"" >> "${TARGET_DIR}/periphery.config.toml"
 
 digest="$(curl -sSL https://api.github.com/repos/moghtech/komodo/releases/latest | jq -r '.assets[] | select(.name == "periphery-x86_64") | .digest')"
 if [ ! -f "${TARGET_DIR}/periphery" ] || [[ "sha256:$(sha256sum "${TARGET_DIR}/periphery" | awk '{print $1}')" != "${digest}" ]]; then
@@ -72,7 +79,7 @@ if [ ! -f "${TARGET_DIR}/periphery" ] || [[ "sha256:$(sha256sum "${TARGET_DIR}/p
   chmod +x "${TARGET_DIR}/periphery"
 fi
 
-ln -s "${TARGET_DIR}" /etc/komodo
+ln -s "${TARGET_DIR}" /etc/komodo || true
 
 # configure periphery
 cat <<EOF | tee /etc/systemd/system/periphery.service
