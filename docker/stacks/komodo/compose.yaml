@@ -18,7 +18,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DB_PASSWORD}
 
   core:
-    image: ghcr.io/moghtech/komodo-core:2.0.0@sha256:417339e4a899d726c4ab6c56acf6b770cf7c6a067e231a2753b2dcf37f9a318b
+    image: ghcr.io/moghtech/komodo-core:2.0.0@sha256:518e6f4b76a9adc27b6ec0c4bb05533c8f5752986e145e3bfb64e4d15c232e32
     init: true
     restart: unless-stopped
     depends_on:
