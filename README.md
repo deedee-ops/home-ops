@@ -132,7 +132,6 @@ need whether my cluster is online or not and (3) The "hit by a bus factor" - wha
 | [healthchecks.io](https://healthchecks.io/) | Heartbeats monitoring                                          | Free           |
 | [Migadu](https://migadu.com/)               | Email hosting                                                  | $19/yr         |
 | [NextDNS](https://nextdns.io/)              | Ad filtering                                                   | ~$20/yr        |
-| [Pushover](https://pushover.net/)           | Kubernetes Alerts and application notifications                | $5 OTP         |
 |                                             |                                                                | Total: ~$10/mo |
 
 ### Networking
