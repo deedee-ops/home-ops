@@ -15,6 +15,7 @@ jobs:
   main:
     name: Labeler - Labeler
     runs-on: ubuntu-latest
+    environment: production
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Generate Token
