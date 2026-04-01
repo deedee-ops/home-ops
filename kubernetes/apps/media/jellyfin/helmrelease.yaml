@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: ghcr.io/jellyfin/jellyfin
-              tag: 10.11.6@sha256:8daa84b40dedbb1307d8958728be583f98334a2b0ae17a8c584fbcb64103b678
+              tag: 10.11.7@sha256:3607f9a27a9b03861ae67410b094cbec0d27ede212c87068f957044c4b2793f6
             env:
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
               JELLYFIN_PublishedServerUrl: &lbIP 192.168.42.35
