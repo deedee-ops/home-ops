@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: glance
+  name: &app glance
 spec:
   chartRef:
     kind: OCIRepository
@@ -24,7 +24,7 @@ spec:
               - secretRef:
                   name: "glance-secret"
             probes:
-              liveness:
+              liveness: &liveness
                 enabled: true
                 spec:
                   periodSeconds: 30
@@ -45,7 +45,7 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
+            securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
@@ -56,13 +56,30 @@ spec:
                 cpu: 10m
               limits:
                 memory: 512Mi
+          k8s-extension:
+            image:
+              repository: ghcr.io/lukasdietrich/glance-k8s/glance-k8s
+              tag: v0.4.7@sha256:4ff785aa8d33d9bd065f1f66cb1c9d4eedd7c0793af07f2bebfb22889f0b07ee
+            env:
+              TZ: Europe/Warsaw
+            securityContext: *sc
+            probes:
+              liveness: *liveness
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8080
     defaultPodOptions:
-      automountServiceAccountToken: false
       enableServiceLinks: false
       dnsConfig:
         options:
           - name: ndots
             value: "1"
+      labels:
+        egress.cilium.io/kube-apiserver: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -71,6 +88,9 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
+    serviceAccount:
+      glance:
+        enabled: true
     service:
       app:
         ports:
@@ -86,7 +106,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - name: glance
+              - name: &app
                 port: 80
             filters:
               - type: ResponseHeaderModifier
@@ -99,6 +119,44 @@ spec:
                         img-src 'self' https:;
                         script-src 'self' 'unsafe-inline';
                         style-src 'self' 'unsafe-inline';
+    rbac:
+      roles:
+        list:
+          type: ClusterRole
+          forceRename: *app
+          rules:
+            - apiGroups:
+                - ""
+                - "metrics.k8s.io"
+              resources:
+                - "nodes"
+              verbs:
+                - "list"
+            - apiGroups:
+                - ""
+              resources:
+                - "services"
+              verbs:
+                - "list"
+            - apiGroups:
+                - "apps"
+              resources:
+                - "deployments"
+                - "statefulsets"
+                - "daemonsets"
+              verbs:
+                - "list"
+      bindings:
+        list:
+          type: ClusterRoleBinding
+          forceRename: *app
+          roleRef:
+            kind: ClusterRole
+            name: *app
+          subjects:
+            - kind: ServiceAccount
+              name: *app
+              namespace: "{{ .Release.Namespace }}"
     persistence:
       config-files:
         type: configMap
