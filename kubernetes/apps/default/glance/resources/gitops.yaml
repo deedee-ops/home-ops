@@ -10,7 +10,7 @@
     - size: full
       widgets:
         - type: split-column
-          max-columns: 3
+          max-columns: 4
           widgets:
             - type: rss
               title: onedr0p
@@ -33,3 +33,10 @@
               feeds:
                 - url: https://github.com/joryirving/home-ops/commits.atom?author=joryirving
                   title: joryirving
+            - type: rss
+              title: kashalls
+              title-url: https://github.com/waifulabs/infrastructure/commits?author=kashalls
+              <<: *feed
+              feeds:
+                - url: https://github.com/waifulabs/infrastructure/commits.atom?author=kashalls
+                  title: kashalls

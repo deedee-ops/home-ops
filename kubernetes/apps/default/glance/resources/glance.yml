@@ -17,5 +17,4 @@ pages:
   - $include: home.yaml
   - $include: rss.yaml
   - $include: youtube.yaml
-  - $include: reddit.yaml
   - $include: gitops.yaml

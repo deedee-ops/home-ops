@@ -15,7 +15,6 @@ configMapGenerator:
       - ./resources/gitops.yaml
       - ./resources/glance.yml
       - ./resources/home.yaml
-      - ./resources/reddit.yaml
       - ./resources/rss.yaml
       - ./resources/youtube.yaml
 generatorOptions:
