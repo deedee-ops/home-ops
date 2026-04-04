@@ -106,7 +106,7 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - name: &app
+              - name: *app
                 port: 80
             filters:
               - type: ResponseHeaderModifier

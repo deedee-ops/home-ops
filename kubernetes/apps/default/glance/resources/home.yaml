@@ -2,8 +2,19 @@
   columns:
     - size: small
       widgets:
-        - type: calendar
-          first-day-of-week: monday
+        - type: clock
+          hour-format: 24h
+          timezones:
+            - timezone: UTC
+              label: UTC
+        - type: rss
+          title-url: /rss
+          cache: 1h
+
+          limit: 3
+          collapse-after: -1
+          feeds:
+            - $include: secrets/feeds.yaml
         - $include: epic-games.yaml
 
     - size: full
@@ -18,14 +29,7 @@
               namespace != kube-system &&
               ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
 
-        - type: rss
-          title-url: /rss
-          cache: 1h
-
-          limit: 3
-          collapse-after: -1
-          feeds:
-            - $include: secrets/feeds.yaml
+        - type: hacker-news
 
         - type: videos
           title: YouTube
@@ -59,10 +63,12 @@
 
     - size: small
       widgets:
-        - type: clock
-          hour-format: 24h
         - $include: air-quality.yaml
         - type: weather
           location: Krakow, Poland
           units: metric
           hour-format: 24h
+        - type: repository
+          repository: deedee-ops/home-ops
+          pull-requests-limit: 5
+          issues-limit: 3
