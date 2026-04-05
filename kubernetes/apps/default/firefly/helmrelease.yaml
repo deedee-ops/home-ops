@@ -138,15 +138,6 @@ spec:
                 namespace: default
                 port: 8080
             filters:
-              # hardcode user email effectively disabling authentication on firefly side,
-              # and delegate it to security policy
-              # workaround, until OIDC is implemented
-              # https://github.com/firefly-iii/firefly-iii/issues/10662
-              - type: RequestHeaderModifier
-                requestHeaderModifier:
-                  add:
-                    - name: Remote-Email
-                      value: "ajgon@${ROOT_DOMAIN}"
               - type: ResponseHeaderModifier
                 responseHeaderModifier:
                   set:

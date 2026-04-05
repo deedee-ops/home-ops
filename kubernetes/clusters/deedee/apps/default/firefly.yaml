@@ -6,7 +6,6 @@ metadata:
   name: firefly
 spec:
   components:
-    - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
