@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/securitypolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: firefly
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: firefly
+  oidc:
+    provider:
+      issuer: "https://id.${ROOT_DOMAIN}"
+      backendRefs:
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: pocket-id
+          namespace: security
+          port: 443
+    clientIDRef:
+      group: ""
+      kind: Secret
+      name: firefly-secret
+    clientSecret:
+      group: ""
+      kind: Secret
+      name: firefly-secret
+    scopes:
+      - openid
+      - email
+    forwardAccessToken: true
+    redirectURL: "https://firefly.${ROOT_DOMAIN}/oauth2/callback"
+    logoutPath: /logout
+  jwt:
+    optional: true
+    providers:
+      - name: pocket-id
+        issuer: "https://id.${ROOT_DOMAIN}"
+        remoteJWKS:
+          uri: "http://pocket-id.security.svc.cluster.local/.well-known/jwks.json"
+        claimToHeaders:
+          - claim: email
+            header: Remote-Email
