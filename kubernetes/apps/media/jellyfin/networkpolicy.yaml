@@ -15,17 +15,18 @@ specs:
           - matchPattern: "*.mirror.jellyfin.org"
           # metadata
           - matchName: api.themoviedb.org
+          - matchName: assets.fanart.tv
           - matchName: image.tmdb.org
           - matchName: m.media-amazon.com
-          - matchName: assets.fanart.tv
+          - matchName: movies-api.accel.li
           - matchName: webservice.fanart.tv
           - matchName: www.omdbapi.com
+          - matchPattern: "*.thetvdb.com"
           # plugins
           - matchName: cdn.jsdelivr.net
           - matchName: github.com
           - matchName: intro-skipper.org
           - matchName: raw.githubusercontent.com
-          - matchName: www.iamparadox.dev
         toPorts:
           - ports:
               - port: "443"
