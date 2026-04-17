@@ -26,3 +26,6 @@ telemetry {
   prometheus_retention_time = "24h"
   disable_hostname          = true
 }
+
+# https://github.com/hashicorp/vault/issues/31919
+disable_mlock = true
