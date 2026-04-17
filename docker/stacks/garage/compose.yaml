@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   garage:
-    image: dxflrs/garage:v2.2.0@sha256:45a61ce3f7c9c24fc23d9ed2b09b27ed560ab87b34605d175d5c588f539c24e4
+    image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
     container_name: garage
     user: "1000:1000"
     restart: unless-stopped
