@@ -15,7 +15,7 @@ spec:
   values:
     instance:
       distribution:
-        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.47.0
+        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.48.0
         registry: ghcr.io/fluxcd
       cluster:
         networkPolicy: false
