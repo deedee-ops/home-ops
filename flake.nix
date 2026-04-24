@@ -159,7 +159,7 @@
           ];
 
           shellHook = self.checks.${system}.pre-commit-check.shellHook + ''
-            export export SOPS_AGE_SSH_PRIVATE_KEY_FILE="$HOME/.config/sops-nix/secrets/ssh/privateKey"
+            export export SOPS_AGE_SSH_PRIVATE_KEY_FILE="$HOME/.config/sops-nix/secrets/features/home/ssh/privateKey"
 
             export ROOT_DIR="$(git rev-parse --show-toplevel)"
             export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
