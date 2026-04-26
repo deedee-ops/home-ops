@@ -29,7 +29,7 @@ lock_wait: 5
 archive_name_format: 'homelab-{now:%Y-%m-%d-%H%M%S}'
 
 # retention
-keep_daily: 3
+keep_daily: 1
 keep_weekly: 0
 keep_monthly: 0
 keep_yearly: 0
@@ -40,7 +40,7 @@ checks:
     frequency: "2 weeks"
   - name: archives
     frequency: always
-check_last: 3
+check_last: 1
 
 healthchecks:
   ping_url: "${BORGMATIC_HOMELAB_HC_PING_URL}"
