@@ -10,6 +10,7 @@ resources:
   - ./bazarr.yaml
   - ./beets-flask.yaml
   - ./jellyfin.yaml
+  - ./kavita.yaml
   - ./navidrome.yaml
   - ./pinchflat.yaml
   - ./prowlarr.yaml
