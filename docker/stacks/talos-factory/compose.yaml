@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   talos-factory:
-    image: ghcr.io/siderolabs/image-factory:v0.8.4-12-gd1bec57@sha256:698b0820a0f46d384c7b202fa859c0620dd3954a50ccf94a729b2b991c974e4a
+    image: ghcr.io/siderolabs/image-factory:v1.1.0-5-g405b488@sha256:77166aa3216b0c7c8dd568c0a4f7609d520331c39238b86dda2510e2ad61a0b1
     container_name: talos-factory
     restart: unless-stopped
     user: 1000:1000
@@ -30,6 +30,7 @@ services:
       - "registry.${ROOT_DOMAIN}/talos/images"
       - "-insecure-cache-repository"
       - "-cache-repository"
+      - "-container-signature-disabled" # they forget signatures sometimes
       - "registry:5000/talos/cache"
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/talos-factory/config:/config:ro"
