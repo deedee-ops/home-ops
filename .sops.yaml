@@ -7,15 +7,8 @@
 keys:
   - users:
       - &ajgon ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOrBLT88ZZ+lO8hHcj+4jqtor79OLhQZcDWF98kkWkfn
-  - hosts:
-      - &meemee age1ls53g22c75czpfshaf5yvzn7zmdk4gp6ylgdca3r0rxl9era5d6s0slsda
 
 creation_rules:
-  - path_regex: docker/hosts/meemee/.*\.sops\.(env|toml)$
-    key_groups:
-      - age:
-          - *ajgon
-          - *meemee
   - path_regex: scripts/.*\.sops\.env$
     key_groups:
       - age:
