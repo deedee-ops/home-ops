@@ -1,0 +1,57 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/traefik-v3.json
+api:
+  dashboard: true
+  disableDashboardAd: true
+  insecure: true
+accesslog: {}
+#   format: json
+#   fields:
+#     defaultMode: keep
+#     headers:
+#       defaultMode: keep
+log:
+  level: INFO # DEBUG
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    directory: /config
+certificatesResolvers:
+  vault-ecdsa:
+    acme:
+      storage: /certs/vault-ecdsa.json
+      caServer: 'https://vault/v1/pki_int_traefik/acme/directory'
+      caCertificates:
+        - /vault-internal.pem
+      httpChallenge:
+        entryPoint: http
+      keyType: EC384
+  vault-rsa:
+    acme:
+      storage: /certs/vault-rsa.json
+      caServer: 'https://vault/v1/pki_fallback_int_traefik/acme/directory'
+      caCertificates:
+        - /vault-internal.pem
+      httpChallenge:
+        entryPoint: http
+      keyType: RSA4096
+
+metrics:
+  prometheus:
+    entryPoint: metrics
+    manualRouting: true
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true

@@ -1,0 +1,90 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  registry-docker-io: &service
+    image: public.ecr.aws/docker/library/registry:3.1.0@sha256:8a7c1aae9db5028cbc1cfe83e5969d270a50e8bc0b72eef3cc5657542ec383c9
+    container_name: registry-docker-io
+    user: "1000:1000"
+    restart: unless-stopped
+    environment: &env
+      OTEL_TRACES_EXPORTER: "none"
+      REGISTRY_LOG_LEVEL: "info"
+      REGISTRY_STORAGE: "s3"
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      REGISTRY_STORAGE_S3_ACCESSKEY: "${REGISTRY_STORAGE_S3_ACCESSKEY}"
+      REGISTRY_STORAGE_S3_BUCKET: "cache"
+      REGISTRY_STORAGE_S3_CHUNKSIZE: "5242880"
+      REGISTRY_STORAGE_S3_ENCRYPT: "false"
+      REGISTRY_STORAGE_S3_FORCEPATHSTYLE: "true"
+      REGISTRY_STORAGE_S3_REGION: "eu-central-1"
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: "https://s3.ajgon.casa"
+      REGISTRY_STORAGE_S3_SECRETKEY: "${REGISTRY_STORAGE_S3_SECRETKEY}"
+      REGISTRY_STORAGE_S3_SECURE: "false"
+      REGISTRY_STORAGE_S3_V4AUTH: "true"
+
+      REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/docker-io
+    ports:
+      - "5000:5000"
+    volumes:
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  registry-codeberg-org:
+    <<: *service
+    container_name: registry-codeberg-org
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://codeberg.org
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/codeberg-org
+    ports:
+      - "5001:5000"
+  registry-ghcr-io:
+    <<: *service
+    container_name: registry-ghcr-io
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://ghcr.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/ghcr-io
+    ports:
+      - "5002:5000"
+  registry-gsoci-azurecr-io:
+    <<: *service
+    container_name: registry-gsoci-azurecr-io
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://gsoci.azurecr.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/gsoci-azurecr-io
+    ports:
+      - "5003:5000"
+  registry-mirror-gcr-io:
+    <<: *service
+    container_name: registry-mirror-gcr-io
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://mirror.gcr.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/mirror-gcr-io
+    ports:
+      - "5004:5000"
+  registry-quay-io:
+    <<: *service
+    container_name: registry-quay-io
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://quay.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/quay-io
+    ports:
+      - "5005:5000"
+  registry-registry-k8s-io:
+    <<: *service
+    container_name: registry-registry-k8s-io
+    environment:
+      <<: *env
+      REGISTRY_PROXY_REMOTEURL: https://registry.k8s.io
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: /docker/registry-k8s-io
+    ports:
+      - "5006:5000"
