@@ -3,7 +3,7 @@
 services:
   talos-factory:
     # don't need sha, these tags are immutable by design
-    image: ghcr.io/siderolabs/image-factory:v1.1.0-6-g4abeff4
+    image: ghcr.io/siderolabs/image-factory:v1.2.0
     container_name: talos-factory
     restart: unless-stopped
     user: 1000:1000
