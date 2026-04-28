@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  talos-factory:
+    # don't need sha, these tags are immutable by design
+    image: ghcr.io/siderolabs/image-factory:v1.1.0-6-g4abeff4
+    container_name: talos-factory
+    restart: unless-stopped
+    user: 1000:1000
+    command:
+      - /usr/bin/image-factory
+      - --config
+      - file=/config.yaml
+    configs:
+      - source: config
+        target: /config.yaml
+    volumes:
+      - ${DATA_DOCKER_DIR}/talos-factory/config:/config:ro
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.talos-factory.loadbalancer.server.port: "8080"
+      traefik.http.routers.talos-factory.entrypoints: https
+      traefik.http.routers.talos-factory.rule: Host(`talos.${ROOT_DOMAIN}`)
+      traefik.http.routers.talos-factory.service: talos-factory
+      traefik.http.routers.talos-factory.tls: true
+      traefik.http.routers.talos-factory.tls.certresolver: vault-rsa
+      traefik.http.routers.talos-factory.tls.options: rsa-kex@file
+      traefik.http.routers.talos-factory.tls.domains[0].main: 'talos.${ROOT_DOMAIN}'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  config:
+    file: ./config/config.yaml
+
+networks:
+  internal:
+    name: internal
+    external: true

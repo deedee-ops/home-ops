@@ -1,7 +1,7 @@
 {
   "ignoreFiles": [
     ".github/actionlint.yaml",
-    "docker/stacks/talos-factory/config/config.yaml",
+    "docker/talos-factory/config/config.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",
     "kubernetes/apps/default/glance/resources/widgets/*.yaml",
     "kubernetes/apps/home/frigate/resources/config.yaml",

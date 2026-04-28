@@ -1,4 +1,0 @@
-[[variable]]
-name = "ROOT_DOMAIN"
-value = "ajgon.casa"
-is_secret = false

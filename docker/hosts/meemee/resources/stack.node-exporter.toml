@@ -1,9 +1,0 @@
-[[stack]]
-name = "node-exporter"
-[stack.config]
-server = "meemee"
-auto_update = true
-repo = "deedee-ops/home-ops"
-branch = "master"
-webhook_enabled = false
-run_directory = "docker/stacks/node-exporter"

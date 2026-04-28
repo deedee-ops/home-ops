@@ -1,0 +1,82 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  registry:
+    environment:
+      OTEL_TRACES_EXPORTER: "none"
+      REGISTRY_LOG_LEVEL: "info"
+      REGISTRY_STORAGE: "s3"
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+      REGISTRY_STORAGE_S3_ACCESSKEY: "${REGISTRY_STORAGE_S3_ACCESSKEY}"
+      REGISTRY_STORAGE_S3_BUCKET: "registry"
+      REGISTRY_STORAGE_S3_CHUNKSIZE: "5242880"
+      REGISTRY_STORAGE_S3_ENCRYPT: "false"
+      REGISTRY_STORAGE_S3_FORCEPATHSTYLE: "true"
+      REGISTRY_STORAGE_S3_REGION: "eu-central-1"
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: "https://s3.${ROOT_DOMAIN}"
+      REGISTRY_STORAGE_S3_ROOTDIRECTORY: "/"
+      REGISTRY_STORAGE_S3_SECRETKEY: "${REGISTRY_STORAGE_S3_SECRETKEY}"
+      REGISTRY_STORAGE_S3_SECURE: "false"
+      REGISTRY_STORAGE_S3_V4AUTH: "true"
+    image: public.ecr.aws/docker/library/registry:3.1.0@sha256:8a7c1aae9db5028cbc1cfe83e5969d270a50e8bc0b72eef3cc5657542ec383c9
+    container_name: registry
+    user: "1000:1000"
+    restart: unless-stopped
+    networks:
+      - internal
+    volumes:
+      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.registry.loadbalancer.server.port: "5000"
+      traefik.http.routers.registry.entrypoints: https
+      traefik.http.routers.registry.rule: "Host(`registry.${ROOT_DOMAIN}`) && PathPrefix(`/v2`)"
+      traefik.http.routers.registry.service: registry
+      traefik.http.routers.registry.tls: true
+      traefik.http.routers.registry.tls.certresolver: vault-ecdsa
+      traefik.http.routers.registry.tls.domains[0].main: 'registry.${ROOT_DOMAIN}'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  registry-ui:
+    environment:
+      CATALOG_ELEMENTS_LIMIT: "1000"
+      CATALOG_MAX_BRANCHES: "1"
+      CATALOG_MIN_BRANCHES: "1"
+      DELETE_IMAGES: "true"
+      NGINX_PROXY_PASS_URL: "http://registry:5000"
+      REGISTRY_SECURED: "false"
+      REGISTRY_TITLE: "Docker Registry UI"
+      SHOW_CATALOG_NB_TAGS: "true"
+      SHOW_CONTENT_DIGEST: "true"
+      SINGLE_REGISTRY: "true"
+      TAGLIST_PAGE_SIZE: "100"
+    image: joxit/docker-registry-ui:2.6.0@sha256:bb5956a6b378706f1c3a92c947d0a0c606e280460cd9e37c0198caf46399c839
+    container_name: registry-ui
+    user: "101:101" # nginx
+    restart: unless-stopped
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.registry-ui.loadbalancer.server.port: "8080"
+      traefik.http.routers.registry-ui.entrypoints: https
+      traefik.http.routers.registry-ui.rule: "Host(`registry.${ROOT_DOMAIN}`) && !PathPrefix(`/v2`)"
+      traefik.http.routers.registry-ui.service: registry-ui
+      traefik.http.routers.registry-ui.tls: true
+      traefik.http.routers.registry-ui.tls.certresolver: vault-ecdsa
+      traefik.http.routers.registry-ui.tls.domains[0].main: 'registry.${ROOT_DOMAIN}'
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+
+networks:
+  internal:
+    name: internal
+    external: true

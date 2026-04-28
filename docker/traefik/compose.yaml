@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  traefik:
+    environment:
+      CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
+      GODEBUG: "tlsrsakex=1"
+      TZ: Europe/Warsaw
+    image: public.ecr.aws/docker/library/traefik:v3.6.14@sha256:4cda3393930dceff030e144b46260e96e1337c9cfaa4fed81c90cb8f4d498f57
+    container_name: traefik
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: traefik-config
+        target: /etc/traefik/traefik.yml
+    volumes:
+      - ./config/extra:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_DOCKER_DIR}/traefik/certs:/certs
+      - ${DATA_DOCKER_DIR}/vault/file/cert.pem:/vault-internal.pem
+    networks:
+      - default
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  traefik-to-unifi:
+    environment:
+      IGNORE_SSL_WARNINGS: "true"
+      TRAEFIK_API_URL: "http://traefik:8080/api/"
+      TRAEFIK_IP: "${TRAEFIK_IP}"
+      UNIFI_API_KEY: "${UNIFI_API_KEY}"
+      UNIFI_URL: "${UNIFI_URL}"
+      UNIFI_USERNAME: "${UNIFI_USERNAME}"
+    image: ghcr.io/thomaslomas/traefik-to-unifi:v1.3.0@sha256:0aeeeb8171da8268edec8d87d599f129aded778ba98eb5eac1eccc5f10bcbcec
+    container_name: traefik-to-unifi
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  traefik-config:
+    file: ./config/traefik.yaml
+
+networks:
+  internal:
+    name: internal
+    external: true
