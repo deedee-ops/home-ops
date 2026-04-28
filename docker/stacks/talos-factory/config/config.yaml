@@ -1,0 +1,30 @@
+---
+cache:
+  oci:
+    insecure: true
+    namespace: talos
+    registry: registry:5000
+    repository: cache
+  signingKeyPath: "/config/cache-signing-key.key"
+secureBoot:
+  enabled: true
+  file:
+    pcrKeyPath: "/config/pcr-signing-key.pem"
+    signingCertPath: "/config/uki-signing-cert.pem"
+    signingKeyPath: "/config/uki-signing-key.pem"
+artifacts:
+  installer:
+    external:
+      insecure: false
+      namespace: talos
+      repository: images
+    internal:
+      insecure: true
+      namespace: talos
+      registry: registry:5000
+      repository: images
+  schematic:
+    insecure: true
+    namespace: talos
+    registry: registry:5000
+    repository: schematic

@@ -2,35 +2,14 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   talos-factory:
-    image: ghcr.io/siderolabs/image-factory:v0.8.4-12-gd1bec57@sha256:698b0820a0f46d384c7b202fa859c0620dd3954a50ccf94a729b2b991c974e4a
+    # don't need sha, these tags are immutable by design
+    image: ghcr.io/siderolabs/image-factory:v0.8.4-12-gd1bec57
     container_name: talos-factory
     restart: unless-stopped
     user: 1000:1000
-    env_file:
-      - compose.env
-    command:
-      - "-external-url"
-      - "https://talos.${ROOT_DOMAIN}"
-      - "-cache-signing-key-path"
-      - "/config/cache-signing-key.key"
-      - "-secureboot"
-      - "-secureboot-pcr-key-path"
-      - "/config/pcr-signing-key.pem"
-      - "-secureboot-signing-cert-path"
-      - "/config/uki-signing-cert.pem"
-      - "-secureboot-signing-key-path"
-      - "/config/uki-signing-key.pem"
-      - "-insecure-schematic-service-repository"
-      - "-schematic-service-repository"
-      - "registry:5000/talos/schematic"
-      - "-insecure-installer-internal-repository"
-      - "-installer-internal-repository"
-      - "registry:5000/talos/images"
-      - "-installer-external-repository"
-      - "registry.${ROOT_DOMAIN}/talos/images"
-      - "-insecure-cache-repository"
-      - "-cache-repository"
-      - "registry:5000/talos/cache"
+    environment:
+      IF_HTTP_EXTERNALURL: "https://talos.${ROOT_DOMAIN}/"
+      IF_ARTIFACTS_INSTALLER_EXTERNAL_REGISTRY: "registry.${ROOT_DOMAIN}"
     volumes:
       - "${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/volumes/talos-factory/config:/config:ro"
       - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"

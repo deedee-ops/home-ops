@@ -55,5 +55,15 @@
       matchStrings: ["oci://(?<depName>[^:]+):(?<currentValue>\\S+)"],
       datasourceTemplate: "docker",
     },
+    {
+      customType: "regex",
+      description: "Process git describe versioning scheme",
+      managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
+      matchStrings: [
+        "image:\\s*(?<depName>[\\w.\\-/:]+image-factory[\\w.\\-/]*):(?<currentValue>[^\\s\"']+)"
+      ],
+      datasourceTemplate: "docker",
+      versioningTemplate: "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>\\d+)-g[a-f0-9]+)?$",
+    },
   ],
 }
