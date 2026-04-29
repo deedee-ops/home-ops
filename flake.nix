@@ -168,8 +168,10 @@
             export $(${pkgs.lib.getExe pkgs.sops} -d scripts/vault.sops.env | xargs)
 
             if [ -f "$ROOT_DIR/.current-cluster" ]; then
-              export KUBECONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
-              export TALOSCONFIG="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
+              kc="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
+              [ -f "$kc" ] && export KUBECONFIG=$kc
+              tc="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
+              [ -f "$tc" ] && export TALOSCONFIG=$tc
               ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "$(cat "$ROOT_DIR/.current-cluster")/talos" > "$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
             fi
 
