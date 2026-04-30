@@ -15,10 +15,15 @@ services:
       - "80:80"
       - "443:443"
     configs:
-      - source: traefik-config
+      - source: traefik
         target: /etc/traefik/traefik.yml
+      - source: extra-dashboard
+        target: /config/extra/dashboard.yaml
+      - source: extra-tls
+        target: /config/extra/tls.yaml
+      - source: extra-truenas
+        target: /config/extra/truenas.yaml
     volumes:
-      - ./config/extra:/config
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_DOCKER_DIR}/traefik/certs:/certs
       - ${DATA_DOCKER_DIR}/vault/file/cert.pem:/vault-internal.pem
@@ -52,8 +57,14 @@ services:
     read_only: true
 
 configs:
-  traefik-config:
+  traefik:
     file: ./config/traefik.yaml
+  extra-dashboard:
+    file: ./config/extra/dashboard.yaml
+  extra-tls:
+    file: ./config/extra/tls.yaml
+  extra-truenas:
+    file: ./config/extra/truenas.yaml
 
 networks:
   internal:
