@@ -15,4 +15,3 @@ resources:
   - ./kube-prometheus-stack.yaml
   - ./silence-operator.yaml
   - ./unpoller.yaml
-  - ./victoria-logs.yaml
