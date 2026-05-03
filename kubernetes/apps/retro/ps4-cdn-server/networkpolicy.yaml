@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: ps4-cdn-server-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: ps4-cdn-server
+    egress:
+      - toFQDNs:
+          - matchName: store.playstation.com
+        toPorts:
+          - ports:
+              - port: "443"
