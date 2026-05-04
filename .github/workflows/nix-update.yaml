@@ -30,7 +30,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends udev xz-utils
       - name: Install Nix
-        uses: cachix/install-nix-action@ab739621df7a23f52766f9ccc97f38da6b7af14f # v31
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
