@@ -6,7 +6,7 @@ services:
       CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
       GODEBUG: "tlsrsakex=1"
       TZ: Europe/Warsaw
-    image: public.ecr.aws/docker/library/traefik:v3.7.0@sha256:3d92aa3da0c8cc21c99832f40691cb25f9570f35f75d5062ce88664b35efada5
+    image: public.ecr.aws/docker/library/traefik:v3.7.0@sha256:eb328e2c806c53aafbbace6c451fa54d268961261a85452fcf0fb752a30c17be
     container_name: traefik
     restart: always
     extra_hosts:
