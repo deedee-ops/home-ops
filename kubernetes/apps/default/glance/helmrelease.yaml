@@ -73,6 +73,7 @@ spec:
                     path: /healthz
                     port: 8080
     defaultPodOptions:
+      automountServiceAccountToken: true
       enableServiceLinks: false
       dnsConfig:
         options:
