@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  fpkgi-server:
+    environment:
+      FPKGI_SERVER_URL: http://192.168.2.10:4444
+    image: registry.ajgon.casa/tools/fpkgi-server:latest
+    container_name: fpkgi-server
+    restart: unless-stopped
+    user: 1000:1000
+    volumes:
+      - /mnt/tank/retro/ps4/pkgs:/data:ro
+      - /mnt/tank/retro/ps4/metadata:/config
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    ports:
+      - 4444:8080
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true

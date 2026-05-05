@@ -8,5 +8,4 @@ components:
 resources:
   - ./_namespace.yaml
   - ./database.yaml
-  - ./ps4-cdn-server.yaml
   - ./retrom.yaml
