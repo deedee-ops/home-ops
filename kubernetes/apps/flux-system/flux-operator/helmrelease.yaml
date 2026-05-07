@@ -63,5 +63,12 @@ spec:
       create: true
     web:
       enabled: true
+      httpRoute:
+        enabled: true
+        hostnames:
+          - "flux.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
       networkPolicy:
         create: false
