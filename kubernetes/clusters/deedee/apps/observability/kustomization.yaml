@@ -13,5 +13,6 @@ resources:
   - ./keda.yaml
   - ./kromgo.yaml
   - ./kube-prometheus-stack.yaml
+  - ./prom-timer.yaml
   - ./silence-operator.yaml
   - ./unpoller.yaml
