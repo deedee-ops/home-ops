@@ -127,9 +127,10 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/merger/usenet"
+              share: "/mnt/cache/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
-          - path: /data/usenet
+          - path: /data/cache/usenet
+            subPath: usenet
       tmp:
         type: emptyDir

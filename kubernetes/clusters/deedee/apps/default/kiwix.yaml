@@ -13,6 +13,7 @@ spec:
   postBuild:
     substitute:
       APP: kiwix
+      KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

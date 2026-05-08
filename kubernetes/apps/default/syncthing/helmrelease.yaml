@@ -131,12 +131,13 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/merger/sync"
+              share: "/mnt/tank/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         advancedMounts:
           main:
             app:
               - path: "/sync"
+                subPath: sync
       tmp:
         type: emptyDir
         medium: Memory

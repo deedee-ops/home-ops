@@ -16,6 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: n8n
+      KEDA_VOLUME: tank/media
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 5Gi
   prune: true

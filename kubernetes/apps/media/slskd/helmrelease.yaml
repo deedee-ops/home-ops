@@ -124,14 +124,14 @@ spec:
         data:
           slskd.yml: |-
             directories:
-              downloads: /data/soulseek/complete
-              incomplete: /data/soulseek/incomplete
+              downloads: /data/complete
+              incomplete: /data/incomplete
             permissions:
               file:
                 mode: 750
             shares:
               directories:
-                - /data/media/music
+                - /music
               filters:
                 - \.ini$
                 - Thumbs.db$
@@ -143,16 +143,30 @@ spec:
         globalMounts:
           - path: /config/slskd.yml
             subPath: slskd.yml
-      media:
+      data:
         type: custom
         volumeSpec:
           csi:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/merger"
+              share: "/mnt/cache/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data
+            subPath: soulseek
+      music:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
+        globalMounts:
+          - path: /music
+            subPath: media/music
+            readOnly: true
       tmp:
         type: emptyDir

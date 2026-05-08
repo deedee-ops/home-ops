@@ -68,7 +68,7 @@ spec:
       cron:
         type: cronjob
         cronjob:
-          schedule: "0 0 25 * *" # every month
+          schedule: "0 10 * * 3" # every Wednesday
           successfulJobsHistory: 0
           failedJobsHistory: 5
           concurrencyPolicy: Forbid
@@ -143,7 +143,8 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/merger/kiwix"
+              share: "/mnt/tank/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data
+            subPath: kiwix

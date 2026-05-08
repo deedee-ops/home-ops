@@ -6,7 +6,6 @@ metadata:
   name: beets-flask
 spec:
   components:
-    - ../../../components/nfs-scaler
     - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:

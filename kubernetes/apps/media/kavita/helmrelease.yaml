@@ -112,10 +112,11 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/merger/media/books"
+              share: "/mnt/tank/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data
+            subPath: media/books
             readOnly: true
       tmp:
         type: emptyDir

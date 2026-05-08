@@ -19,6 +19,7 @@ spec:
   postBuild:
     substitute:
       APP: retrom
+      KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 50Gi
   prune: true

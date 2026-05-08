@@ -3,7 +3,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: &name bazarr
+  name: &name radarr
 spec:
   advanced:
     restoreToOriginalReplicaCount: true
