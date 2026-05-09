@@ -23,7 +23,7 @@
         //
         // # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
         // # yaml-language-server: $schema=https://www.talos.dev/v1.10/schemas/v1alpha1_config.schema.json
-        'datasource=(?<datasource>\\S+) depName=(?<depName>[0-9a-zA-Z/.-]+)[",]*\\n[^\\n]+?/(?<currentValue>(v|\\d)[\\d.][^/]+)',
+        'datasource=(?<datasource>\\S+) depName=(?<depName>[0-9a-zA-Z/.-]+)[",]*\\n[^\\n]+?/(?<currentValue>(v|\\d)\\d+\\.[\\d.]+[^/]+)',
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
     },

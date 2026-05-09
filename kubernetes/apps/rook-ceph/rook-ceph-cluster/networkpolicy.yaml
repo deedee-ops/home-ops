@@ -9,4 +9,4 @@ spec:
   endpointSelector: {}
   egress:
     - toCIDRSet:
-        - cidr: 169.254.42.0/24
+        - cidr: 192.168.41.0/24

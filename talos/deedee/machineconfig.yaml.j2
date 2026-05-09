@@ -53,13 +53,12 @@ machine:
   install:
     diskSelector:
       model: "WD Blue SN570 500GB"
-    image: talos.ajgon.casa/installer-secureboot/33099b32da1366462863d3d952bf759ffe67ec567ac0e654d0e2ed0d9b23522b:v1.13.0
+    image: talos.ajgon.casa/installer-secureboot/3158c22eb3c614983204dc3033adff59b8e0de7cafc71c9d7aca10f69f84e43c:v1.13.0
     wipe: true
   kernel:
     modules:
       - name: nbd
       - name: thunderbolt
-      - name: thunderbolt_net
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
@@ -141,10 +140,6 @@ machine:
     rules:
       # Intel GPU
       - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
-      # Thunderbolt - Disable Power Management
-      - ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{power/control}="on"
-      # Thunderbolt - Ensure proper cooperation with kexec
-      - ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
 
 cluster:
   ca:
@@ -350,21 +345,7 @@ kind: LinkAliasConfig
 name: cluster
 selector:
   match: glob("48:21:0b:51:*", mac(link.permanent_addr))
----
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
-apiVersion: v1alpha1
-kind: BondConfig
-name: bond0
-links:
-  - cluster
-bondMode: active-backup
-mtu: 9000
----
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
-apiVersion: v1alpha1
-kind: DHCPv4Config
-name: bond0
-clientIdentifier: mac
+
 # secondary interface for VLANs
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
@@ -381,6 +362,20 @@ name: bond1
 links:
   - multus
 bondMode: active-backup
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: bond1
+clientIdentifier: mac
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
+apiVersion: v1alpha1
+kind: VLANConfig
+name: bond1.4
+up: true
+vlanID: 4
+parent: multus
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
