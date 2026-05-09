@@ -46,7 +46,6 @@ spec:
                   - ALL
               runAsUser: 33
               runAsGroup: 33
-              fsGroup: 33
             resources:
               requests:
                 cpu: 10m
@@ -69,7 +68,6 @@ spec:
                   - ALL
               runAsUser: 1000
               runAsGroup: 1000
-              fsGroup: 1000
             resources:
               requests:
                 cpu: 10m
