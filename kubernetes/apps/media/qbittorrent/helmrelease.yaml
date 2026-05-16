@@ -21,6 +21,13 @@ spec:
               QBT_WEBUI_PORT: &port 80
               QBT_TORRENTING_PORT: 17307
               TZ: Europe/Warsaw
+            lifecycle:
+              preStop:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - rm -rf /config/qBittorrent/lockfile
             probes:
               liveness:
                 enabled: true
