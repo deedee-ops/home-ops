@@ -3,12 +3,14 @@
 services:
   roms-server:
     environment:
-      ROMS_SERVER_URL: http://192.168.2.10:4444
-      ROMS_PKGS_DIR_FILTER: "PS3,PS4"
+      ROMS_CONFIG: /roms-server.yaml
     image: registry.ajgon.casa/tools/roms-server:latest
     container_name: roms-server
     restart: unless-stopped
     user: 1000:1000
+    configs:
+      - source: config
+        target: /roms-server.yaml
     volumes:
       - /mnt/tank/retro/roms:/data:ro
       - /mnt/tank/retro/metadata:/config
@@ -22,3 +24,7 @@ services:
     security_opt:
       - no-new-privileges
     read_only: true
+
+configs:
+  config:
+    file: ./config/roms-server.yaml

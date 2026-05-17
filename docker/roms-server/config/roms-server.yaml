@@ -1,0 +1,26 @@
+---
+server:
+  external_url: http://192.168.2.10:4444
+  bind: :8080
+metadata:
+  directory: /config
+  dlc_mapper:
+    CUSA12152: CUSA12153
+    CUSA12421: CUSA12401
+    CUSA17776: CUSA20177
+    CUSA34386: CUSA34390
+  game_title_mapper:
+    CUSA03551: Bully
+  title_replacements:
+    "™": ""
+    "®": ""
+    "ö": "o"
+    "by 14QwerT88": ""
+    "By PsHack": ""
+pkgs:
+  directory: /data
+  filter:
+    - PS3
+    - PS4
+scanner:
+  poll_interval: 30s
