@@ -1,0 +1,20 @@
+---
+server:
+  external_url: http://192.168.2.10:4444
+  bind: :8080
+metadata:
+  directory: /config
+  dlc_mapper:
+    CUSA34386: CUSA34390
+  title_replacements:
+    "™": ""
+    "®": ""
+    "ö": "o"
+    "by 14QwerT88": ""
+pkgs:
+  directory: /data
+  filter:
+    - PS3
+    - PS4
+scanner:
+  poll_interval: 30s
