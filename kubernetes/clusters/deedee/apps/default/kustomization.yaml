@@ -21,3 +21,4 @@ resources:
   - ./paperless-ngx.yaml
   - ./syncthing.yaml
   - ./wakapi.yaml
+  - ./vaultwarden.yaml
