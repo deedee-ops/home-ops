@@ -22,6 +22,8 @@
     "github>deedee-ops/home-ops//.renovate/overrides.json5",
     "github>deedee-ops/home-ops//.renovate/semanticCommits.json5",
   ],
+  minimumReleaseAge: "7 days",
+  minimumReleaseAgeBehaviour: "timestamp-optional",
   dependencyDashboardTitle: "Renovate Dashboard 🤖",
   suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
   packageRules: [
