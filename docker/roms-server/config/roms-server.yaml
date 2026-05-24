@@ -11,6 +11,7 @@ metadata:
     CUSA34386: CUSA34390
   game_title_mapper:
     CUSA03551: Bully
+    BLES01227: "ASURA'S WRATH"
   title_replacements:
     "™": ""
     "®": ""

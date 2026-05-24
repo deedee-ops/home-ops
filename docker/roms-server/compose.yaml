@@ -12,12 +12,30 @@ services:
       - source: config
         target: /roms-server.yaml
     volumes:
-      - /mnt/tank/retro/roms:/data:ro
+      - /mnt/tank/retro/roms/PS3/pkgi-server:/data/PS3:ro
+      - /mnt/tank/retro/roms/PS4:/data/PS4:ro
       - /mnt/tank/retro/metadata:/config
     tmpfs:
       - /tmp:mode=755,uid=1000,gid=1000
     ports:
       - 4444:8080
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  ps3netsrv-go:
+    image: ghcr.io/xakep666/ps3netsrv-go:v0.2.4
+    container_name: ps3netsrv-go
+    restart: unless-stopped
+    user: 1000:1000
+    volumes:
+      - /mnt/tank/retro/roms/PS3:/srv/ps3data:ro
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    ports:
+      - 38008:38008
     # security
     cap_drop:
       - all
