@@ -16,6 +16,9 @@ spec:
       egress.cilium.io/kube-apiserver: "true"
       egress.cilium.io/nas: "true"
   primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  stopDelay: 180
+  smartShutdownTimeout: 180
   storage:
     size: 10Gi
     storageClass: ceph-block
