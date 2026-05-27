@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: open-webui-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: open-webui
+  egress:
+    - toEndpoints:
+        - {}
+    - toCIDRSet:
+        - cidr: 192.168.2.0/24
+    - toFQDNs:
+        - matchName: cas-server.xethub.hf.co
+        - matchName: huggingface.co
+        - matchName: transfer.xethub.hf.co
+        - matchName: us.aws.cdn.hf.co
