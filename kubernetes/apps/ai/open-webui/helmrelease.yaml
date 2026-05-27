@@ -28,6 +28,8 @@ spec:
               ENABLE_VERSION_UPDATE_CHECK: "False"
               OAUTH_EMAIL_CLAIM: "email"
               OAUTH_GROUP_CLAIM: "groups"
+              OPENAI_API_BASE_URL: "http://bifrost.ai.svc.cluster.local/v1"
+              OPENAI_API_KEY: ""
               OAUTH_PROVIDER_NAME: "Pocket ID"
               OAUTH_SCOPES: "openid email profile groups"
               OAUTH_USERNAME_CLAIM: "preferred_username"

@@ -7,5 +7,6 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
+  - ./bifrost.yaml
   - ./hermes-agent.yaml
   - ./open-webui.yaml
