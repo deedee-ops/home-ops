@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes-agent-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: hermes-agent
+    egress:
+      - toCIDRSet:
+          - cidr: 0.0.0.0/0
+        toPorts:
+          - ports:
+              - port: "80"
+              - port: "443"
