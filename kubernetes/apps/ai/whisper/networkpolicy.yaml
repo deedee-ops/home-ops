@@ -3,23 +3,12 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: open-webui-egress-internal
+  name: whisper-egress-internal
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: open-webui
+      app.kubernetes.io/name: whisper
   egress:
-    - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: bifrost
-        - matchLabels:
-            app.kubernetes.io/name: whisper
-    - toCIDRSet:
-        - cidr: 192.168.2.0/24
-      toPorts:
-        - ports:
-            - port: "80"
-            - port: "443"
     - toFQDNs:
         - matchName: cas-server.xethub.hf.co
         - matchName: huggingface.co
@@ -28,3 +17,9 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+    - toFQDNs:
+        - matchName: ip1.dynupdate.no-ip.com
+        - matchName: ipv4.icanhazip.com
+      toPorts:
+        - ports:
+            - port: "80"

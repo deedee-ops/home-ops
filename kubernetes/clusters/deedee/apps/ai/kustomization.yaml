@@ -10,3 +10,4 @@ resources:
   - ./bifrost.yaml
   - ./hermes-agent.yaml
   - ./open-webui.yaml
+  - ./whisper.yaml
