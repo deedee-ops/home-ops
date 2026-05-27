@@ -17,7 +17,7 @@ spec:
           app:
             image: &img
               repository: ghcr.io/n8n-io/n8n
-              tag: stable@sha256:012773be0d2be4a6478bca5643f52d21bf690482aae6297221eca0d969bc7b90
+              tag: stable@sha256:a3ea08b6b923d909b125c7b06273c16679491f07a05857a2dc0df9d9124080db
             env:
               DB_SQLITE_POOL_SIZE: "1000"
               DB_SQLITE_VACUUM_ON_STARTUP: "true"
