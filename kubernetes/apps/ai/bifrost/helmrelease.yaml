@@ -1,0 +1,178 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bifrost
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bifrost
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image:
+              repository: maximhq/bifrost
+              tag: v1.5.5@sha256:e197a84985bf7396ad78b6c26061c3f04573b4c7e2512d30e9ee3053c91e5b2c
+            env:
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "bifrost-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 512Mi
+        initContainers:
+          caddy:
+            restartPolicy: Always # make it sidecar
+            image:
+              repository: docker.io/library/caddy
+              tag: "2.11.3@sha256:ec18ee54aab3315c22e25f3b2babda73ff8007d39b13b3bd1bfffa2f0444c7d9"
+            args:
+              - caddy
+              - run
+              - --config
+              - /config/Caddyfile
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /datasheet
+                    port: 8000
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+            securityContext:
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - NET_BIND_SERVICE
+            resources:
+              requests:
+                cpu: "5m"
+                memory: "128Mi"
+              limits:
+                cpu: "1000m"
+                memory: "512Mi"
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "bifrost.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: bifrost
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /v1
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: RequestRedirect
+                requestRedirect:
+                  path:
+                    type: ReplaceFullPath
+                    replaceFullPath: /v1
+                  statusCode: 301
+    configMaps:
+      caddy:
+        enabled: true
+        data:
+          # yamllint disable rule:line-length
+          Caddyfile: |
+            :8000 {
+                handle /datasheet {
+                    respond "{}" 200
+                }
+            }
+    persistence:
+      config:
+        existingClaim: "bifrost"
+        globalMounts:
+          - path: /app/data
+      caddy:
+        type: configMap
+        identifier: caddy
+        advancedMounts:
+          main:
+            caddy:
+              - subPath: Caddyfile
+                path: /config/Caddyfile
+      configfile:
+        type: configMap
+        name: bifrost-configmap
+        globalMounts:
+          - subPath: config.json
+            path: /app/data/config.json
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp

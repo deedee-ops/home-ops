@@ -3,15 +3,14 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: open-webui-egress-internal
+  name: bifrost-egress-internal
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: open-webui
+      app.kubernetes.io/name: bifrost
   egress:
     - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: bifrost
+        - {}
     - toCIDRSet:
         - cidr: 192.168.2.0/24
       toPorts:
@@ -19,10 +18,7 @@ spec:
             - port: "80"
             - port: "443"
     - toFQDNs:
-        - matchName: cas-server.xethub.hf.co
-        - matchName: huggingface.co
-        - matchName: transfer.xethub.hf.co
-        - matchName: us.aws.cdn.hf.co
+        - matchName: getbifrost.ai
       toPorts:
         - ports:
             - port: "443"
