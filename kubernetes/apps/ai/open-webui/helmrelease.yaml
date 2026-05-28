@@ -22,6 +22,11 @@ spec:
               AUDIO_STT_MODEL: "turbo"
               AUDIO_STT_OPENAI_API_BASE_URL: "http://whisper.ai.svc.cluster.local/v1"
               AUDIO_STT_OPENAI_API_KEY: ""
+              AUDIO_TTS_ENGINE: "openai"
+              AUDIO_TTS_MODEL: "tts-1"
+              AUDIO_TTS_OPENAI_API_BASE_URL: "http://kokoro.ai.svc.cluster.local/v1"
+              AUDIO_TTS_OPENAI_API_KEY: ""
+              AUDIO_TTS_VOICE: "af_heart"
               ENABLE_FOLLOW_UP_GENERATION: "False"
               ENABLE_LOGIN_FORM: "False"
               ENABLE_OAUTH_SIGNUP: "True"
@@ -99,7 +104,7 @@ spec:
         runAsNonRoot: false
         runAsUser: 0
         runAsGroup: 0
-        fsGroup: 10000
+        fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
