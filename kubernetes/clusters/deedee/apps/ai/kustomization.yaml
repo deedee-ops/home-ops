@@ -9,6 +9,6 @@ resources:
   - ./_namespace.yaml
   - ./bifrost.yaml
   - ./hermes-agent.yaml
-  - ./kokoro.yaml
   - ./open-webui.yaml
+  - ./speaches.yaml
   - ./whisper.yaml
