@@ -43,10 +43,5 @@
   },
   "config_store": {
     "enabled": false
-  },
-  "framework": {
-    "pricing": {
-      "pricing_url": "http://localhost:8000/datasheet"
-    }
   }
 }

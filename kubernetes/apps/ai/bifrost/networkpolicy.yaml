@@ -18,6 +18,7 @@ spec:
             - port: "80"
             - port: "443"
     - toFQDNs:
+        - matchName: www.getbifrost.ai
         - matchName: getbifrost.ai
       toPorts:
         - ports:

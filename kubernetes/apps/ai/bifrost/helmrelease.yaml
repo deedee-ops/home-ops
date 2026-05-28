@@ -55,46 +55,13 @@ spec:
                 cpu: 10m
               limits:
                 memory: 512Mi
-        initContainers:
-          caddy:
-            restartPolicy: Always # make it sidecar
-            image:
-              repository: docker.io/library/caddy
-              tag: "2.11.3@sha256:ec18ee54aab3315c22e25f3b2babda73ff8007d39b13b3bd1bfffa2f0444c7d9"
-            args:
-              - caddy
-              - run
-              - --config
-              - /config/Caddyfile
-            probes:
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /datasheet
-                    port: 8000
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-            securityContext:
-              readOnlyRootFilesystem: true
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - ALL
-                add:
-                  - NET_BIND_SERVICE
-            resources:
-              requests:
-                cpu: "5m"
-                memory: "128Mi"
-              limits:
-                cpu: "1000m"
-                memory: "512Mi"
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -135,30 +102,11 @@ spec:
                     type: ReplaceFullPath
                     replaceFullPath: /v1
                   statusCode: 301
-    configMaps:
-      caddy:
-        enabled: true
-        data:
-          # yamllint disable rule:line-length
-          Caddyfile: |
-            :8000 {
-                handle /datasheet {
-                    respond "{}" 200
-                }
-            }
     persistence:
       config:
         existingClaim: "bifrost"
         globalMounts:
           - path: /app/data
-      caddy:
-        type: configMap
-        identifier: caddy
-        advancedMounts:
-          main:
-            caddy:
-              - subPath: Caddyfile
-                path: /config/Caddyfile
       configfile:
         type: configMap
         name: bifrost-configmap
