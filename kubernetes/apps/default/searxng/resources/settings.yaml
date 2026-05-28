@@ -1,0 +1,54 @@
+---
+use_default_settings: true
+
+server:
+  limiter: false
+  image_proxy: true
+  method: GET # https://github.com/searxng/searxng/pull/3619
+  public_instance: false
+
+search:
+  autocomplete: duckduckgo
+  favicon_resolver: duckduckgo
+  languages:
+    - all
+    - en
+    - en-US
+    - pl
+    - pl-PL
+  formats:
+    - html
+    - json
+
+valkey:
+  url: valkey://localhost:6379/0
+
+general:
+  instance_name: SearXNG
+
+ui:
+  default_theme: simple
+  infinite_scroll: true
+  query_in_title: true
+  results_on_new_tab: true
+  static_use_hash: true
+  theme_args:
+    simple_style: auto
+
+categories_as_tabs:
+  general:
+  images:
+  videos:
+  map:
+
+hostnames:
+  high_priority:
+    - (.*)\/blog\/(.*)
+    - (.*\.)?wikipedia.org$
+    - (.*\.)?github.com$
+    - (.*\.)?reddit.com$
+    - (.*\.)?docker.com$
+    - (.*\.)?archlinux.org$
+    - (.*\.)?stackoverflow.com$
+    - (.*\.)?askubuntu.com$
+    - (.*\.)?superuser.com$

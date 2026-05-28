@@ -12,9 +12,10 @@ spec:
   values:
     controllers:
       main:
+        type: statefulset
         containers:
           app:
-            image:
+            image: &img
               repository: ghcr.io/open-webui/open-webui
               tag: main@sha256:74093dadc9c6aabc23987a74fd8c2fb8d995b1a5b22e83b0036fb9d6af590e8c
             env:
@@ -35,6 +36,7 @@ spec:
               ENABLE_PERSISTENT_CONFIG: "False"
               ENABLE_SIGNUP: "False"
               ENABLE_VERSION_UPDATE_CHECK: "False"
+              ENABLE_WEB_SEARCH: "True"
               OAUTH_EMAIL_CLAIM: "email"
               OAUTH_GROUP_CLAIM: "groups"
               OAUTH_PROVIDER_NAME: "Pocket ID"
@@ -43,10 +45,15 @@ spec:
               OPENAI_API_BASE_URL: "http://bifrost.ai.svc.cluster.local/v1"
               OPENAI_API_KEY: ""
               OPENID_PROVIDER_URL: "https://id.${ROOT_DOMAIN}/.well-known/openid-configuration"
-              REQUESTS_CA_BUNDLE: "/certs/homelab.pem"
-              SSL_CERT_FILE: "/certs/homelab.pem"
+              REQUESTS_CA_BUNDLE: "/certs/ca-bundle.pem"
+              SEARXNG_QUERY_URL: "http://searxng.default.svc.cluster.local/search?q=<query>"
+              SSL_CERT_FILE: "/certs/ca-bundle.pem"
               USER_PERMISSIONS_CHAT_STT: "True"
               WEBUI_URL: "https://ai.${ROOT_DOMAIN}"
+              WEB_LOADER_ENGINE: "playwright"
+              WEB_SEARCH_CONCURRENT_REQUESTS: 10
+              WEB_SEARCH_ENGINE: "searxng"
+              WEB_SEARCH_RESULT_COUNT: 3
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
@@ -91,6 +98,25 @@ spec:
                 cpu: 10m
               limits:
                 memory: 4096Mi
+        initContainers:
+          01-merge-certificates:
+            image: *img
+            command:
+              - sh
+              - -c
+              - >-
+                cat /etc/ssl/certs/ca-certificates.crt /certs/homelab.pem
+                > /certs/ca-bundle.pem
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 5Gi
+              advancedMounts:
+                app:
+                  - path: /root/.cache
+                    subPath: root-cache
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -100,6 +126,7 @@ spec:
             value: "1"
       labels:
         egress.cilium.io/auth: "true"
+        egress.cilium.io/search: "true"
       securityContext:
         runAsNonRoot: false
         runAsUser: 0
@@ -152,3 +179,5 @@ spec:
         globalMounts:
           - path: /tmp
             subPath: tmp
+          - path: /certs
+            subPath: certs

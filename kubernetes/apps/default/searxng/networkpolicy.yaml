@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: searxng-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: searxng
+    egress:
+      - toCIDRSet:
+          - cidr: 0.0.0.0/0
+        toPorts:
+          - ports:
+              - port: "443"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: searxng-egress-label
+specs:
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/search: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: searxng
+        toPorts:
+          - ports:
+              - port: "80"

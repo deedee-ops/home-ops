@@ -5,6 +5,7 @@
     "docker/talos-factory/config/config.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",
     "kubernetes/apps/default/glance/resources/widgets/*.yaml",
+    "kubernetes/apps/default/searxng/resources/*.y*ml",
     "kubernetes/apps/home/frigate/resources/config.yaml",
     "kubernetes/apps/observability/gatus/resources/config.yaml",
     "kubernetes/apps/retro/romm/resources/config.yaml",

@@ -19,6 +19,7 @@ resources:
   - ./mail-archive.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
+  - ./searxng.yaml
   - ./syncthing.yaml
   - ./wakapi.yaml
   - ./vaultwarden.yaml
