@@ -3,11 +3,11 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: whisper-egress-internal
+  name: openedai-speech-egress-internal
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: whisper
+      app.kubernetes.io/name: openedai-speech
   egress:
     - toFQDNs:
         - matchName: cas-bridge.xethub.hf.co
@@ -15,12 +15,7 @@ spec:
         - matchName: huggingface.co
         - matchName: transfer.xethub.hf.co
         - matchName: us.aws.cdn.hf.co
+        - matchName: pypi.org
       toPorts:
         - ports:
             - port: "443"
-    - toFQDNs:
-        - matchName: ip1.dynupdate.no-ip.com
-        - matchName: ipv4.icanhazip.com
-      toPorts:
-        - ports:
-            - port: "80"

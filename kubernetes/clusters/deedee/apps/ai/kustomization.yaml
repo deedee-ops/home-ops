@@ -10,5 +10,5 @@ resources:
   - ./bifrost.yaml
   - ./hermes-agent.yaml
   - ./open-webui.yaml
-  - ./speaches.yaml
+  - ./openedai-speech.yaml
   - ./whisper.yaml
