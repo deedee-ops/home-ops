@@ -8,6 +8,7 @@ components:
 resources:
   - ./_namespace.yaml
   - ./bifrost.yaml
+  - ./database.yaml
   - ./hermes-agent.yaml
   - ./open-webui.yaml
   - ./openedai-speech.yaml

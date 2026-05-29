@@ -28,6 +28,24 @@ spec:
               AUDIO_TTS_OPENAI_API_BASE_URL: "http://openedai-speech.ai.svc.cluster.local/v1"
               AUDIO_TTS_OPENAI_API_KEY: ""
               AUDIO_TTS_VOICE: "alloy"
+              DATABASE_TYPE: postgresql
+              DATABASE_NAME: openwebui
+              DATABASE_HOST:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: host
+              DATABASE_PASSWORD:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: password
+              DATABASE_PORT:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: port
+              DATABASE_USER:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: username
               ENABLE_FOLLOW_UP_GENERATION: "False"
               ENABLE_LOGIN_FORM: "False"
               ENABLE_OAUTH_SIGNUP: "True"
@@ -49,6 +67,7 @@ spec:
               SEARXNG_QUERY_URL: "http://searxng.default.svc.cluster.local/search?q=<query>"
               SSL_CERT_FILE: "/certs/ca-bundle.pem"
               USER_PERMISSIONS_CHAT_STT: "True"
+              VECTOR_DB: pgvector
               WEBUI_URL: "https://ai.${ROOT_DOMAIN}"
               WEB_LOADER_ENGINE: "playwright"
               WEB_SEARCH_CONCURRENT_REQUESTS: 10

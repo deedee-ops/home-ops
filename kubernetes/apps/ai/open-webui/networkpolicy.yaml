@@ -16,6 +16,8 @@ spec:
             app.kubernetes.io/name: openedai-speech
         - matchLabels:
             app.kubernetes.io/name: whisper
+        - matchLabels:
+            app.kubernetes.io/component: database
     - toCIDRSet:
         - cidr: 0.0.0.0/0
       toPorts:
