@@ -13,6 +13,9 @@ spec:
     monitoring:
       enabled: true
       createPrometheusRules: true
+      prometheusRuleOverrides:
+        CephPoolGrowthWarning:
+          disabled: true
     toolbox:
       enabled: true
     route:
