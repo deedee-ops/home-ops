@@ -84,7 +84,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 4096Mi
+                memory: 4Gi
         statefulset:
           volumeClaimTemplates:
             - name: data

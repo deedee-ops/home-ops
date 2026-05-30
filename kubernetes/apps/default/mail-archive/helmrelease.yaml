@@ -50,7 +50,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                memory: 1024Mi
+                memory: 1Gi
           dovecot:
             image:
               repository: ghcr.io/slusarz/dovecot-fts-flatcurve

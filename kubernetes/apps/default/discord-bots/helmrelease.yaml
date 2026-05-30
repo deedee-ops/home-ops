@@ -61,10 +61,10 @@ spec:
             securityContext: *sc
             resources:
               requests:
-                cpu: "50m"
+                cpu: 50m
               limits:
-                cpu: "1000m"
-                memory: "1024Mi"
+                cpu: 1000m
+                memory: 1Gi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
