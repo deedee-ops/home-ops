@@ -32,5 +32,15 @@
       ignoreTests: false,
       matchUpdateTypes: ["major", "minor", "patch", "pin", "digest"],
     },
+    {
+      description: "Auto-merge high-cadence packages weekly",
+      matchDatasources: ["docker"],
+      automerge: true,
+      automergeType: "pr",
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      matchPackageNames: ["/hermes-agent/", "/kube-prometheus-stack/"],
+      ignoreTests: false,
+      schedule: ["before 6am on Monday"],
+    },
   ],
 }
