@@ -123,17 +123,6 @@ spec:
     persistence:
       config:
         existingClaim: sonarr
-      cache:
-        type: custom
-        volumeSpec:
-          csi:
-            driver: nfs.csi.k8s.io
-            volumeAttributes:
-              server: nas.internal
-              share: "/mnt/cache/media"
-              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
-        globalMounts:
-          - path: /data/cache
       tank:
         type: custom
         volumeSpec:
@@ -144,7 +133,7 @@ spec:
               share: "/mnt/tank/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
-          - path: /data/tank
+          - path: /data
       scripts:
         type: configMap
         name: sonarr-configmap
