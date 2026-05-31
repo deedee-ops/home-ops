@@ -21,6 +21,7 @@
     "github>deedee-ops/home-ops//.renovate/labels.json5",
     "github>deedee-ops/home-ops//.renovate/overrides.json5",
     "github>deedee-ops/home-ops//.renovate/semanticCommits.json5",
+    "github>deedee-ops/home-ops//.renovate/talosFactory.json5",
   ],
   minimumReleaseAge: "7 days",
   minimumReleaseAgeBehaviour: "timestamp-optional",
