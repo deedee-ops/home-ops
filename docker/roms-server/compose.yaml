@@ -26,7 +26,7 @@ services:
       - no-new-privileges
     read_only: true
   ps3netsrv-go:
-    image: ghcr.io/xakep666/ps3netsrv-go:v0.2.4
+    image: ghcr.io/xakep666/ps3netsrv-go:v0.3.0
     container_name: ps3netsrv-go
     restart: unless-stopped
     user: 1000:1000
