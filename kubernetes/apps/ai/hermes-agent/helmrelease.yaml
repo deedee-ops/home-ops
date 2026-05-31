@@ -16,7 +16,7 @@ spec:
           app:
             image:
               repository: nousresearch/hermes-agent
-              tag: latest@sha256:4ef2f871259550db7cb1d6d700763f4ef335379902e5db6d8356636443539dff
+              tag: latest@sha256:b09780a9ef660becd0a2d23a9fd3d0f18ef0a24fdd3114eda2aa80dddbc25f66
             args:
               - gateway
               - run
