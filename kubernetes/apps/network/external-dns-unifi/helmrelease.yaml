@@ -64,4 +64,4 @@ spec:
       limits:
         memory: 300Mi
     txtOwnerId: "${CLUSTER}"
-    txtPrefix: "k8s.${CLUSTER}."
+    txtPrefix: "k8s.${CLUSTER}.%{record_type}-"

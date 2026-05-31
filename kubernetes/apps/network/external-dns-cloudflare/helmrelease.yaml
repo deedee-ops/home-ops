@@ -43,7 +43,7 @@ spec:
       - crd
       - gateway-httproute
     txtOwnerId: default
-    txtPrefix: k8s.
+    txtPrefix: k8s.%{record_type}-
     domainFilters:
       - "${ROOT_DOMAIN}"
     serviceMonitor:
