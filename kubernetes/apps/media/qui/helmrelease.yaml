@@ -19,12 +19,15 @@ spec:
               tag: v1.19.0@sha256:baa07db5326f75f8c2246703603cbe2132476c8ad0ab31c976a960cb4c4731f5
             env:
               QUI__HOST: 0.0.0.0
-              QUI__PORT: &port 80
               QUI__LOG_LEVEL: INFO
+              QUI__METRICS_ENABLED: true
+              QUI__METRICS_HOST: 0.0.0.0
+              QUI__METRICS_PORT: &metricsPort 8080
               QUI__OIDC_DISABLE_BUILT_IN_LOGIN: "true"
               QUI__OIDC_ENABLED: "true"
               QUI__OIDC_ISSUER: https://id.${ROOT_DOMAIN}
               QUI__OIDC_REDIRECT_URL: https://torrents.${ROOT_DOMAIN}/api/auth/oidc/callback
+              QUI__PORT: &port 80
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
@@ -80,6 +83,12 @@ spec:
         ports:
           http:
             port: *port
+          metrics:
+            port: *metricsPort
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: metrics
     route:
       app:
         hostnames:
