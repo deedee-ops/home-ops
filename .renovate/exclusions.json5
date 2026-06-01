@@ -7,5 +7,10 @@
       matchDatasources: ["docker"],
       matchPackageNames: ["/registry\\.ajgon\\.casa/"],
     },
+    {
+      description: "Exclude packages with disabled timestamps",
+      matchPackageNames: ["ghcr.io/home-operations/busybox"],
+      minimumReleaseAge: null,
+    },
   ],
 }

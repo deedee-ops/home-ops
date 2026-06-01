@@ -2,7 +2,7 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   customDatasources: {
     "talos-factory": {
-      defaultRegistryUrlTemplate: "https://talos.ajgon.casa/versions",
+      defaultRegistryUrlTemplate: "https://factory.talos.dev/versions",
       format: "json",
       transformTemplates: ['{"releases": [$.{"version": $}]}'],
     },
@@ -13,7 +13,7 @@
       customType: "regex",
       managerFilePatterns: ["/talos\\/.*\\.yaml(?:\\.j2)?$/"],
       matchStrings: [
-        "talos\\.ajgon\\.casa\\/[^/]+\\/[^:]+:(?<currentValue>v\\S+)",
+        "factory\\.talos\\.dev\\/[^/]+\\/[^:]+:(?<currentValue>v\\S+)",
       ],
       datasourceTemplate: "custom.talos-factory",
       versioningTemplate: "semver",
@@ -26,6 +26,7 @@
       matchDatasources: ["custom.talos-factory"],
       semanticCommitScope: "container",
       commitMessageTopic: "{{depName}}",
+      minimumReleaseAge: "1d",
     },
   ],
 }
