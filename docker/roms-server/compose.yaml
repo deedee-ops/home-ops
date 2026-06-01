@@ -32,6 +32,8 @@ services:
     user: 1000:1000
     volumes:
       - /mnt/tank/retro/roms/PS3:/srv/ps3data:ro
+      - /mnt/tank/retro/roms/PS2:/srv/ps3data/PS2ISO:ro
+      - /mnt/tank/retro/roms/PS1:/srv/ps3data/PSXISO:ro
     tmpfs:
       - /tmp:mode=755,uid=1000,gid=1000
     ports:
