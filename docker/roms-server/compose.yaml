@@ -25,25 +25,42 @@ services:
     security_opt:
       - no-new-privileges
     read_only: true
-  ps3netsrv-go:
-    image: ghcr.io/xakep666/ps3netsrv-go:v0.3.0
-    container_name: ps3netsrv-go
+  ps3netsrv:
+    image: shawly/ps3netsrv
+    container_name: ps3netsrv
     restart: unless-stopped
-    user: 1000:1000
+    environment:
+      USER_ID: "1000"
+      GROUP_ID: "1000"
+      TZ: Europe/Warsaw
     volumes:
-      - /mnt/tank/retro/roms/PS3:/srv/ps3data:ro
-      - /mnt/tank/retro/roms/PS2:/srv/ps3data/PS2ISO:ro
-      - /mnt/tank/retro/roms/PS1:/srv/ps3data/PSXISO:ro
-    tmpfs:
-      - /tmp:mode=755,uid=1000,gid=1000
+      - /mnt/tank/retro/roms/PS3:/games:ro
+      - /mnt/tank/retro/roms/PS2:/games/PS2ISO:ro
+      - /mnt/tank/retro/roms/PS1:/games/PSXISO:ro
     ports:
       - 38008:38008
     # security
-    cap_drop:
-      - all
     security_opt:
       - no-new-privileges
-    read_only: true
+#   ps3netsrv-go:
+#     image: ghcr.io/xakep666/ps3netsrv-go:v0.3.0
+#     container_name: ps3netsrv-go
+#     restart: unless-stopped
+#     user: 1000:1000
+#     volumes:
+#       - /mnt/tank/retro/roms/PS3:/srv/ps3data:ro
+#       - /mnt/tank/retro/roms/PS2:/srv/ps3data/PS2ISO:ro
+#       - /mnt/tank/retro/roms/PS1:/srv/ps3data/PSXISO:ro
+#     tmpfs:
+#       - /tmp:mode=755,uid=1000,gid=1000
+#     ports:
+#       - 38008:38008
+#     # security
+#     cap_drop:
+#       - all
+#     security_opt:
+#       - no-new-privileges
+#     read_only: true
 
 configs:
   config:
