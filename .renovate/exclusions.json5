@@ -5,7 +5,17 @@
       enabled: false,
       description: "Disable private registry images",
       matchDatasources: ["docker"],
-      matchPackageNames: ["/registry\\.ajgon\\.casa/"],
+      matchPackageNames: [
+        "/registry\\.ajgon\\.casa/",
+        // this would also surpress "Package lookup failures" for talos/*/machineconfig.yaml,
+        // when docker datasource interferes instead of using "custom.talos-factory" datasource
+        "/talos\\.ajgon\\.casa/",
+      ],
+    },
+    {
+      description: "Exclude packages with disabled timestamps (for minimumReleaseAge)",
+      matchPackageNames: ["ghcr.io/home-operations/busybox"],
+      minimumReleaseAge: null,
     },
   ],
 }

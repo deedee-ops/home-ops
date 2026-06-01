@@ -18,34 +18,17 @@
       description: "Flux Operator Group",
       groupName: "flux-operator",
       matchDatasources: ["docker"],
-      matchPackageNames: [
-        "/flux-operator/",
-        "/flux-instance/",
-        "/flux-operator-manifests/",
-      ],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-      minimumGroupSize: 3,
-    },
-    {
-      description: "Kiwix Group",
-      groupName: "kiwix",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/kiwix-serve/", "/kiwix-tools/"],
+      matchPackageNames: ["/flux-operator/", "/flux-instance/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
       minimumGroupSize: 2,
     },
     {
-      description: "Intel Device Plugins Group",
-      groupName: "intel-device-plugins",
+      description: "Kiwix Group",
+      groupName: "kiwix",
       matchDatasources: ["docker"],
-      matchPackageNames: [
-        "/intel-device-plugins-operator/",
-        "/intel-device-plugins-gpu/",
-      ],
+      matchPackageNames: ["/kiwix-serve/", "/kiwix-tools/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
@@ -65,8 +48,7 @@
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
-      // renovate for some reason duplicates items here
-      minimumGroupSize: 9,
+      minimumGroupSize: 5,
     },
     {
       description: "Rook-Ceph Group",

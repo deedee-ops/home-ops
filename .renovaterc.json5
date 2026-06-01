@@ -1,45 +1,35 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
-    "config:recommended",
-    "docker:enableMajor",
-    "helpers:pinGitHubActionDigests",
-    ":automergeDigest",
-    ":automergePatch",
-    ":automergePr",
-    ":dependencyDashboard",
-    ":disableRateLimiting",
-    ":rebaseStalePrs",
-    ":semanticCommits",
     ":timezone(Europe/Warsaw)",
+
+    "github>home-operations/renovate-presets//config/baseConfig.json5",
+    "github>home-operations/renovate-presets//config/dependencyDashboard.json5",
+    "github>home-operations/renovate-presets//config/managerFilePatterns.json5",
+    "github>home-operations/renovate-presets//config/registryAliases.json5",
+    "github>home-operations/renovate-presets//managers/cnpg.json5",
+    "github>home-operations/renovate-presets//managers/grafanaDashboards.json5",
+    "github>home-operations/renovate-presets//managers/oci.json5",
+    "github>home-operations/renovate-presets//overrides/changelogs.json5",
+    "github>home-operations/renovate-presets//overrides/helmfile.json5",
+    "github>home-operations/renovate-presets//overrides/renovateOperator.json5",
+    "github>home-operations/renovate-presets//policies/semanticCommits.json5",
+    "github>home-operations/renovate-presets//versioning/searxng.json5",
+
     "github>deedee-ops/home-ops//.renovate/autoMerge.json5",
-    "github>deedee-ops/home-ops//.renovate/changelogs.json5",
     "github>deedee-ops/home-ops//.renovate/customManagers.json5",
     "github>deedee-ops/home-ops//.renovate/exclusions.json5",
-    "github>deedee-ops/home-ops//.renovate/grafanaDashboards.json5",
     "github>deedee-ops/home-ops//.renovate/groups.json5",
     "github>deedee-ops/home-ops//.renovate/labels.json5",
-    "github>deedee-ops/home-ops//.renovate/overrides.json5",
-    "github>deedee-ops/home-ops//.renovate/semanticCommits.json5",
     "github>deedee-ops/home-ops//.renovate/talosFactory.json5",
   ],
-  minimumReleaseAge: "7 days",
-  minimumReleaseAgeBehaviour: "timestamp-optional",
-  dependencyDashboardTitle: "Renovate Dashboard 🤖",
-  suppressNotifications: ["prEditedNotification", "prIgnoreNotification"],
+  minimumReleaseAge: "3 days",
+  minimumReleaseAgeBehaviour: "timestamp-required",
   packageRules: [
+    // Map terraform registry to opentofu
     {
       matchDatasources: ["terraform-provider", "terraform-module"],
       registryUrls: ["https://registry.opentofu.org"],
     },
   ],
-  flux: {
-    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
-  },
-  "helm-values": {
-    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
-  },
-  kubernetes: {
-    managerFilePatterns: ["/\\.yaml(?:\\.j2)?$/"],
-  },
 }
