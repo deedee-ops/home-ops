@@ -254,3 +254,13 @@ the DNS records to their respective platforms accordingly.
 Thanks to all the people who donate their time to the [Home Operations](https://discord.gg/home-operations) Discord community.
 Be sure to check out [kubesearch.dev](https://kubesearch.dev/) for ideas on how to deploy applications
 or get ideas on what you could deploy.
+
+---
+
+<!-- markdownlint-disable MD033 -->
+<div align="center">
+
+[![DeepWiki](https://img.shields.io/badge/deepwiki-purple?label=&logo=deepl&style=for-the-badge&logoColor=white)](https://deepwiki.com/deedee-ops/home-ops)
+
+</div>
+<!-- markdownlint-enable MD033 -->
