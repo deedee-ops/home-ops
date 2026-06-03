@@ -13,7 +13,6 @@ resources:
   - ./davis.yaml
   - ./discord-bots.yaml
   - ./firefly.yaml
-  - ./forgejo.yaml
   - ./glance.yaml
   - ./kiwix.yaml
   - ./mail-archive.yaml

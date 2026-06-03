@@ -12,7 +12,7 @@ spec:
       namespace: rook-ceph
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/default/forgejo
+  path: ./kubernetes/apps/forgejo-system/forgejo
   postBuild:
     substitute:
       APP: forgejo
@@ -24,5 +24,5 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
+  targetNamespace: forgejo-system
   wait: false
