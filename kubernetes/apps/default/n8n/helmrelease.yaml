@@ -35,7 +35,6 @@ spec:
               N8N_METRICS: "true"
               N8N_PORT: &port 80
               N8N_RESTRICT_FILE_ACCESS_TO: "/sync"
-              N8N_RUNNERS_ENABLED: "true"
               N8N_SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               N8N_SMTP_PORT: "25"
               N8N_SMTP_SENDER: "deedee@${ROOT_DOMAIN}"
