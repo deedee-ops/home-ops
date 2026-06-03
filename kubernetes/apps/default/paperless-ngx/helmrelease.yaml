@@ -40,7 +40,7 @@ spec:
               PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
               PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
               PAPERLESS_SUPERVISORD_WORKING_DIR: "/tmp"
-              PAPERLESS_TASK_WORKERS: "2"
+              PAPERLESS_TASK_WORKERS: "1"
               PAPERLESS_TIKA_ENABLED: "1"
               PAPERLESS_TIKA_ENDPOINT: "http://localhost:9998"
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: "http://localhost:3000"
@@ -48,6 +48,7 @@ spec:
               PAPERLESS_TRASH_DIR: &trash "/data/trash"
               PAPERLESS_TRUSTED_PROXIES: "172.30.0.0/16"
               PAPERLESS_URL: "https://paperless.${ROOT_DOMAIN}"
+              PAPERLESS_WEBSERVER_WORKERS: "1"
               REQUESTS_CA_BUNDLE: /etc/ssl/certs/homelab.crt
               USERMAP_UID: 1000
               USERMAP_GID: 1000
