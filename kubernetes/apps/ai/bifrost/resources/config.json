@@ -34,7 +34,7 @@
           "models": ["hermes-agent"],
           "weight": 1.0,
           "vllm_key_config": {
-            "url": "http://hermes-agent.ai.svc.cluster.local:8642",
+            "url": "http://hermes-agent:8642",
             "model_name": "hermes-agent"
           }
         }

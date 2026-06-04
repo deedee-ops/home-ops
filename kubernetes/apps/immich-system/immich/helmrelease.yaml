@@ -26,7 +26,7 @@ spec:
               IMMICH_CONFIG_FILE: /config/config.yaml
               IMMICH_ENV: &appEnv production
               IMMICH_HOST: "0.0.0.0"
-              IMMICH_MACHINE_LEARNING_URL: "http://immich-machinelearning.immich-system.svc.cluster.local:3003"
+              IMMICH_MACHINE_LEARNING_URL: "http://immich-machinelearning:3003"
               IMMICH_PORT: &port 80
               IMMICH_TELEMETRY_INCLUDE: "all" # enable metrics expose, not for calling home
               IMMICH_TRUSTED_PROXIES: "172.30.0.0/24"
@@ -172,7 +172,7 @@ spec:
               tag: 0.25.2@sha256:79b82f9818ded34c8dcfc5df0502126fdaff698b94ddad4b20ac1f0c3a7dcba2
             env:
               ALBUM_LEVELS: "1"
-              API_URL: http://immich-api.immich-system.svc.cluster.local/api/
+              API_URL: http://immich-api/api/
               IGNORE: "__Videos"
               MODE: CREATE
               READ_ALBUM_PROPERTIES: "True"

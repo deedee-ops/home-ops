@@ -22,7 +22,7 @@ spec:
               tag: "1.7.0-apache-nonroot@sha256:d36de6d12028186da454b78dcee0264a2ef13ff2c5faf8b18295c12b3385920e"
             env:
               ROUNDCUBEMAIL_DB_TYPE: "sqlite"
-              ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot.default.svc.cluster.local"
+              ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot"
               ROUNDCUBEMAIL_DEFAULT_PORT: "143"
               ROUNDCUBEMAIL_PLUGINS: "hide_blockquote,identicon,zipdownload"
             probes:

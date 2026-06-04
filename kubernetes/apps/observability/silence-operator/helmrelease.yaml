@@ -21,7 +21,7 @@ spec:
               kind: Deployment
               name: silence-operator
   values:
-    alertmanagerAddress: http://kube-prometheus-stack-alertmanager.observability.svc.cluster.local:9093
+    alertmanagerAddress: http://kube-prometheus-stack-alertmanager:9093
     networkPolicy:
       enabled: false
     podSecurityContext:
