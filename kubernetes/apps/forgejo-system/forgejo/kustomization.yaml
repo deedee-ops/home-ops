@@ -5,13 +5,6 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-configMapGenerator:
-  - name: forgejo-configmap
-    files:
-      - ./resources/app.ini
-generatorOptions:
-  disableNameSuffixHash: true
-  annotations:
-    kustomize.toolkit.fluxcd.io/substitute: disabled

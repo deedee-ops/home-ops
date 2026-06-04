@@ -20,3 +20,20 @@ specs:
         toPorts:
           - ports:
               - port: "443"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: forgejo-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: forgejo
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: forgejo-dragonfly
+      toPorts:
+        - ports:
+            - port: "6379"

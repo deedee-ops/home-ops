@@ -6,6 +6,7 @@ metadata:
   name: forgejo
 spec:
   components:
+    - ../../../components/dragonfly
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
