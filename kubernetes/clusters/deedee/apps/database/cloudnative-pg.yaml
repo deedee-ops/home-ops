@@ -7,10 +7,10 @@ metadata:
 spec:
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/cnpg-system/cloudnative-pg
+  path: ./kubernetes/apps/database/cloudnative-pg
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: cnpg-system
+  targetNamespace: database

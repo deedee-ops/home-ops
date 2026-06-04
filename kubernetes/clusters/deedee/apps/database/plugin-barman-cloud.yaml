@@ -7,13 +7,13 @@ metadata:
 spec:
   dependsOn:
     - name: cloudnative-pg
-      namespace: cnpg-system
+      namespace: database
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/cnpg-system/plugin-barman-cloud
+  path: ./kubernetes/apps/database/plugin-barman-cloud
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: cnpg-system
+  targetNamespace: database
