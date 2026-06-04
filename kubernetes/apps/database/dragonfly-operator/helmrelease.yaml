@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dragonfly-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: dragonfly-operator
+  interval: 30m
+  values:
+    replicaCount: 2
+    podLabels:
+      egress.cilium.io/kube-apiserver: "true"
+    manager:
+      image:
+        repository: ghcr.io/dragonflydb/operator
+    grafanaDashboard:
+      enabled: true
+      grafanaOperator:
+        enabled: true
+      folder: database
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: dragonfly-operator
+            patch: |-
+              - op: add
+                path: /spec/template/spec/securityContext/seccompProfile
+                value:
+                  type: RuntimeDefault

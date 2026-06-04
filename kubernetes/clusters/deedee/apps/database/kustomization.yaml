@@ -8,4 +8,5 @@ components:
 resources:
   - ./_namespace.yaml
   - ./cloudnative-pg.yaml
+  - ./dragonfly-operator.yaml
   - ./plugin-barman-cloud.yaml
