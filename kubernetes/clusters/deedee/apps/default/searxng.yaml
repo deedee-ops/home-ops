@@ -5,11 +5,14 @@ kind: Kustomization
 metadata:
   name: searxng
 spec:
+  components:
+    - ../../../components/dragonfly
   interval: 1h
   patches: []
   path: ./kubernetes/apps/default/searxng
   postBuild:
     substitute:
+      APP: searxng
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

@@ -14,3 +14,20 @@ specs:
         toPorts:
           - ports:
               - port: "443"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: paperless-ngx-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: paperless-ngx
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: paperless-ngx-dragonfly
+      toPorts:
+        - ports:
+            - port: "6379"

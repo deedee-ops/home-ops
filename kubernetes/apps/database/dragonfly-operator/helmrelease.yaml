@@ -11,6 +11,7 @@ spec:
   interval: 30m
   values:
     replicaCount: 2
+    networkPolicyEnabled: false
     podLabels:
       egress.cilium.io/kube-apiserver: "true"
     manager:
@@ -18,9 +19,12 @@ spec:
         repository: ghcr.io/dragonflydb/operator
     grafanaDashboard:
       enabled: true
-      grafanaOperator:
-        enabled: true
-      folder: database
+      # TODO: wait for 1.6.0 release, to fix the bug
+      # grafanaOperator:
+      #   enabled: true
+      #   matchLabels:
+      #     grafana.internal/instance: grafana
+      # folder: database
   postRenderers:
     - kustomize:
         patches:

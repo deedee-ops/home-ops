@@ -2,7 +2,7 @@
 use_default_settings: true
 
 server:
-  limiter: false
+  limiter: true
   image_proxy: true
   method: GET # https://github.com/searxng/searxng/pull/3619
   public_instance: false
@@ -19,9 +19,6 @@ search:
   formats:
     - html
     - json
-
-valkey:
-  url: valkey://localhost:6379/0
 
 general:
   instance_name: SearXNG

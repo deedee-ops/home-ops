@@ -30,7 +30,9 @@ kind: CiliumNetworkPolicy
 metadata:
   name: cpng-egress-internal
 spec:
-  endpointSelector: {}
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: cloudnative-pg
   egress:
     - toEndpoints:
         - {}

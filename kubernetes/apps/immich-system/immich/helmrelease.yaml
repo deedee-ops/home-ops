@@ -33,7 +33,7 @@ spec:
               IMMICH_WORKERS_INCLUDE: "api"
               NODE_ENV: *appEnv
               NODE_EXTRA_CA_CERTS: /certs/homelab.pem
-              REDIS_HOSTNAME: immich-valkey.immich-system.svc.cluster.local
+              REDIS_HOSTNAME: immich-dragonfly
               DB_DATABASE_NAME: &dbname "immich"
               DB_HOSTNAME: &dbhost
                 secretKeyRef:
@@ -226,39 +226,6 @@ spec:
             securityContext:
               <<: *sc
               runAsUser: 999
-      valkey:
-        type: statefulset
-        containers:
-          app:
-            image:
-              repository: docker.io/valkey/valkey
-              tag: 9.1.0-alpine@sha256:a35428eba9043cc0b79dbe54100f0c92784f2de00ad09b01182bfb1c5c83d1bd
-            probes:
-              liveness: &vprobes
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - sh
-                      - -c
-                      - "valkey-cli ping | grep PONG"
-                  initialDelaySeconds: 10
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 3
-              readiness: *vprobes
-              startup: *vprobes
-            securityContext: *sc
-        statefulset:
-          volumeClaimTemplates:
-            - name: data
-              storageClass: ceph-block
-              accessMode: ReadWriteOnce
-              size: 1Gi
-              advancedMounts:
-                app:
-                  - path: /data
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -288,11 +255,6 @@ spec:
         ports:
           ml-api:
             port: *mlport
-      valkey:
-        controller: valkey
-        ports:
-          valkey:
-            port: 6379
     serviceMonitor:
       api:
         serviceName: api

@@ -35,7 +35,7 @@ spec:
               PAPERLESS_OCR_USER_ARGS: "{\"invalidate_digital_signatures\": true}"
               PAPERLESS_PORT: &port 80
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
-              PAPERLESS_REDIS: "redis://localhost:6379"
+              PAPERLESS_REDIS: "redis://paperless-ngx-dragonfly:6379"
               PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS: "true"
               PAPERLESS_SOCIAL_ACCOUNT_SYNC_GROUPS: "true"
               PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
@@ -78,26 +78,6 @@ spec:
                 memory: 512Mi
               limits:
                 memory: 8192Mi
-          valkey:
-            image:
-              repository: docker.io/valkey/valkey
-              tag: 9.1.0-alpine@sha256:a35428eba9043cc0b79dbe54100f0c92784f2de00ad09b01182bfb1c5c83d1bd
-            probes:
-              liveness: &vprobes
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - sh
-                      - -c
-                      - "valkey-cli ping | grep PONG"
-                  initialDelaySeconds: 10
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 3
-              readiness: *vprobes
-            securityContext: *sc
           tika:
             image:
               repository: docker.io/apache/tika
@@ -249,11 +229,6 @@ spec:
               - subPath: tessdata
                 path: /usr/share/tesseract-ocr/5/tessdata
               - subPath: tmp-app
-                path: /tmp
-            valkey:
-              - subPath: valkey-data
-                path: /data
-              - subPath: tmp-valkey
                 path: /tmp
             gotenberg:
               - subPath: tmp-gotenberg

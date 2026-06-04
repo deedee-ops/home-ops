@@ -6,6 +6,7 @@ metadata:
   name: immich
 spec:
   components:
+    - ../../../components/dragonfly
     - ../../../components/gpu
     - ../../../components/volsync
   dependsOn:

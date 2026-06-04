@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: dragonfly-egress-clusters
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: dragonfly-operator
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/part-of: dragonfly
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: dragonfly-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: dragonfly-operator
+  egress:
+    - toEndpoints:
+        - {}
