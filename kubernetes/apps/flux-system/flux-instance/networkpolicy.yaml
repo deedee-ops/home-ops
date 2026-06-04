@@ -33,6 +33,8 @@ specs:
           # helm charts
           ## codeberg
           - matchName: codeberg.org
+          ## forgejo
+          - matchName: code.forgejo.org
           ## fluentbit
           - matchName: cr.fluentbit.io
           ## github

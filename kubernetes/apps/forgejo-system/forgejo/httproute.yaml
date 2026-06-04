@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  annotations:
+    gatus.home-operations.com/endpoint: |
+      name: forgejo
+  name: forgejo
+spec:
+  hostnames:
+    - git.${ROOT_DOMAIN}
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+  rules:
+    - backendRefs:
+        - name: forgejo-http
+          port: 3000
+      filters:
+        - responseHeaderModifier:
+            set:
+              - name: Content-Security-Policy
+                value: >-
+                  default-src 'self';
+                  object-src 'none';
+                  script-src 'self' 'unsafe-inline';
+                  style-src 'self' 'unsafe-inline';
+          type: ResponseHeaderModifier
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+    - filters:
+        - requestRedirect:
+            path:
+              replaceFullPath: "/user/oauth2/Pocket ID"
+              type: ReplaceFullPath
+            statusCode: 301
+          type: RequestRedirect
+      matches:
+        - path:
+            type: PathPrefix
+            value: /user/login

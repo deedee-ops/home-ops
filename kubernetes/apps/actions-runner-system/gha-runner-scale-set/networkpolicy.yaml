@@ -22,6 +22,7 @@ specs:
           - matchName: "archive.ubuntu.com"
           - matchName: "cache.garnix.io"
           - matchName: "cdn.jsdelivr.net"
+          - matchName: "code.forgejo.org"
           - matchName: "crates.io"
           - matchName: "deploy-rs.cachix.org"
           - matchName: "dl.k8s.io"

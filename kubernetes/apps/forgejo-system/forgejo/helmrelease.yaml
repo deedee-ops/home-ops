@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/forgejo-hr.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -8,175 +8,185 @@ spec:
   chartRef:
     kind: OCIRepository
     name: forgejo
-  interval: 1h
+  interval: 30m
   values:
-    controllers:
-      main:
-        containers:
-          app:
-            image:
-              repository: codeberg.org/forgejo/forgejo
-              tag: 15.0.2-rootless@sha256:cc2d74fb4c30385a8ee34de8c8f83344f7316cec70bd2cc7eb82b2802fa28e0b
-            env:
-              FORGEJO__mailer__FROM: "${CLUSTER_NAME}@${ROOT_DOMAIN}"
-              FORGEJO__mailer__SMTP_ADDR: smtp-relay.network.svc.cluster.local
-              FORGEJO__mailer__SMTP_PORT: "25"
-              FORGEJO__openid__WHITELISTED_URIS: "id.${ROOT_DOMAIN}"
-              FORGEJO__server__DOMAIN: "git.${ROOT_DOMAIN}"
-              FORGEJO__server__HTTP_PORT: &http 80
-              FORGEJO__server__ROOT_URL: "https://git.${ROOT_DOMAIN}"
-              FORGEJO__server__SSH_DOMAIN: "git.${ROOT_DOMAIN}"
-              FORGEJO__server__SSH_PORT: &ssh 22
-              FORGEJO__time__DEFAULT_UI_LOCATION: &tz "Europe/Warsaw"
-              TZ: *tz
-            envFrom:
-              - secretRef:
-                  name: "forgejo-secret"
-            probes:
-              liveness:
-                enabled: true
-                spec:
-                  periodSeconds: 30
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-              readiness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /api/healthz
-                    port: *http
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 5
-              startup:
-                enabled: true
-                spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
-            securityContext: &sc
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities:
-                drop:
-                  - ALL
-            resources:
-              requests:
-                cpu: 10m
-              limits:
-                memory: 2Gi
-        initContainers:
-          01-set-config:
-            image:
-              repository: ghcr.io/home-operations/busybox
-              tag: 1.38.0@sha256:7e2c04dd50ede647bf4a7a4c8dbd629dd4971cd139b9b88fb22bfc3c7a6c13df
-            command:
-              - "/bin/sh"
-              - "-c"
-              - |
-                mkdir -p /var/lib/gitea/custom/conf
-                cp /config/app.ini /var/lib/gitea/custom/conf/app.ini
-            securityContext: *sc
-            resources:
-              requests:
-                cpu: 5m
-                memory: 10M
-    defaultPodOptions:
-      automountServiceAccountToken: false
-      enableServiceLinks: false
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
+    gitea:
+      admin:
+        username: ""
+      additionalConfigSources:
+        - secret:
+            secretName: forgejo-secret
+      config:
+        admin:
+          DISABLE_REGULAR_ORG_CREATION: false
+        attachment:
+          ENABLED: true
+          MAX_SIZE: 64
+          PATH: /data/data/attachments
+          STORAGE_TYPE: local
+        avatar:
+          PATH: /data/data/avatars
+          STORAGE_TYPE: local
+        badges:
+          ENABLED: true
+        cache:
+          ENABLED: true
+          ADAPTER: redis
+          HOST: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
+        cron.archive_cleanup:
+          ENABLED: true
+          OLDER_THAN: 2h
+          RUN_AT_START: true
+          SCHEDULE: "@every 1h"
+        database:
+          DB_TYPE: sqlite3
+          PATH: /data/data/database/forgejo.db
+        federation:
+          ENABLED: false
+        indexer:
+          ISSUE_INDEXER_TYPE: bleve
+          REPO_INDEXER_ENABLED: true
+        lfs:
+          PATH: /data/git/lfs
+        log:
+          MODE: console
+        log.console:
+          COLORIZE: false
+          FLAGS: journaldflags
+          STDERR: true
+        mailer:
+          ENABLED: true
+          PROTOCOL: smtp
+          SMTP_ADDR: smtp-relay.network.svc.cluster.local
+          SMTP_PORT: "25"
+          SUBJECT_PREFIX: "[GIT]"
+        openid:
+          ENABLE_OPENID_SIGNIN: false
+          ENABLE_OPENID_SIGNUP: false
+          WHITELISTED_URIS: "id.${ROOT_DOMAIN}"
+        picture:
+          DISABLE_GRAVATAR: true
+          ENABLE_FEDERATED_AVATAR: false
+        queue:
+          CONN_STR: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
+          TYPE: redis
+        repo-avatar:
+          PATH: /data/data/repo-avatars
+          STORAGE_TYPE: local
+        repository:
+          DEFAULT_BRANCH: master
+          DEFAULT_PRIVATE: private
+          DEFAULT_REPO_UNITS: repo.code,repo.releases,repo.issues,repo.pulls,repo.actions
+          DISABLED_REPO_UNITS: repo.ext_wiki,repo.ext_issues
+          DISABLE_STARS: true
+          ROOT: /data/git/repositories
+        repository.pull-request:
+          DEFAULT_MERGE_STYLE: squash
+        repository.signing:
+          CRUD_ACTIONS: pubkey, parentsigned
+          FORMAT: ssh
+          INITIAL_COMMIT: pubkey
+          MERGES: pubkey
+          SIGNING_EMAIL: "noreply@git.${ROOT_DOMAIN}"
+          SIGNING_KEY: /data/signing/ed25519.pub
+          SIGNING_NAME: "git.${ROOT_DOMAIN} Instance"
+          WIKI: never
+        security:
+          INSTALL_LOCK: true
+          REVERSE_PROXY_TRUSTED_PROXIES: 172.30.0.0/16
+        server:
+          DOMAIN: "git.${ROOT_DOMAIN}"
+          ENABLE_PPROF: false
+          OFFLINE_MODE: true
+          ROOT_URL: "https://git.${ROOT_DOMAIN}"
+          SSH_DOMAIN: "git.${ROOT_DOMAIN}"
+          SSH_PORT: &sshPort 22
+        service:
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+          DEFAULT_ALLOW_CREATE_ORGANIZATION: true
+          DEFAULT_ENABLE_TIMETRACKING: false
+          DISABLE_REGISTRATION: false
+          ENABLE_INTERNAL_SIGNIN: false
+          ENABLE_NOTIFY_MAIL: true
+          ENABLE_PASSWORD_SIGNIN_FORM: false
+          SHOW_REGISTRATION_BUTTON: false
+        service.explore:
+          DISABLE_CODE_PAGE: false
+          DISABLE_ORGANIZATIONS_PAGE: false
+          DISABLE_USERS_PAGE: true
+          REQUIRE_SIGNIN_VIEW: false
+        session:
+          PROVIDER: redis
+          PROVIDER_CONFIG: redis://forgejo-dragonfly:6379?pool_size=100&idle_timeout=180s
+          SESSION_LIFE_TIME: "1209600"
+        storage:
+          STORAGE_TYPE: local
+        time:
+          DEFAULT_UI_LOCATION: &tz "Europe/Warsaw"
+        ui:
+          DEFAULT_THEME: forgejo-dark
+        webhook:
+          ALLOWED_HOST_LIST: "*"
+      oauth:
+        - name: Pocket ID
+          adminGroup: admins
+          autoDiscoverUrl: https://id.${ROOT_DOMAIN}/.well-known/openid-configuration
+          existingSecret: forgejo-oidc-secret
+          groupClaimName: groups
+          provider: openidConnect
+          scopes: profile email groups
+    deployment:
+      env:
+        - name: TZ
+          value: *tz
       labels:
         egress.cilium.io/auth: "true"
         egress.cilium.io/smtp-relay: "true"
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
-        seccompProfile:
-          type: RuntimeDefault
-    service:
-      app:
-        ports:
-          ssh:
-            port: *ssh
-          http:
-            port: *http
-    route:
-      app:
-        annotations:
-          gatus.home-operations.com/endpoint: |
-            name: forgejo
-        hostnames:
-          - "git.${ROOT_DOMAIN}"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        rules:
-          - backendRefs:
-              - name: forgejo
-                port: 80
-            filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  set:
-                    - name: Content-Security-Policy
-                      value: >-
-                        default-src 'self';
-                        object-src 'none';
-                        script-src 'self' 'unsafe-inline';
-                        style-src 'self' 'unsafe-inline';
-          # https://codeberg.org/forgejo/forgejo/issues/10066
-          # https://codeberg.org/forgejo/forgejo/issues/3342
-          - matches:
-              - path:
-                  type: PathPrefix
-                  value: /user/login
-            filters:
-              - type: RequestRedirect
-                requestRedirect:
-                  statusCode: 301
-                  path:
-                    type: ReplaceFullPath
-                    replaceFullPath: "/user/oauth2/Pocket ID"
-      ssh:
-        kind: TCPRoute
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-            sectionName: ssh
-        rules:
-          - backendRefs:
-              - name: forgejo
-                port: *ssh
-
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+    extraContainerVolumeMounts:
+      - name: signing-key
+        mountPath: /data/signing
+        readOnly: true
+      - name: root-ca
+        mountPath: /etc/ssl/certs/homelab.crt
+        subPath: ec.crt
+        readOnly: true
+    extraInitVolumeMounts:
+      - name: signing-key
+        mountPath: /data/signing
+        readOnly: true
+      - name: root-ca
+        mountPath: /etc/ssl/certs/homelab.crt
+        subPath: ec.crt
+        readOnly: true
+    extraVolumes:
+      - name: root-ca
+        secret:
+          secretName: homelab-root-ca.crt
+          defaultMode: 0400
+      - name: signing-key
+        secret:
+          secretName: forgejo-signing-key-secret
+          defaultMode: 0400
+    httpRoute:
+      enabled: false
+    image:
+      rootless: true
+      registry: code.forgejo.org
+      repository: forgejo/forgejo
+      tag: 15.0.2-rootless
     persistence:
-      config:
-        type: configMap
-        name: forgejo-configmap
-        advancedMounts:
-          main:
-            01-set-config:
-              - path: /config
-                readOnly: true
-      data:
-        existingClaim: forgejo
-        globalMounts:
-          - path: /var/lib/gitea
-      root-ca:
-        type: secret
-        name: homelab-root-ca.crt
-        advancedMounts:
-          main:
-            app:
-              - path: /etc/ssl/certs/homelab.crt
-                subPath: ec.crt
-      tmp:
-        type: emptyDir
-        globalMounts:
-          - subPath: tmp
-            path: /tmp
+      create: false
+      claimName: forgejo
+    service:
+      ssh:
+        port: *sshPort
+    tcpRoute:
+      enabled: true
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+          sectionName: ssh
