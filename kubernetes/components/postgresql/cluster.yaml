@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: ai-db
+  name: ${APP}-db
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
@@ -20,17 +20,9 @@ spec:
   stopDelay: 180
   smartShutdownTimeout: 180
   storage:
-    size: 10Gi
-    storageClass: ceph-block
-  bootstrap:
-    initdb:
-      database: app
-  #   recovery:
-  #     source: app-db-restore
-  #     database: app
+    size: ${PGDB_CAPACITY:=10Gi}
+    storageClass: ${PGDB_STORAGE_CLASS:=ceph-block}
   postgresql:
-    shared_preload_libraries:
-      - "vchord.so"
     parameters:
       max_connections: "300"
       shared_buffers: 512MB
@@ -44,12 +36,12 @@ spec:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
-        barmanObjectName: ai-db-store
-        serverName: ai-db
+        barmanObjectName: ${APP}-db-store
+        serverName: ${APP}-db
   externalClusters:
-    - name: ai-db-restore
+    - name: ${APP}-db-restore
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: ai-db-store
-          serverName: ai-db
+          barmanObjectName: ${APP}-db-store
+          serverName: ${APP}-db

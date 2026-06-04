@@ -9,7 +9,7 @@ spec:
     - ../../../components/gpu
     - ../../../components/volsync
   dependsOn:
-    - name: database
+    - name: postgresql
       namespace: immich-system
     - name: intel-gpu-resource-driver
       namespace: kube-system

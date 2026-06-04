@@ -7,8 +7,8 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
+  - ./_postgresql.yaml
   - ./bifrost.yaml
-  - ./database.yaml
   - ./hermes-agent.yaml
   - ./open-webui.yaml
   - ./openedai-speech.yaml

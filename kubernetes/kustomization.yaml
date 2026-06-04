@@ -1,10 +1,8 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization.json
+# dummy customization for components-only installations
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources:
-  - ./cluster.yaml
-  - ./externalsecret.yaml
-  - ./networkpolicy.yaml
-  - ./objectstore.yaml
-  - ./scheduledbackup.yaml
+metadata:
+  name: dummy
+resources: []

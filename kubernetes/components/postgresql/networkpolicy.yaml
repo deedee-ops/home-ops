@@ -3,12 +3,12 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: immich-egress-databases
+  name: ${APP}-egress-databases
 spec:
   endpointSelector:
     matchLabels:
-      cnpg.io/cluster: immich-db
+      cnpg.io/cluster: ${APP}-db
   egress:
     - toEndpoints:
         - matchLabels:
-            cnpg.io/cluster: immich-db
+            cnpg.io/cluster: ${APP}-db

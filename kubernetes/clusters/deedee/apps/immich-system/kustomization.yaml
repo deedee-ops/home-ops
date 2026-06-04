@@ -7,5 +7,5 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
-  - ./database.yaml
+  - ./_postgresql.yaml
   - ./immich.yaml

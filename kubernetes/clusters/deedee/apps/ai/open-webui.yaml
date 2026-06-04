@@ -8,8 +8,15 @@ spec:
   components:
     - ../../../components/volsync
   dependsOn:
+    - name: postgresql
+      namespace: ai
     - name: rook-ceph-cluster
       namespace: rook-ceph
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      inProgress: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
   interval: 1h
   patches: []
   path: ./kubernetes/apps/ai/open-webui

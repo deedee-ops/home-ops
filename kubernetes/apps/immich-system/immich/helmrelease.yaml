@@ -34,10 +34,7 @@ spec:
               NODE_ENV: *appEnv
               NODE_EXTRA_CA_CERTS: /certs/homelab.pem
               REDIS_HOSTNAME: immich-valkey.immich-system.svc.cluster.local
-              DB_DATABASE_NAME: &dbname
-                secretKeyRef:
-                  name: immich-db-app
-                  key: dbname
+              DB_DATABASE_NAME: &dbname "immich"
               DB_HOSTNAME: &dbhost
                 secretKeyRef:
                   name: immich-db-app

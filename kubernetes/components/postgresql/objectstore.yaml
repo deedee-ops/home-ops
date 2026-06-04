@@ -3,7 +3,7 @@
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: immich-db-store
+  name: ${APP}-db-store
 spec:
   retentionPolicy: 7d
   configuration:
@@ -14,10 +14,10 @@ spec:
       key: ec.crt
     s3Credentials:
       accessKeyId:
-        name: immich-db-store-secret
+        name: ${APP}-db-store-secret
         key: ACCESS_KEY_ID
       secretAccessKey:
-        name: immich-db-store-secret
+        name: ${APP}-db-store-secret
         key: ACCESS_SECRET_KEY
     wal:
       compression: gzip
