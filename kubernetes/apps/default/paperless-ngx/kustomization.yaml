@@ -7,3 +7,5 @@ resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
   - ./networkpolicy.yaml
+  - ./pocketidoidcclient.yaml
+  - ./secret.yaml

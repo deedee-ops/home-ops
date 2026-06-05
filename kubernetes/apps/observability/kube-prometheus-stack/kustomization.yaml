@@ -9,6 +9,7 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./pocketidoidcclient.yaml
   - ./prometheusrule.yaml
   - ./scrapeconfig.yaml
   - ./securitypolicy.yaml

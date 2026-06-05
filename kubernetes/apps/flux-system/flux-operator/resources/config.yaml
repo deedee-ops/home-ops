@@ -1,0 +1,12 @@
+---
+apiVersion: web.fluxcd.controlplane.io/v1
+kind: Config
+spec:
+  authentication:
+    oauth2:
+      issuerURL: https://id.${ROOT_DOMAIN}
+      provider: OIDC
+      clientID: "${OAUTH_CLIENT_ID}"
+      clientSecret: "${OAUTH_CLIENT_SECRET}"
+    type: OAuth2
+  baseURL: https://flux.${ROOT_DOMAIN}

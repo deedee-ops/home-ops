@@ -6,4 +6,5 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./pocketidoidcclient.yaml
   - ./scaledobject.yaml

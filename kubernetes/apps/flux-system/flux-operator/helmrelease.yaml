@@ -38,8 +38,8 @@ spec:
         subPath: ec.crt
     extraVolumes:
       - name: web-config
-        secret:
-          secretName: flux-operator-web-config-secret
+        configMap:
+          name: flux-operator-web-configmap
       - name: root-ca
         secret:
           secretName: homelab-root-ca.crt

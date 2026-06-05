@@ -131,7 +131,7 @@ spec:
         - name: Pocket ID
           adminGroup: admins
           autoDiscoverUrl: https://id.${ROOT_DOMAIN}/.well-known/openid-configuration
-          existingSecret: forgejo-oidc-secret
+          existingSecret: forgejo-oidc-credentials
           groupClaimName: groups
           provider: openidConnect
           scopes: profile email groups

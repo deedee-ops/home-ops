@@ -11,6 +11,10 @@ spec:
   postBuild:
     substitute:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
+    substituteFrom:
+      - kind: Secret
+        name: flux-operator-oidc-credentials
+        optional: true
   prune: true
   sourceRef:
     kind: GitRepository

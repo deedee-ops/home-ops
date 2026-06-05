@@ -16,6 +16,8 @@ spec:
       namespace: kube-system
     - name: rook-ceph-cluster
       namespace: rook-ceph
+    - name: pocket-id-operator
+      namespace: security
   interval: 1h
   patches: []
   path: ./kubernetes/apps/immich-system/immich
@@ -30,7 +32,12 @@ spec:
       VOLSYNC_STORAGECLASS: ceph-filesystem
       VOLSYNC_SNAPSHOTCLASS: csi-ceph-filesystem
       VOLSYNC_SCHEDULE: "0 1 * * *"
+    substituteFrom:
+      - kind: Secret
+        name: immich-oidc-credentials
+        optional: true
   prune: true
+  retryInterval: 30s
   sourceRef:
     kind: GitRepository
     name: flux-system

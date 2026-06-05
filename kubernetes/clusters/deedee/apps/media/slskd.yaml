@@ -21,6 +21,17 @@ spec:
       target:
         group: gateway.envoyproxy.io
         kind: SecurityPolicy
+    - patch: |-
+        - op: replace
+          path: /spec/callbackUrls
+          value:
+            - "https://soulseek.${ROOT_DOMAIN}/oauth2/callback"
+        - op: replace
+          path: /spec/launchUrl
+          value: "https://soulseek.${ROOT_DOMAIN}"
+      target:
+        group: pocketid.internal
+        kind: PocketIDOIDCClient
   path: ./kubernetes/apps/media/slskd
   postBuild:
     substitute:

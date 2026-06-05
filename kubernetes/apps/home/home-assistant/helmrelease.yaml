@@ -26,7 +26,9 @@ spec:
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
-                  name: "home-assistant-secret"
+                  name: home-assistant-secret
+              - secretRef:
+                  name: home-assistant-oidc-credentials
             probes:
               liveness:
                 enabled: true
