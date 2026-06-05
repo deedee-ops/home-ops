@@ -45,7 +45,7 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
+            securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
@@ -59,6 +59,31 @@ spec:
                 memory: 16Gi
               claims:
                 - name: gpu
+        initContainers:
+          01-set-oidc:
+            image:
+              repository: nixery.dev/shell/xmlstarlet
+              tag: latest
+            command:
+              - sh
+              - -c
+              - |
+                xmlstarlet ed \
+                  --update "//OidConfigs/item[key/string='pocket-id']/value/PluginConfiguration/OidClientId" \
+                  --value "$OAUTH_CLIENT_ID" \
+                  --update "//OidConfigs/item[key/string='pocket-id']/value/PluginConfiguration/OidSecret" \
+                  --value "$OAUTH_CLIENT_SECRET" \
+                  /config/plugins/configurations/SSO-Auth.xml \
+                  > /tmp/SSO-Auth.xml \
+                  && mv /tmp/SSO-Auth.xml /config/plugins/configurations/SSO-Auth.xml
+            envFrom:
+              - secretRef:
+                  name: jellyfin-oidc-credentials
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
         statefulset:
           volumeClaimTemplates:
             - name: cache

@@ -1,0 +1,146 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/pocket-id-operator-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: pocket-id-operator
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: pocket-id-operator
+  interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # Add security contexts
+            patch: |-
+              - op: add
+                path: /spec/template/metadata/labels/egress.cilium.io~1kube-apiserver
+                value: "true"
+            target:
+              kind: Deployment
+              name: pocket-id-operator
+  values:
+    operator:
+      autoGenerateLogos: false
+      replicas: 2
+      timezone: &tz Europe/Warsaw
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+      dashboard:
+        enabled: true
+        grafanaDashboard:
+          enabled: true
+          instanceSelector:
+            matchLabels:
+              grafana.internal/instance: grafana
+    instance:
+      enabled: true
+      name: pocket-id
+      serviceMonitor:
+        enabled: true
+      spec:
+        analyticsDisabled: true
+        appUrl: "https://id.${ROOT_DOMAIN}"
+        emailNotifications:
+          loginNotification: true
+          oneTimeAccessAsAdmin: true
+          apiKeyExpiration: true
+          oneTimeAccessAsUnauthenticated: false
+          verification: true
+        encryptionKey:
+          valueFrom:
+            secretKeyRef:
+              name: pocket-id-operator-secret
+              key: ENCRYPTION_KEY
+        geoip:
+          dbPath: /tmp/GeoLite2-City.mmdb
+          maxmindLicenseKey:
+            valueFrom:
+              secretKeyRef:
+                name: pocket-id-operator-secret
+                key: MAXMIND_LICENSE_KEY
+        labels:
+          egress.cilium.io/smtp-relay: "true"
+        logging:
+          level: "info"
+          json: true
+        persistence:
+          enabled: true
+          existingClaim: pocket-id-operator
+        podTemplate:
+          spec:
+            containers:
+              - name: caddy
+                image: docker.io/library/caddy:2.11.3@sha256:ec18ee54aab3315c22e25f3b2babda73ff8007d39b13b3bd1bfffa2f0444c7d9
+                args:
+                  - caddy
+                  - run
+                  - --config
+                  - /config/Caddyfile
+                dnsConfig:
+                  options:
+                    - name: ndots
+                      value: "1"
+                securityContext:
+                  readOnlyRootFilesystem: true
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+                    add:
+                      - NET_BIND_SERVICE
+                resources:
+                  requests:
+                    cpu: "5m"
+                    memory: "128Mi"
+                  limits:
+                    cpu: "1000m"
+                    memory: "512Mi"
+                volumeMounts:
+                  - mountPath: /config/Caddyfile
+                    name: pocket-id-caddy
+                    subPath: Caddyfile
+            volumes:
+              - configMap:
+                  name: pocket-id-caddy
+                name: pocket-id-caddy
+        route:
+          enabled: true
+          name: pocket-id
+          parentRefs:
+            - name: envoy-internal
+              namespace: network
+        smtp:
+          host: smtp-relay.network.svc.cluster.local
+          port: 25
+          from: "deedee@${ROOT_DOMAIN}"
+        timezone: *tz
+        ui:
+          sessionDuration: 10080 # 1 week
+        userManagement:
+          emailsVerified: true
+          allowOwnAccountEdit: true
+          allowUserSignups: "disabled"
+        versionCheckDisabled: true
+    users:
+      - name: ajgon
+        spec:
+          admin: true
+          email:
+            value: "ajgon@${ROOT_DOMAIN}"
+          firstName:
+            value: Igor
+          lastName:
+            value: Rzegocki
+    userGroups:
+      - name: admins
+        spec:
+          friendlyName: admins
+          users:
+            userRefs:
+              - name: ajgon

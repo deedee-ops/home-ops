@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/configmajjj-v1.json
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pocket-id-caddy
+data:
+  Caddyfile: |-
+    {
+      log {
+        level info
+        output stderr
+        format console
+      }
+      http_port 8080
+    }
+    pocket-id.security.svc.cluster.local:8080 {
+      log
+      header -Server
+      header -X-Powered-By
+      encode zstd gzip
+      handle /.well-known/openid-configuration {
+        header Content-Type "application/json"
+        respond <<EOF
+          {
+            "authorization_endpoint": "https://id.${ROOT_DOMAIN}/authorize",
+            "authorization_response_iss_parameter_supported": true,
+            "claims_supported": [
+              "sub",
+              "given_name",
+              "family_name",
+              "name",
+              "email",
+              "email_verified",
+              "preferred_username",
+              "picture",
+              "groups"
+            ],
+            "code_challenge_methods_supported": [
+              "plain",
+              "S256"
+            ],
+            "device_authorization_endpoint": "https://id.${ROOT_DOMAIN}/api/oidc/device/authorize",
+            "end_session_endpoint": "https://id.${ROOT_DOMAIN}/api/oidc/end-session",
+            "grant_types_supported": [
+              "authorization_code",
+              "refresh_token",
+              "urn:ietf:params:oauth:grant-type:device_code",
+              "client_credentials"
+            ],
+            "id_token_signing_alg_values_supported": [
+              "RS256"
+            ],
+            "introspection_endpoint": "http://pocket-id.security.svc.cluster.local/api/oidc/introspect",
+            "issuer": "https://id.${ROOT_DOMAIN}",
+            "jwks_uri": "http://pocket-id.security.svc.cluster.local/.well-known/jwks.json",
+            "response_types_supported": [
+              "code",
+              "id_token"
+            ],
+            "scopes_supported": [
+              "openid",
+              "profile",
+              "email",
+              "groups"
+            ],
+            "subject_types_supported": [
+              "public"
+            ],
+            "token_endpoint": "http://pocket-id.security.svc.cluster.local/api/oidc/token",
+            "userinfo_endpoint": "http://pocket-id.security.svc.cluster.local/api/oidc/userinfo"
+          }
+          EOF 200
+      }
+    }

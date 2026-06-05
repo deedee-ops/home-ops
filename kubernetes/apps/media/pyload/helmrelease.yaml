@@ -19,9 +19,6 @@ spec:
               tag: latest
             env:
               TZ: Europe/Warsaw
-            envFrom:
-              - secretRef:
-                  name: "pyload-secret"
             probes:
               liveness: &probes
                 enabled: true

@@ -56,6 +56,8 @@ spec:
             envFrom:
               - secretRef:
                   name: "paperless-ngx-secret"
+              - secretRef:
+                  name: "paperless-ngx-oidc-secret"
             probes:
               liveness:
                 enabled: true

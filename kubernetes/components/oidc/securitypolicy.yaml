@@ -21,10 +21,10 @@ spec:
     clientIDRef:
       group: ""
       kind: Secret
-      name: ${APP}-secret
+      name: ${APP}-oidc-credentials
     clientSecret:
       group: ""
       kind: Secret
-      name: ${APP}-secret
+      name: ${APP}-oidc-credentials
     redirectURL: "https://${APP}.${ROOT_DOMAIN}/oauth2/callback"
     logoutPath: "/logout"

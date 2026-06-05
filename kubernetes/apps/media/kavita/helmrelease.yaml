@@ -42,7 +42,7 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
+            securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
@@ -53,6 +53,27 @@ spec:
                 cpu: 15m
               limits:
                 memory: 4Gi
+        initContainers:
+          01-set-oidc:
+            image:
+              repository: nixery.dev/shell/jq
+              tag: latest
+            command:
+              - sh
+              - -c
+              - |
+                jq --arg id "$OAUTH_CLIENT_ID" --arg secret "$OAUTH_CLIENT_SECRET" \
+                  '.OpenIdConnectSettings.ClientId = $id | .OpenIdConnectSettings.Secret = $secret' \
+                  /kavita/config/appsettings.json > /tmp/appsettings.json \
+                  && mv /tmp/appsettings.json /kavita/config/appsettings.json
+            envFrom:
+              - secretRef:
+                  name: kavita-oidc-credentials
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10M
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false

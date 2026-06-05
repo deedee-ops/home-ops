@@ -21,11 +21,11 @@ spec:
     clientIDRef:
       group: ""
       kind: Secret
-      name: alertmanager-secret
+      name: alertmanager-oidc-credentials
     clientSecret:
       group: ""
       kind: Secret
-      name: alertmanager-secret
+      name: alertmanager-oidc-credentials
     redirectURL: "https://alertmanager.${ROOT_DOMAIN}/oauth2/callback"
     logoutPath: "/logout"
 ---
@@ -51,10 +51,10 @@ spec:
     clientIDRef:
       group: ""
       kind: Secret
-      name: prometheus-secret
+      name: prometheus-oidc-credentials
     clientSecret:
       group: ""
       kind: Secret
-      name: prometheus-secret
+      name: prometheus-oidc-credentials
     redirectURL: "https://prometheus.${ROOT_DOMAIN}/oauth2/callback"
     logoutPath: "/logout"

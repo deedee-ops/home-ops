@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/pocketid.internal/pocketidoidcclient_v1alpha1.json
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: kavita
+spec:
+  launchUrl: https://kavita.${ROOT_DOMAIN}
+  callbackUrls:
+    - "https://kavita.{ROOT_DOMAIN}/signin-oidc"
+  secret:
+    keys:
+      clientID: OAUTH_CLIENT_ID
+      clientSecret: OAUTH_CLIENT_SECRET

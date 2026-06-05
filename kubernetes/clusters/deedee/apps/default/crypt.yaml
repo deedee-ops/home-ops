@@ -5,11 +5,30 @@ kind: Kustomization
 metadata:
   name: crypt
 spec:
+  components:
+    - ../../../components/oidc
   interval: 1h
-  patches: []
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/targetRefs
+          value:
+            - group: gateway.networking.k8s.io
+              kind: HTTPRoute
+              name: crypt-base
+            - group: gateway.networking.k8s.io
+              kind: HTTPRoute
+              name: crypt-ui
+        - op: add
+          path: /spec/oidc/cookieDomain
+          value: crypt.${ROOT_DOMAIN}
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
   path: ./kubernetes/apps/default/crypt
   postBuild:
     substitute:
+      APP: crypt
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

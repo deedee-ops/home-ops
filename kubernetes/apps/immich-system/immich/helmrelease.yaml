@@ -289,8 +289,8 @@ spec:
                         style-src 'self' 'unsafe-inline';
     persistence:
       config:
-        type: secret
-        name: immich-secret
+        type: configMap
+        name: immich-configmap
         advancedMounts:
           api: &configMount
             app:

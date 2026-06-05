@@ -50,12 +50,12 @@ spec:
               TZ: Europe/Warsaw
               WAKAPI_OIDC_PROVIDERS_0_CLIENT_ID:
                 secretKeyRef:
-                  name: wakapi-secret
-                  key: WAKAPI_OIDC_PROVIDERS_0_CLIENT_ID
+                  name: wakapi-oidc-credentials
+                  key: client-id
               WAKAPI_OIDC_PROVIDERS_0_CLIENT_SECRET:
                 secretKeyRef:
-                  name: wakapi-secret
-                  key: WAKAPI_OIDC_PROVIDERS_0_CLIENT_SECRET
+                  name: wakapi-oidc-credentials
+                  key: client-secret
               WAKAPI_PASSWORD_SALT:
                 secretKeyRef:
                   name: wakapi-secret
