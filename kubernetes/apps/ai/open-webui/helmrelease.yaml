@@ -77,6 +77,8 @@ spec:
             envFrom:
               - secretRef:
                   name: "open-webui-secret"
+              - secretRef:
+                  name: "open-webui-oidc-credentials"
             probes:
               liveness:
                 enabled: true

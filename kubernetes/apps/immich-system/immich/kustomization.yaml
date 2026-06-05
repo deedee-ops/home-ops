@@ -8,4 +8,11 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./pocketidoidcclient.yaml
   - ./scaledobject.yaml
+configMapGenerator:
+  - name: immich-configmap
+    files:
+      - ./resources/config.yaml
+generatorOptions:
+  disableNameSuffixHash: true

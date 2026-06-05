@@ -18,6 +18,10 @@ spec:
       APP: mail-archive
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 25Gi
+    substituteFrom:
+      - kind: Secret
+        name: mail-archive-oidc-credentials
+        optional: true
   prune: true
   sourceRef:
     kind: GitRepository

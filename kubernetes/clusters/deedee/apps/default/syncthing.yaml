@@ -7,12 +7,20 @@ metadata:
 spec:
   components:
     - ../../../components/nfs-scaler
+    - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  patches: []
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/targetRefs/0/name
+          value: syncthing-app
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
   path: ./kubernetes/apps/default/syncthing
   postBuild:
     substitute:

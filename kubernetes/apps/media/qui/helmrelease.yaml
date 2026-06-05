@@ -31,7 +31,9 @@ spec:
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
-                  name: "qui-secret"
+                  name: qui-secret
+              - secretRef:
+                  name: qui-oidc-credentials
             probes:
               liveness:
                 enabled: true

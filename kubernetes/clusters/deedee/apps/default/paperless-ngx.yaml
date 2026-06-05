@@ -21,6 +21,10 @@ spec:
       KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 10Gi
+    substituteFrom:
+      - kind: Secret
+        name: paperless-ngx-oidc-credentials
+        optional: true
   prune: true
   sourceRef:
     kind: GitRepository

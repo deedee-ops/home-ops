@@ -50,6 +50,8 @@ spec:
               envFrom:
                 - secretRef:
                     name: grafana-secret
+                - secretRef:
+                    name: grafana-oidc-credentials
               env:
                 - name: GF_SECURITY_ADMIN_USER
                   valueFrom:
