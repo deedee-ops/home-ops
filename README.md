@@ -14,24 +14,24 @@ _... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenT
 
 <div align="center">
 
-[![Discord](https://img.shields.io/discord/673534664354430999?style=for-the-badge&label&logo=discord&logoColor=white&color=blue)](https://discord.gg/home-operations)&nbsp;&nbsp;
-[![Talos](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Ftalos_version%3Fformat%3Dendpoint&style=for-the-badge&logo=talos&logoColor=white&color=blue&label=%20)](https://www.talos.dev/)&nbsp;&nbsp;
-[![Kubernetes](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fkubernetes_version%3Fformat%3Dendpoint&style=for-the-badge&logo=kubernetes&logoColor=white&color=blue&label=%20)](https://kubernetes.io/)&nbsp;&nbsp;
-[![Flux](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fflux_version&style=for-the-badge&logo=flux&logoColor=white&color=blue&label=%20)](https://fluxcd.io)&nbsp;&nbsp;
-[![Renovate](https://img.shields.io/github/actions/workflow/status/deedee-ops/home-ops/renovate.yaml?branch=master&label=&logo=renovatebot&style=for-the-badge&color=blue)](https://github.com/deedee-ops/home-ops/actions/workflows/renovate.yaml)
+[![Discord](https://img.shields.io/discord/673534664354430999?label&logo=discord&logoColor=white&color=blue)](https://discord.gg/home-operations)&nbsp;&nbsp;
+[![Talos](https://kromgo.ajgon.casa/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
+[![Kubernetes](https://kromgo.ajgon.casa/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
+[![Flux](https://kromgo.ajgon.casa/badges/flux_version)](https://fluxcd.io)&nbsp;&nbsp;
+[![Renovate](https://img.shields.io/github/actions/workflow/status/buroa/k8s-gitops/renovate.yaml?branch=main&label&logo=renovate&color=blue)](https://github.com/buroa/k8s-gitops/actions/workflows/renovate.yaml)
 
 </div>
 
 <div align="center">
 
-[![Age](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_birth_age&style=flat-square&label=Age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Uptime](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_uptime_age&style=flat-square&label=Uptime)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Nodes](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_node_count&style=flat-square&label=Nodes)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Pods](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_pod_count&style=flat-square&label=Pods)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![CPU](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_cpu_usage&style=flat-square&label=CPU)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Memory](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_memory_usage&style=flat-square&label=Memory)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Power](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_power_usage&style=flat-square&label=Power)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Alerts](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.ajgon.casa%2Fcluster_alert_count&style=flat-square&label=Alerts)](https://github.com/home-operations/kromgo)
+[![Age](https://kromgo.ajgon.casa/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Uptime](https://kromgo.ajgon.casa/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Nodes](https://kromgo.ajgon.casa/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Pods](https://kromgo.ajgon.casa/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![CPU](https://kromgo.ajgon.casa/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Memory](https://kromgo.ajgon.casa/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Power](https://kromgo.ajgon.casa/badges/cluster_power_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Alerts](https://kromgo.ajgon.casa/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)
 
 </div>
 <!-- markdownlint-enable MD013 MD033 -->
