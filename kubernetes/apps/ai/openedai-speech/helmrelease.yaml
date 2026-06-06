@@ -116,7 +116,7 @@ spec:
           01-download-polish-voices:
             image:
               repository: alpine/curl
-              tag: 8.19.0@sha256:a631ce0c7409926d98dac91513de58e7d58bb421ac130c8c2c1e186a5493de63
+              tag: 8.19.0@sha256:c103daf2dbf75dbaee86c278f45be6c82acd86eef27e17521d0992bf90031d81
             env:
               TTS_HOME: *voicesPath
             command:
