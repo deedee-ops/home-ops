@@ -11,12 +11,12 @@ spec:
         - alert: NASCacheUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1
-            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/cache", node="nas"})
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/fast", node="nas"})
           for: 5m
           labels:
             severity: critical
           annotations:
-            summary: NAS /mnt/cache is not mounted.
+            summary: NAS /mnt/fast is not mounted.
         - alert: NASTankUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1

@@ -210,7 +210,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/media"
+              share: "/mnt/fast/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         advancedMounts:
           main:

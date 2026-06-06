@@ -21,7 +21,7 @@ spec:
   postBuild:
     substitute:
       APP: frigate
-      KEDA_VOLUME: cache
+      KEDA_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 5Gi
   prune: true

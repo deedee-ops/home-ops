@@ -17,7 +17,7 @@ spec:
       name: nfs-csi
       parameters:
         server: nas.internal
-        share: "/mnt/cache/backups/kubernetes/${CLUSTER}"
+        share: "/mnt/fast/backups/kubernetes/${CLUSTER}"
       mountOptions:
         - noac
         - nfsvers=4.1

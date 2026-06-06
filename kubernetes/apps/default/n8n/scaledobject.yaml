@@ -3,7 +3,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: &name beets-flask
+  name: &name n8n
 spec:
   advanced:
     restoreToOriginalReplicaCount: true
@@ -12,7 +12,7 @@ spec:
   maxReplicaCount: 1
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: *name
   triggers:
     - type: prometheus

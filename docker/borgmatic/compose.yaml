@@ -28,7 +28,7 @@ services:
       - source: nas
         target: /etc/borgmatic.d/nas.yaml
     volumes:
-      - /mnt/cache:/mnt/cache:ro
+      - /mnt/fast:/mnt/fast:ro
       - /mnt/tank:/mnt/tank:ro
       - ${DATA_DOCKER_DIR}/borgmatic/config:/config
 

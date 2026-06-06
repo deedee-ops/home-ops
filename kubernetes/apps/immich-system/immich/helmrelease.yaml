@@ -312,7 +312,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/backups/kubernetes/${CLUSTER}/databases/immich"
+              share: "/mnt/fast/backups/kubernetes/${CLUSTER}/databases/immich"
         advancedMounts:
           dbbackup:
             app:

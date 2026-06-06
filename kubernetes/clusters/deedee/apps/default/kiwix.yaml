@@ -12,7 +12,7 @@ spec:
   path: ./kubernetes/apps/default/kiwix
   postBuild:
     substitute:
-      APP: kiwix
+      APP: kiwix-main
       KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true

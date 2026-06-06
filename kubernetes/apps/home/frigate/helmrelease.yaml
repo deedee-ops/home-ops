@@ -120,7 +120,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/cache/cameras"
+              share: "/mnt/fast/cameras"
         globalMounts:
           - path: /media/frigate
       config:

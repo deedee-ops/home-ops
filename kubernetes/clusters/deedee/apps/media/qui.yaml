@@ -17,7 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: qui
-      KEDA_VOLUME: cache
+      KEDA_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 2Gi
   prune: true
