@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../components/gpu
+    - ../../../components/nfs-scaler
     - ../../../components/volsync
   dependsOn:
     - name: intel-gpu-resource-driver
@@ -19,6 +20,7 @@ spec:
   postBuild:
     substitute:
       APP: jellyfin
+      KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 50Gi
   prune: true

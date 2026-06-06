@@ -7,7 +7,6 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./scaledobject.yaml
 configMapGenerator:
   - name: sonarr-configmap
     files:

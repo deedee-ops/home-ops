@@ -7,4 +7,3 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
-  - ./scaledobject.yaml

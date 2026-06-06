@@ -117,6 +117,7 @@ spec:
             volumeAttributes:
               server: nas.internal
               share: "/mnt/fast/backups/kubernetes/${CLUSTER}/kopia"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /repository
       tmpfs:

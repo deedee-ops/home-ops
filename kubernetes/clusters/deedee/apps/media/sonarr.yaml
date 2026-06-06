@@ -6,6 +6,7 @@ metadata:
   name: sonarr
 spec:
   components:
+    - ../../../components/nfs-scaler
     - ../../../components/oidc
     - ../../../components/volsync
   dependsOn:
@@ -16,6 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: sonarr
+      KEDA_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 5Gi
   patches:
