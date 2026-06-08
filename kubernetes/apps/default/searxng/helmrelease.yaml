@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: SearXNG
+          glance/icon: di:searxng
+          glance/url: https://search.${ROOT_DOMAIN}
         containers:
           app:
             image:

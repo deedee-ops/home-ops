@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Jellyfin
+          glance/icon: di:jellyfin
+          glance/url: https://jellyfin.${ROOT_DOMAIN}
         type: statefulset
         containers:
           app:

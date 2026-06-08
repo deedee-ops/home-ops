@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Kiwix
+          glance/icon: di:kiwix-light
+          glance/url: https://kiwix.${ROOT_DOMAIN}
         containers:
           app:
             image:

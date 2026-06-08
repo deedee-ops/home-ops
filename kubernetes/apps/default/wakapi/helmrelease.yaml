@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Wakapi
+          glance/icon: di:wakapi
+          glance/url: https://wakapi.${ROOT_DOMAIN}
         containers:
           app:
             image:

@@ -19,16 +19,6 @@
 
     - size: full
       widgets:
-        - type: extension
-          url: http://localhost:8080/extension/nodes
-          allow-potentially-dangerous-html: true
-          cache: 1s
-          parameters:
-            # namespace, name annotations
-            show-if: |
-              namespace != kube-system &&
-              ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
-
         - type: hacker-news
 
         - type: videos

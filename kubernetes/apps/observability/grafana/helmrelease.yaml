@@ -24,6 +24,10 @@ spec:
               kind: Deployment
               name: grafana-operator
   values:
+    annotations:
+      glance/name: Grafana
+      glance/icon: di:grafana
+      glance/url: https://grafana.${ROOT_DOMAIN}
     dashboard:
       enabled: true
     serviceMonitor:

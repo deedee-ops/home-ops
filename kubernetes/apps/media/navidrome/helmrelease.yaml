@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Navidrome
+          glance/icon: di:navidrome
+          glance/url: https://navidrome.${ROOT_DOMAIN}
         containers:
           app:
             image:

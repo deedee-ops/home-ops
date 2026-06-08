@@ -13,6 +13,10 @@ spec:
   values:
     controllers:
       api:
+        annotations:
+          glance/name: Immich
+          glance/icon: di:immich
+          glance/url: https://immich.${ROOT_DOMAIN}
         pod:
           labels:
             egress.cilium.io/auth: "true"

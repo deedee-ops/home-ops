@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Crypt
+          glance/icon: di:windows-retro
+          glance/url: https://crypt.${ROOT_DOMAIN}
         containers:
           base:
             image:

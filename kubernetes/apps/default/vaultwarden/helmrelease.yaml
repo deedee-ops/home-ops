@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Vaultwarden
+          glance/icon: di:vaultwarden-light
+          glance/url: https://vaultwarden.${ROOT_DOMAIN}
         containers:
           app:
             image:

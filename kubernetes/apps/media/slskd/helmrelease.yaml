@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: SLSKD
+          glance/icon: di:slskd
+          glance/url: https://soulseek.${ROOT_DOMAIN}
         type: statefulset
         containers:
           app:

@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Open WebUI
+          glance/icon: di:open-webui-light
+          glance/url: https://ai.${ROOT_DOMAIN}
         type: statefulset
         containers:
           app:

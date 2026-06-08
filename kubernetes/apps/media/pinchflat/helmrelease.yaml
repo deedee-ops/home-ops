@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Pinchflat
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/pinchflat.png
+          glance/url: https://pinchflat.${ROOT_DOMAIN}
         containers:
           app:
             image: &img

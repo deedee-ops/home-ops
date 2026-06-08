@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: PyLoad
+          glance/icon: di:pyload
+          glance/url: https://pyload.${ROOT_DOMAIN}
         containers:
           app:
             image:

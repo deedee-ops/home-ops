@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Radarr
+          glance/icon: di:radarr
+          glance/url: https://radarr.${ROOT_DOMAIN}
         containers:
           app:
             image:

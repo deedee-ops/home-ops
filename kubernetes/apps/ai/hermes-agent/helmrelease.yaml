@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Hermes Agent
+          glance/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/hermes-agent.png
+          glance/url: https://hermes.${ROOT_DOMAIN}
         containers:
           app:
             image:

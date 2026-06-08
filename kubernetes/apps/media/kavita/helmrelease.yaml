@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Kavita
+          glance/icon: di:kavita
+          glance/url: https://kavita.${ROOT_DOMAIN}
         containers:
           app:
             image:

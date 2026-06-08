@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Paperless-NGX
+          glance/icon: di:paperless-ngx
+          glance/url: https://paperless.${ROOT_DOMAIN}
         containers:
           app:
             image: &img

@@ -27,6 +27,10 @@ spec:
     commonLabels:
       egress.cilium.io/kube-apiserver: "true"
       egress.cilium.io/auth: "true"
+    commonAnnotations:
+      glance/name: Flux Operator
+      glance/icon: di:flux-cd
+      glance/url: https://flux.${ROOT_DOMAIN}
     extraArgs:
       - "--web-config=/etc/flux-operator/web/config.yaml"
     extraVolumeMounts:

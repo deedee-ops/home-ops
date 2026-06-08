@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: n8n
+          glance/icon: di:n8n
+          glance/url: https://n8n.${ROOT_DOMAIN}
         type: statefulset
         containers:
           app:

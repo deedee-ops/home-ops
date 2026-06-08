@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: SabNZBD
+          glance/icon: di:sabnzbd
+          glance/url: https://sabnzbd.${ROOT_DOMAIN}
         containers:
           app:
             image:

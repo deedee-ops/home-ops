@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Home Assistant
+          glance/icon: di:home-assistant
+          glance/url: https://home.${ROOT_DOMAIN}
         pod:
           labels:
             egress.cilium.io/auth: "true"

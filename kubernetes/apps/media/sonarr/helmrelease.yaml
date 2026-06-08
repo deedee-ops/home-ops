@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Sonarr
+          glance/icon: di:sonarr
+          glance/url: https://sonarr.${ROOT_DOMAIN}
         containers:
           app:
             image:

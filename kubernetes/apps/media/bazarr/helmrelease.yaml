@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Bazarr
+          glance/icon: di:bazarr
+          glance/url: https://bazarr.${ROOT_DOMAIN}
         containers:
           app:
             image:

@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Frigate
+          glance/icon: di:frigate-light
+          glance/url: https://frigate.${ROOT_DOMAIN}
         containers:
           app:
             image:

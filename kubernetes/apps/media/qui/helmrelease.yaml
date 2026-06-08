@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: QUI
+          glance/icon: di:qui
+          glance/url: https://torrents.${ROOT_DOMAIN}
         containers:
           app:
             image:

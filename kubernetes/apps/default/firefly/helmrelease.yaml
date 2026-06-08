@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Firefly III
+          glance/icon: di:firefly
+          glance/url: https://firefly.${ROOT_DOMAIN}
         pod:
           labels:
             egress.cilium.io/smtp-relay: "true"

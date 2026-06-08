@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Mail Archive
+          glance/icon: di:roundcube
+          glance/url: https://mail.${ROOT_DOMAIN}
         pod:
           labels:
             egress.cilium.io/auth: "true"

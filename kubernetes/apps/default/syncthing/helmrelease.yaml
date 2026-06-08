@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Syncthing
+          glance/icon: di:syncthing
+          glance/url: https://syncthing.${ROOT_DOMAIN}
         containers:
           app:
             image:

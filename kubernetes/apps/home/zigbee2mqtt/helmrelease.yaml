@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Zigbee2MQTT
+          glance/icon: di:zigbee2mqtt
+          glance/url: https://zigbee.${ROOT_DOMAIN}
         containers:
           app:
             image:

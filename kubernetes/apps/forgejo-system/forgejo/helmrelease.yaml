@@ -136,6 +136,10 @@ spec:
           provider: openidConnect
           scopes: profile email groups
     deployment:
+      annotations:
+        glance/name: Forgejo
+        glance/icon: di:forgejo
+        glance/url: https://git.${ROOT_DOMAIN}
       env:
         - name: TZ
           value: *tz

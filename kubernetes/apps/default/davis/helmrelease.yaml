@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Davis
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/davis.png
+          glance/url: https://davis.${ROOT_DOMAIN}
         containers:
           app:
             image: &img

@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Kopia
+          glance/icon: di:kopia
+          glance/url: https://kopia.${ROOT_DOMAIN}
         containers:
           app:
             image:

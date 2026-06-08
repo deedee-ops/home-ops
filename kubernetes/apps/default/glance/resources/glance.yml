@@ -15,6 +15,7 @@ theme:
 
 pages:
   - $include: home.yaml
+  - $include: k8s.yaml
   - $include: rss.yaml
   - $include: youtube.yaml
   - $include: gitops.yaml

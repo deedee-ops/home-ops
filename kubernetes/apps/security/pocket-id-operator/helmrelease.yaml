@@ -45,7 +45,11 @@ spec:
         enabled: true
       spec:
         analyticsDisabled: true
-        appUrl: "https://id.${ROOT_DOMAIN}"
+        appUrl: &appUrl "https://id.${ROOT_DOMAIN}"
+        annotations:
+          glance/name: Pocket-ID
+          glance/icon: di:pocket-id
+          glance/url: *appUrl
         emailNotifications:
           loginNotification: true
           oneTimeAccessAsAdmin: true

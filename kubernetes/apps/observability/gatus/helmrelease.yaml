@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Gatus
+          glance/icon: di:gatus
+          glance/url: https://status.${ROOT_DOMAIN}
         type: statefulset
         initContainers:
           gatus-sidecar:

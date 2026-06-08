@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Prowlarr
+          glance/icon: di:prowlarr
+          glance/url: https://prowlarr.${ROOT_DOMAIN}
         containers:
           app:
             image:

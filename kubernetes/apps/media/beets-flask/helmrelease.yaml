@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: Beets Flask
+          glance/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/beets-flask.svg
+          glance/url: https://beets.${ROOT_DOMAIN}
         containers:
           app:
             image:

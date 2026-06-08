@@ -147,6 +147,18 @@ spec:
                 - "daemonsets"
               verbs:
                 - "list"
+            - apiGroups:
+                - "networking.k8s.io"
+              resources:
+                - "ingresses"
+              verbs:
+                - "list"
+            - apiGroups:
+                - "gateway.networking.k8s.io"
+              resources:
+                - "httproutes"
+              verbs:
+                - "list"
       bindings:
         list:
           type: ClusterRoleBinding

@@ -12,6 +12,10 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          glance/name: BentoPDF
+          glance/icon: di:bentopdf
+          glance/url: https://pdf.${ROOT_DOMAIN}
         containers:
           app:
             image:
