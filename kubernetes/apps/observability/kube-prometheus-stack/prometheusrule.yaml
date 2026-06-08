@@ -8,15 +8,15 @@ spec:
   groups:
     - name: nas.rules
       rules:
-        - alert: NASCacheUnmounted
+        - alert: NASVMsUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1
-            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/fast", node="nas"})
+            AND on (node) absent(node_filesystem_mount_info{mountpoint="/mnt/fast/vms", node="nas"})
           for: 5m
           labels:
-            severity: critical
+            severity: warning
           annotations:
-            summary: NAS /mnt/fast is not mounted.
+            summary: NAS /mnt/fast/vms is not mounted.
         - alert: NASTankUnmounted
           expr: >-
             up{node="nas",job="node-exporter"} == 1
