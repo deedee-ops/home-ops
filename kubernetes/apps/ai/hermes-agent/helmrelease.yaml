@@ -18,9 +18,9 @@ spec:
           glance/url: https://hermes.${ROOT_DOMAIN}
         containers:
           app:
-            image:
+            image: &img
               repository: nousresearch/hermes-agent
-              tag: v2026.5.29@sha256:192a40783e9227b5f162b76af4d133050557adebd46e1c9cb40cb79a1317a9f7
+              tag: v2026.6.5@sha256:9ad3b04ec916ea2c2da22358fd43b024c788d74073210695af88bfc2e63869b4
             args:
               - gateway
               - run
@@ -28,15 +28,21 @@ spec:
               API_SERVER_ENABLED: true
               API_SERVER_HOST: "0.0.0.0"
               API_SERVER_CORS_ORIGINS: "*"
+              HERMES_DASHBOARD_OIDC_ISSUER: "https://id.${ROOT_DOMAIN}"
+              HERMES_DASHBOARD_OIDC_SCOPES: "openid profile email groups"
               HERMES_DASHBOARD: true
               HERMES_DASHBOARD_HOST: "0.0.0.0"
               HERMES_DASHBOARD_PORT: &dashboardPort 9119
+              HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${ROOT_DOMAIN}"
               HERMES_DASHBOARD_TUI: "1"
               PYTHONPATH: /opt/data/.local/lib/python3.13/site-packages
+              SSL_CERT_FILE: "/certs/ca-bundle.pem"
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
                   name: "hermes-agent-secret"
+              - secretRef:
+                  name: "hermes-agent-oidc-credentials"
             probes:
               liveness:
                 enabled: true
@@ -59,7 +65,7 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
+            securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities:
@@ -77,9 +83,20 @@ spec:
                 cpu: 10m
               limits:
                 memory: 4Gi
+        initContainers:
+          01-merge-certificates:
+            image: *img
+            command:
+              - sh
+              - -c
+              - >-
+                cat /etc/ssl/certs/ca-certificates.crt /certs/homelab.pem
+                > /certs/ca-bundle.pem
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
       dnsConfig:
         options:
           - name: ndots
@@ -128,8 +145,16 @@ spec:
         existingClaim: "hermes-agent"
         globalMounts:
           - path: /opt/data
+      root-ca:
+        type: secret
+        name: homelab-root-ca.crt
+        globalMounts:
+          - path: /certs/homelab.pem
+            subPath: ec.crt
       tmp:
         type: emptyDir
         globalMounts:
           - path: /tmp
             subPath: tmp
+          - path: /certs
+            subPath: certs
