@@ -12,7 +12,6 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
   - ./intel-gpu-resource-driver.yaml
-  - ./irqbalance.yaml
   - ./metrics-server.yaml
   - ./multus.yaml
   - ./reloader.yaml
