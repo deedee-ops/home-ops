@@ -7,7 +7,6 @@
     "github>home-operations/renovate-presets//config/dependencyDashboard.json5",
     "github>home-operations/renovate-presets//config/managerFilePatterns.json5",
     "github>home-operations/renovate-presets//config/registryAliases.json5",
-    "github>home-operations/renovate-presets//managers/cnpg.json5",
     "github>home-operations/renovate-presets//managers/grafanaDashboards.json5",
     "github>home-operations/renovate-presets//managers/oci.json5",
     "github>home-operations/renovate-presets//overrides/changelogs.json5",
