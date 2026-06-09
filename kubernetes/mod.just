@@ -9,7 +9,7 @@ default:
 
 [doc('Open a shell on a node')]
 node-shell node:
-    kubectl debug node/{{ node }} -n kube-system -it --image="mirror.gcr.io/alpine:latest" --profile sysadmin
+    kubectl debug node/{{ node }} -n kube-system -it --image="mirror.gcr.io/ubuntu:latest" --profile sysadmin
     kubectl delete pod -n kube-system -l app.kubernetes.io/managed-by=kubectl-debug
 
 [doc('Remove all dead pods')]
