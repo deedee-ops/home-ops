@@ -23,8 +23,6 @@
     "github>deedee-ops/home-ops//.renovate/labels.json5",
     "github>deedee-ops/home-ops//.renovate/talosFactory.json5",
   ],
-  minimumReleaseAge: "3 days",
-  minimumReleaseAgeBehaviour: "timestamp-required",
   packageRules: [
     // Map terraform registry to opentofu
     {

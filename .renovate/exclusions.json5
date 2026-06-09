@@ -12,10 +12,5 @@
         "/talos\\.ajgon\\.casa/",
       ],
     },
-    {
-      description: "Exclude packages with disabled timestamps (for minimumReleaseAge)",
-      matchPackageNames: ["ghcr.io/home-operations/busybox"],
-      minimumReleaseAge: null,
-    },
   ],
 }
