@@ -7,5 +7,6 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
+  - ./ceph-csi-drivers.yaml
   - ./rook-ceph-cluster.yaml
   - ./rook-ceph-operator.yaml
