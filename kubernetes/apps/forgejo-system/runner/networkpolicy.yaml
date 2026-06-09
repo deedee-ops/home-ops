@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: runner-egress-internal
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+          - runner
+          - runner-instance
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: forgejo
+      toPorts:
+        - ports:
+            - protocol: TCP
+              port: "3000"
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+      toPorts:
+        - ports:
+            - port: "80"
+            - port: "443"

@@ -1,0 +1,253 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: runner
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: runner
+  interval: 30m
+  values:
+    configMaps:
+      config:
+        suffix: config
+        data:
+          runner.yaml: |-
+            cache:
+              enabled: true
+              dir: /data/cache
+            container:
+              docker_host: "-"
+              workdir_parent: shared/workdir
+            host:
+              workdir_parent: /data/act
+            kubernetes:
+              namespace: forgejo-system
+              poll_timeout: 10m
+            log:
+              level: info
+            plugins:
+              k8s:
+                address: unix:///plugin/forgejo-runner-k8s.sock
+                options:
+                  namespace: forgejo-system
+                  poll_timeout: 10m
+                  labels: "app.kubernetes.io/name=runner-instance,app.kubernetes.io/instance=env-${ENV_ID}"
+            runner:
+              capacity: 4
+              file: /persistent/.runner
+              labels:
+                - ubuntu-latest:k8s:/config/podspec-default.yaml
+                - ubuntu-24.04:k8spod:/config/podspec-default.yaml
+                - default:k8s:/config/podspec-default.yaml
+                - docker:k8s:/config/podspec-dind.yaml
+              timeout: 3h
+          podspec-default.yaml: |-
+            containers:
+              - env:
+                  - name: DEBIAN_FRONTEND
+                    value: noninteractive
+                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:cda8cd3f3848560b3e00099f6892ff99aad198d7d93d040b1d07bb604668395d
+                imagePullPolicy: IfNotPresent
+                name: main
+                resources:
+                  limits:
+                    memory: 2Gi
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+            restartPolicy: Never
+          podspec-dind.yaml: |-
+            initContainers:
+              - name: dind
+                image: docker:29-dind
+                securityContext:
+                  privileged: true
+                restartPolicy: Always
+                env:
+                  - name: DOCKER_TLS_CERTDIR
+                    value: /certs
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    memory: 4Gi
+                volumeMounts:
+                  - name: docker-storage
+                    mountPath: /var/lib/docker
+                  - name: docker-certs
+                    mountPath: /certs
+                startupProbe:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - >-
+                        docker --tlsverify --tlscacert=/certs/client/ca.pem --tlscert=/certs/client/cert.pem
+                        --tlskey=/certs/client/key.pem -H tcp://localhost:2376 info
+                  initialDelaySeconds: 5
+                  periodSeconds: 1
+                  failureThreshold: 30
+            containers:
+              - env:
+                  - name: DEBIAN_FRONTEND
+                    value: noninteractive
+                  - name: DOCKER_HOST
+                    value: tcp://localhost:2376
+                  - name: DOCKER_TLS_VERIFY
+                    value: "1"
+                  - name: DOCKER_CERT_PATH
+                    value: /certs/client
+                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:cda8cd3f3848560b3e00099f6892ff99aad198d7d93d040b1d07bb604668395d
+                imagePullPolicy: IfNotPresent
+                name: main
+                resources:
+                  limits:
+                    memory: 2Gi
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                volumeMounts:
+                  - name: docker-certs
+                    mountPath: /certs
+                    readOnly: true
+            volumes:
+              - name: docker-storage
+                emptyDir: {}
+              - name: docker-certs
+                emptyDir: {}
+            restartPolicy: Never
+    controllers:
+      runner:
+        type: deployment
+        replicas: 1
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          automountServiceAccountToken: true
+          labels:
+            app.kubernetes.io/component: runner
+            egress.cilium.io/kube-apiserver: "true"
+          securityContext:
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+        containers:
+          runner:
+            image:
+              repository: registry.erwanleboucher.dev/erwanleboucher.dev/eleboucher/runner
+              tag: 12.10.2@sha256:d5eeafda573012c229b730f5a18437b464d946473478e1f6bd56fd537b881609
+            command:
+              - sh
+              - -ec
+              - |
+                exec /bin/forgejo-runner daemon \
+                  --config /config/runner.yaml \
+                  --url "http://forgejo-http:3000" \
+                  --uuid "$(cat /etc/runner-secret/uuid)" \
+                  --token-url file:///etc/runner-secret/token
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
+          k8s-plugin:
+            image:
+              pullPolicy: Always
+              repository: registry.erwanleboucher.dev/erwanleboucher.dev/eleboucher/runner-k8s-plugin
+              tag: 12.10.4@sha256:c0f55b539978c82b70e651114dc3803d5226ffd4cc81677e67a218b16d7fd82d
+            args:
+              - --listen
+              - unix:///plugin/forgejo-runner-k8s.sock
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    persistence:
+      config:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /config
+      plugin:
+        type: emptyDir
+        globalMounts:
+          - path: /plugin
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /data
+            subPath: data
+          - path: /tmp
+            subPath: tmp
+      runner-secret:
+        type: secret
+        name: runner-secret
+        globalMounts:
+          - path: /etc/runner-secret
+            readOnly: true
+    rbac:
+      bindings:
+        runner:
+          type: RoleBinding
+          roleRef:
+            identifier: runner
+          subjects:
+            - identifier: runner
+      roles:
+        runner:
+          type: Role
+          rules:
+            # Jobs - the plugin creates jobs to run pipeline steps
+            - apiGroups:
+                - "batch"
+              resources:
+                - jobs
+              verbs:
+                - create
+                - get
+                - list
+                - watch
+                - delete
+            # Pods - only needed when the plugin needs to interact with them (logs, exec)
+            - apiGroups:
+                - ""
+              resources:
+                - pods
+              verbs:
+                - list
+                - watch
+                - get
+            - apiGroups:
+                - ""
+              resources:
+                - pods/exec
+              verbs:
+                - create
+                - get
+            - apiGroups:
+                - ""
+              resources:
+                - pods/log
+              verbs:
+                - list
+                - watch
+                - get
+    serviceAccount:
+      runner: {}
