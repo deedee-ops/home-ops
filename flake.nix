@@ -57,7 +57,14 @@
         checks.pre-commit-check = pre-commit-hooks.lib.${system}.run {
           src = ./.;
           hooks = {
-            actionlint.enable = true;
+            actionlint = {
+              enable = true;
+              args = [
+                "-config-file"
+                ".forgejo/actionlint.yaml"
+              ];
+              files = ".forgejo/workflows/.+\.yaml";
+            };
             check-json.enable = true;
             commitizen.enable = true;
             markdownlint.enable = true;
@@ -75,7 +82,7 @@
               name = "zizmor";
               package = pkgs.zizmor;
               entry = "${pkgs.lib.getExe pkgs.zizmor}";
-              files = ".github/workflows/.+\.yaml";
+              files = ".forgejo/workflows/.+\.yaml";
             };
 
             check-case-conflicts.enable = true;
