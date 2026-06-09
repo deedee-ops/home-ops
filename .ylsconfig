@@ -1,6 +1,6 @@
 {
   "ignoreFiles": [
-    ".github/actionlint.yaml",
+    ".forgejo/actionlint.yaml",
     "docker/roms-server/config/roms-server.yaml",
     "docker/talos-factory/config/config.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",

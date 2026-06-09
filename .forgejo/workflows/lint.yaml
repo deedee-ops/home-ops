@@ -10,34 +10,31 @@ name: Lint everything
     branches:
       - "renovate/*"
 
+concurrency:
+  group: ${{ forgejo.ref }}-${{ forgejo.workflow }}
+  cancel-in-progress: true
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   main:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: Generate Token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        id: app-token
-        with:
-          client-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.repository }}
-          permission-contents: read
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          token: "${{ steps.app-token.outputs.token }}"
           persist-credentials: false
+
       - name: Prepare environment
         run: |
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends udev xz-utils
+
       - name: Install Nix
-        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+        uses: https://github.com/cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+
       - name: Run linters
         run: "nix flake check -L"
         env:

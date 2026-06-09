@@ -27,7 +27,7 @@
     },
     {
       matchManagers: ["github-actions"],
-      addLabels: ["renovate/github-action"],
+      addLabels: ["renovate/action"],
     },
     {
       matchDatasources: ["github-releases", "github-tags"],

@@ -3,6 +3,10 @@
 area/bootstrap:
   - changed-files:
       - any-glob-to-any-file: "bootstrap/**/*"
+area/ci:
+  - changed-files:
+      - any-glob-to-any-file: ".forgejo/**/*"
+      - any-glob-to-any-file: ".github/**/*"
 area/docker:
   - changed-files:
       - any-glob-to-any-file: "docker/**/*"
@@ -11,9 +15,6 @@ area/docs:
       - any-glob-to-any-file:
           - "**/README.md"
           - "docs/**/*.md"
-area/github:
-  - changed-files:
-      - any-glob-to-any-file: ".github/**/*"
 area/kubernetes:
   - changed-files:
       - any-glob-to-any-file: "kubernetes/**/*"
@@ -25,9 +26,6 @@ area/renovate:
       - any-glob-to-any-file:
           - ".renovate/**/*"
           - ".renovaterc.json5"
-area/schemas:
-  - changed-files:
-      - any-glob-to-any-file: "schemas/**/*"
 area/scripts:
   - changed-files:
       - any-glob-to-any-file: "scripts/**/*"
