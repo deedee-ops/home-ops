@@ -56,6 +56,8 @@ spec:
           STDERR: true
         mailer:
           ENABLED: true
+          FROM: "deedee@${ROOT_DOMAIN}"
+          HELO_HOSTNAME: "${ROOT_DOMAIN}"
           PROTOCOL: smtp
           SMTP_ADDR: smtp-relay.network.svc.cluster.local
           SMTP_PORT: "25"
