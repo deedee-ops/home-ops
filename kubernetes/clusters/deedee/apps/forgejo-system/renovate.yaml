@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: renovate-operator
+spec:
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: renovate-operator
+      namespace: forgejo-system
+  interval: 1h
+  patches: []
+  path: "./kubernetes/apps/forgejo-system/renovate/operator"
+  postBuild:
+    substitute:
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: forgejo-system
+  timeout: 5m
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: renovate-jobs
+spec:
+  dependsOn:
+    - name: renovate-operator
+  interval: 1h
+  patches: []
+  path: "./kubernetes/apps/forgejo-system/renovate/jobs"
+  postBuild:
+    substitute:
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: forgejo-system
+  timeout: 5m
+  wait: false
