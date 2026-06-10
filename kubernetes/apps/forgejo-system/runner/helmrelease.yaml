@@ -34,7 +34,7 @@ spec:
                 options:
                   namespace: forgejo-system
                   poll_timeout: 10m
-                  labels: "app.kubernetes.io/name=runner-instance,app.kubernetes.io/instance=env-${ENV_ID}"
+                  labels: "app.kubernetes.io/name=runner-instance,app.kubernetes.io/instance=env-${ENV_ID},egress.cilium.io/kube-apiserver=true"
             runner:
               capacity: 4
               file: /persistent/.runner
@@ -59,6 +59,8 @@ spec:
                     cpu: 100m
                     memory: 256Mi
             restartPolicy: Never
+            serviceAccount: forgejo-runner
+            serviceAccountName: forgejo-runner
           podspec-dind.yaml: |-
             initContainers:
               - name: dind
@@ -120,6 +122,8 @@ spec:
               - name: docker-certs
                 emptyDir: {}
             restartPolicy: Never
+            serviceAccount: forgejo-runner
+            serviceAccountName: forgejo-runner
     controllers:
       runner:
         type: deployment
