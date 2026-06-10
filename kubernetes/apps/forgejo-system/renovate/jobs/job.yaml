@@ -1,0 +1,38 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+apiVersion: renovate-operator.mogenius.com/v1alpha1
+kind: RenovateJob
+metadata:
+  name: forgejo
+spec:
+  discoveryFilters:
+    - deedee/mark13
+  extraEnv:
+    - name: LOG_LEVEL
+      value: debug
+    - name: NODE_EXTRA_CA_CERTS
+      value: &certs /certs/homelab.pem
+    - name: GIT_SSL_CAINFO
+      value: *certs
+  extraVolumes:
+    - name: homelab-ca
+      secret:
+        defaultMode: 420
+        secretName: homelab-root-ca.crt
+  extraVolumeMounts:
+    - mountPath: /certs/homelab.pem
+      name: homelab-ca
+      subPath: ec.crt
+  image: ghcr.io/renovatebot/renovate:43.214.5
+  parallelism: 5
+  provider:
+    name: forgejo
+    endpoint: https://git.${ROOT_DOMAIN}/api/v1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  schedule: 0 * * * *
+  secretRef: renovate-secret
+  webhook:
+    enabled: false

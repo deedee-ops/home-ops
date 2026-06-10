@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: renovate-operator-egress-internal
+specs:
+  - endpointSelector:
+      matchLabels:
+        batch.kubernetes.io/job-name: renovate-operator-crd-install
+    egress:
+      - toEntities:
+          - kube-apiserver
+  - endpointSelector:
+      matchExpressions:
+        - key: renovate-operator.mogenius.com/job-type
+          operator: In
+          values:
+            - discovery
+            - executor
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: forgejo
+        toPorts:
+          - ports:
+              - protocol: TCP
+                port: "3000"
+      # via envoy, when pods use git.${ROOT_DOMAIN}
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: network
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+        toPorts:
+          - ports:
+              - port: "10443"
+      - toCIDRSet:
+          - cidr: 0.0.0.0/0
+        toPorts:
+          - ports:
+              - port: "443"
