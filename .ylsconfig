@@ -15,7 +15,7 @@
     "talos/*/schematic.yaml.j2"
   ],
   "allowOnlyURLs": [
-    "https://json.schemastore.org",
+    "https://www.schemastore.org",
     "https://schemas.ajgon.casa",
     "https://devenv.sh"
   ]

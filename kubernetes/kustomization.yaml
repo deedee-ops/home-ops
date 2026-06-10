@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization.json
+# yaml-language-server: $schema=https://www.schemastore.org/kustomization.json
 # dummy customization for components-only installations
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

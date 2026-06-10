@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://json.schemastore.org/pull-request-labeler.json
+# yaml-language-server: $schema=https://www.schemastore.org/pull-request-labeler.json
 area/bootstrap:
   - changed-files:
       - any-glob-to-any-file: "bootstrap/**/*"
