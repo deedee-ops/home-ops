@@ -25,7 +25,7 @@ spec:
     - mountPath: /certs/homelab.pem
       name: homelab-ca
       subPath: ec.crt
-  image: ghcr.io/renovatebot/renovate:43.219.0
+  image: ghcr.io/renovatebot/renovate:43.220.0
   parallelism: 5
   provider:
     name: forgejo
