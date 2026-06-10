@@ -1,5 +1,4 @@
 .current-cluster
-.direnv
 .pre-commit-config.yaml
 kubeconfig
 talosconfig
@@ -15,3 +14,14 @@ talos/**/*.iso
 
 charts
 Chart.lock
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

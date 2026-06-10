@@ -16,6 +16,7 @@
   ],
   "allowOnlyURLs": [
     "https://json.schemastore.org",
-    "https://schemas.ajgon.casa"
+    "https://schemas.ajgon.casa",
+    "https://devenv.sh"
   ]
 }

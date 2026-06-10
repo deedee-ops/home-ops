@@ -19,23 +19,20 @@ permissions:
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: docker
     environment: production
+    container: ghcr.io/cachix/devenv/devenv:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          persist-credentials: false
-
-      - name: Prepare environment
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes --no-install-recommends udev xz-utils
-
-      - name: Install Nix
-        uses: https://github.com/cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+          git init -b master
+          git remote add origin \
+          "http://x-access-token:${FORGEJO_TOKEN}@${FORGEJO_SERVER_URL#http*://}/${FORGEJO_REPOSITORY}.git"
+          git fetch --depth=1 origin "${FORGEJO_REF_NAME}"
+          git checkout FETCH_HEAD
 
       - name: Run linters
-        run: "nix flake check -L"
+        run: |
+          devenv test -v
         env:
           YLS_RESOLVE_URLS: "1"

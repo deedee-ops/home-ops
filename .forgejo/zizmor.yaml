@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/zizmor.json
+rules:
+  # false positives on forgejo, because `uses` stanza doesn't accept https:// proto in github
+  impostor-commit:
+    disable: true
+  known-vulnerable-actions:
+    disable: true
+  ref-version-mismatch:
+    disable: true
+  stale-action-refs:
+    disable: true
