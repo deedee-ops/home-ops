@@ -27,7 +27,6 @@
       matchDatasources: ["custom.talos-factory"],
       semanticCommitScope: "container",
       commitMessageTopic: "{{depName}}",
-      minimumReleaseAge: "1d",
     },
   ],
 }
