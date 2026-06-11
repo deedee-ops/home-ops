@@ -12,3 +12,9 @@ inputs:
     url: github:Handfish/talos-pilot
 
 allow_unfree: true
+
+profile: deedee
+
+secretspec:
+  enable: true
+  provider: keyring

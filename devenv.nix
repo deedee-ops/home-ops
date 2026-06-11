@@ -10,9 +10,21 @@ let
   isDevShell = !config.devenv.isTesting;
 in
 {
+  profiles.deedee.module.env = {
+    CLUSTER = "deedee";
+  };
+
+  env = lib.optionalAttrs isDevShell {
+    AWS_ACCESS_KEY_ID = config.secretspec.secrets.AWS_ACCESS_KEY_ID;
+    AWS_SECRET_ACCESS_KEY = config.secretspec.secrets.AWS_SECRET_ACCESS_KEY;
+    TOFU_TFVARS = config.secretspec.secrets.TOFU_TFVARS;
+    VAULT_TOKEN = config.secretspec.secrets.VAULT_TOKEN;
+  };
+
   packages = lib.optionals isDevShell [
     inputs.talos-pilot.packages."${pkgs.stdenv.system}".talos-pilot
 
+    pkgs.envconsul
     pkgs.fluxcd
     pkgs.gum
     pkgs.helmfile
@@ -116,25 +128,17 @@ in
   };
 
   enterShell = lib.optionalString isDevShell ''
-    export export SOPS_AGE_SSH_PRIVATE_KEY_FILE="$HOME/.config/sops-nix/secrets/features/home/ssh/privateKey"
-
     export ROOT_DIR="$(git rev-parse --show-toplevel)"
     export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
-
     export VAULT_ADDR=https://vault.ajgon.casa
-    export $(${pkgs.lib.getExe pkgs.sops} -d scripts/vault.sops.env | xargs)
 
-    if [ -f "$ROOT_DIR/.current-cluster" ]; then
-      kc="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/kubeconfig"
-      [ -f "$kc" ] && export KUBECONFIG=$kc
-      tc="$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
-      [ -f "$tc" ] && export TALOSCONFIG=$tc
-      ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "$(cat "$ROOT_DIR/.current-cluster")/talos" > "$ROOT_DIR/talos/$(cat "$ROOT_DIR/.current-cluster")/talosconfig"
-    fi
+    kc="$ROOT_DIR/talos/$CLUSTER/kubeconfig"
+    [ -f "$kc" ] && export KUBECONFIG=$kc
+    tc="$ROOT_DIR/talos/$CLUSTER/talosconfig"
+    [ -f "$tc" ] && export TALOSCONFIG=$tc
+    ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "$CLUSTER/talos" > "$ROOT_DIR/talos/$CLUSTER/talosconfig"
 
     # opentofu
-    ${pkgs.lib.getExe pkgs.vault} kv get -field=TOFU_TFVARS global/opentofu > "$ROOT_DIR/opentofu/terraform.tfvars"
-    export AWS_ACCESS_KEY_ID="$(${pkgs.lib.getExe pkgs.vault} kv get -field=AWS_ACCESS_KEY_ID global/opentofu)"
-    export AWS_SECRET_ACCESS_KEY="$(${pkgs.lib.getExe pkgs.vault} kv get -field=AWS_SECRET_ACCESS_KEY global/opentofu)"
+    echo "$TOFU_TFVARS" > "$ROOT_DIR/opentofu/terraform.tfvars"
   '';
 }

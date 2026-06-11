@@ -2,7 +2,8 @@ set positional-arguments := true
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-export CLUSTER := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+# export CLUSTER := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+export CLUSTER := shell("echo $CLUSTER")
 export TALOSCONFIG := cluster_dir + "/talosconfig"
 export KUBECONFIG := cluster_dir + "/kubeconfig"
 

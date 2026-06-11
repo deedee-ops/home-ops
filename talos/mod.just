@@ -1,11 +1,11 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-# cluster := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
-cluster := "deedee"
+# export CLUSTER := shell("cat " + justfile_dir() + "/.current-cluster 2> /dev/null || just cluster")
+export CLUSTER := shell("echo $CLUSTER")
 
 talos_dir := justfile_dir() + '/talos'
-cluster_dir := talos_dir + '/' + cluster
+cluster_dir := talos_dir + '/' + CLUSTER
 
 controller_cmd := "talosctl --talosconfig=" + cluster_dir + "/talosconfig config info -o yaml | yq -e '.endpoints[0]'"
 

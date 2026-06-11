@@ -30,6 +30,7 @@ jobs:
           "http://x-access-token:${FORGEJO_TOKEN}@${FORGEJO_SERVER_URL#http*://}/${FORGEJO_REPOSITORY}.git"
           git fetch --depth=1 origin "${FORGEJO_REF_NAME}"
           git checkout FETCH_HEAD
+          sed -i'' 's@enable: true@enable: false@g' devenv.yaml
 
       - name: Run linters
         run: |
