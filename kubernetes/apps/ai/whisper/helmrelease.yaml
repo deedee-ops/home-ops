@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: hwdsl2/whisper-server
-              tag: latest@sha256:4e1d727c2d9a3d2e89e38a8f3fd21fcbdb2398ae2772b9f0fafec7fb662426d8
+              tag: latest@sha256:3f109fa1cfd99d701b9e60a8ef52457630b0711ef2c1ad44d57cd95e25b91b39
             env:
               TZ: Europe/Warsaw
             probes:
