@@ -25,7 +25,7 @@ services:
     networks:
       - internal
     volumes:
-      - "/etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt"
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     labels:
       traefik.enable: "true"
       traefik.http.services.registry.loadbalancer.server.port: "5000"

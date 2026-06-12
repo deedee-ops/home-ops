@@ -1,0 +1,15 @@
+# attic.toml
+[storage]
+type = "s3"
+region = "eu-central-1"
+bucket = "nix"
+endpoint = "https://s3.ajgon.casa"
+
+[database]
+url = "sqlite:///var/lib/attic/server.db"
+
+[chunking]
+nar-size-threshold = 65536
+min-size = 16384
+avg-size = 65536
+max-size = 262144

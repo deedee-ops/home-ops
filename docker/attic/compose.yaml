@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  attic:
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64: "${ATTIC_SERVER_TOKEN_HS256_SECRET_BASE64}"
+      SSL_CERT_FILE: "/etc/ssl/certs/ca-certificates.crt"
+    image: ghcr.io/zhaofengli/attic:latest@sha256:18574aba70fc89d2b695273fbe2e7b2f8ad7e8e786b4cc535124fbe14bada1d0
+    container_name: attic
+    restart: unless-stopped
+    user: 1000:1000
+    command:
+      - -f
+      - /etc/attic/server.toml
+    configs:
+      - source: config
+        target: /etc/attic/server.toml
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${DATA_DOCKER_DIR}/attic/config:/var/lib/attic
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.attic.loadbalancer.server.port: "8080"
+      traefik.http.routers.attic.entrypoints: https
+      traefik.http.routers.attic.rule: Host(`nix.${ROOT_DOMAIN}`)
+      traefik.http.routers.attic.service: attic
+      traefik.http.routers.attic.tls: true
+      traefik.http.routers.attic.tls.certresolver: attic-ecdsa
+      traefik.http.routers.attic.tls.domains[0].main: "nix.${ROOT_DOMAIN}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  config:
+    file: ./config/server.toml
+
+networks:
+  internal:
+    name: internal
+    external: true

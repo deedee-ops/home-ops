@@ -10,8 +10,8 @@ services:
       - source: vault-config
         target: /vault/config/config.hcl
     volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - ${DATA_DOCKER_DIR}/vault/file:/vault/file
-      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
     networks:
       - internal
     environment:

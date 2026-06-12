@@ -15,8 +15,8 @@ services:
       - source: config
         target: /config.yaml
     volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - ${DATA_DOCKER_DIR}/talos-factory/config:/config:ro
-      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
     tmpfs:
       - /tmp:mode=755,uid=1000,gid=1000
     networks:
