@@ -52,9 +52,13 @@ spec:
                 image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:f99cc8767da554dc88765e6dd68bcdb0aa211df9282d267398bdfffa74ec070d
                 imagePullPolicy: IfNotPresent
                 name: main
+                securityContext:
+                  capabilities:
+                    add:
+                      - SYS_ADMIN
                 resources:
                   limits:
-                    memory: 2Gi
+                    memory: 16Gi
                   requests:
                     cpu: 100m
                     memory: 256Mi
@@ -108,7 +112,7 @@ spec:
                 name: main
                 resources:
                   limits:
-                    memory: 2Gi
+                    memory: 16Gi
                   requests:
                     cpu: 100m
                     memory: 256Mi
