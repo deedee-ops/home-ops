@@ -36,8 +36,8 @@ spec:
         - https://kvm.${ROOT_DOMAIN}
         - https://unifi.${ROOT_DOMAIN}
         # docker on nas
+        - https://arcane.${ROOT_DOMAIN}
         - https://garage.${ROOT_DOMAIN}
-        - https://komodo.${ROOT_DOMAIN}
         - https://matchbox.${ROOT_DOMAIN}
         - https://nas.${ROOT_DOMAIN}
         - https://registry.${ROOT_DOMAIN}

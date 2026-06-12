@@ -8,7 +8,7 @@
 
 ### My Home Operations Repository ☸
 
-_... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenTofu](https://opentofu.org/), [Renovate](https://github.com/renovatebot/renovate) and [GitHub Actions](https://github.com/features/actions)_ 🤖
+_... managed with [Flux](https://fluxcd.io/), [Arcane](https://getarcane.app/), [OpenTofu](https://opentofu.org/), [Renovate](https://github.com/renovatebot/renovate) and [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/) 🤖
 
 </div>
 
@@ -18,7 +18,6 @@ _... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenT
 [![Talos](https://kromgo.ajgon.casa/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
 [![Kubernetes](https://kromgo.ajgon.casa/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
 [![Flux](https://kromgo.ajgon.casa/badges/flux_version)](https://fluxcd.io)&nbsp;&nbsp;
-[![Renovate](https://img.shields.io/github/actions/workflow/status/buroa/k8s-gitops/renovate.yaml?branch=main&label&logo=renovate&color=blue)](https://github.com/buroa/k8s-gitops/actions/workflows/renovate.yaml)
 
 </div>
 
@@ -41,9 +40,9 @@ _... managed with [Flux](https://fluxcd.io/), [Komodo](https://komo.do/), [OpenT
 ## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4a1/512.gif" alt="💡" width="20" height="20" /> Overview
 
 This is a mono repository for my home infrastructure and Kubernetes cluster. I try to adhere to Infrastructure as Code
-(IaC) and GitOps practices using tools like [Komodo](https://komo.do/), [OpenTofu](https://www.opentofu.org/),
+(IaC) and GitOps practices using tools like [Arcane](https://getarcane.app/), [OpenTofu](https://www.opentofu.org/),
 [Kubernetes](https://kubernetes.io/), [Flux](https://github.com/fluxcd/flux2), [Renovate](https://github.com/renovatebot/renovate),
-and [GitHub Actions](https://github.com/features/actions).
+and [Forgejo Actions](https://forgejo.org/docs/latest/user/actions/).
 
 > [!NOTE]
 > Old [ArgoCD](https://argo-cd.readthedocs.io/en/stable/) is not maintained anymore,
@@ -72,7 +71,7 @@ along with some of the practices I use here.
 - **Storage & Data Protection**: [rook](https://github.com/rook/rook) provides distributed storage for persistent
   volumes, with [volsync](https://github.com/backube/volsync) handling backups and restores.
   [spegel](https://github.com/spegel-org/spegel) improves reliability by running a stateless, cluster-local OCI image mirror.
-- **Automation & CI/CD**: [actions-runner-controller](https://github.com/actions/actions-runner-controller) runs
+- **Automation & CI/CD**: [forgejo-runner](https://code.forgejo.org/forgejo/runner) runs
   self-hosted GitHub Actions runners directly in the cluster for continuous integration workflows.
 
 ### GitOps
@@ -91,10 +90,9 @@ when they are found a PR is automatically created. When some PRs are merged Flux
 
 ### Docker
 
-Machines which are not feesible to be maintained by kubernetes (like NAS), are managed by [Komodo](https://komo.do)
-and [Docker Compose](https://compose-spec.io/) files. Directories are organized similar to flux flow - there are global
-`stacks` with application configuration meant to be shared among machines, and `hosts` configurations with fine-tuned
-per-machine options.
+Machines which are not feesible to be maintained by kubernetes (like NAS), are managed by [Arcane](https://getarcane.app/)
+and [Docker Compose](https://compose-spec.io/) files. Directories are organized per application, and instance specific options
+are configured directly in Arcane.
 
 ### Directories
 
@@ -102,9 +100,7 @@ This Git repository contains the following directories.
 
 ```sh
 📁 bootstrap      # initial set of files necessary to kickstart the cluster
-📁 docker
-├── 📁 hosts      # per-host docker compose komodo configurations
-└── 📁 stacks     # application templates with base rules shared among machines
+📁 docker         # application compose files with configurations
 📁 kubernetes
 ├── 📁 apps       # application templates with base rules shared among clusters
 ├── 📁 clusters   # per-cluster configurations of said apps
