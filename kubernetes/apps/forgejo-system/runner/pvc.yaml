@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/persistentvolumeclaim-v1.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: runner-nix-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: ceph-block
