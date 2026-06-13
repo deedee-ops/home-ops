@@ -11,6 +11,10 @@ spec:
   interval: 30m
   values:
     deployment:
+      annotations:
+        glance/name: Renovate Operator
+        glance/icon: di:renovate
+        glance/url: https://renovate.${ROOT_DOMAIN}
       podLabels:
         egress.cilium.io/kube-apiserver: "true"
     fullnameOverride: renovate-operator
