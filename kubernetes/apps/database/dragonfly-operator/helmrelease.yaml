@@ -19,12 +19,11 @@ spec:
         repository: ghcr.io/dragonflydb/operator
     grafanaDashboard:
       enabled: true
-      # TODO: wait for 1.6.0 release, to fix the bug
-      # grafanaOperator:
-      #   enabled: true
-      #   matchLabels:
-      #     grafana.internal/instance: grafana
-      # folder: database
+      grafanaOperator:
+        enabled: true
+        matchLabels:
+          grafana.internal/instance: grafana
+      folder: database
   postRenderers:
     - kustomize:
         patches:
