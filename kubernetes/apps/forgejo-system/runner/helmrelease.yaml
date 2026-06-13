@@ -42,6 +42,7 @@ spec:
                 - ubuntu-latest:k8s:/config/podspec-default.yaml
                 - ubuntu-24.04:k8spod:/config/podspec-default.yaml
                 - default:k8s:/config/podspec-default.yaml
+                - nix:k8s:/config/podspec-nix.yaml
                 - docker:k8s:/config/podspec-dind.yaml
               timeout: 3h
           podspec-default.yaml: |-
@@ -52,13 +53,9 @@ spec:
                 image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:c63459cc38364ab58f852bbcbc41685e42510d67e3ee081c3e7abd73486f98f8
                 imagePullPolicy: IfNotPresent
                 name: main
-                securityContext:
-                  capabilities:
-                    add:
-                      - SYS_ADMIN
                 resources:
                   limits:
-                    memory: 16Gi
+                    memory: 4Gi
                   requests:
                     cpu: 100m
                     memory: 256Mi
@@ -112,7 +109,7 @@ spec:
                 name: main
                 resources:
                   limits:
-                    memory: 16Gi
+                    memory: 4Gi
                   requests:
                     cpu: 100m
                     memory: 256Mi
@@ -125,6 +122,45 @@ spec:
                 emptyDir: {}
               - name: docker-certs
                 emptyDir: {}
+            restartPolicy: Never
+            serviceAccount: forgejo-runner
+            serviceAccountName: forgejo-runner
+          podspec-nix.yaml: |-
+            initContainers:
+              - name: 01-nix-store
+                image: nixos/nix:latest
+                command:
+                  - sh
+                  - -c
+                  - |
+                    [ -d /data/store ] && exit 0
+                    cp -r /nix/* /data/
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    memory: 1Gi
+                volumeMounts:
+                  - name: runner-nix-data
+                    mountPath: /data
+            containers:
+              - image: nixos/nix:latest
+                imagePullPolicy: IfNotPresent
+                name: main
+                resources:
+                  limits:
+                    memory: 16Gi
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                volumeMounts:
+                  - name: runner-nix-data
+                    mountPath: /nix
+            volumes:
+              - name: runner-nix-data
+                persistentVolumeClaim:
+                  claimName: runner-nix-data
             restartPolicy: Never
             serviceAccount: forgejo-runner
             serviceAccountName: forgejo-runner
