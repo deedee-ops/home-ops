@@ -27,6 +27,9 @@ spec:
       name: homelab-ca
       subPath: ec.crt
   image: ghcr.io/renovatebot/renovate:43.220.0
+  metadata:
+    labels:
+      app.kubernetes.io/name: renovate-job
   parallelism: 5
   provider:
     name: forgejo
