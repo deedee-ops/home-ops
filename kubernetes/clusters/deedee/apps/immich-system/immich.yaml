@@ -10,6 +10,8 @@ spec:
     - ../../../components/gpu
     - ../../../components/volsync
   dependsOn:
+    - name: dragonfly-operator
+      namespace: database
     - name: postgresql
       namespace: immich-system
     - name: intel-gpu-resource-driver

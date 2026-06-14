@@ -7,6 +7,9 @@ metadata:
 spec:
   components:
     - ../../../components/dragonfly
+  dependsOn:
+    - name: dragonfly-operator
+      namespace: database
   interval: 1h
   patches: []
   path: ./kubernetes/apps/default/searxng
