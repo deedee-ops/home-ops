@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: toolhive-egress-internal
+specs:
+  - endpointSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+            - embeddingserver
+    egress:
+      - toCIDRSet:
+          - cidr: 0.0.0.0/0
+        toPorts:
+          - ports:
+              - port: "443"
+  - endpointSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+            - mcpserver
+            - virtualmcpserver
+    egress:
+      - toEntities:
+          - kube-apiserver
+  - endpointSelector:
+      matchLabels:
+        toolhive: "true"
+    egress: &toolhivePods
+      - toEndpoints:
+          - matchLabels:
+              toolhive: "true"
+      - toEndpoints:
+          - matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - embeddingserver
+                  - mcpserver
+                  - toolhive-operator
+                  - virtualmcpserver
+  - endpointSelector:
+      matchExpressions:
+        - key: app.kubernetes.io/name
+          operator: In
+          values:
+            - embeddingserver
+            - mcpserver
+            - toolhive-operator
+            - virtualmcpserver
+    egress: *toolhivePods
