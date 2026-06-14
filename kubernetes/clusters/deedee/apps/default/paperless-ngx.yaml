@@ -10,6 +10,8 @@ spec:
     - ../../../components/nfs-scaler
     - ../../../components/volsync
   dependsOn:
+    - name: dragonfly-operator
+      namespace: database
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h

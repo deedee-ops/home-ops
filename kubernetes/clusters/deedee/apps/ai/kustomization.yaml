@@ -12,4 +12,5 @@ resources:
   - ./hermes-agent.yaml
   - ./open-webui.yaml
   - ./openedai-speech.yaml
+  - ./toolhive.yaml
   - ./whisper.yaml
