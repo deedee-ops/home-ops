@@ -19,16 +19,6 @@
           }
         },
         {
-          "name": "Qwen/Qwen3.6-27B",
-          "value": "",
-          "models": ["Qwen/Qwen3.6-27B"],
-          "weight": 1.0,
-          "vllm_key_config": {
-            "url": "env.VLLM_QWEN3_URL",
-            "model_name": "Qwen/Qwen3.6-27B"
-          }
-        },
-        {
           "name": "hermes/agent",
           "value": "env.VLLM_HERMES_API_KEY",
           "models": ["hermes-agent"],
@@ -38,7 +28,8 @@
             "model_name": "hermes-agent"
           }
         }
-      ]
+      ],
+      "network_config": { "allow_private_network": true }
     }
   },
   "config_store": {
