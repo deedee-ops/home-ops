@@ -19,6 +19,17 @@ specs:
           - kube-apiserver
   - endpointSelector:
       matchLabels:
+        egress.cilium.io/talos-apiserver: "true"
+    egress:
+      - toEntities:
+          - host
+          - remote-node
+      - toPorts:
+          - ports:
+              - port: "50000"
+                protocol: TCP
+  - endpointSelector:
+      matchLabels:
         egress.cilium.io/nas: "true"
     egress:
       - toCIDRSet:

@@ -10,6 +10,7 @@ resources:
   - ./_postgresql.yaml
   - ./bifrost.yaml
   - ./hermes-agent.yaml
+  - ./mcp-servers.yaml
   - ./open-webui.yaml
   - ./openedai-speech.yaml
   - ./toolhive.yaml
