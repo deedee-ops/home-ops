@@ -61,7 +61,7 @@ spec:
           PROTOCOL: smtp
           SMTP_ADDR: smtp-relay.network.svc.cluster.local
           SMTP_PORT: "25"
-          SUBJECT_PREFIX: "[GIT]"
+          SUBJECT_PREFIX: "[FORGEJO]"
         openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: false
