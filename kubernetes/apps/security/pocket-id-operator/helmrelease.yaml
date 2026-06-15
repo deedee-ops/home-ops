@@ -119,6 +119,26 @@ spec:
           parentRefs:
             - name: envoy-internal
               namespace: network
+          template:
+            rules:
+              - filters:
+                  - type: ResponseHeaderModifier
+                    responseHeaderModifier:
+                      set:
+                        - name: Content-Security-Policy
+                          value: >-
+                            default-src 'self';
+                            object-src 'none';
+                            script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                            style-src 'self' 'unsafe-inline';
+                  - cors:
+                      allowOrigins:
+                        - 'https://*.${ROOT_DOMAIN}'
+                      allowHeaders:
+                        - '*'
+                      allowMethods:
+                        - '*'
+                    type: CORS
         smtp:
           host: smtp-relay.network.svc.cluster.local
           port: 25
