@@ -26,7 +26,7 @@ spec:
     - mountPath: /certs/homelab.pem
       name: homelab-ca
       subPath: ec.crt
-  image: ghcr.io/renovatebot/renovate:43.224.0
+  image: ghcr.io/renovatebot/renovate:43.224.1
   metadata:
     labels:
       app.kubernetes.io/name: renovate-job
