@@ -70,6 +70,8 @@ spec:
         options:
           - name: ndots
             value: "1"
+      labels:
+        egress.cilium.io/internet: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

@@ -30,6 +30,7 @@ spec:
   metadata:
     labels:
       app.kubernetes.io/name: renovate-job
+      egress.cilium.io/internet: "true"
   parallelism: 5
   provider:
     name: forgejo

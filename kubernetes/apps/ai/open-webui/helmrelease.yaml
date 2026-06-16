@@ -151,6 +151,7 @@ spec:
             value: "1"
       labels:
         egress.cilium.io/auth: "true"
+        egress.cilium.io/internet: "true"
         egress.cilium.io/search: "true"
       securityContext:
         runAsNonRoot: false

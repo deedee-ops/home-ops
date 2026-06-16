@@ -34,7 +34,7 @@ spec:
                 options:
                   namespace: forgejo-system
                   poll_timeout: 10m
-                  labels: "app.kubernetes.io/name=runner-instance,app.kubernetes.io/instance=env-${ENV_ID},egress.cilium.io/kube-apiserver=true"
+                  labels: "app.kubernetes.io/name=runner-instance,app.kubernetes.io/instance=env-${ENV_ID},egress.cilium.io/kube-apiserver=true,egress.cilium.io/internet=true"
             runner:
               capacity: 4
               file: /persistent/.runner

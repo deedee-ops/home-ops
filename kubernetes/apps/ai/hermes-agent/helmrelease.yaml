@@ -97,6 +97,7 @@ spec:
       enableServiceLinks: false
       labels:
         egress.cilium.io/auth: "true"
+        egress.cilium.io/internet: "true"
       dnsConfig:
         options:
           - name: ndots

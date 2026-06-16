@@ -10,3 +10,7 @@ spec:
   env:
     - name: HOSTNAME
       value: "::"
+  podTemplateSpec:
+    metadata:
+      labels:
+        egress.cilium.io/internet: "true"
