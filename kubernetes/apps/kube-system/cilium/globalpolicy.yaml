@@ -34,6 +34,53 @@ specs:
     egress:
       - toCIDRSet:
           - cidr: 192.168.42.10/32
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/internet: "true"
+    egress:
+      # Public IP space without private subnets
+      # Script:
+      # docker run --rm python:3 sh -c 'pip install netaddr && \
+      # python -c '"'"'reserved=["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"];
+      # from netaddr import IPSet,IPNetwork;world=IPSet(IPNetwork("0.0.0.0/0"));
+      # excluded=IPSet([IPNetwork(n) for n in reserved]);
+      # [print(f"          - cidr: {n}") for n in (world ^ excluded).iter_cidrs()]'"'"
+      - toCIDRSet:
+          - cidr: 0.0.0.0/5
+          - cidr: 8.0.0.0/7
+          - cidr: 11.0.0.0/8
+          - cidr: 12.0.0.0/6
+          - cidr: 16.0.0.0/4
+          - cidr: 32.0.0.0/3
+          - cidr: 64.0.0.0/2
+          - cidr: 128.0.0.0/3
+          - cidr: 160.0.0.0/5
+          - cidr: 168.0.0.0/6
+          - cidr: 172.0.0.0/12
+          - cidr: 172.32.0.0/11
+          - cidr: 172.64.0.0/10
+          - cidr: 172.128.0.0/9
+          - cidr: 173.0.0.0/8
+          - cidr: 174.0.0.0/7
+          - cidr: 176.0.0.0/4
+          - cidr: 192.0.0.0/9
+          - cidr: 192.128.0.0/11
+          - cidr: 192.160.0.0/13
+          - cidr: 192.169.0.0/16
+          - cidr: 192.170.0.0/15
+          - cidr: 192.172.0.0/14
+          - cidr: 192.176.0.0/12
+          - cidr: 192.192.0.0/10
+          - cidr: 193.0.0.0/8
+          - cidr: 194.0.0.0/7
+          - cidr: 196.0.0.0/6
+          - cidr: 200.0.0.0/5
+          - cidr: 208.0.0.0/4
+          - cidr: 224.0.0.0/3
+        toPorts:
+          - ports:
+              - port: "80"
+              - port: "443"
   - endpointSelector: {}
     egress:
       - toEndpoints:

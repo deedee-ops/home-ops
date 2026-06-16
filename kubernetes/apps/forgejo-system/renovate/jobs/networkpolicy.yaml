@@ -24,8 +24,3 @@ specs:
         toPorts:
           - ports:
               - port: "10443"
-      - toCIDRSet:
-          - cidr: 0.0.0.0/0
-        toPorts:
-          - ports:
-              - port: "443"
