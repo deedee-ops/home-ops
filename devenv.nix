@@ -77,6 +77,7 @@ in
     shellcheck = {
       enable = true;
       args = [ "-x" ];
+      excludes = [ ".envrc" ];
     };
     terraform-format.enable = true;
     tflint.enable = true;
