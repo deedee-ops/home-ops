@@ -12,9 +12,3 @@ spec:
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/name: bifrost
-    - toCIDRSet:
-        - cidr: 0.0.0.0/0
-      toPorts:
-        - ports:
-            - port: "80"
-            - port: "443"

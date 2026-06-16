@@ -10,18 +10,6 @@ specs:
         - key: app.kubernetes.io/name
           operator: In
           values:
-            - embeddingserver
-    egress:
-      - toCIDRSet:
-          - cidr: 0.0.0.0/0
-        toPorts:
-          - ports:
-              - port: "443"
-  - endpointSelector:
-      matchExpressions:
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
             - mcpserver
             - virtualmcpserver
     egress:
