@@ -20,11 +20,13 @@ spec:
         - matchName: www.reddit.com
         - matchName: www.youtube.com
 
+        - matchName: nerdz.cloud
         - matchName: blog.nerdz.cloud
         - matchName: inwestomat.eu
         - matchName: lowcygier.pl
         - matchName: morfikov.github.io
         - matchName: musicforprogramming.net
+        - matchName: www.jeffgeerling.com
       toPorts:
         - ports:
             - port: "443"
