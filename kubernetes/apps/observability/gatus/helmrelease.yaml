@@ -86,7 +86,7 @@ spec:
           - name: ndots
             value: "1"
       labels:
-        egress.cilium.io/envoy: "true"
+        egress.cilium.io/envoy-http: "true"
         egress.cilium.io/kube-apiserver: "true"
       securityContext:
         runAsNonRoot: true
