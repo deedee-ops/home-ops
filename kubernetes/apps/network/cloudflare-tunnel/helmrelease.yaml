@@ -58,7 +58,7 @@ spec:
       automountServiceAccountToken: false
       enableServiceLinks: false
       labels:
-        egress.cilium.io/envoy: "true"
+        egress.cilium.io/envoy-http: "true"
       dnsConfig:
         options:
           - name: ndots

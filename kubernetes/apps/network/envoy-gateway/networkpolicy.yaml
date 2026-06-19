@@ -22,7 +22,7 @@ metadata:
 specs:
   - endpointSelector:
       matchLabels:
-        egress.cilium.io/envoy: "true"
+        egress.cilium.io/envoy-http: "true"
     egress:
       - toEndpoints:
           - matchLabels:
@@ -39,3 +39,15 @@ specs:
         toPorts:
           - ports:
               - port: "10443"
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/envoy-tcp: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: envoy
+      # via envoy, when pods use ${ROOT_DOMAIN}
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: network
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal

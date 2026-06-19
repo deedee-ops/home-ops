@@ -60,6 +60,8 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      labels:
+        egress.cilium.io/envoy-tcp: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
