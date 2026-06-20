@@ -55,3 +55,7 @@ resource "migadu_identity" "identities" {
   may_access_pop3         = false
   may_access_manage_sieve = false
 }
+
+output "migadu_message" {
+  value = "If provisioning from scratch, don't forget to set up catch-all and forwarding!"
+}
