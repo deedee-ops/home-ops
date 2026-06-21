@@ -21,7 +21,7 @@ jobs:
   main:
     runs-on: docker
     environment: production
-    container: ghcr.io/cachix/devenv/devenv:latest
+    container: ghcr.io/cachix/devenv/devenv:v2.1.2
     steps:
       - name: Checkout
         run: |

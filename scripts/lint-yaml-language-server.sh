@@ -145,12 +145,12 @@ check_all_yaml_files() {
 
   if [[ -f "$ylsconfig" ]]; then
     ignore_file="$(mktemp)"
-    python -c "import json; d=json.load(open('${ylsconfig}')); [print(x) for x in d.get('ignoreFiles', [])]" > "$ignore_file"
+    python3 -c "import json; d=json.load(open('${ylsconfig}')); [print(x) for x in d.get('ignoreFiles', [])]" > "$ignore_file"
     load_patterns "$ignore_file" ignore_patterns
     rm -f "$ignore_file"
 
     url_file="$(mktemp)"
-    python -c "import json; d=json.load(open('${ylsconfig}')); [print(x) for x in d.get('allowOnlyURLs', [])]" > "$url_file"
+    python3 -c "import json; d=json.load(open('${ylsconfig}')); [print(x) for x in d.get('allowOnlyURLs', [])]" > "$url_file"
     load_patterns "$url_file" url_patterns
     rm -f "$url_file"
   fi
