@@ -148,6 +148,7 @@ spec:
       labels:
         egress.cilium.io/auth: "true"
         egress.cilium.io/internet: "true"
+        egress.cilium.io/nas: "true"
         egress.cilium.io/smtp-relay: "true"
     dnsConfig:
       options:
