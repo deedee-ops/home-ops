@@ -4,6 +4,7 @@ services:
   roms-server:
     environment:
       ROMS_CONFIG: /roms-server.yaml
+      ROMS_SERVER_EXTERNAL_URL: "http://${NAS_IP}:4444"
     image: registry.ajgon.casa/tools/roms-server:latest
     container_name: roms-server
     restart: unless-stopped

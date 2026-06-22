@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  docker-socket-proxy:
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      INFO: 1
+      NETWORKS: 1
+      VOLUMES: 1
+      EVENTS: 1
+      POST: 0
+      DELETE: 0
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2
+    container_name: docker-socket-proxy
+    restart: unless-stopped
+    user: 1000:1000
+    group_add:
+      - "999"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    tmpfs:
+      - /run:mode=755,uid=1000,gid=1000
+      - /tmp:mode=755,uid=1000,gid=1000
+    ports:
+      - "${NAS_IP}:2375:2375"
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true

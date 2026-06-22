@@ -1,6 +1,5 @@
 ---
 server:
-  external_url: http://192.168.2.10:4444
   bind: :8080
 metadata:
   directory: /config
