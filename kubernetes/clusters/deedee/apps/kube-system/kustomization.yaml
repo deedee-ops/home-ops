@@ -15,6 +15,7 @@ resources:
   - ./metrics-server.yaml
   - ./multus.yaml
   - ./reloader.yaml
+  - ./roles.yaml
   - ./smartctl-exporter.yaml
   - ./snapshot-controller.yaml
   - ./spegel.yaml
