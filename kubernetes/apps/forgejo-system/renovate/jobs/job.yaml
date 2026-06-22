@@ -6,6 +6,7 @@ metadata:
   name: forgejo
 spec:
   discoveryFilters:
+    - deedee/claude
     - deedee/mark13
     - deedee/schemas
   extraEnv:
