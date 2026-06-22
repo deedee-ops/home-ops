@@ -109,7 +109,7 @@ spec:
                       script-src 'self' 'unsafe-inline';
                       style-src 'self' 'unsafe-inline';
       prometheusSpec:
-        externalUrl: https://prometheus.turbo.ac
+        externalUrl: https://prometheus.${ROOT_DOMAIN}
         version: v2.55.1 # override 'unsupported Prometheus version' error
         image:
           registry: mirror.gcr.io
