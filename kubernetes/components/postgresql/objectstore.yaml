@@ -19,5 +19,8 @@ spec:
       secretAccessKey:
         name: ${APP}-db-store-secret
         key: ACCESS_SECRET_KEY
+      region:
+        name: ${APP}-db-store-secret
+        key: AWS_REGION
     wal:
       compression: gzip
