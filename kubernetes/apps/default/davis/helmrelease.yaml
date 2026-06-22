@@ -60,7 +60,7 @@ spec:
           caddy:
             image:
               repository: docker.io/library/caddy
-              tag: "2.11.4@sha256:cfeb0b281bc44a5a51fecde39e9e577c60d863c0b6196e6bbdf58fd00960887f"
+              tag: "2.11.4@sha256:597f813aa60873d4c8148c816fbc4507d496ab160d620460279557f58ee3d0b9"
             args:
               - caddy
               - run
