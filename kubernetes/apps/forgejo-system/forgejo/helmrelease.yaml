@@ -17,6 +17,8 @@ spec:
         - secret:
             secretName: forgejo-secret
       config:
+        actions:
+          DEFAULT_ACTIONS_URL: https://github.com
         admin:
           DISABLE_REGULAR_ORG_CREATION: false
         attachment:
