@@ -5,6 +5,9 @@ services:
     environment:
       CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
       GODEBUG: "tlsrsakex=1"
+      TRAEFIK_OIDC_CLIENT_ID: "${TRAEFIK_OIDC_CLIENT_ID}"
+      TRAEFIK_OIDC_CLIENT_SECRET: "${TRAEFIK_OIDC_CLIENT_SECRET}"
+      TRAEFIK_OIDC_ENCRYPTION_SECRET: "${TRAEFIK_OIDC_ENCRYPTION_SECRET}"
       TZ: Europe/Warsaw
     image: public.ecr.aws/docker/library/traefik:v3.7.5@sha256:e4d98158c01ad752fc1071d4e9573788747230d902cdde00a772516e692d07c9
     container_name: traefik
@@ -24,8 +27,10 @@ services:
       - source: extra-truenas
         target: /config/extra/truenas.yaml
     volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_DOCKER_DIR}/traefik/certs:/certs
+      - ${DATA_DOCKER_DIR}/traefik/plugins-storage:/plugins-storage
       - ${DATA_DOCKER_DIR}/openbao/file/cert.pem:/openbao-internal.pem
     networks:
       - default
