@@ -28,7 +28,7 @@ services:
       traefik.http.routers.talos-factory.rule: Host(`talos.${ROOT_DOMAIN}`)
       traefik.http.routers.talos-factory.service: talos-factory
       traefik.http.routers.talos-factory.tls: true
-      traefik.http.routers.talos-factory.tls.certresolver: vault-rsa
+      traefik.http.routers.talos-factory.tls.certresolver: openbao-rsa
       traefik.http.routers.talos-factory.tls.options: rsa-kex@file
       traefik.http.routers.talos-factory.tls.domains[0].main: 'talos.${ROOT_DOMAIN}'
     # security

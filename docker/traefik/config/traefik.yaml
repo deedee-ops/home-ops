@@ -32,21 +32,21 @@ providers:
   file:
     directory: /config
 certificatesResolvers:
-  vault-ecdsa:
+  openbao-ecdsa:
     acme:
-      storage: /certs/vault-ecdsa.json
-      caServer: 'https://vault/v1/pki_int_traefik/acme/directory'
+      storage: /certs/openbao-ecdsa.json
+      caServer: 'https://openbao/v1/pki_int_traefik/acme/directory'
       caCertificates:
-        - /vault-internal.pem
+        - /openbao-internal.pem
       httpChallenge:
         entryPoint: http
       keyType: EC384
-  vault-rsa:
+  openbao-rsa:
     acme:
-      storage: /certs/vault-rsa.json
-      caServer: 'https://vault/v1/pki_fallback_int_traefik/acme/directory'
+      storage: /certs/openbao-rsa.json
+      caServer: 'https://openbao/v1/pki_fallback_int_traefik/acme/directory'
       caCertificates:
-        - /vault-internal.pem
+        - /openbao-internal.pem
       httpChallenge:
         entryPoint: http
       keyType: RSA4096

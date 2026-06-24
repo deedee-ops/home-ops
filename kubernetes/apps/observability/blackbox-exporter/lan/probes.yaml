@@ -37,14 +37,15 @@ spec:
         - https://unifi.${ROOT_DOMAIN}
         # docker on nas
         - https://arcane.${ROOT_DOMAIN}
+        - https://bao.${ROOT_DOMAIN}
         - https://garage.${ROOT_DOMAIN}
         - https://matchbox.${ROOT_DOMAIN}
         - https://nas.${ROOT_DOMAIN}
+        - https://nix.${ROOT_DOMAIN}
         - https://registry.${ROOT_DOMAIN}
         - https://s3.${ROOT_DOMAIN}
         - https://talos.${ROOT_DOMAIN}
         - https://traefik.${ROOT_DOMAIN}
-        - https://vault.${ROOT_DOMAIN}
   metricRelabelings:
     - targetLabel: service
       replacement: blackbox-exporter-lan
