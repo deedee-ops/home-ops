@@ -34,19 +34,27 @@ services:
       traefik.http.routers.s3.tls.certresolver: openbao-ecdsa
       traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
   garage-ui:
-    image: khairul169/garage-webui:1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
+    image: noooste/garage-ui:v0.8.4@sha256:736fc1936478dc4ed4d4e931aa464d1fbd0816f212fa6dc1e574b246b143d3ae
     container_name: garage-ui
     user: "1000:1000"
     restart: unless-stopped
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
     environment:
-      API_BASE_URL: "http://garage:3903"
-      S3_ENDPOINT_URL: "http://garage:3900"
-      S3_REGION: "eu-central-1"
-      API_ADMIN_KEY: "${API_ADMIN_KEY}"
-      AUTH_USER_PASS: "${AUTH_USER_PASS}"
-    configs:
-      - source: garage-toml
-        target: /etc/garage.toml
+      GARAGE_UI_AUTH_OIDC_CLIENT_ID: "${GARAGE_UI_AUTH_OIDC_CLIENT_ID}"
+      GARAGE_UI_AUTH_OIDC_CLIENT_SECRET: "${GARAGE_UI_AUTH_OIDC_CLIENT_SECRET}"
+      GARAGE_UI_AUTH_OIDC_ENABLED: "true"
+      GARAGE_UI_AUTH_OIDC_ISSUER_URL: "https://id.${ROOT_DOMAIN}"
+      GARAGE_UI_AUTH_OIDC_PROVIDER_NAME: "Pocket ID"
+      GARAGE_UI_AUTH_OIDC_SCOPES: "openid,email,profile,groups"
+      GARAGE_UI_AUTH_OIDC_ROLE_ATTRIBUTE_PATH: "groups"
+      GARAGE_UI_AUTH_OIDC_ADMIN_ROLE: "admins"
+      GARAGE_UI_GARAGE_ADMIN_ENDPOINT: "http://garage:3903"
+      GARAGE_UI_GARAGE_ADMIN_TOKEN: "${API_ADMIN_KEY}"
+      GARAGE_UI_GARAGE_ENDPOINT: "http://garage:3900"
+      GARAGE_UI_GARAGE_REGION: "eu-central-1"
+      GARAGE_UI_SERVER_PORT: "8080"
+      GARAGE_UI_SERVER_ROOT_URL: "https://garage.${ROOT_DOMAIN}"
     networks:
       - internal
     # security
@@ -58,7 +66,7 @@ services:
     labels:
       traefik.enable: "true"
       # Dashboard
-      traefik.http.services.garage.loadbalancer.server.port: "3909"
+      traefik.http.services.garage.loadbalancer.server.port: "8080"
       traefik.http.routers.garage.entrypoints: https
       traefik.http.routers.garage.rule: Host(`garage.${ROOT_DOMAIN}`)
       traefik.http.routers.garage.service: garage
