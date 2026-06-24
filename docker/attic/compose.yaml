@@ -31,7 +31,7 @@ services:
       traefik.http.routers.attic.rule: Host(`nix.${ROOT_DOMAIN}`)
       traefik.http.routers.attic.service: attic
       traefik.http.routers.attic.tls: true
-      traefik.http.routers.attic.tls.certresolver: attic-ecdsa
+      traefik.http.routers.attic.tls.certresolver: openbao-ecdsa
       traefik.http.routers.attic.tls.domains[0].main: "nix.${ROOT_DOMAIN}"
     # security
     cap_drop:

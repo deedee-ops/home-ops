@@ -3,7 +3,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: vault
+  name: openbao
 spec:
   vault:
     path: pki_int/sign/${VAULT_SIGNING_ROLE}
@@ -11,5 +11,5 @@ spec:
     caBundle: ${CA_BUNDLE}
     auth:
       tokenSecretRef:
-        name: vault-token-secret
+        name: openbao-token-secret
         key: token

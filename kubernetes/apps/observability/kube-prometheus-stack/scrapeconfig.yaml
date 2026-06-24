@@ -84,7 +84,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: vault
+  name: openbao
 spec:
   scheme: HTTPS
   authorization:
@@ -98,12 +98,24 @@ spec:
         name: homelab-root-ca.crt
   staticConfigs:
     - targets:
-        - "vault.${ROOT_DOMAIN}"
+        - "bao.${ROOT_DOMAIN}"
   metricsPath: /v1/sys/metrics
+  params:
+    format:
+      - "prometheus"
   relabelings:
     - action: replace
       targetLabel: job
-      replacement: vault
+      replacement: openbao
     - action: replace
       targetLabel: node
       replacement: nas
+  metricRelabelings:
+    # OpenBao/Vault emits vault_core_unsealed twice: once with the cluster
+    # label and once without (empty cluster) - upstream bug hashicorp/vault#11988.
+    # Drop the empty-cluster series so it doesn't show a phantom sealed node.
+    - sourceLabels:
+        - __name__
+        - cluster
+      regex: vault_core_unsealed;
+      action: drop

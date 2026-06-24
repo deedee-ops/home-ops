@@ -26,7 +26,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_DOCKER_DIR}/traefik/certs:/certs
-      - ${DATA_DOCKER_DIR}/vault/file/cert.pem:/vault-internal.pem
+      - ${DATA_DOCKER_DIR}/openbao/file/cert.pem:/openbao-internal.pem
     networks:
       - default
       - internal

@@ -4,7 +4,7 @@ tls:
   stores:
     default:
       defaultGeneratedCert:
-        resolver: vault-ecdsa
+        resolver: openbao-ecdsa
   options:
     rsa-kex:
       maxVersion: VersionTLS12

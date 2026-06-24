@@ -8,7 +8,7 @@ http:
         - https
       service: truenas
       tls:
-        certResolver: vault-ecdsa
+        certResolver: openbao-ecdsa
 
   services:
     truenas:

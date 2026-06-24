@@ -31,7 +31,7 @@ services:
       traefik.http.routers.s3.rule: Host(`s3.${ROOT_DOMAIN}`)
       traefik.http.routers.s3.service: s3
       traefik.http.routers.s3.tls: true
-      traefik.http.routers.s3.tls.certresolver: vault-ecdsa
+      traefik.http.routers.s3.tls.certresolver: openbao-ecdsa
       traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
   garage-ui:
     image: khairul169/garage-webui:1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
@@ -63,7 +63,7 @@ services:
       traefik.http.routers.garage.rule: Host(`garage.${ROOT_DOMAIN}`)
       traefik.http.routers.garage.service: garage
       traefik.http.routers.garage.tls: true
-      traefik.http.routers.garage.tls.certresolver: vault-ecdsa
+      traefik.http.routers.garage.tls.certresolver: openbao-ecdsa
       traefik.http.routers.garage.tls.domains[0].main: 'garage.${ROOT_DOMAIN}'
 
 configs:

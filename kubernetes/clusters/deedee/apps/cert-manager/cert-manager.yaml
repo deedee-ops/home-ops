@@ -12,7 +12,7 @@ spec:
       namespace: cert-manager
     - apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
-      name: vault
+      name: openbao
   healthCheckExprs:
     - apiVersion: cert-manager.io/v1
       kind: ClusterIssuer
@@ -25,7 +25,7 @@ spec:
     substitute:
       CA_BUNDLE: "${CA_BUNDLE}"
       VAULT_SIGNING_ROLE: ajgon-casa
-      VAULT_HOST: "vault.${ROOT_DOMAIN}"
+      VAULT_HOST: "bao.${ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository

@@ -9,4 +9,5 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./pocketidoidcclient.yaml
   - ./referencegrant.yaml

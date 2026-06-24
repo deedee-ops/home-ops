@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  openbao:
+    image: ghcr.io/openbao/openbao:2.5.5@sha256:6150c4a6b62067db6141c8da7a6a6b5763f4f47c315343d0c848b40fecdfd452
+    container_name: openbao
+    restart: unless-stopped
+    command: server
+    configs:
+      - source: openbao-config
+        target: /openbao/config/config.hcl
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${DATA_DOCKER_DIR}/openbao/file:/openbao/file
+    networks:
+      - internal
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+    ports:
+      - 8200:8200
+    # security
+    cap_add:
+      - CAP_IPC_LOCK
+    # traefik
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.openbao.loadbalancer.server.port: "8200"
+      traefik.http.routers.openbao.entrypoints: https
+      traefik.http.routers.openbao.rule: Host(`bao.${ROOT_DOMAIN}`)
+      traefik.http.routers.openbao.service: openbao
+      traefik.http.routers.openbao.tls: true
+      traefik.http.routers.openbao.tls.certresolver: openbao-ecdsa
+      traefik.http.routers.openbao.tls.domains[0].main: "bao.${ROOT_DOMAIN}"
+    post_start:
+      - command: >-
+          sh -c "
+          while ! bao operator unseal '${UNSEAL_KEY}'; do
+          sleep 1;
+          done"
+
+configs:
+  openbao-config:
+    file: ./config/config.hcl
+
+networks:
+  internal:
+    name: internal
+    external: true
