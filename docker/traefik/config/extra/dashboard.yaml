@@ -1,12 +1,27 @@
 ---
 # yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
 http:
+  middlewares:
+    oidc-auth:
+      plugin:
+        traefik-oidc-auth:
+          Secret: '{{ env "TRAEFIK_OIDC_ENCRYPTION_SECRET" }}'
+          Provider:
+            Url: 'https://id.ajgon.casa'
+            ClientId: '{{ env "TRAEFIK_OIDC_CLIENT_ID" }}'
+            ClientSecret: '{{ env "TRAEFIK_OIDC_CLIENT_SECRET" }}'
+          Scopes:
+            - openid
+            - profile
+            - email
   routers:
     dashboard:
       rule: 'Host(`traefik.{{ env "ROOT_DOMAIN" }}`)'
       service: api@internal
       entryPoints:
         - https
+      middlewares:
+        - oidc-auth
       tls:
         certResolver: openbao-ecdsa
     metrics:
