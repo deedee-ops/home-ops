@@ -69,8 +69,8 @@ specs:
           - ports:
               - port: "80"
       - toFQDNs:
+          - matchName: "bao.${ROOT_DOMAIN}"
           - matchName: "traefik.${ROOT_DOMAIN}"
-          - matchName: "vault.${ROOT_DOMAIN}"
         toPorts:
           - ports:
               - port: "443"

@@ -8,11 +8,11 @@ http:
       entryPoints:
         - https
       tls:
-        certResolver: vault-ecdsa
+        certResolver: openbao-ecdsa
     metrics:
       rule: 'Host(`traefik.{{ env "ROOT_DOMAIN" }}`) && PathPrefix(`/metrics`)'
       service: prometheus@internal
       entryPoints:
         - https
       tls:
-        certResolver: vault-ecdsa
+        certResolver: openbao-ecdsa

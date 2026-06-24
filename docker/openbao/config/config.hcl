@@ -1,6 +1,6 @@
 ui = true
 storage "file" {
-  path = "/vault/file"
+  path = "/openbao/file"
 }
 
 listener "tcp" {
@@ -12,13 +12,14 @@ listener "tcp" {
 
 listener "tcp" {
   address = "0.0.0.0:443"
-  tls_cert_file = "/vault/file/cert.pem"
-  tls_key_file  = "/vault/file/key.pem"
+  tls_cert_file = "/openbao/file/cert.pem"
+  tls_key_file  = "/openbao/file/key.pem"
   tls_min_version = "tls13"
 }
 
 api_addr     = "http://127.0.0.1:8200"
 cluster_addr = "http://127.0.0.1:8201"
+cluster_name = "openbao-nas"
 
 log_level = "info"
 
@@ -26,6 +27,3 @@ telemetry {
   prometheus_retention_time = "24h"
   disable_hostname          = true
 }
-
-# https://github.com/hashicorp/vault/issues/31919
-disable_mlock = true

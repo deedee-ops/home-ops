@@ -67,7 +67,7 @@ along with some of the practices I use here.
   All egress traffic is carefuly filtered using network policies.
 - **Security & Secrets**: [cert-manager](https://github.com/cert-manager/cert-manager) automates SSL/TLS certificate
   management. For secrets, I use [external-secrets](https://github.com/external-secrets/external-secrets) with
-  self-hosted [HashiCorp Vault](https://www.hashicorp.com/en/products/vault) to inject secrets into Kubernetes.
+  self-hosted [OpenBao](https://openbao.org/) to inject secrets into Kubernetes.
 - **Storage & Data Protection**: [rook](https://github.com/rook/rook) provides distributed storage for persistent
   volumes, with [volsync](https://github.com/backube/volsync) handling backups and restores.
   [spegel](https://github.com/spegel-org/spegel) improves reliability by running a stateless, cluster-local OCI image mirror.

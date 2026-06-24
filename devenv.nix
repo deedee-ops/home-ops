@@ -35,9 +35,9 @@ in
     pkgs.kubectl-node-shell
     pkgs.kustomize
     pkgs.minijinja
+    pkgs.openbao
     pkgs.sops
     pkgs.talosctl
-    pkgs.vault
     pkgs.yamlfmt
     pkgs.yq-go
   ];
@@ -131,13 +131,13 @@ in
   enterShell = lib.optionalString isDevShell ''
     export ROOT_DIR="$(git rev-parse --show-toplevel)"
     export MINIJINJA_CONFIG_FILE="$ROOT_DIR/.minijinja.toml"
-    export VAULT_ADDR=https://vault.ajgon.casa
+    export VAULT_ADDR=https://bao.ajgon.casa
 
     kc="$ROOT_DIR/talos/$CLUSTER/kubeconfig"
     [ -f "$kc" ] && export KUBECONFIG=$kc
     tc="$ROOT_DIR/talos/$CLUSTER/talosconfig"
     [ -f "$tc" ] && export TALOSCONFIG=$tc
-    ${pkgs.lib.getExe pkgs.vault} kv get -field=TALOSCONFIG "$CLUSTER/talos" > "$ROOT_DIR/talos/$CLUSTER/talosconfig"
+    ${pkgs.lib.getExe pkgs.openbao} kv get -field=TALOSCONFIG "$CLUSTER/talos" > "$ROOT_DIR/talos/$CLUSTER/talosconfig"
 
     # opentofu
     echo "$TOFU_TFVARS" > "$ROOT_DIR/opentofu/terraform.tfvars"

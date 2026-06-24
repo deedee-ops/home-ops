@@ -31,19 +31,19 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: vault-rules
+  name: openbao-rules
 spec:
   groups:
-    - name: vault.rules
+    - name: openbao.rules
       rules:
-        - alert: VaultSealed
+        - alert: OpenBaoVaultSealed
           expr: vault_core_unsealed == 0
           for: 0m
           labels:
             severity: critical
           annotations:
-            summary: Vault sealed (instance {{ $labels.instance }})
+            summary: OpenBao vault sealed (instance {{ $labels.instance }})
             description: |-
-              Vault instance is sealed on {{ $labels.instance }}
+              OpenBao vault instance is sealed on {{ $labels.instance }}
                 VALUE = {{ $value }}
                 LABELS = {{ $labels }}
