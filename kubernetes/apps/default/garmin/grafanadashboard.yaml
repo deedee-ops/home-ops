@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: garmin
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasources:
+    - datasourceName: Garmin-InfluxDB
+      inputName: DS_GARMIN_STATS
+  plugins:
+    - name: marcusolsson-hourly-heatmap-panel
+      version: 2.0.1
+  url: https://raw.githubusercontent.com/arpanghosh8453/garmin-grafana/refs/heads/main/Grafana_Dashboard/Garmin-Grafana-Dashboard.json
