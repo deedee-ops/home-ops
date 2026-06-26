@@ -12,5 +12,10 @@
         "/talos\\.ajgon\\.casa/",
       ],
     },
+    {
+      description: "Hold influxdb at v1",
+      matchPackageNames: ["/influxdb/"],
+      allowedVersions: "<2.0.0",
+    },
   ],
 }
