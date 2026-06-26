@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/grafana.integreatly.org/grafanadatasource_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: garmin
+spec:
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  datasource:
+    type: influxdb
+    name: garmin
+    access: proxy
+    isDefault: false
+    url: http://garmin.default.svc.cluster.local:8096

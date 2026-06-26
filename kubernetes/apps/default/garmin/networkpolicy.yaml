@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: grafana-garmin-internal
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: grafana-operator
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: garmin
+        toPorts:
+          - ports:
+              - port: "8086"
