@@ -16,7 +16,8 @@ spec:
           app:
             image:
               repository: registry.${ROOT_DOMAIN}/tools/garmin-importer
-              tag: latest
+              tag: latest@sha256:e232bdf8c29e2c2f700600d0a4b96be37ce22cabb95bbd43b2bad6d2fb902e00
+              pullPolicy: IfNotPresent
             env:
               IMPORT_MODE: watch
               INFLUXDB_HOST: 127.0.0.1
