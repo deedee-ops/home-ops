@@ -21,7 +21,13 @@ spec:
     - name: pocket-id-operator
       namespace: security
   interval: 1h
-  patches: []
+  patches:
+    - target:
+        kind: Dragonfly
+      patch: |
+        - op: add
+          path: /spec/args/-
+          value: --default_lua_flags=allow-undeclared-keys
   path: ./kubernetes/apps/immich-system/immich
   postBuild:
     substitute:
