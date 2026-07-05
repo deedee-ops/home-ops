@@ -26,12 +26,10 @@
           title-url: /youtube
           cache: 1h
 
-          limit: 10
+          limit: 15
           include-shorts: true # must be true to include livestreams
           channels:
-            - $include: secrets/gaming.yaml
-            - $include: secrets/knowledge.yaml
-            - $include: secrets/tech.yaml
+            - $include: secrets/youtube.yaml
 
     - size: small
       widgets:
