@@ -30,7 +30,7 @@ specs:
           - matchName: license.n8n.io
           # community modes
           - matchName: registry.npmjs.org
-          # google drive
+          # google drive and youtube
           - matchName: oauth2.googleapis.com
           - matchName: www.googleapis.com
           # dropbox
@@ -38,6 +38,8 @@ specs:
           - matchName: content.dropboxapi.com
           # todoist
           - matchName: api.todoist.com
+          # secrets
+          - matchName: bao.${ROOT_DOMAIN}
         toPorts:
           - ports:
               - port: "443"
