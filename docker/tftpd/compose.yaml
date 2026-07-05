@@ -9,7 +9,7 @@ services:
     environment:
       TFTPD_BIND_ADDRESSi: "0.0.0.0:1069"
       TFTPD_EXTRA_ARGSi: "--blocksize 1468"
-    image: registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:6205e580af44b1ac37be8a7270259c18cf62ac167487317b70433d98ec50c3a7
+    image: registry.gitlab.com/kalaksi-containers/tftpd:1.6@sha256:6e3a44958bc4e6fb3f72d1c870c3a32809c7c8d72c8601eb684d49047b90e7fd
     container_name: tftpd
     restart: unless-stopped
     volumes:
