@@ -62,69 +62,72 @@ in
     };
   };
 
-  git-hooks.hooks = {
-    actionlint = {
-      enable = true;
-      args = [
-        "-config-file"
-        ".forgejo/actionlint.yaml"
-      ];
-      files = ".forgejo/workflows/.+\.yaml";
-    };
-    check-json.enable = true;
-    commitizen.enable = true;
-    markdownlint.enable = true;
-    shellcheck = {
-      enable = true;
-      args = [ "-x" ];
-      excludes = [ ".envrc" ];
-    };
-    terraform-format.enable = true;
-    tflint.enable = true;
-    yamlfmt.enable = true;
-    yamllint.enable = true;
-    zizmor = {
-      enable = true;
-      args = [
-        "-c"
-        ".forgejo/zizmor.yaml"
-      ];
-      name = "zizmor";
-      package = pkgs.zizmor;
-      entry = "${pkgs.lib.getExe pkgs.zizmor}";
-      files = ".forgejo/workflows/.+\.yaml";
-    };
+  git-hooks = {
+    excludes = [ "\\.lock$" ];
+    hooks = {
+      actionlint = {
+        enable = true;
+        args = [
+          "-config-file"
+          ".forgejo/actionlint.yaml"
+        ];
+        files = ".forgejo/workflows/.+\.yaml";
+      };
+      check-json.enable = true;
+      commitizen.enable = true;
+      markdownlint.enable = true;
+      shellcheck = {
+        enable = true;
+        args = [ "-x" ];
+        excludes = [ ".envrc" ];
+      };
+      terraform-format.enable = true;
+      tflint.enable = true;
+      yamlfmt.enable = true;
+      yamllint.enable = true;
+      zizmor = {
+        enable = true;
+        args = [
+          "-c"
+          ".forgejo/zizmor.yaml"
+        ];
+        name = "zizmor";
+        package = pkgs.zizmor;
+        entry = "${pkgs.lib.getExe pkgs.zizmor}";
+        files = ".forgejo/workflows/.+\.yaml";
+      };
 
-    check-case-conflicts.enable = true;
-    check-executables-have-shebangs.enable = true;
-    check-merge-conflicts.enable = true;
-    check-shebang-scripts-are-executable.enable = true;
-    end-of-file-fixer.enable = true;
-    fix-byte-order-marker.enable = true;
-    mixed-line-endings.enable = true;
-    trim-trailing-whitespace.enable = true;
+      check-case-conflicts.enable = true;
+      check-executables-have-shebangs.enable = true;
+      check-merge-conflicts.enable = true;
+      check-shebang-scripts-are-executable.enable = true;
+      end-of-file-fixer.enable = true;
+      fix-byte-order-marker.enable = true;
+      mixed-line-endings.enable = true;
+      trim-trailing-whitespace.enable = true;
 
-    deadnix.enable = true;
-    nixfmt.enable = true;
+      deadnix.enable = true;
+      nixfmt.enable = true;
 
-    # custom linters
-    lint-charts-for-oci = {
-      enable = true;
-      entry = "./scripts/lint-charts-for-oci.sh";
-      args = [
-        "-q"
-      ];
-    };
-    lint-yaml-language-server = {
-      enable = true;
-      entry = "./scripts/lint-yaml-language-server.sh";
-      args = [ "." ];
-      always_run = true;
-      pass_filenames = false;
-      extraPackages = [
-        pkgs.curl
-        pkgs.python3
-      ];
+      # custom linters
+      lint-charts-for-oci = {
+        enable = true;
+        entry = "./scripts/lint-charts-for-oci.sh";
+        args = [
+          "-q"
+        ];
+      };
+      lint-yaml-language-server = {
+        enable = true;
+        entry = "./scripts/lint-yaml-language-server.sh";
+        args = [ "." ];
+        always_run = true;
+        pass_filenames = false;
+        extraPackages = [
+          pkgs.curl
+          pkgs.python3
+        ];
+      };
     };
   };
 
