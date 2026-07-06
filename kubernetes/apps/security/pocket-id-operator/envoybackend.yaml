@@ -22,7 +22,7 @@ spec:
       name: pocket-id
   validation:
     caCertificateRefs:
-      - name: homelab-root-ca.crt
+      - name: homelab-root-ca
         kind: Secret
         group: ""
     hostname: "id.${ROOT_DOMAIN}"

@@ -199,9 +199,9 @@ spec:
                 path: *media
               - subPath: "trash"
                 path: *trash
-      root-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         advancedMounts:
           main:
             app:
