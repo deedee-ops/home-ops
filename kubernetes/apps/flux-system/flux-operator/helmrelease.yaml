@@ -38,15 +38,15 @@ spec:
         mountPath: /etc/flux-operator/web
         readOnly: true
       - mountPath: /etc/ssl/certs/homelab.pem
-        name: root-ca
+        name: homelab-root-ca
         subPath: ec.crt
     extraVolumes:
       - name: web-config
         configMap:
           name: flux-operator-web-configmap
-      - name: root-ca
+      - name: homelab-root-ca
         secret:
-          secretName: homelab-root-ca.crt
+          secretName: homelab-root-ca
     resources:
       limits:
         cpu: 2000m

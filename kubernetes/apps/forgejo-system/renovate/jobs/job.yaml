@@ -19,13 +19,13 @@ spec:
     - name: RENOVATE_DETECT_HOST_RULES_FROM_ENV
       value: "true"
   extraVolumes:
-    - name: homelab-ca
+    - name: homelab-root-ca
       secret:
         defaultMode: 420
-        secretName: homelab-root-ca.crt
+        secretName: homelab-root-ca
   extraVolumeMounts:
     - mountPath: /certs/homelab.pem
-      name: homelab-ca
+      name: homelab-root-ca
       subPath: ec.crt
   image: ghcr.io/renovatebot/renovate:43.252.1
   metadata:

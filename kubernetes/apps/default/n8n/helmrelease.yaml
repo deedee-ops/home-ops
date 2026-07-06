@@ -171,7 +171,7 @@ spec:
             app:
               - subPath: config
                 path: /home/node/.n8n
-      patches:
+      n8n-secret:
         type: secret
         name: n8n-secret
         advancedMounts:
@@ -179,9 +179,9 @@ spec:
             01-security-patches:
               - subPath: security-patches.sh
                 path: /security-patches.sh
-      root-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         advancedMounts:
           main:
             01-security-patches:

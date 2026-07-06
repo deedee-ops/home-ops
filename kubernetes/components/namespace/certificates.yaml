@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: homelab-root-ca.crt
+  name: homelab-root-ca
 type: Opaque
 stringData:
   ec.crt: &ec |-

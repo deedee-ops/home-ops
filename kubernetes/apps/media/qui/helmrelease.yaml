@@ -136,9 +136,9 @@ spec:
         globalMounts:
           - path: /data/torrents
             subPath: torrents
-      root-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         advancedMounts:
           main:
             app:

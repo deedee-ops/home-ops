@@ -170,7 +170,7 @@ spec:
                 path: /var/www/html/storage/framework/cache/
               - subPath: database
                 path: /var/www/html/storage/database/
-      cron:
+      firefly-secret:
         type: secret
         name: firefly-secret
         advancedMounts:

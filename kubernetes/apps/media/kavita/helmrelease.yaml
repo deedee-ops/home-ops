@@ -124,9 +124,9 @@ spec:
         existingClaim: kavita
         globalMounts:
           - path: /kavita/config
-      homelab-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         globalMounts:
           - path: /certs/homelab.pem
             subPath: ec.crt

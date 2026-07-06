@@ -321,9 +321,9 @@ spec:
           dbbackup:
             app:
               - path: "/backups"
-      homelab-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         advancedMounts:
           api: &certMount
             app:

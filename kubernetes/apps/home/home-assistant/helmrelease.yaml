@@ -106,9 +106,9 @@ spec:
     persistence:
       config:
         existingClaim: home-assistant
-      homelab-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         globalMounts:
           - path: /certs/homelab.crt
             subPath: ec.crt
