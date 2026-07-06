@@ -65,14 +65,14 @@ spec:
             summary: |-
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
     extraVolumes:
-      - name: root-ca
+      - name: homelab-root-ca
         secret:
           defaultMode: 420
-          secretName: homelab-root-ca.crt
+          secretName: homelab-root-ca
     extraVolumeMounts:
-      - name: root-ca
+      - name: homelab-root-ca
         mountPath: /etc/ssl/certs/homelab-ec.crt
         subPath: ec.crt
-      - name: root-ca
+      - name: homelab-root-ca
         mountPath: /etc/ssl/certs/homelab-rsa.crt
         subPath: rsa.crt

@@ -208,7 +208,7 @@ spec:
             sync:
               - subPath: "imapsync.sh"
                 path: /imapsync.sh
-      dovecot-password:
+      mail-archive-secret:
         type: secret
         name: mail-archive-secret
         advancedMounts:
@@ -233,9 +233,9 @@ spec:
               - subPath: dovecot.oauth.conf
                 path: /etc/dovecot/dovecot.oauth.conf
                 readOnly: true
-      homelab-ca:
+      homelab-root-ca:
         type: secret
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
         advancedMounts:
           main:
             app:

@@ -33,9 +33,9 @@ spec:
         type: RuntimeDefault
     volumeMounts:
       - mountPath: /etc/ssl/certs
-        name: root-ca
+        name: homelab-root-ca
     volumes:
-      - name: root-ca
+      - name: homelab-root-ca
         secret:
           defaultMode: 420
-          secretName: homelab-root-ca.crt
+          secretName: homelab-root-ca

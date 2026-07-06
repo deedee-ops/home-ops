@@ -67,7 +67,7 @@ spec:
     ca:
       secret:
         key: ec.crt
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
   staticConfigs:
     - targets:
         - "traefik.${ROOT_DOMAIN}"
@@ -95,7 +95,7 @@ spec:
     ca:
       secret:
         key: ec.crt
-        name: homelab-root-ca.crt
+        name: homelab-root-ca
   staticConfigs:
     - targets:
         - "bao.${ROOT_DOMAIN}"
