@@ -9,6 +9,21 @@ spec:
     kind: OCIRepository
     name: rook-ceph-cluster
   interval: 1h
+  # A Ceph upgrade rolls OSDs one at a time and can take a while; give Helm room.
+  timeout: 15m
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: false
+    remediation:
+      # NEVER roll back: a Helm rollback of this release is a Ceph version
+      # DOWNGRADE, which Ceph does not support (it poisons the mon store and
+      # deadlocks OSD activation). On a failed/slow upgrade, leave the release
+      # as-is and let the operator finish the roll; Flux re-attempts the
+      # upgrade on the next interval instead of downgrading.
+      retries: 0
+      remediateLastFailure: false
   values:
     monitoring:
       enabled: true
