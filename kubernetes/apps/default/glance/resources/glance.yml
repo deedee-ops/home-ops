@@ -1,6 +1,21 @@
 ---
 branding:
   hide-footer: true
+document:
+  head: |
+    <script>
+    (() => {
+      if (!/Firefox/.test(navigator.userAgent)) return;
+
+      document.addEventListener('click', (e) => {
+        const a = e.target.closest('a[href^="https://www.youtube.com"]');
+        if (!a) return;
+        if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        location.href = 'ytp:' + a.href;
+      });
+    })();
+    </script>
 server:
   host: 0.0.0.0
   port: ${GLANCE_PORT}
