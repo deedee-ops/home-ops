@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: maximhq/bifrost
-              tag: v1.5.14@sha256:e379f7df42e6987d880d2f82974128d3f1412e0c70f2a4c8abf9b0bde69ec060
+              tag: v1.6.3@sha256:95caedb1c368c6d88178c2b98b9238d8a6a62b51d9cb12b6661bf2671ed1aaa4
             env:
               TZ: Europe/Warsaw
             envFrom:
