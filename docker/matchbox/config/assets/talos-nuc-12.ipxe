@@ -36,7 +36,7 @@ exit
 
 :talos
 # renovate: datasource=custom.talos-factory depName=siderolabs/talos
-kernel https://talos.ajgon.casa/pxe/3158c22eb3c614983204dc3033adff59b8e0de7cafc71c9d7aca10f69f84e43c/v1.13.5/metal-amd64-secureboot
+kernel https://talos.ajgon.casa/pxe/3158c22eb3c614983204dc3033adff59b8e0de7cafc71c9d7aca10f69f84e43c/v1.13.6/metal-amd64-secureboot
 boot || goto failed
 goto start
 
