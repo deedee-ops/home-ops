@@ -86,14 +86,14 @@ spec:
         mgr:
           limits:
             cpu: "1000m"
-            memory: "2Gi"
+            memory: "6Gi"
           requests:
             cpu: "500m"
             memory: "512Mi"
         mgr-sidecar:
           limits:
             cpu: "1000m"
-            memory: "100Mi"
+            memory: "200Mi"
           requests:
             cpu: "100m"
             memory: "40Mi"
