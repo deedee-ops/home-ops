@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: whisper-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: whisper
+  egress:
+    - toFQDNs:
+        - matchName: cas-bridge.xethub.hf.co
+        - matchName: cas-server.xethub.hf.co
+        - matchName: huggingface.co
+        - matchName: transfer.xethub.hf.co
+        - matchName: us.aws.cdn.hf.co
+      toPorts:
+        - ports:
+            - port: "443"
+    - toFQDNs:
+        - matchName: ip1.dynupdate.no-ip.com
+        - matchName: ipv4.icanhazip.com
+      toPorts:
+        - ports:
+            - port: "80"
