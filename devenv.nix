@@ -74,7 +74,7 @@ in
         files = ".forgejo/workflows/.+\.yaml";
       };
       check-json.enable = true;
-      commitizen.enable = true;
+      # commitizen.enable = true;
       markdownlint.enable = true;
       shellcheck = {
         enable = true;
