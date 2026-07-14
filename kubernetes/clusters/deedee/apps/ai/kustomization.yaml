@@ -9,4 +9,5 @@ resources:
   - ./_namespace.yaml
   - ./bifrost.yaml
   - ./camofox.yaml
+  - ./embedder.yaml
   - ./whisper.yaml

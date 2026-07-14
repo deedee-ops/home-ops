@@ -1,0 +1,106 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: embedder
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: embedder
+  interval: 1h
+  values:
+    controllers:
+      main:
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/huggingface/text-embeddings-inference
+              tag: cpu-latest@sha256:cb570aabbfa016b86684f576b5bd72d1ee96cc0b7a00b0ad221b298762b32157
+            args:
+              - --model-id
+              - mixedbread-ai/mxbai-embed-large-v1
+            env:
+              TZ: Europe/Warsaw
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 80
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 4Gi
+        statefulset:
+          volumeClaimTemplates:
+            - name: data
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 5Gi
+              advancedMounts:
+                app:
+                  - path: /data
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+    route:
+      app:
+        hostnames:
+          - "embedder.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: embedder
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
