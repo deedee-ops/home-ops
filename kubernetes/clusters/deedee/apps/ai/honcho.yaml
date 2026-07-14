@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: honcho
+spec:
+  components:
+    - ../../../components/dragonfly
+    - ../../../components/oidc
+  dependsOn:
+    - name: dragonfly-operator
+      namespace: database
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+    - name: postgresql
+  interval: 1h
+  path: ./kubernetes/apps/ai/honcho
+  postBuild:
+    substitute:
+      APP: honcho
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  patches:
+    # Scope OIDC to the `app` route rule (the UI) so the /v3 API stays open for
+    # Hermes. No target.name: patches run during the kustomize build, before
+    # postBuild substitutes ${APP}, so a name filter wouldn't match — and there's
+    # only one SecurityPolicy anyway.
+    - patch: |-
+        - op: add
+          path: /spec/targetRefs/0/sectionName
+          value: app
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: false
