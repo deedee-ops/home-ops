@@ -1,0 +1,45 @@
+[deriver.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[summary.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dream.deduction_model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dream.induction_model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dialectic.levels.minimal]
+MAX_TOOL_ITERATIONS = 1
+[dialectic.levels.minimal.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dialectic.levels.low]
+MAX_TOOL_ITERATIONS = 5
+[dialectic.levels.low.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dialectic.levels.medium]
+MAX_TOOL_ITERATIONS = 2
+[dialectic.levels.medium.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dialectic.levels.high]
+MAX_TOOL_ITERATIONS = 4
+[dialectic.levels.high.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"
+
+[dialectic.levels.max]
+MAX_TOOL_ITERATIONS = 10
+[dialectic.levels.max.model_config]
+transport = "openai"
+model = "vllm/Google/gemma-4-31B-it"

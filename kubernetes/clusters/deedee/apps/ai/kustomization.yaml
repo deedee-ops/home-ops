@@ -11,4 +11,5 @@ resources:
   - ./bifrost.yaml
   - ./camofox.yaml
   - ./embedder.yaml
+  - ./honcho.yaml
   - ./whisper.yaml

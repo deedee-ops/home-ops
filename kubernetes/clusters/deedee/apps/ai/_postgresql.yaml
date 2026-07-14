@@ -19,11 +19,11 @@ spec:
           name: _
         spec:
           bootstrap:
-            initdb:
-              database: app
-            # recovery:
-            #   source: ai-db-restore
+            # initdb:
             #   database: app
+            recovery:
+              source: ai-db-restore
+              database: app
           postgresql:
             shared_preload_libraries:
               - "vchord.so"

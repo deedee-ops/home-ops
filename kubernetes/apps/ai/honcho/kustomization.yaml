@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/kustomization.json
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./database.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./ocirepository.yaml
+configMapGenerator:
+  - name: honcho-configmap
+    files:
+      - ./resources/config.toml
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

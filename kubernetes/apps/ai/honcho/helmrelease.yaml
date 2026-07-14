@@ -1,0 +1,235 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: honcho
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: honcho
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          glance/name: honcho
+          glance/url: https://honcho.${ROOT_DOMAIN}
+        containers:
+          app:
+            image: &img
+              repository: ghcr.io/plastic-labs/honcho
+              tag: v3.0.12@sha256:1e9dbc40136d3f9213ce7482b0eecac914b630ee3e714ea961bd763945f94be5
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                cd /app
+                export DB_CONNECTION_URI="postgresql+psycopg://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/honcho"
+                /app/.venv/bin/python scripts/provision_db.py
+                /app/.venv/bin/python scripts/configure_embeddings.py --yes
+                exec /app/.venv/bin/fastapi run --host 0.0.0.0 src/main.py
+            env: &env
+              AUTH_USE_AUTH: "false"
+              CACHE_ENABLED: "true"
+              CACHE_URL: redis://honcho-dragonfly.ai.svc.cluster.local:6379/0?suppress=true
+              EMBEDDING_API_KEY: "dummy"
+              EMBEDDING_MODEL_CONFIG__DIMENSIONS_MODE: never
+              EMBEDDING_MODEL_CONFIG__MODEL: mixedbread-ai/mxbai-embed-large-v1
+              EMBEDDING_MODEL_CONFIG__OVERRIDES__API_KEY_ENV: EMBEDDING_API_KEY
+              EMBEDDING_MODEL_CONFIG__OVERRIDES__BASE_URL: http://embedder.ai.svc.cluster.local/v1
+              EMBEDDING_MODEL_CONFIG__TRANSPORT: openai
+              EMBEDDING_VECTOR_DIMENSIONS: "1024"
+              LLM_OPENAI_API_KEY: "dummy"
+              OPENAI_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
+              TELEMETRY_ENABLED: "false"
+              TIKTOKEN_CACHE_DIR: /tmp/tiktoken
+              TZ: Europe/Warsaw
+              PGHOST:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: host
+              PGPORT:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: port
+              PGUSER:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: username
+              PGPASSWORD:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: password
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &hcPort 8000
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+          deriver:
+            image: *img
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                cd /app
+                export DB_CONNECTION_URI="postgresql+psycopg://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/honcho"
+                exec /app/.venv/bin/python -m src.deriver
+            env: *env
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+          openconcho:
+            image:
+              repository: ghcr.io/offendingcommit/openconcho-web
+              tag: 0.16.0@sha256:f27b61df1af9e5c22758fc85a83a0e856e8aeba503db6dea7a9e35404f01dd48
+            env:
+              OPENCONCHO_DEFAULT_HONCHO_URL: http://127.0.0.1:8000
+              OPENCONCHO_UPSTREAM_ALLOWLIST: 127.0.0.1
+              TZ: Europe/Warsaw
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &ocPort 8080
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              runAsUser: 101
+              runAsGroup: 101
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: main
+        ports:
+          http:
+            port: 80
+            targetPort: *hcPort
+      openconcho:
+        controller: main
+        ports:
+          http:
+            port: *ocPort
+    route:
+      app:
+        hostnames:
+          - "honcho.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: honcho-openconcho
+                port: *ocPort
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        connect-src 'self';
+                        img-src 'self' data:;
+                        font-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+                        style-src 'self' 'unsafe-inline';
+          - name: api
+            backendRefs:
+              - kind: Service
+                name: honcho-app
+                port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /v3
+    persistence:
+      config:
+        type: configMap
+        name: honcho-configmap
+        globalMounts:
+          - subPath: config.toml
+            path: /app/config.toml
+            readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
