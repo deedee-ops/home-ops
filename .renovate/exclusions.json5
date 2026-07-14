@@ -17,5 +17,10 @@
       matchPackageNames: ["/influxdb/"],
       allowedVersions: "<2.0.0",
     },
+    {
+      description: "Hold bifrost at v1",
+      matchPackageNames: ["/bifrost/"],
+      allowedVersions: "<2.0.0",
+    },
   ],
 }
