@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgresql
+spec:
+  components:
+    - ./components/postgresql
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  patches:
+    - patch: |-
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        metadata:
+          name: _
+        spec:
+          bootstrap:
+            initdb:
+              database: app
+            # recovery:
+            #   source: ai-db-restore
+            #   database: app
+          postgresql:
+            shared_preload_libraries:
+              - "vchord.so"
+      target:
+        group: postgresql.cnpg.io
+        kind: Cluster
+  path: ./kubernetes
+  postBuild:
+    substitute:
+      APP: ai
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: ai
+  wait: true
