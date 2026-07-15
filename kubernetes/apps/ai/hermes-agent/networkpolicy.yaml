@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hermes-agent-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: hermes-agent
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: bifrost
+        - matchLabels:
+            app.kubernetes.io/name: camofox
+        - matchLabels:
+            app.kubernetes.io/name: honcho
+    - toFQDNs:
+        - matchName: imap.migadu.com
+      toPorts:
+        - ports:
+            - port: "993"
