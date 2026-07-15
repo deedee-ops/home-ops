@@ -211,15 +211,6 @@ spec:
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
                         style-src 'self' 'unsafe-inline';
-          - name: api
-            backendRefs:
-              - kind: Service
-                name: honcho-app
-                port: 80
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /v3
     persistence:
       config:
         type: configMap

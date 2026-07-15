@@ -85,22 +85,3 @@ spec:
         ports:
           http:
             port: 80
-    route:
-      app:
-        hostnames:
-          - "embedder.${ROOT_DOMAIN}"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        rules:
-          - backendRefs:
-              - name: embedder
-                port: 80
-            filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  set:
-                    - name: Content-Security-Policy
-                      value: >-
-                        default-src 'self';
-                        object-src 'none';

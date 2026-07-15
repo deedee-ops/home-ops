@@ -75,22 +75,3 @@ spec:
           http:
             port: 80
             targetPort: *port
-    route:
-      app:
-        hostnames:
-          - "camofox.${ROOT_DOMAIN}"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        rules:
-          - backendRefs:
-              - name: camofox
-                port: 80
-            filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  set:
-                    - name: Content-Security-Policy
-                      value: >-
-                        default-src 'self';
-                        object-src 'none';
