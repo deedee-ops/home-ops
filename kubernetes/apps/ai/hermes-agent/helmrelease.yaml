@@ -1,0 +1,151 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hermes-agent
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: hermes-agent
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          app:
+            image: &img
+              repository: nousresearch/hermes-agent
+              tag: main@sha256:288667938c397df0fe4591f8d0032e499472aa6874e6b48f9f815b610f14a96c
+            args:
+              - serve
+              - --host
+              - 0.0.0.0
+              - --port
+              - "9119"
+            env:
+              PYTHONPATH: /opt/data/.local/lib/python3.13/site-packages
+              CURL_CA_BUNDLE: /certs/ca-bundle.pem
+              REQUESTS_CA_BUNDLE: /certs/ca-bundle.pem
+              SSL_CERT_FILE: /certs/ca-bundle.pem
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "hermes-agent-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 9119
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - CHOWN
+                  - DAC_OVERRIDE
+                  - FOWNER
+                  - KILL
+                  - SETGID
+                  - SETUID
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 4Gi
+        initContainers:
+          01-merge-certificates:
+            image: *img
+            command:
+              - sh
+              - -c
+              - >-
+                cat /etc/ssl/certs/ca-certificates.crt /certs/homelab.crt
+                > /certs/ca-bundle.pem
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/internet: "true"
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 10000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          api:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "hermes.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: hermes-agent
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      config:
+        existingClaim: "hermes-agent"
+        globalMounts:
+          - path: /opt/data
+      homelab-root-ca:
+        type: secret
+        name: homelab-root-ca
+        globalMounts:
+          - path: /certs/homelab.crt
+            subPath: ec.crt
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+          - path: /certs
+            subPath: certs
