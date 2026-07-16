@@ -38,133 +38,147 @@ spec:
           instanceSelector:
             matchLabels:
               grafana.internal/instance: grafana
-    instance:
-      enabled: true
-      name: pocket-id
-      serviceMonitor:
+    pocket-id-instance:
+      instance:
         enabled: true
-      spec:
-        analyticsDisabled: true
-        appUrl: &appUrl "https://id.${ROOT_DOMAIN}"
-        annotations:
-          glance/name: Pocket-ID
-          glance/icon: di:pocket-id
-          glance/url: *appUrl
-        emailNotifications:
-          loginNotification: true
-          oneTimeAccessAsAdmin: true
-          apiKeyExpiration: true
-          oneTimeAccessAsUnauthenticated: false
-          verification: true
-        encryptionKey:
-          valueFrom:
-            secretKeyRef:
-              name: pocket-id-operator-secret
-              key: ENCRYPTION_KEY
-        geoip:
-          dbPath: /tmp/GeoLite2-City.mmdb
-          maxmindLicenseKey:
+        name: pocket-id
+        serviceMonitor:
+          enabled: true
+        spec:
+          analyticsDisabled: true
+          appUrl: &appUrl "https://id.${ROOT_DOMAIN}"
+          annotations:
+            glance/name: Pocket-ID
+            glance/icon: di:pocket-id
+            glance/url: *appUrl
+          emailNotifications:
+            loginNotification: true
+            oneTimeAccessAsAdmin: true
+            apiKeyExpiration: true
+            oneTimeAccessAsUnauthenticated: false
+            verification: true
+          encryptionKey:
             valueFrom:
               secretKeyRef:
                 name: pocket-id-operator-secret
-                key: MAXMIND_LICENSE_KEY
-        labels:
-          egress.cilium.io/smtp-relay: "true"
-        logging:
-          level: "info"
-          json: true
-        persistence:
-          enabled: true
-          existingClaim: pocket-id-operator
-        podTemplate:
-          spec:
-            containers:
-              - name: caddy
-                image: docker.io/library/caddy:2.11.4@sha256:844f60b64e4724a5aa8245e019dace0d3f199f7433ce6c57676cb30a920dbad9
-                args:
-                  - caddy
-                  - run
-                  - --config
-                  - /config/Caddyfile
-                dnsConfig:
-                  options:
-                    - name: ndots
-                      value: "1"
-                securityContext:
-                  readOnlyRootFilesystem: true
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                      - ALL
-                    add:
-                      - NET_BIND_SERVICE
-                resources:
-                  requests:
-                    cpu: "5m"
-                    memory: "128Mi"
-                  limits:
-                    cpu: "1000m"
-                    memory: "512Mi"
-                volumeMounts:
-                  - mountPath: /config/Caddyfile
+                key: ENCRYPTION_KEY
+          geoip:
+            dbPath: /tmp/GeoLite2-City.mmdb
+            maxmindLicenseKey:
+              valueFrom:
+                secretKeyRef:
+                  name: pocket-id-operator-secret
+                  key: MAXMIND_LICENSE_KEY
+          labels:
+            egress.cilium.io/smtp-relay: "true"
+          logging:
+            level: "info"
+            json: true
+          persistence:
+            enabled: true
+            existingClaim: pocket-id-operator
+          podTemplate:
+            spec:
+              containers:
+                - name: caddy
+                  image: docker.io/library/caddy:2.11.4@sha256:844f60b64e4724a5aa8245e019dace0d3f199f7433ce6c57676cb30a920dbad9
+                  args:
+                    - caddy
+                    - run
+                    - --config
+                    - /config/Caddyfile
+                  dnsConfig:
+                    options:
+                      - name: ndots
+                        value: "1"
+                  securityContext:
+                    readOnlyRootFilesystem: true
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                        - ALL
+                      add:
+                        - NET_BIND_SERVICE
+                  resources:
+                    requests:
+                      cpu: "5m"
+                      memory: "128Mi"
+                    limits:
+                      cpu: "1000m"
+                      memory: "512Mi"
+                  volumeMounts:
+                    - mountPath: /config/Caddyfile
+                      name: pocket-id-caddy
+                      subPath: Caddyfile
+                    - mountPath: /config/caddy
+                      name: tmp
+                      subPath: caddy-config
+                    - mountPath: /data/caddy
+                      name: tmp
+                      subPath: caddy-data
+              volumes:
+                - configMap:
                     name: pocket-id-caddy
-                    subPath: Caddyfile
-            volumes:
-              - configMap:
                   name: pocket-id-caddy
-                name: pocket-id-caddy
-        route:
-          enabled: true
-          name: pocket-id
-          parentRefs:
-            - name: envoy-internal
-              namespace: network
-          template:
-            rules:
-              - filters:
-                  - type: ResponseHeaderModifier
-                    responseHeaderModifier:
-                      set:
-                        - name: Content-Security-Policy
-                          value: >-
-                            default-src 'self';
-                            object-src 'none';
-                            script-src 'self' 'unsafe-inline' 'unsafe-eval';
-                            style-src 'self' 'unsafe-inline';
-                  - cors:
-                      allowOrigins:
-                        - 'https://*.${ROOT_DOMAIN}'
-                      allowHeaders:
-                        - '*'
-                      allowMethods:
-                        - '*'
-                    type: CORS
-        smtp:
-          host: smtp-relay.network.svc.cluster.local
-          port: 25
-          from: "deedee@${ROOT_DOMAIN}"
-        timezone: *tz
-        ui:
-          sessionDuration: 10080 # 1 week
-        userManagement:
-          emailsVerified: true
-          allowOwnAccountEdit: true
-          allowUserSignups: "disabled"
-        versionCheckDisabled: true
-    users:
-      - name: ajgon
-        spec:
-          admin: true
-          email:
-            value: "ajgon@${ROOT_DOMAIN}"
-          firstName:
-            value: Igor
-          lastName:
-            value: Rzegocki
-    userGroups:
-      - name: admins
-        spec:
-          friendlyName: admins
-          users:
-            userRefs:
-              - name: ajgon
+                - emptyDir:
+                    medium: Memory
+                    sizeLimit: 32Mi
+                  name: tmp
+          route:
+            enabled: true
+            name: pocket-id
+            parentRefs:
+              - name: envoy-internal
+                namespace: network
+            template:
+              rules:
+                - filters:
+                    - type: ResponseHeaderModifier
+                      responseHeaderModifier:
+                        set:
+                          - name: Content-Security-Policy
+                            value: >-
+                              default-src 'self';
+                              object-src 'none';
+                              script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                              style-src 'self' 'unsafe-inline';
+                    - cors:
+                        allowOrigins:
+                          - 'https://*.${ROOT_DOMAIN}'
+                        allowHeaders:
+                          - '*'
+                        allowMethods:
+                          - '*'
+                      type: CORS
+          rateLimitingDisabled: true # bootstrapping operator sends A LOT of requests
+          smtp:
+            host: smtp-relay.network.svc.cluster.local
+            port: 25
+            from: "deedee@${ROOT_DOMAIN}"
+          timezone: *tz
+          trustedProxies:
+            enabled: true
+          ui:
+            sessionDuration: 10080 # 1 week
+          userManagement:
+            emailsVerified: true
+            allowOwnAccountEdit: true
+            allowUserSignups: "disabled"
+          versionCheckDisabled: true
+      users:
+        - name: ajgon
+          spec:
+            admin: true
+            email:
+              value: "ajgon@${ROOT_DOMAIN}"
+            firstName:
+              value: Igor
+            lastName:
+              value: Rzegocki
+      userGroups:
+        - name: admins
+          spec:
+            friendlyName: admins
+            users:
+              userRefs:
+                - name: ajgon
