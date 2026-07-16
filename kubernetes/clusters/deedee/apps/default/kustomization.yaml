@@ -15,6 +15,7 @@ resources:
   - ./firefly.yaml
   - ./garmin.yaml
   - ./glance.yaml
+  - ./karakeep.yaml
   - ./kiwix.yaml
   - ./mail-archive.yaml
   - ./n8n.yaml

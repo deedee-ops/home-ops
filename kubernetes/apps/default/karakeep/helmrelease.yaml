@@ -1,0 +1,208 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: karakeep
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: karakeep
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          glance/name: karakeep
+          glance/icon: di:karakeep
+          glance/url: https://karakeep.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/karakeep-app/karakeep
+              tag: 0.32.0@sha256:64d6a9bbf2d37b5c808cf06b5d87f1f1c7846fdd3844724145a9741aeb06fd31
+            env:
+              BROWSER_WEB_URL: http://localhost:9222
+              CRAWLER_FULL_PAGE_SCREENSHOT: "true"
+              CRAWLER_MONOLITH_TIMEOUT_SEC: "90"
+              CRAWLER_SCREENSHOT_TIMEOUT_SEC: "30"
+              DATA_DIR: /data
+              DISABLE_NEW_RELEASE_CHECK: "true"
+              DISABLE_PASSWORD_AUTH: "true"
+              DISABLE_SIGNUPS: "true"
+              EMBEDDING_TEXT_MODEL: vllm/mixedbread-ai/mxbai-embed-large-v1
+              INFERENCE_IMAGE_MODEL: vllm/Qwen/Qwen3-VL-30B-A3B-Thinking
+              INFERENCE_TEXT_MODEL: vllm/Google/gemma-4-31B-it
+              MEILI_ADDR: http://localhost:7700
+              NEXTAUTH_URL: "https://karakeep.${ROOT_DOMAIN}"
+              NODE_EXTRA_CA_CERTS: /certs/homelab.pem
+              OAUTH_AUTO_REDIRECT: "true"
+              OAUTH_PROVIDER_NAME: "Pocket ID"
+              OAUTH_WELLKNOWN_URL: "https://id.${ROOT_DOMAIN}/.well-known/openid-configuration"
+              OCR_USE_LLM: "true"
+              OPENAI_API_KEY: dummy
+              OPENAI_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
+              S6_YES_I_WANT_A_WORLD_WRITABLE_RUN_BECAUSE_KUBERNETES: "1" # yes, s6 in containers is absolute garbage
+              SMTP_FROM: "deedee@${ROOT_DOMAIN}"
+              SMTP_HOST: "smtp-relay.network.svc.cluster.local"
+              SMTP_PORT: "25"
+              SMTP_SECURE: "false"
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "karakeep-secret"
+              - secretRef:
+                  name: "karakeep-oidc-credentials"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: &port 3000
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 50m
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+          chrome:
+            image:
+              repository: gcr.io/zenika-hub/alpine-chrome
+              tag: 124@sha256:1a0046448e0bb6c275c88f86e01faf0de62b02ec8572901256ada0a8c08be23f
+            args:
+              - --no-sandbox
+              - --disable-gpu
+              - --disable-dev-shm-usage
+              - --remote-debugging-address=0.0.0.0
+              - --remote-debugging-port=9222
+              - --hide-scrollbars
+              - --disable-blink-features=AutomationControlled
+              - --window-size=1440,900
+            env:
+              TZ: Europe/Warsaw
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 50m
+              limits:
+                cpu: 1000m
+                memory: 4Gi
+          meilisearch:
+            image:
+              repository: getmeili/meilisearch
+              tag: v1.49.0@sha256:bdc7d7e7939911c40d88d6bcd01f9c72c81f7293135916d48bce241569f721bd
+            env:
+              MEILI_NO_ANALYTICS: "true"
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "karakeep-secret"
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 50m
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/internet: "true"
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            targetPort: *port
+            port: 80
+    route:
+      app:
+        hostnames:
+          - "karakeep.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: karakeep
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data:;
+                        object-src 'none';
+                        img-src 'self' data: blob: https:;
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:;
+                        style-src 'self' 'unsafe-inline' data:;
+    persistence:
+      data:
+        existingClaim: karakeep
+        advancedMounts:
+          main:
+            app:
+              - path: /data
+                subPath: karakeep
+            meilisearch:
+              - path: /meili_data
+                subPath: meilisearch
+      homelab-root-ca:
+        type: secret
+        name: homelab-root-ca
+        advancedMounts:
+          main:
+            app:
+              - path: /certs/homelab.pem
+                subPath: ec.crt
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          main:
+            app:
+              - path: /app/apps/web/.next/cache
+                subPath: next-cache
+        globalMounts:
+          - subPath: var-run
+            path: /var/run
+          - subPath: run
+            path: /run
+          - subPath: tmp
+            path: /tmp
