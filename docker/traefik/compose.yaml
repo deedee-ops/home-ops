@@ -9,7 +9,7 @@ services:
       TRAEFIK_OIDC_CLIENT_SECRET: "${TRAEFIK_OIDC_CLIENT_SECRET}"
       TRAEFIK_OIDC_ENCRYPTION_SECRET: "${TRAEFIK_OIDC_ENCRYPTION_SECRET}"
       TZ: Europe/Warsaw
-    image: public.ecr.aws/docker/library/traefik:3.7.7@sha256:1cb3845d7a05e1473c9086351426597e911db49db382b6e4769f9b0744962ac8
+    image: public.ecr.aws/docker/library/traefik:v3.7.8@sha256:5cb000ad823bfcfff911e22a4c4fa09cee74c7a2d960c012a1a46a8d0a159fcf
     container_name: traefik
     restart: always
     extra_hosts:
