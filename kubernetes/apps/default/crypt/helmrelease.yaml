@@ -47,6 +47,7 @@ spec:
             resources: &rs
               requests:
                 cpu: 10m
+                memory: 256Mi
               limits:
                 memory: 1Gi
           ui:

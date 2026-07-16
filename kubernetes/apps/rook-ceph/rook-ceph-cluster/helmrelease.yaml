@@ -98,6 +98,8 @@ spec:
             cpu: "100m"
             memory: "40Mi"
         osd:
+          requests:
+            memory: 3Gi
           limits:
             memory: 8Gi
       storage:

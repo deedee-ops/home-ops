@@ -80,6 +80,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
+                memory: 192Mi
               limits:
                 memory: 512Mi
       cron:
@@ -105,6 +106,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
+                memory: 24Mi
               limits:
                 memory: 32Mi
     defaultPodOptions:
