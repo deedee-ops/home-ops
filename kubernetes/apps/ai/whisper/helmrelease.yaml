@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: hwdsl2/whisper-server
-              tag: latest@sha256:3ee18f84149389e886829e31ea4bec40b1919682d8fff7f2f0d447a278f196a6
+              tag: latest@sha256:120e4b7835898715d97b16e54e991e5226535fdfad506863a3b9cd4dd6d6377f
             env:
               WHISPER_COMPUTE_TYPE: int8
               WHISPER_DEVICE: cpu
