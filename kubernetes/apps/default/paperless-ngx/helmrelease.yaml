@@ -25,6 +25,8 @@ spec:
               PAPERLESS_ACCOUNT_EMAIL_VERIFICATION: "true"
               PAPERLESS_APPS: "allauth.socialaccount.providers.openid_connect"
               PAPERLESS_CONSUMER_POLLING: "60" # ionotify doesn't work over NFS
+              PAPERLESS_CONSUMER_POLLING_DELAY: "5"
+              PAPERLESS_CONSUMER_POLLING_RETRY_COUNT: "30"
               PAPERLESS_CONSUMER_RECURSIVE: "true"
               PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
               PAPERLESS_CONSUMPTION_DIR: "/sync/consume"
@@ -57,9 +59,12 @@ spec:
               USERMAP_UID: 1000
               USERMAP_GID: 1000
               TZ: *tz
+              PAPERLESS_SECRET_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: &secret paperless-ngx-secret
+                    key: PAPERLESS_SECRET_KEY
             envFrom:
-              - secretRef:
-                  name: "paperless-ngx-secret"
               - secretRef:
                   name: "paperless-ngx-oidc-secret"
             probes:
@@ -126,6 +131,67 @@ spec:
                   tcpSocket:
                     port: 3000
               readiness: *gotenProbes
+          gpt:
+            image:
+              repository: ghcr.io/icereed/paperless-gpt
+              tag: v0.26.1@sha256:6b9024d1adebfcd6bd7ec5e9da2ca17f9879b1fb5ce749d72905bbb121091ef8
+            command:
+              - /app/paperless-gpt
+            env:
+              AUTO_GENERATE_CORRESPONDENTS: "false"
+              AUTO_GENERATE_CREATED_DATE: "false"
+              AUTO_GENERATE_DOCUMENT_TYPE: "false"
+              AUTO_GENERATE_TAGS: "false"
+              AUTO_GENERATE_TITLE: "false"
+              HOME: /home/paperless-gpt
+              LLM_LANGUAGE: "English,Polish"
+              LLM_MODEL: vllm/Google/gemma-4-31B-it
+              LLM_PROVIDER: openai
+              OCR_PROCESS_MODE: image
+              OCR_PROVIDER: llm
+              OPENAI_API_KEY: dummy
+              OPENAI_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
+              PAPERLESS_BASE_URL: http://localhost
+              PAPERLESS_PUBLIC_URL: "https://paperless.${ROOT_DOMAIN}"
+              PUID: 1000
+              PGID: 1000
+              VISION_LLM_MODEL: vllm/Qwen/Qwen3-VL-30B-A3B-Thinking
+              VISION_LLM_PROVIDER: openai
+              TZ: *tz
+              PAPERLESS_API_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: PAPERLESS_API_TOKEN
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/version
+                    port: &gptPort 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: "10m"
+                memory: "32Mi"
+              limits:
+                memory: "1Gi"
         initContainers:
           01-download-languages:
             image: *img
@@ -149,6 +215,7 @@ spec:
           - name: ndots
             value: "1"
       labels:
+        egress.cilium.io/ai: "true"
         egress.cilium.io/auth: "true"
         egress.cilium.io/smtp-relay: "true"
       securityContext:
@@ -164,6 +231,11 @@ spec:
         ports:
           http:
             port: *port
+      gpt:
+        ports:
+          http:
+            port: 80
+            targetPort: *gptPort
     route:
       app:
         hostnames:
@@ -173,9 +245,9 @@ spec:
             namespace: network
         rules:
           - backendRefs:
-              - name: paperless-ngx
+              - name: paperless-ngx-app
                 port: 80
-            filters:
+            filters: &hrFilters
               - type: ResponseHeaderModifier
                 responseHeaderModifier:
                   set:
@@ -186,6 +258,17 @@ spec:
                         object-src 'self';
                         script-src 'self' 'unsafe-inline';
                         style-src 'self' 'unsafe-inline';
+      gpt:
+        hostnames:
+          - "paperless-gpt.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: paperless-ngx-gpt
+                port: 80
+            filters: *hrFilters
     persistence:
       data:
         existingClaim: paperless-ngx
@@ -200,6 +283,11 @@ spec:
                 path: *media
               - subPath: "trash"
                 path: *trash
+            gpt:
+              - subPath: "gpt-config"
+                path: /app/config
+              - subPath: "gpt-prompts"
+                path: /app/prompts
       homelab-root-ca:
         type: secret
         name: homelab-root-ca
@@ -236,6 +324,13 @@ spec:
               - subPath: tessdata
                 path: /usr/share/tesseract-ocr/5/tessdata
               - subPath: tmp-app
+                path: /tmp
+            gpt:
+              - subPath: gpt-app-db
+                path: /app/db
+              - subPath: gpt-home
+                path: /home/paperless-gpt
+              - subPath: tmp-gpt
                 path: /tmp
             gotenberg:
               - subPath: tmp-gotenberg
