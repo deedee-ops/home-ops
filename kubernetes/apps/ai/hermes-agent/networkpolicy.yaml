@@ -16,6 +16,9 @@ spec:
             app.kubernetes.io/name: camofox
         - matchLabels:
             app.kubernetes.io/name: honcho
+        - matchLabels:
+            io.kubernetes.pod.namespace: default
+            app.kubernetes.io/name: searxng
     - toFQDNs:
         - matchName: imap.migadu.com
       toPorts:

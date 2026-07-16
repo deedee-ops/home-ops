@@ -29,6 +29,7 @@ block_ip = [
 ]
 
 pass_ip = [
+  '172.16.0.0/12',       # IPv4 private network
   '192.168.0.0/16',      # IPv4 private network
   '10.0.0.0/8',          # IPv4 private network
 ]
