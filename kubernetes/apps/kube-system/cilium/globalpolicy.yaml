@@ -13,6 +13,14 @@ specs:
           - cluster
   - endpointSelector:
       matchLabels:
+        egress.cilium.io/ai: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: ai
+              app.kubernetes.io/name: bifrost
+  - endpointSelector:
+      matchLabels:
         egress.cilium.io/kube-apiserver: "true"
     egress:
       - toEntities:
