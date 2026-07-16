@@ -134,6 +134,7 @@ spec:
           - name: ndots
             value: "1"
       labels:
+        egress.cilium.io/ai: "true"
         egress.cilium.io/auth: "true"
         egress.cilium.io/internet: "true"
         egress.cilium.io/smtp-relay: "true"
