@@ -13,8 +13,8 @@
     {
       description: "Auto-merge high-cadence OCI packages weekly",
       matchDatasources: ["docker"],
-      matchUpdateTypes: ["minor", "patch"],
-      matchPackageNames: ["/hermes-agent/", "/kube-prometheus-stack/"],
+      matchUpdateTypes: ["minor", "patch", "digest", "pinDigest"],
+      matchPackageNames: ["/hermes-agent/", "/kube-prometheus-stack/", "/renovatebot\\/renovate/"],
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,

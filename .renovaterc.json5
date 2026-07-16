@@ -23,8 +23,8 @@
     "github>deedee-ops/home-ops//.renovate/talosFactory.json5",
   ],
   packageRules: [
-    // Map terraform registry to opentofu
     {
+      description: "Map terraform registry to opentofu",
       matchDatasources: ["terraform-provider", "terraform-module"],
       registryUrls: ["https://registry.opentofu.org"],
     },
