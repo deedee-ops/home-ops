@@ -10,9 +10,6 @@ services:
       BORGMATIC_HOMELAB_HC_PING_URL: "${BORGMATIC_HOMELAB_HC_PING_URL}"
       BORGMATIC_HOMELAB_REPO_BORGBASE_EU: "${BORGMATIC_HOMELAB_REPO_BORGBASE_EU}"
       BORGMATIC_HOMELAB_REPO_BORGBASE_US: "${BORGMATIC_HOMELAB_REPO_BORGBASE_US}"
-      BORGMATIC_LEGACY_ENCRYPTION_PASSPHRASE: "${BORGMATIC_LEGACY_ENCRYPTION_PASSPHRASE}"
-      BORGMATIC_LEGACY_HC_PING_URL: "${BORGMATIC_LEGACY_HC_PING_URL}"
-      BORGMATIC_LEGACY_REPO_BORGBASE_EU: "${BORGMATIC_LEGACY_REPO_BORGBASE_EU}"
       BORGMATIC_NAS_ENCRYPTION_PASSPHRASE: "${BORGMATIC_NAS_ENCRYPTION_PASSPHRASE}"
       BORGMATIC_NAS_HC_PING_URL: "${BORGMATIC_NAS_HC_PING_URL}"
       BORGMATIC_NAS_REPO_BORGBASE_EU: "${BORGMATIC_NAS_REPO_BORGBASE_EU}"
@@ -23,8 +20,6 @@ services:
     configs:
       - source: homelab
         target: /etc/borgmatic.d/homelab.yaml
-      - source: legacy
-        target: /etc/borgmatic.d/legacy.yaml
       - source: nas
         target: /etc/borgmatic.d/nas.yaml
     volumes:
@@ -35,7 +30,5 @@ services:
 configs:
   homelab:
     file: ./config/homelab.yaml
-  legacy:
-    file: ./config/legacy.yaml
   nas:
     file: ./config/nas.yaml
