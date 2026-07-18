@@ -74,7 +74,12 @@ in
         files = ".forgejo/workflows/.+\.yaml";
       };
       check-json.enable = true;
-      # commitizen.enable = true;
+      commitizen = {
+        enable = true;
+        package = pkgs.commitizen.overridePythonAttrs (_: {
+          doCheck = false;
+        });
+      };
       markdownlint.enable = true;
       shellcheck = {
         enable = true;
