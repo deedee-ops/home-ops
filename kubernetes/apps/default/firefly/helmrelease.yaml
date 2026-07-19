@@ -130,7 +130,8 @@ spec:
         controller: main
         ports:
           http:
-            port: *port
+            port: 80
+            targetPort: *port
     route:
       app:
         hostnames:
@@ -142,7 +143,7 @@ spec:
           - backendRefs:
               - name: firefly
                 namespace: default
-                port: 8080
+                port: 80
             filters:
               # hardcode user email effectively disabling authentication on firefly side,
               # and delegate it to security policy

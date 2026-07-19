@@ -10,6 +10,7 @@ spec:
       app.kubernetes.io/name: hermes-agent
   egress:
     - toEndpoints:
+        # core
         - matchLabels:
             app.kubernetes.io/name: bifrost
         - matchLabels:
@@ -19,6 +20,10 @@ spec:
         - matchLabels:
             io.kubernetes.pod.namespace: default
             app.kubernetes.io/name: searxng
+        # apps
+        - matchLabels:
+            io.kubernetes.pod.namespace: default
+            app.kubernetes.io/name: firefly
     - toFQDNs:
         - matchName: imap.migadu.com
       toPorts:
