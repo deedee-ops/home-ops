@@ -18,7 +18,7 @@
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,
-      schedule: ["before 6am on Monday"],
+      schedule: ["before 12pm on Monday"],
     },
     {
       description: "Auto-merge GitHub Actions",
