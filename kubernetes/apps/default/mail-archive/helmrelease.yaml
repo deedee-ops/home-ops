@@ -23,7 +23,7 @@ spec:
           app:
             image:
               repository: docker.io/roundcube/roundcubemail
-              tag: "1.7.2-apache-nonroot@sha256:fc5c038813a26781adb0f8f1b5639b8c519f7e684df825088508d9d1410f5028"
+              tag: "1.7.2-apache-nonroot@sha256:13a2c8f62f6968c96f718c5baf183f6993d24d8f45c529ef26fc31ff3d26fb3c"
             env:
               ROUNDCUBEMAIL_DB_TYPE: "sqlite"
               ROUNDCUBEMAIL_DEFAULT_HOST: "mail-archive-dovecot"
