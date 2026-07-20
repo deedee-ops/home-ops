@@ -16,7 +16,7 @@ spec:
           app:
             image: &img
               repository: nousresearch/hermes-agent
-              tag: main@sha256:c9fb6c37ac61ce0a72e00a2c86abb2728556dfb3276d2ba8c974f4bf09a8ea86
+              tag: main@sha256:a7171d611dd0393e1e2c44f8431860a8002262fc3bbff9545bc070f6ea967919
             args:
               - serve
               - --host
