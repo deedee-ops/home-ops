@@ -134,7 +134,11 @@ spec:
               <<: *pgEnv
               GOTRUE_API_HOST: 0.0.0.0
               PORT: &authPort 9999
-              API_EXTERNAL_URL: *supabaseUrl
+              # Must include /auth/v1 so GoTrue derives the external-provider
+              # callback as https://shelf-supabase.../auth/v1/callback (the
+              # routed + Pocket-ID-registered URL). external.go: redirect =
+              # API_EXTERNAL_URL + "/callback".
+              API_EXTERNAL_URL: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1
               GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
               GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
               GOTRUE_DB_DRIVER: postgres
@@ -151,17 +155,13 @@ spec:
               GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
               GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
-              GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
-              GOTRUE_EXTERNAL_KEYCLOAK_URL: https://id.${ROOT_DOMAIN}
-              GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
-              GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
-                secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_ID
-              GOTRUE_EXTERNAL_KEYCLOAK_SECRET:
-                secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_SECRET
+              # Pocket-ID is wired as a discovery-based CUSTOM OIDC provider
+              # (identifier "pocketid"), registered at runtime by the
+              # register-oidc job — NOT the built-in keycloak provider, whose
+              # hardcoded /protocol/openid-connect/* paths Pocket-ID doesn't
+              # serve. Custom providers are DB-stored (enabled by default).
+              # Trust the homelab CA for OIDC discovery + token/userinfo to
+              # id.${ROOT_DOMAIN}.
               SSL_CERT_FILE: /certs/homelab.pem
             probes:
               liveness: &authProbe
@@ -233,6 +233,64 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+
+      # ---------------------------------------------------------------------
+      # Registers Pocket-ID as a discovery-based custom OIDC provider in GoTrue
+      # (POST/PUT /admin/custom-providers). Runs on each reconcile, idempotent
+      # (upsert by identifier), so it also re-syncs the client secret if the
+      # pocket-id operator rotates it. Waits for GoTrue to be up first.
+      # ---------------------------------------------------------------------
+      register-oidc:
+        type: job
+        job:
+          backoffLimit: 10
+          ttlSecondsAfterFinished: 3600
+        containers:
+          app:
+            image:
+              repository: docker.io/badouralix/curl-jq
+              tag: latest
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                set -eu
+                GT="http://shelf-gotrue.shelf-system.svc.cluster.local:9999"
+                echo "waiting for gotrue..."
+                until curl -fsS "$${GT}/health" >/dev/null 2>&1; do sleep 3; done
+                BODY=$(printf '{"provider_type":"oidc","identifier":"pocketid","name":"Pocket ID","issuer":"https://id.${ROOT_DOMAIN}","client_id":"%s","client_secret":"%s","scopes":["openid","profile","email"],"pkce_enabled":false,"enabled":true}' "$${OAUTH_CLIENT_ID}" "$${OAUTH_CLIENT_SECRET}")
+                AUTH="Authorization: Bearer $${SERVICE_ROLE_KEY}"
+                ID=$(curl -fsS -H "$${AUTH}" "$${GT}/admin/custom-providers?type=oidc" | jq -r '[.. | objects | select(.identifier?=="pocketid")][0].id // empty')
+                if [ -n "$${ID}" ]; then
+                  echo "updating custom provider $${ID}"
+                  curl -fsS -X PUT -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${GT}/admin/custom-providers/$${ID}" >/dev/null
+                else
+                  echo "creating custom provider"
+                  curl -fsS -X POST -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${GT}/admin/custom-providers" >/dev/null
+                fi
+                echo "pocketid custom OIDC provider registered"
+            env:
+              SERVICE_ROLE_KEY:
+                secretKeyRef:
+                  name: shelf-secret
+                  key: SERVICE_ROLE_KEY
+              OAUTH_CLIENT_ID:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_ID
+              OAUTH_CLIENT_SECRET:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_SECRET
+              HOME: /tmp
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -287,7 +345,7 @@ spec:
                   statusCode: 302
                   path:
                     type: ReplaceFullPath
-                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
+                    replaceFullPath: "/auth/v1/authorize?provider=pocketid&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
@@ -353,4 +411,6 @@ spec:
           gotrue:
             app: *tmpMount
           storage-api:
+            app: *tmpMount
+          register-oidc:
             app: *tmpMount
