@@ -200,6 +200,7 @@ spec:
             env:
               <<: *pgEnv
               SERVER_PORT: &storagePort 5000
+              UV_USE_IO_URING: "0"
               AUTH_JWT_SECRET: *jwtSecret
               PGRST_JWT_SECRET: *jwtSecret
               ANON_KEY: *anonKey
