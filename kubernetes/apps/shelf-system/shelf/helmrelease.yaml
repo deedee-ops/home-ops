@@ -152,6 +152,7 @@ spec:
               GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
               GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
+              GOTRUE_EXTERNAL_KEYCLOAK_SCOPES: openid
               GOTRUE_EXTERNAL_KEYCLOAK_URL: https://id.${ROOT_DOMAIN}
               GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
               GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
