@@ -263,13 +263,14 @@ spec:
                 AUTH="Authorization: Bearer $${SERVICE_ROLE_KEY}"
                 ID=$(curl -fsS -H "$${AUTH}" "$${GT}/admin/custom-providers?type=oidc" | jq -r '[.. | objects | select(.identifier?=="pocketid")][0].id // empty')
                 if [ -n "$${ID}" ]; then
-                  echo "updating custom provider $${ID}"
-                  curl -fsS -X PUT -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${GT}/admin/custom-providers/$${ID}" >/dev/null
+                  METHOD=PUT; URL="$${GT}/admin/custom-providers/$${ID}"
                 else
-                  echo "creating custom provider"
-                  curl -fsS -X POST -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${GT}/admin/custom-providers" >/dev/null
+                  METHOD=POST; URL="$${GT}/admin/custom-providers"
                 fi
-                echo "pocketid custom OIDC provider registered"
+                echo "$${METHOD} $${URL}"
+                CODE=$(curl -sS -o /tmp/resp -w '%{http_code}' -X "$${METHOD}" -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${URL}")
+                echo "HTTP $${CODE}"; cat /tmp/resp; echo
+                case "$${CODE}" in 2*) echo "pocketid custom OIDC provider registered";; *) exit 1;; esac
             env:
               SERVICE_ROLE_KEY:
                 secretKeyRef:
