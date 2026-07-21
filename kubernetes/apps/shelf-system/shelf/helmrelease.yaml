@@ -128,7 +128,7 @@ spec:
               - -c
             args:
               - |
-                export GOTRUE_DB_DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export GOTRUE_DB_DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf?search_path=auth"
                 exec auth
             env:
               <<: *pgEnv
