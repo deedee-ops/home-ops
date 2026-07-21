@@ -271,6 +271,23 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
+          # Repurpose Shelf's /sso-login as the OIDC entry point: redirect to
+          # GoTrue's authorize endpoint (provider=keycloak -> Pocket-ID), which
+          # round-trips back to /oauth/callback authenticated. Exact match takes
+          # precedence over the /-prefix backend rule below.
+          - matches:
+              - path:
+                  type: Exact
+                  value: /sso-login
+            filters:
+              - type: RequestRedirect
+                requestRedirect:
+                  scheme: https
+                  hostname: "shelf-supabase.${ROOT_DOMAIN}"
+                  statusCode: 302
+                  path:
+                    type: ReplaceFullPath
+                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
