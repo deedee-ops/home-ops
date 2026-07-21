@@ -143,6 +143,10 @@ spec:
                 secretKeyRef:
                   name: shelf-secret
                   key: JWT_SECRET
+              # supabase-js sends an `apikey` header; GoTrue's default CORS
+              # allow-list omits it (Kong normally handles it), so the browser
+              # preflight to /auth/v1/user fails with no ACAO. Allow it here.
+              GOTRUE_CORS_ALLOWED_HEADERS: "apikey,x-client-info,x-supabase-api-version"
               GOTRUE_JWT_AUD: authenticated
               GOTRUE_JWT_EXP: "3600"
               GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
