@@ -278,7 +278,19 @@ spec:
                   timeoutSeconds: 2
                   failureThreshold: 6
               readiness: *shimProbe
-            securityContext: *sc
+            # The official Caddy binary carries a cap_net_bind_service file
+            # capability; under NoNewPrivs (allowPrivilegeEscalation: false)
+            # + drop ALL the kernel refuses to exec it ("operation not
+            # permitted"). Add back NET_BIND_SERVICE (the only cap restricted
+            # PSA permits) so the fscap isn't treated as an escalation.
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - NET_BIND_SERVICE
             resources:
               requests:
                 cpu: 10m
