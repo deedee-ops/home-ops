@@ -1,0 +1,42 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+# GoTrue's keycloak provider calls /protocol/openid-connect/{auth,token,userinfo}
+# on this host; translate to Pocket-ID's real endpoints. ${ROOT_DOMAIN} is
+# substituted by Flux; Caddy's own {query} placeholder has no '$' so it is left
+# intact.
+:8080 {
+	respond /healthz "ok" 200
+
+	# Browser-facing: 302 so the URL bar lands on Pocket-ID's real /authorize
+	# (its SPA routes that path), keeping the user on id.${ROOT_DOMAIN} for its
+	# session cookie. Envoy/Caddy preserve the original query string.
+	@auth path /protocol/openid-connect/auth
+	redir @auth https://id.${ROOT_DOMAIN}/authorize?{query} 302
+
+	# Server-side (GoTrue): reverse-proxy the code exchange + userinfo.
+	@token path /protocol/openid-connect/token
+	handle @token {
+		rewrite * /api/oidc/token
+		reverse_proxy https://id.${ROOT_DOMAIN} {
+			header_up Host id.${ROOT_DOMAIN}
+			transport http {
+				tls_trusted_ca_certs /certs/homelab.pem
+			}
+		}
+	}
+
+	@userinfo path /protocol/openid-connect/userinfo
+	handle @userinfo {
+		rewrite * /api/oidc/userinfo
+		reverse_proxy https://id.${ROOT_DOMAIN} {
+			header_up Host id.${ROOT_DOMAIN}
+			transport http {
+				tls_trusted_ca_certs /certs/homelab.pem
+			}
+		}
+	}
+}

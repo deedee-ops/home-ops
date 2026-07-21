@@ -9,3 +9,9 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
+configMapGenerator:
+  - name: shelf-oidc-shim-configmap
+    files:
+      - ./resources/Caddyfile
+generatorOptions:
+  disableNameSuffixHash: true

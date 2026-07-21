@@ -134,11 +134,7 @@ spec:
               <<: *pgEnv
               GOTRUE_API_HOST: 0.0.0.0
               PORT: &authPort 9999
-              # Must include /auth/v1 so GoTrue derives the external-provider
-              # callback as https://shelf-supabase.../auth/v1/callback (the
-              # routed + Pocket-ID-registered URL). external.go: redirect =
-              # API_EXTERNAL_URL + "/callback".
-              API_EXTERNAL_URL: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1
+              API_EXTERNAL_URL: *supabaseUrl
               GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
               GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
               GOTRUE_DB_DRIVER: postgres
@@ -155,13 +151,24 @@ spec:
               GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
               GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
-              # Pocket-ID is wired as a discovery-based CUSTOM OIDC provider
-              # (identifier "pocketid"), registered at runtime by the
-              # register-oidc job — NOT the built-in keycloak provider, whose
-              # hardcoded /protocol/openid-connect/* paths Pocket-ID doesn't
-              # serve. Custom providers are DB-stored (enabled by default).
-              # Trust the homelab CA for OIDC discovery + token/userinfo to
-              # id.${ROOT_DOMAIN}.
+              # Built-in keycloak provider, pointed at the oidc-shim (a Caddy
+              # controller below) instead of Pocket-ID directly. The shim
+              # translates GoTrue's hardcoded /protocol/openid-connect/* paths
+              # to Pocket-ID's real /authorize + /api/oidc/{token,userinfo}.
+              # (Pocket-ID can't be a GoTrue *custom* OIDC provider: GoTrue's
+              # discovery fetch SSRF-blocks Pocket-ID's private LAN IP.)
+              GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
+              GOTRUE_EXTERNAL_KEYCLOAK_URL: https://shelf-oidc.${ROOT_DOMAIN}
+              GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
+              GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_ID
+              GOTRUE_EXTERNAL_KEYCLOAK_SECRET:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_SECRET
+              # Trust the homelab CA to reach the shim host over TLS.
               SSL_CERT_FILE: /certs/homelab.pem
             probes:
               liveness: &authProbe
@@ -235,63 +242,49 @@ spec:
                 memory: 512Mi
 
       # ---------------------------------------------------------------------
-      # Registers Pocket-ID as a discovery-based custom OIDC provider in GoTrue
-      # (POST/PUT /admin/custom-providers). Runs on each reconcile, idempotent
-      # (upsert by identifier), so it also re-syncs the client secret if the
-      # pocket-id operator rotates it. Waits for GoTrue to be up first.
+      # OIDC path-translation shim (Caddy). GoTrue's keycloak provider hardcodes
+      # /protocol/openid-connect/{auth,token,userinfo}; Pocket-ID serves
+      # /authorize + /api/oidc/{token,userinfo}. GOTRUE_EXTERNAL_KEYCLOAK_URL
+      # targets this shim, which 302s the browser authorize to Pocket-ID's
+      # /authorize and reverse-proxies the server-side token/userinfo calls.
       # ---------------------------------------------------------------------
-      register-oidc:
-        type: job
-        job:
-          backoffLimit: 10
-          ttlSecondsAfterFinished: 3600
+      oidc-shim:
         containers:
           app:
             image:
-              repository: docker.io/badouralix/curl-jq
-              tag: latest
+              repository: docker.io/library/caddy
+              # renovate: datasource=docker depName=docker.io/library/caddy
+              tag: 2.10.0-alpine
             command:
-              - /bin/sh
-              - -c
-            args:
-              - |
-                set -eu
-                GT="http://shelf-gotrue.shelf-system.svc.cluster.local:9999"
-                echo "waiting for gotrue..."
-                until curl -fsS "$${GT}/health" >/dev/null 2>&1; do sleep 3; done
-                BODY=$(printf '{"provider_type":"oidc","identifier":"custom:pocketid","name":"Pocket ID","issuer":"https://id.${ROOT_DOMAIN}","client_id":"%s","client_secret":"%s","scopes":["openid","profile","email"],"pkce_enabled":false,"enabled":true}' "$${OAUTH_CLIENT_ID}" "$${OAUTH_CLIENT_SECRET}")
-                AUTH="Authorization: Bearer $${SERVICE_ROLE_KEY}"
-                ID=$(curl -fsS -H "$${AUTH}" "$${GT}/admin/custom-providers?type=oidc" | jq -r '[.. | objects | select(.identifier?=="custom:pocketid")][0].id // empty')
-                if [ -n "$${ID}" ]; then
-                  METHOD=PUT; URL="$${GT}/admin/custom-providers/$${ID}"
-                else
-                  METHOD=POST; URL="$${GT}/admin/custom-providers"
-                fi
-                echo "$${METHOD} $${URL}"
-                CODE=$(curl -sS -o /tmp/resp -w '%{http_code}' -X "$${METHOD}" -H "$${AUTH}" -H "Content-Type: application/json" -d "$${BODY}" "$${URL}")
-                echo "HTTP $${CODE}"; cat /tmp/resp; echo
-                case "$${CODE}" in 2*) echo "pocketid custom OIDC provider registered";; *) exit 1;; esac
+              - caddy
+              - run
+              - --config
+              - /etc/caddy/Caddyfile
+              - --adapter
+              - caddyfile
             env:
-              SERVICE_ROLE_KEY:
-                secretKeyRef:
-                  name: shelf-secret
-                  key: SERVICE_ROLE_KEY
-              OAUTH_CLIENT_ID:
-                secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_ID
-              OAUTH_CLIENT_SECRET:
-                secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_SECRET
-              HOME: /tmp
+              XDG_DATA_HOME: /tmp
+              XDG_CONFIG_HOME: /tmp
+            probes:
+              liveness: &shimProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &shimPort 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *shimProbe
             securityContext: *sc
             resources:
               requests:
                 cpu: 10m
                 memory: 32Mi
               limits:
-                memory: 128Mi
+                memory: 64Mi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -322,6 +315,11 @@ spec:
         ports:
           http:
             port: *storagePort
+      oidc-shim:
+        controller: oidc-shim
+        ports:
+          http:
+            port: *shimPort
     route:
       app:
         hostnames:
@@ -346,10 +344,22 @@ spec:
                   statusCode: 302
                   path:
                     type: ReplaceFullPath
-                    replaceFullPath: "/auth/v1/authorize?provider=custom:pocketid&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
+                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
+      # OIDC shim host: GoTrue's keycloak provider targets this; Caddy
+      # translates the Keycloak paths to Pocket-ID's real endpoints.
+      oidc:
+        hostnames:
+          - "shelf-oidc.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: shelf-oidc-shim
+                port: *shimPort
       supabase:
         hostnames:
           - "shelf-supabase.${ROOT_DOMAIN}"
@@ -390,18 +400,26 @@ spec:
           storage-api:
             app:
               - path: /var/lib/storage
+      caddyfile:
+        type: configMap
+        name: shelf-oidc-shim-configmap
+        advancedMounts:
+          oidc-shim:
+            app:
+              - subPath: Caddyfile
+                path: /etc/caddy/Caddyfile
       homelab-root-ca:
         type: secret
         name: homelab-root-ca
         advancedMounts:
           webapp:
-            app:
+            app: &certMount
               - path: /certs/homelab.pem
                 subPath: ec.crt
           gotrue:
-            app:
-              - path: /certs/homelab.pem
-                subPath: ec.crt
+            app: *certMount
+          oidc-shim:
+            app: *certMount
       tmp:
         type: emptyDir
         advancedMounts:
@@ -413,5 +431,5 @@ spec:
             app: *tmpMount
           storage-api:
             app: *tmpMount
-          register-oidc:
+          oidc-shim:
             app: *tmpMount
