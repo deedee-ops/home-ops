@@ -259,9 +259,9 @@ spec:
                 GT="http://shelf-gotrue.shelf-system.svc.cluster.local:9999"
                 echo "waiting for gotrue..."
                 until curl -fsS "$${GT}/health" >/dev/null 2>&1; do sleep 3; done
-                BODY=$(printf '{"provider_type":"oidc","identifier":"pocketid","name":"Pocket ID","issuer":"https://id.${ROOT_DOMAIN}","client_id":"%s","client_secret":"%s","scopes":["openid","profile","email"],"pkce_enabled":false,"enabled":true}' "$${OAUTH_CLIENT_ID}" "$${OAUTH_CLIENT_SECRET}")
+                BODY=$(printf '{"provider_type":"oidc","identifier":"custom:pocketid","name":"Pocket ID","issuer":"https://id.${ROOT_DOMAIN}","client_id":"%s","client_secret":"%s","scopes":["openid","profile","email"],"pkce_enabled":false,"enabled":true}' "$${OAUTH_CLIENT_ID}" "$${OAUTH_CLIENT_SECRET}")
                 AUTH="Authorization: Bearer $${SERVICE_ROLE_KEY}"
-                ID=$(curl -fsS -H "$${AUTH}" "$${GT}/admin/custom-providers?type=oidc" | jq -r '[.. | objects | select(.identifier?=="pocketid")][0].id // empty')
+                ID=$(curl -fsS -H "$${AUTH}" "$${GT}/admin/custom-providers?type=oidc" | jq -r '[.. | objects | select(.identifier?=="custom:pocketid")][0].id // empty')
                 if [ -n "$${ID}" ]; then
                   METHOD=PUT; URL="$${GT}/admin/custom-providers/$${ID}"
                 else
@@ -346,7 +346,7 @@ spec:
                   statusCode: 302
                   path:
                     type: ReplaceFullPath
-                    replaceFullPath: "/auth/v1/authorize?provider=pocketid&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
+                    replaceFullPath: "/auth/v1/authorize?provider=custom:pocketid&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
