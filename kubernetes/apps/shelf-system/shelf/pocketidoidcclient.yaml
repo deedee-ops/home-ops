@@ -6,7 +6,7 @@ metadata:
   name: shelf
 spec:
   launchUrl: >-
-    https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/authorize?provider=keycloak&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback
+    https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback
   callbackUrls:
     - "https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback"
   secret:

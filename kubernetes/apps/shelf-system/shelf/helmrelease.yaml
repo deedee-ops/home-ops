@@ -152,7 +152,6 @@ spec:
               GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
               GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
-              GOTRUE_EXTERNAL_KEYCLOAK_SCOPES: openid
               GOTRUE_EXTERNAL_KEYCLOAK_URL: https://id.${ROOT_DOMAIN}
               GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
               GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
@@ -288,7 +287,7 @@ spec:
                   statusCode: 302
                   path:
                     type: ReplaceFullPath
-                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
+                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
