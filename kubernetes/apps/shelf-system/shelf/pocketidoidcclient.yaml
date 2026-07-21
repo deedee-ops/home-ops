@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/pocketid.internal/pocketidoidcclient_v1alpha1.json
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: shelf
+spec:
+  launchUrl: >-
+    https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/authorize?provider=keycloak&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback
+  callbackUrls:
+    - "https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback"
+  secret:
+    additionalLabels:
+      reconcile.fluxcd.io/watch: Enabled
+    keys:
+      clientID: OAUTH_CLIENT_ID
+      clientSecret: OAUTH_CLIENT_SECRET
