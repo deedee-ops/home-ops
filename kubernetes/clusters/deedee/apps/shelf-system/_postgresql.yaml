@@ -29,6 +29,8 @@ spec:
                 - CREATE ROLE supabase_storage_admin NOLOGIN NOINHERIT;
                 - GRANT anon, authenticated, service_role TO authenticator;
                 - GRANT anon, authenticated, service_role, supabase_auth_admin, supabase_storage_admin TO app;
+                - CREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION app;
+                - CREATE SCHEMA IF NOT EXISTS storage AUTHORIZATION app;
       target:
         group: postgresql.cnpg.io
         kind: Cluster

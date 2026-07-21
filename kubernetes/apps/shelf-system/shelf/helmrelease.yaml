@@ -75,6 +75,9 @@ spec:
               ENABLE_PREMIUM_FEATURES: "false"
               DISABLE_SSO: "false"
               DISABLE_SIGNUP: "true"
+              MAPTILER_TOKEN: "unused"
+              SMTP_HOST: "smtp-relay.network.svc.cluster.local"
+              SMTP_FROM: "deedee@${ROOT_DOMAIN}"
               SESSION_SECRET:
                 secretKeyRef:
                   name: shelf-secret
@@ -204,6 +207,7 @@ spec:
               TENANT_ID: shelf
               REGION: home
               STORAGE_BACKEND: file
+              STORAGE_S3_BUCKET: shelf
               FILE_STORAGE_BACKEND_PATH: /var/lib/storage
               FILE_SIZE_LIMIT: "52428800" # 50 MiB
               ENABLE_IMAGE_TRANSFORMATION: "false"
@@ -230,6 +234,9 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
