@@ -78,6 +78,8 @@ spec:
               MAPTILER_TOKEN: "unused"
               SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
+              SMTP_USER: ""
+              SMTP_PWD: ""
               SESSION_SECRET:
                 secretKeyRef:
                   name: shelf-secret
