@@ -74,7 +74,11 @@ spec:
               NODE_EXTRA_CA_CERTS: /certs/homelab.pem
               ENABLE_PREMIUM_FEATURES: "false"
               DISABLE_SSO: "false"
-              DISABLE_SIGNUP: "true"
+              # Must be false: gates whether the OIDC callback provisions a user
+              # AND their personal workspace (createUser: shouldCreatePersonalOrg
+              # = !disableSignup). Self-serve email signup is already off via
+              # GOTRUE_EXTERNAL_EMAIL_ENABLED=false; access is gated by Pocket-ID.
+              DISABLE_SIGNUP: "false"
               MAPTILER_TOKEN: "unused"
               SMTP_HOST: "smtp-relay.network.svc.cluster.local"
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
@@ -143,10 +147,13 @@ spec:
                 secretKeyRef:
                   name: shelf-secret
                   key: JWT_SECRET
-              # supabase-js sends an `apikey` header; GoTrue's default CORS
-              # allow-list omits it (Kong normally handles it), so the browser
-              # preflight to /auth/v1/user fails with no ACAO. Allow it here.
-              GOTRUE_CORS_ALLOWED_HEADERS: "apikey,x-client-info,x-supabase-api-version"
+              # supabase-js sends `apikey` (+ others) that GoTrue's default CORS
+              # list omits (Kong normally handles it). Must be "*": rs/cors
+              # v1.11.0 matches multi-header preflights with a sorted-set
+              # Subsumes() that rejects the browser's header order unless
+              # allowedHeadersAll is set (via "*"). An enumerated list only
+              # works for single-header requests.
+              GOTRUE_CORS_ALLOWED_HEADERS: "*"
               GOTRUE_JWT_AUD: authenticated
               GOTRUE_JWT_EXP: "3600"
               GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
