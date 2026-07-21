@@ -1,0 +1,34 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:8080 {
+	respond /healthz "ok" 200
+
+	@auth path /protocol/openid-connect/auth
+	redir @auth https://id.${ROOT_DOMAIN}/authorize?{query} 302
+
+	@token path /protocol/openid-connect/token
+	handle @token {
+		rewrite * /api/oidc/token
+		reverse_proxy https://id.${ROOT_DOMAIN} {
+			header_up Host id.${ROOT_DOMAIN}
+			transport http {
+				tls_trusted_ca_certs /certs/homelab.pem
+			}
+		}
+	}
+
+	@userinfo path /protocol/openid-connect/userinfo
+	handle @userinfo {
+		rewrite * /api/oidc/userinfo
+		reverse_proxy https://id.${ROOT_DOMAIN} {
+			header_up Host id.${ROOT_DOMAIN}
+			transport http {
+				tls_trusted_ca_certs /certs/homelab.pem
+			}
+		}
+	}
+}

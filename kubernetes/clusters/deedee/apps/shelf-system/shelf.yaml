@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: shelf
+spec:
+  components:
+    - ../../../components/volsync
+  dependsOn:
+    - name: postgresql
+      namespace: shelf-system
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+    - name: pocket-id-operator
+      namespace: security
+  interval: 1h
+  patches: []
+  path: ./kubernetes/apps/shelf-system/shelf
+  postBuild:
+    substitute:
+      APP: shelf
+      CLUSTER: deedee
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      VOLSYNC_CAPACITY: 20Gi
+    substituteFrom:
+      - kind: Secret
+        name: shelf-oidc-credentials
+        optional: true
+  prune: true
+  retryInterval: 30s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: shelf-system

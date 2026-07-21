@@ -1,0 +1,428 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: shelf
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: shelf
+  interval: 1h
+  values:
+    controllers:
+      webapp:
+        annotations:
+          glance/name: Shelf
+          glance/url: https://shelf.${ROOT_DOMAIN}
+        initContainers:
+          01-db-migrate:
+            image: &shelfImg
+              repository: ghcr.io/shelf-nu/shelf.nu
+              tag: latest@sha256:fc8004a357251dbd56c73c8eacc126abe38af3f6f1f7de34e39fb774c7ff7939
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export DIRECT_URL="$${DATABASE_URL}"
+                exec npx --yes prisma@6.19.3 migrate deploy \
+                  --schema /src/packages/database/prisma/schema.prisma
+            env:
+              <<: &pgEnv
+                PGHOST:
+                  secretKeyRef:
+                    name: shelf-db-app
+                    key: host
+                PGPORT:
+                  secretKeyRef:
+                    name: shelf-db-app
+                    key: port
+                PGUSER:
+                  secretKeyRef:
+                    name: shelf-db-app
+                    key: username
+                PGPASSWORD:
+                  secretKeyRef:
+                    name: shelf-db-app
+                    key: password
+              HOME: /tmp
+              NPM_CONFIG_CACHE: /tmp/.npm
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+        containers:
+          app:
+            image: *shelfImg
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export DIRECT_URL="$${DATABASE_URL}"
+                exec /src/apps/webapp/docker-entrypoint.sh
+            env:
+              <<: *pgEnv
+              DISABLE_SIGNUP: "false"
+              DISABLE_SSO: "false"
+              ENABLE_PREMIUM_FEATURES: "false"
+              MAPTILER_TOKEN: "unused"
+              NODE_EXTRA_CA_CERTS: /certs/homelab.pem
+              PORT: &webPort 8080
+              SERVER_URL: https://shelf.${ROOT_DOMAIN}
+              SMTP_FROM: "deedee@${ROOT_DOMAIN}"
+              SMTP_HOST: "smtp-relay.network.svc.cluster.local"
+              SMTP_PWD: ""
+              SMTP_USER: ""
+              SUPABASE_URL: &supabaseUrl https://shelf-supabase.${ROOT_DOMAIN}
+              SESSION_SECRET:
+                secretKeyRef:
+                  name: shelf-secret
+                  key: SESSION_SECRET
+              INVITE_TOKEN_SECRET:
+                secretKeyRef:
+                  name: shelf-secret
+                  key: INVITE_TOKEN_SECRET
+              SUPABASE_ANON_PUBLIC: &anonKey
+                secretKeyRef:
+                  name: shelf-secret
+                  key: ANON_KEY
+              SUPABASE_SERVICE_ROLE: &serviceKey
+                secretKeyRef:
+                  name: shelf-secret
+                  key: SERVICE_ROLE_KEY
+            probes:
+              liveness: &webProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthcheck
+                    port: *webPort
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *webProbe
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 25m
+                memory: 384Mi
+              limits:
+                memory: 1Gi
+
+      gotrue:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/supabase/gotrue
+              tag: v2.193.1@sha256:1399c3e86b23400d1858ac830a8aeb4ce55fd3e25a2b9205133e0b21b08ac8e5
+            command:
+              - /bin/sh
+              - -c
+            # yamllint disable rule:line-length
+            args:
+              - |
+                export GOTRUE_DB_DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf?search_path=auth"
+                exec auth
+            # yamllint enable rule:line-length
+            env:
+              <<: *pgEnv
+              API_EXTERNAL_URL: *supabaseUrl
+              GOTRUE_API_HOST: 0.0.0.0
+              GOTRUE_CORS_ALLOWED_HEADERS: "*"
+              GOTRUE_DB_DRIVER: postgres
+              GOTRUE_DB_NAMESPACE: auth
+              GOTRUE_DISABLE_SIGNUP: "false"
+              GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+              GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
+              GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
+              GOTRUE_EXTERNAL_KEYCLOAK_URL: https://shelf-oidc.${ROOT_DOMAIN}
+              GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
+              GOTRUE_JWT_ADMIN_ROLES: service_role
+              GOTRUE_JWT_AUD: authenticated
+              GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+              GOTRUE_JWT_EXP: "3600"
+              GOTRUE_MAILER_AUTOCONFIRM: "true"
+              GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
+              GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
+              PORT: &authPort 9999
+              SSL_CERT_FILE: /certs/homelab.pem
+              GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_ID
+              GOTRUE_EXTERNAL_KEYCLOAK_SECRET:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_SECRET
+              GOTRUE_JWT_SECRET: &jwtSecret
+                secretKeyRef:
+                  name: shelf-secret
+                  key: JWT_SECRET
+            probes:
+              liveness: &authProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *authPort
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *authProbe
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+      storage-api:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/supabase/storage-api
+              tag: v1.67.13@sha256:e15a385958ebd0ff0017ac523eaadfe46d94573e0ef0241713f84a857eed5027
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                exec node dist/start/server.js
+            env:
+              <<: *pgEnv
+              ANON_KEY: *anonKey
+              AUTH_JWT_SECRET: *jwtSecret
+              DB_INSTALL_ROLES: "false"
+              ENABLE_IMAGE_TRANSFORMATION: "false"
+              FILE_SIZE_LIMIT: "52428800" # 50 MiB
+              FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+              PGRST_JWT_SECRET: *jwtSecret
+              POSTGREST_URL: ""
+              REGION: home
+              SERVER_PORT: &storagePort 5000
+              SERVICE_KEY: *serviceKey
+              STORAGE_BACKEND: file
+              STORAGE_S3_BUCKET: shelf
+              TENANT_ID: shelf
+            probes:
+              liveness: &storageProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /status
+                    port: *storagePort
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *storageProbe
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+
+      oidc-shim:
+        containers:
+          app:
+            image:
+              repository: docker.io/library/caddy
+              tag: 2.11.4@sha256:844f60b64e4724a5aa8245e019dace0d3f199f7433ce6c57676cb30a920dbad9
+            command:
+              - caddy
+              - run
+              - --config
+              - /etc/caddy/Caddyfile
+              - --adapter
+              - caddyfile
+            env:
+              XDG_DATA_HOME: /tmp
+              XDG_CONFIG_HOME: /tmp
+            probes:
+              liveness: &shimProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &shimPort 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *shimProbe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+                add:
+                  - NET_BIND_SERVICE
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      webapp:
+        controller: webapp
+        ports:
+          http:
+            port: *webPort
+      gotrue:
+        controller: gotrue
+        ports:
+          http:
+            port: *authPort
+      storage-api:
+        controller: storage-api
+        ports:
+          http:
+            port: *storagePort
+      oidc-shim:
+        controller: oidc-shim
+        ports:
+          http:
+            port: *shimPort
+    route:
+      app:
+        hostnames:
+          - "shelf.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: Exact
+                  value: /sso-login
+            filters:
+              - type: RequestRedirect
+                requestRedirect:
+                  scheme: https
+                  hostname: "shelf-supabase.${ROOT_DOMAIN}"
+                  statusCode: 302
+                  path:
+                    type: ReplaceFullPath
+                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
+          - backendRefs:
+              - name: shelf-webapp
+                port: *webPort
+      oidc:
+        hostnames:
+          - "shelf-oidc.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: shelf-oidc-shim
+                port: *shimPort
+      supabase:
+        hostnames:
+          - "shelf-supabase.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /auth/v1
+            filters:
+              - type: URLRewrite
+                urlRewrite:
+                  path:
+                    type: ReplacePrefixMatch
+                    replacePrefixMatch: /
+            backendRefs:
+              - name: shelf-gotrue
+                port: *authPort
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /storage/v1
+            filters:
+              - type: URLRewrite
+                urlRewrite:
+                  path:
+                    type: ReplacePrefixMatch
+                    replacePrefixMatch: /
+            backendRefs:
+              - name: shelf-storage-api
+                port: *storagePort
+    persistence:
+      storage:
+        existingClaim: shelf
+        advancedMounts:
+          storage-api:
+            app:
+              - path: /var/lib/storage
+      caddyfile:
+        type: configMap
+        name: shelf-oidc-shim-configmap
+        advancedMounts:
+          oidc-shim:
+            app:
+              - subPath: Caddyfile
+                path: /etc/caddy/Caddyfile
+      homelab-root-ca:
+        type: secret
+        name: homelab-root-ca
+        advancedMounts:
+          webapp:
+            app: &certMount
+              - path: /certs/homelab.pem
+                subPath: ec.crt
+          gotrue:
+            app: *certMount
+          oidc-shim:
+            app: *certMount
+      tmp:
+        type: emptyDir
+        advancedMounts:
+          webapp:
+            app: &tmpMount
+              - path: /tmp
+            01-db-migrate: *tmpMount
+          gotrue:
+            app: *tmpMount
+          storage-api:
+            app: *tmpMount
+          oidc-shim:
+            app: *tmpMount
