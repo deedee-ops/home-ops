@@ -23,27 +23,29 @@ spec:
             command:
               - /bin/sh
               - -c
+            # yamllint disable rule:line-length
             args:
               - |
-                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export DATABASE_URL="postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/shelf"
                 export DIRECT_URL="$${DATABASE_URL}"
                 exec npx --yes prisma@6.19.3 migrate deploy \
                   --schema /src/packages/database/prisma/schema.prisma
+            # yamllint enable rule:line-length
             env:
               <<: &pgEnv
-                PGHOST:
+                POSTGRES_HOST:
                   secretKeyRef:
                     name: shelf-db-app
                     key: host
-                PGPORT:
+                POSTGRES_PORT:
                   secretKeyRef:
                     name: shelf-db-app
                     key: port
-                PGUSER:
+                POSTGRES_USER:
                   secretKeyRef:
                     name: shelf-db-app
                     key: username
-                PGPASSWORD:
+                POSTGRES_PASSWORD:
                   secretKeyRef:
                     name: shelf-db-app
                     key: password
@@ -62,11 +64,13 @@ spec:
             command:
               - /bin/sh
               - -c
+            # yamllint disable rule:line-length
             args:
               - |
-                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export DATABASE_URL="postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/shelf"
                 export DIRECT_URL="$${DATABASE_URL}"
                 exec /src/apps/webapp/docker-entrypoint.sh
+            # yamllint enable rule:line-length
             env:
               <<: *pgEnv
               CHECKPOINT_DISABLE: "1"
@@ -123,7 +127,39 @@ spec:
                 memory: 384Mi
               limits:
                 memory: 1Gi
-
+      dbbackup:
+        containers:
+          app:
+            image:
+              repository: docker.io/prodrigestivill/postgres-backup-local
+              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
+            env:
+              <<: *pgEnv
+              BACKUP_DIR: "/backups"
+              BACKUP_KEEP_DAYS: "14"
+              BACKUP_KEEP_WEEKS: "0"
+              BACKUP_KEEP_MONTHS: "0"
+              BACKUP_KEEP_MINS: "240"
+              HEALTHCHECK_PORT: "8080"
+              SCHEDULE: "@hourly"
+              POSTGRES_EXTRA_OPTS: "-b -C -c -Z6 --inserts"
+              POSTGRES_DB: shelf
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 10
+              readiness: *probes
+            securityContext:
+              <<: *sc
+              runAsUser: 999
       gotrue:
         containers:
           app:
@@ -136,7 +172,7 @@ spec:
             # yamllint disable rule:line-length
             args:
               - |
-                export GOTRUE_DB_DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf?search_path=auth"
+                export GOTRUE_DB_DATABASE_URL="postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/shelf?search_path=auth"
                 exec auth
             # yamllint enable rule:line-length
             env:
@@ -203,10 +239,12 @@ spec:
             command:
               - /bin/sh
               - -c
+            # yamllint disable rule:line-length
             args:
               - |
-                export DATABASE_URL="postgres://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/shelf"
+                export DATABASE_URL="postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/shelf"
                 exec node dist/start/server.js
+            # yamllint enable rule:line-length
             env:
               <<: *pgEnv
               ANON_KEY: *anonKey
@@ -409,6 +447,18 @@ spec:
             app:
               - subPath: Caddyfile
                 path: /etc/caddy/Caddyfile
+      dbbackup:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/fast/backups/kubernetes/${CLUSTER}/databases/shelf"
+        advancedMounts:
+          dbbackup:
+            app:
+              - path: "/backups"
       homelab-root-ca:
         type: secret
         name: homelab-root-ca
