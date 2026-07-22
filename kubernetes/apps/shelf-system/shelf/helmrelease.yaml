@@ -47,6 +47,7 @@ spec:
                   secretKeyRef:
                     name: shelf-db-app
                     key: password
+              CHECKPOINT_DISABLE: "1"
               HOME: /tmp
               NPM_CONFIG_CACHE: /tmp/.npm
             securityContext: &sc
@@ -68,6 +69,7 @@ spec:
                 exec /src/apps/webapp/docker-entrypoint.sh
             env:
               <<: *pgEnv
+              CHECKPOINT_DISABLE: "1"
               COLLECT_BUSINESS_INTEL: "false"
               DISABLE_SIGNUP: "false"
               DISABLE_SSO: "false"

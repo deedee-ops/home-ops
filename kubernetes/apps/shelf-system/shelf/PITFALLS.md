@@ -5,6 +5,47 @@ Everything here was discovered the hard way while self-hosting **Shelf.nu**
 to **Pocket-ID** for OIDC. Read this before touching the manifests — most of the
 env values look arbitrary but each one fixes a specific failure.
 
+---
+
+## ⭐ Post-install — required manual SQL
+
+The manifests bring the stack up, but a working single-user install needs a few
+**one-time SQL statements** that no env or manifest can express (all confirmed
+working). Run them against the **`shelf`** database after your first successful
+Pocket-ID login. Replace `<email>` with your Pocket-ID email throughout.
+
+```sql
+-- 1) Escape "No workspace assigned" (/sso-pending-assignment).
+--    Every OIDC user is created with sso=true, which hides their personal
+--    workspace. No env toggle exists. Re-run for each new SSO user. (§8)
+UPDATE public."User" SET sso = false WHERE email = '<email>';
+
+-- 2) Grant super-admin so /admin-dashboard is reachable — needed to generate
+--    blank/unclaimed QR codes for printing. Nothing in env grants it. (§10)
+INSERT INTO "Role" (id, name, "createdAt", "updatedAt")
+VALUES (gen_random_uuid()::text, 'ADMIN', now(), now())
+ON CONFLICT (name) DO NOTHING;
+INSERT INTO "_RoleToUser" ("A", "B")
+SELECT r.id, u.id FROM "Role" r, "User" u
+WHERE r.name = 'ADMIN' AND u.email = '<email>'
+ON CONFLICT DO NOTHING;
+
+-- 3) Unlock "hide Shelf branding on labels". ENABLE_PREMIUM_FEATURES=false does
+--    NOT cover this one gate; assigning the Plus tier satisfies it for personal
+--    workspaces and keeps the UI toggle working. FK-safe, no billing. (§4.1)
+UPDATE public."User" SET "tierId" = 'tier_1' WHERE email = '<email>';
+```
+
+After **(2)**, log out and back in for the `ADMIN` role to take effect.
+
+**Not SQL, but also required:** add `firstname` / `lastname` **custom claims** to
+your user/group in Pocket-ID, or the login callback errors "First name is
+required" (§5.7).
+
+Situational one-offs (schema resets, re-provisioning) live in §9.
+
+---
+
 ## Source references (pinned commits — `file:line` refs below are relative to these)
 
 Links point at the exact commit read, so line numbers stay valid. `supabase/auth`
@@ -178,6 +219,39 @@ Fix was wipe + recreate the PVC (`ceph-block` RWO, single writer — CephFS/RWX 
 - `NODE_EXTRA_CA_CERTS: /certs/homelab.pem` — server-side calls to `SUPABASE_URL`
   hairpin through the internal gateway (homelab-CA cert). Node **appends** this
   to its trust store.
+- `CHECKPOINT_DISABLE: "1"` (on both `01-db-migrate` and `app`) — stops Prisma's
+  telemetry / version-check call to `checkpoint.prisma.io`. That request is
+  fire-and-forget and failure-tolerant, so blocking it in Hubble is harmless, but
+  disabling it removes the blocked-connection noise and a small startup stall.
+  Do **not** open egress for it — it's pure telemetry, not a dependency.
+
+### 4.1 "Label branding" is walled even with premium disabled
+
+Workspace → General → **Label branding** shows "This is a premium feature" despite
+`ENABLE_PREMIUM_FEATURES=false`. This is an upstream oversight: the base helper
+`canHideShelfBranding()` honors the premium flag (`if (!premiumIsEnabled) return
+true`), but `settings.general.tsx` wraps it in a **second gate that ignores the
+flag**:
+
+```ts
+const canHideBrandingForThisWorkspace =
+  canHideBranding && (org.type === TEAM || user.tierId === "tier_1");
+```
+
+A **personal** workspace on the default **`free`** tier fails the second clause, so
+the UI toggle is disabled *and* the save action force-resets `showShelfBranding =
+true` whenever the gate is false. The actual label renderers, however, read
+`Organization.showShelfBranding` **directly with no tier check**
+(`api+/assets.$assetId.generate-code-obj.ts`, `kits.$kitId…`,
+`assets.get-assets-for-bulk-qr-download.ts`).
+
+**Fix (recommended):** assign the Plus tier — `UPDATE public."User" SET "tierId" =
+'tier_1'` (post-install step 3). It satisfies the gate for personal workspaces, so
+the toggle is enabled and persists across settings saves; FK-safe (`User.tierId →
+Tier.id`, `tier_1` + its `TierLimit.canHideShelfBranding=true` are seeded by
+migrations), and with billing disabled it has no other side effects. (Alternative:
+set `Organization."showShelfBranding" = false` directly — works because rendering
+reads the column, but any later *General* settings save resets it to `true`.)
 
 ---
 
@@ -305,29 +379,26 @@ Even with a personal workspace created, an OIDC user lands on
 `oauth.callback.tsx:147` hides the personal workspace for SSO users
 (`isSSO && !hasTeamOrgs → redirect`), expecting an admin/SCIM to assign them to a
 **team** org. `updateUserFromSSO` does **not** rewrite `sso` on later logins, so
-the fix sticks:
+flipping it once sticks — this is the **Post-install step 1**
+(`UPDATE public."User" SET sso = false …`).
 
-```sql
-UPDATE public."User" SET sso = false WHERE email = '<email>';
-```
-
-This is **systemic** — every new OIDC user gets `sso=true` and needs the flip
-(no env toggle exists). Alternative: create a shared **team** org and assign
-users via `UserOrganization` (then `hasTeamOrgs=true`).
+**Systemic:** every new OIDC user gets `sso=true` and needs the flip; no env
+toggle exists. Alternative: create a shared **team** org and assign users via
+`UserOrganization` (then `hasTeamOrgs=true`).
 
 ---
 
 ## 9. One-time / manual operations (not in Git)
 
+The routine per-user SQL is at the top (**Post-install**). These are the
+**situational** ones you won't normally need:
+
 | When | SQL / action | Why |
 | ---- | ------------ | --- |
 | Existing cluster (initdb already ran) | the role + `CREATE SCHEMA auth/storage` from §2.2 | `postInitApplicationSQL` won't re-run |
 | After flipping search_path on a live DB | `DROP SCHEMA auth CASCADE; CREATE SCHEMA auth AUTHORIZATION app;` restart GoTrue | migration-tracker moved schemas (§2.4) |
-| Each new OIDC user | `UPDATE public."User" SET sso = false WHERE email = …` | escape `/sso-pending-assignment` (§8) |
 | Re-provision an org-less user | `DELETE FROM public."User" WHERE email = …` then re-login | lets `createUser` rebuild the workspace |
-| openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, `MAPTILER_TOKEN` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role); MAPTILER_TOKEN is your MapTiler API key (§4) |
-| Pocket-ID | add `firstname` / `lastname` custom claims | Shelf callback needs them (§5.7) |
-| Bootstrap a super-admin | `INSERT`/link the `ADMIN` role (§11) | only way to reach `/admin-dashboard` → generate blank QR codes; no env grants it |
+| Secrets in openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, `MAPTILER_TOKEN` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role); MAPTILER_TOKEN is your MapTiler API key (§4) |
 
 ---
 
@@ -359,21 +430,8 @@ super-admin dashboard** (`generateUnclaimedCodesForPrint` and
 `routes/_layout+/admin-dashboard+/qrs.*` and `org.$organizationId.qr-codes.tsx`).
 The dashboard is guarded by `requireAdmin` (`utils/roles.server.ts:31`), which
 checks the `ADMIN` row in the implicit m2m join `"_RoleToUser"`. **Nothing in
-env or the OIDC flow grants this** — you assign it in the DB:
-
-```sql
--- 1) ensure the ADMIN role row exists (Role.name is @unique)
-INSERT INTO "Role" (id, name, "createdAt", "updatedAt")
-VALUES (gen_random_uuid()::text, 'ADMIN', now(), now())
-ON CONFLICT (name) DO NOTHING;
-
--- 2) link it to your user (implicit Prisma m2m: A = Role.id, B = User.id)
-INSERT INTO "_RoleToUser" ("A", "B")
-SELECT r.id, u.id
-FROM "Role" r, "User" u
-WHERE r.name = 'ADMIN' AND u.email = '<email>'
-ON CONFLICT DO NOTHING;
-```
+env or the OIDC flow grants this** — assign it via **Post-install step 2**
+(`Role` + `_RoleToUser` insert).
 
 Then log out/in → `/admin-dashboard` → **QR codes** (unclaimed print batch) or a
 given org's QR-codes page (orphaned) → enter an amount → it creates real
