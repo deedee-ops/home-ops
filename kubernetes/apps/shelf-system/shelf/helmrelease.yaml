@@ -72,7 +72,6 @@ spec:
               DISABLE_SIGNUP: "false"
               DISABLE_SSO: "false"
               ENABLE_PREMIUM_FEATURES: "false"
-              MAPTILER_TOKEN: "unused"
               NODE_EXTRA_CA_CERTS: /certs/homelab.pem
               PORT: &webPort 8080
               SERVER_URL: https://shelf.${ROOT_DOMAIN}
@@ -90,6 +89,10 @@ spec:
                 secretKeyRef:
                   name: shelf-secret
                   key: INVITE_TOKEN_SECRET
+              MAPTILER_TOKEN:
+                secretKeyRef:
+                  name: shelf-secret
+                  key: MAPTILER_TOKEN
               SUPABASE_ANON_PUBLIC: &anonKey
                 secretKeyRef:
                   name: shelf-secret
