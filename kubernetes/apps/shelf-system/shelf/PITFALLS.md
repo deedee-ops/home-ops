@@ -34,7 +34,10 @@ Key files referenced below (deep-links to the pinned commits):
 - Shelf: [`apps/webapp/app/modules/user/service.server.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/modules/user/service.server.ts) ·
   [`apps/webapp/app/routes/_auth+/oauth.callback.tsx`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/routes/_auth+/oauth.callback.tsx) ·
   [`apps/webapp/app/utils/auth.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/utils/auth.ts) ·
-  [`apps/webapp/app/utils/subscription.server.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/utils/subscription.server.ts)
+  [`apps/webapp/app/utils/subscription.server.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/utils/subscription.server.ts) ·
+  [`apps/webapp/app/routes/qr+/_public+/$qrId.tsx`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/routes/qr+/_public+/$qrId.tsx) ·
+  [`apps/webapp/app/modules/qr/service.server.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/modules/qr/service.server.ts) ·
+  [`apps/webapp/app/utils/roles.server.ts`](https://github.com/Shelf-nu/shelf.nu/blob/b5c36a862078830d1eb3ffc4272dcea1a4752bd9/apps/webapp/app/utils/roles.server.ts)
 <!-- markdownlint-enable MD013 -->
 
 ---
@@ -317,10 +320,63 @@ users via `UserOrganization` (then `hasTeamOrgs=true`).
 | Re-provision an org-less user | `DELETE FROM public."User" WHERE email = …` then re-login | lets `createUser` rebuild the workspace |
 | openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role) |
 | Pocket-ID | add `firstname` / `lastname` custom claims | Shelf callback needs them (§5.7) |
+| Bootstrap a super-admin | `INSERT`/link the `ADMIN` role (§11) | only way to reach `/admin-dashboard` → generate blank QR codes; no env grants it |
 
 ---
 
-## 10. Assumptions worth revisiting
+## 10. QR codes — pre-generated only, and gated behind super-admin
+
+Symptom: visiting `https://shelf.$ROOT_DOMAIN/qr/<random-string>` returns
+**"QR code not found"** (404) instead of the "create asset" flow.
+
+This is **by design, not a missing setting.** The `/qr/$qrId` loader
+(`routes/qr+/_public+/$qrId.tsx`) calls `getQr({ id })`, which is a
+`db.qr.findUniqueOrThrow` **by primary key** (`qr/service.server.ts:68`). QR ids
+are server-generated **cuids** (`id: id()`), never arbitrary strings — so an
+invented path like `/qr/kjsdhfgkjd` has no matching row and always 404s. There
+is no env/UI toggle that changes this.
+
+The "scan a blank code → create asset" feature only works for rows that
+**already exist** but aren't linked yet. The loader branches on row state:
+
+| `Qr` row state | Redirect | Meaning |
+| -------------- | -------- | ------- |
+| no row | 404 "QR code not found" | invented/foreign id |
+| `organizationId = NULL` | → `claim` | **unclaimed** print code |
+| belongs to your org, `assetId` & `kitId` NULL | → `link` | **orphaned** code → link existing / **create new asset** |
+| linked | → the asset/kit | normal |
+
+Blank codes are minted by two generators, and **both are only reachable from the
+super-admin dashboard** (`generateUnclaimedCodesForPrint` and
+`generateOrphanedCodes` in `qr/service.server.ts`; called from
+`routes/_layout+/admin-dashboard+/qrs.*` and `org.$organizationId.qr-codes.tsx`).
+The dashboard is guarded by `requireAdmin` (`utils/roles.server.ts:31`), which
+checks the `ADMIN` row in the implicit m2m join `"_RoleToUser"`. **Nothing in
+env or the OIDC flow grants this** — you assign it in the DB:
+
+```sql
+-- 1) ensure the ADMIN role row exists (Role.name is @unique)
+INSERT INTO "Role" (id, name, "createdAt", "updatedAt")
+VALUES (gen_random_uuid()::text, 'ADMIN', now(), now())
+ON CONFLICT (name) DO NOTHING;
+
+-- 2) link it to your user (implicit Prisma m2m: A = Role.id, B = User.id)
+INSERT INTO "_RoleToUser" ("A", "B")
+SELECT r.id, u.id
+FROM "Role" r, "User" u
+WHERE r.name = 'ADMIN' AND u.email = '<email>'
+ON CONFLICT DO NOTHING;
+```
+
+Then log out/in → `/admin-dashboard` → **QR codes** (unclaimed print batch) or a
+given org's QR-codes page (orphaned) → enter an amount → it creates real
+cuid-backed rows and a downloadable ZIP of PNGs. Scan **those** and you reach the
+claim / link / create-asset flow. Normal asset creation still auto-mints a QR;
+this dashboard is only for pre-printing blanks.
+
+---
+
+## 11. Assumptions worth revisiting
 
 - **Cert for `shelf-oidc.$ROOT_DOMAIN`** relies on the same wildcard/cert-manager
   path as the other `*.$ROOT_DOMAIN` hosts.
