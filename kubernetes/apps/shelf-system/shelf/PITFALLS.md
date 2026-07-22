@@ -164,8 +164,15 @@ Fix was wipe + recreate the PVC (`ceph-block` RWO, single writer — CephFS/RWX 
   `GOTRUE_EXTERNAL_EMAIL_ENABLED=false`; access is gated by Pocket-ID.
 - **Required-at-boot env even in OIDC-only mode** (Shelf validates these in
   `env.ts`/`instrument.server.js` and crashes if unset):
-  - `MAPTILER_TOKEN` — non-empty. `"unused"` boots fine; maps just won't render.
-    Swap for a real MapTiler token to get the location map.
+  - `MAPTILER_TOKEN` — non-empty. Sourced from `shelf-secret` (openbao). The
+    provider is **hardcoded** to MapTiler in `components/location/map.tsx`
+    (`maptiler(MAPTILER_TOKEN, "streets")`) — there is **no env to switch to
+    OSM**, and the token ships to the browser bundle (lock it to
+    `shelf.$ROOT_DOMAIN` in the MapTiler dashboard). Any non-empty value boots;
+    an invalid one just fails to render the 240px location-preview map (only on
+    Location detail pages). OSM tiles would require dropping the `provider` prop
+    — a source patch/fork, deliberately avoided. Free tier (100k loads/mo) is
+    ample for single-user.
   - `SMTP_HOST` — non-empty. `SMTP_PWD`/`SMTP_USER` may be empty. No mail is sent
     with OIDC-only single-user; point at a real relay for invites/notifications.
 - `NODE_EXTRA_CA_CERTS: /certs/homelab.pem` — server-side calls to `SUPABASE_URL`
@@ -318,7 +325,7 @@ users via `UserOrganization` (then `hasTeamOrgs=true`).
 | After flipping search_path on a live DB | `DROP SCHEMA auth CASCADE; CREATE SCHEMA auth AUTHORIZATION app;` restart GoTrue | migration-tracker moved schemas (§2.4) |
 | Each new OIDC user | `UPDATE public."User" SET sso = false WHERE email = …` | escape `/sso-pending-assignment` (§8) |
 | Re-provision an org-less user | `DELETE FROM public."User" WHERE email = …` then re-login | lets `createUser` rebuild the workspace |
-| openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role) |
+| openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, `MAPTILER_TOKEN` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role); MAPTILER_TOKEN is your MapTiler API key (§4) |
 | Pocket-ID | add `firstname` / `lastname` custom claims | Shelf callback needs them (§5.7) |
 | Bootstrap a super-admin | `INSERT`/link the `ADMIN` role (§11) | only way to reach `/admin-dashboard` → generate blank QR codes; no env grants it |
 
