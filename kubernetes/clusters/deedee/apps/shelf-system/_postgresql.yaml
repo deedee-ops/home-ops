@@ -31,6 +31,13 @@ spec:
                 - GRANT anon, authenticated, service_role, supabase_auth_admin, supabase_storage_admin TO app;
                 - CREATE SCHEMA IF NOT EXISTS auth AUTHORIZATION app;
                 - CREATE SCHEMA IF NOT EXISTS storage AUTHORIZATION app;
+                - GRANT USAGE ON SCHEMA storage TO anon, authenticated, service_role;
+                - >-
+                  ALTER DEFAULT PRIVILEGES FOR ROLE app IN SCHEMA storage
+                  GRANT ALL ON TABLES TO anon, authenticated, service_role;
+                - >-
+                  ALTER DEFAULT PRIVILEGES FOR ROLE app IN SCHEMA storage
+                  GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
       target:
         group: postgresql.cnpg.io
         kind: Cluster

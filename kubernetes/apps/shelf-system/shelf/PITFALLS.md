@@ -38,6 +38,21 @@ UPDATE public."User" SET "tierId" = 'tier_1' WHERE email = '<email>';
 
 After **(2)**, log out and back in for the `ADMIN` role to take effect.
 
+**Storage buckets — also required (§3.2).** Shelf expects three buckets to
+pre-exist and never creates them; image upload 400s with "Bucket not found" until
+they do. They're app-level rows in `storage.buckets` (a table that only exists
+after storage-api migrates), so they can't live in a manifest. Run against the
+**`shelf`** DB (the schema `GRANT`s they rely on are applied by `_postgresql.yaml`
+at initdb):
+
+```sql
+INSERT INTO storage.buckets (id, name, public) VALUES
+  ('assets',           'assets',           false),  -- 72h signed URLs (private)
+  ('profile-pictures', 'profile-pictures', true),   -- getPublicUrl
+  ('files',            'files',            true)     -- PUBLIC_BUCKET, getPublicUrl
+ON CONFLICT (id) DO NOTHING;
+```
+
 **Not SQL, but also required:** add `firstname` / `lastname` **custom claims** to
 your user/group in Pocket-ID, or the login callback errors "First name is
 required" (§5.7).
@@ -168,7 +183,9 @@ flip search_path on an existing install.
   is `FILE_STORAGE_BACKEND_PATH/STORAGE_S3_BUCKET/...`; without it the TUS init
   `mkdir`s `/var/lib/storage/undefined` and the process aborts.
 - `FILE_STORAGE_BACKEND_PATH: /var/lib/storage` — the volsync-backed PVC mount.
-- `DB_INSTALL_ROLES: "false"` — roles are pre-created by initdb (§2.2).
+- `DB_INSTALL_ROLES: "false"` — roles are pre-created by initdb (§2.2). **Side
+  effect:** it also skips the migration that grants those roles access to the
+  `storage` schema — see §3.2.
 - `POSTGREST_URL: ""` — we don't run PostgREST; storage-api talks to Postgres
   directly.
 - `TENANT_ID` / `REGION` — arbitrary single-tenant identifiers.
@@ -181,6 +198,28 @@ checksum`), so every `mkdir` returned `EBADMSG (-74)`. This was a **fluke** on a
 volsync-provisioned RBD — ~30 other volsync/`ceph-block` volumes are healthy.
 Fix was wipe + recreate the PVC (`ceph-block` RWO, single writer — CephFS/RWX is
 **not** needed). Not a Caddy/libuv/io_uring issue (those were red herrings).
+
+### 3.2 Storage schema grants + buckets are not automatic
+
+storage-api connects as `app` but runs each request under the JWT's role via
+`SET ROLE` — for Shelf's uploads that's **`service_role`** (Shelf uses the service
+key / `getSupabaseAdmin()`). With `DB_INSTALL_ROLES=false`, storage-api never
+grants the Supabase roles `USAGE`/table privileges on the `storage` schema, so the
+first `SELECT … FROM storage.buckets` fails with `permission denied for schema
+storage` (SQLSTATE `42501`) → the upload 400s. `service_role` has `BYPASSRLS`, so
+this is a plain **grant** gap, not RLS.
+
+`_postgresql.yaml` now grants `USAGE` + `ALTER DEFAULT PRIVILEGES FOR ROLE app`
+on the `storage` schema at initdb, so a **fresh** cluster is covered (default
+privileges apply to the tables storage-api creates *later*, as `app`). An
+already-migrated cluster needs the grants applied to its existing tables once
+(§9).
+
+Separately, Shelf expects three buckets to **pre-exist** and never creates them
+(`utils/storage.server.ts`, `constants.ts`): `assets` (private, 72h signed URLs),
+`profile-pictures` and `files`/`PUBLIC_BUCKET` (public, `getPublicUrl`). These are
+app-level rows in `storage.buckets` (a table that only exists after storage-api
+migrates), so they can't live in a manifest — insert them Post-install.
 
 ---
 
@@ -396,6 +435,7 @@ The routine per-user SQL is at the top (**Post-install**). These are the
 | When | SQL / action | Why |
 | ---- | ------------ | --- |
 | Existing cluster (initdb already ran) | the role + `CREATE SCHEMA auth/storage` from §2.2 | `postInitApplicationSQL` won't re-run |
+| Existing cluster, storage-api already migrated | `GRANT USAGE ON SCHEMA storage …` + `GRANT ALL ON ALL TABLES/SEQUENCES IN SCHEMA storage …` to `anon, authenticated, service_role` | `ALTER DEFAULT PRIVILEGES` in `_postgresql.yaml` only covers tables created *after* it; pre-existing ones need an explicit grant (§3.2) |
 | After flipping search_path on a live DB | `DROP SCHEMA auth CASCADE; CREATE SCHEMA auth AUTHORIZATION app;` restart GoTrue | migration-tracker moved schemas (§2.4) |
 | Re-provision an org-less user | `DELETE FROM public."User" WHERE email = …` then re-login | lets `createUser` rebuild the workspace |
 | Secrets in openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, `MAPTILER_TOKEN` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role); MAPTILER_TOKEN is your MapTiler API key (§4) |
