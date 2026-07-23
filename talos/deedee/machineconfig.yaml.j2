@@ -66,7 +66,7 @@ machine:
       featureGates:
         UserNamespacesSupport: true
       serializeImagePulls: false
-    image: "ghcr.io/siderolabs/kubelet:v1.36.2"
+    image: "ghcr.io/siderolabs/kubelet:v1.36.3"
     nodeIP:
       validSubnets:
         - 192.168.42.0/26
@@ -203,11 +203,11 @@ cluster:
     disablePodSecurityPolicy: true
     extraArgs:
       enable-aggregator-routing: "true" # mandatory without kube-proxy
-    image: registry.k8s.io/kube-apiserver:v1.36.2
+    image: registry.k8s.io/kube-apiserver:v1.36.3
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-controller-manager:v1.36.2
+    image: registry.k8s.io/kube-controller-manager:v1.36.3
   coreDNS:
     disabled: true
   etcd:
@@ -224,7 +224,7 @@ cluster:
       election-timeout: "5000"
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.36.2
+    image: registry.k8s.io/kube-proxy:v1.36.3
   scheduler:
     config:
       apiVersion: kubescheduler.config.k8s.io/v1
@@ -245,7 +245,7 @@ cluster:
                     whenUnsatisfiable: ScheduleAnyway
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-scheduler:v1.36.2
+    image: registry.k8s.io/kube-scheduler:v1.36.3
   secretboxEncryptionSecret: '{{ ENV[".cluster.secretboxEncryptionSecret"] }}'
   serviceAccount:
     key: '{{ ENV[".cluster.serviceAccount.key"] }}'
