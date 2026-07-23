@@ -9,6 +9,7 @@ resources:
   - ./_namespace.yaml
   - ./atuin.yaml
   - ./bentopdf.yaml
+  - ./copyparty.yaml
   - ./crypt.yaml
   - ./davis.yaml
   - ./discord-bots.yaml
