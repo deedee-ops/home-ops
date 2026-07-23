@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: copyparty
+spec:
+  components:
+    - ../../../components/oidc
+    - ../../../components/volsync
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/oidc/redirectURL
+          value: "https://files.${ROOT_DOMAIN}/oauth2/callback"
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
+    - patch: |-
+        - op: replace
+          path: /spec/callbackUrls
+          value:
+            - "https://files.${ROOT_DOMAIN}/oauth2/callback"
+        - op: replace
+          path: /spec/launchUrl
+          value: "https://files.${ROOT_DOMAIN}"
+      target:
+        group: pocketid.internal
+        kind: PocketIDOIDCClient
+  path: ./kubernetes/apps/default/copyparty
+  postBuild:
+    substitute:
+      APP: copyparty
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      VOLSYNC_CAPACITY: 10Gi
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false

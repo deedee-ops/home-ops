@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: copyparty
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: copyparty
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          glance/name: copyparty
+          glance/icon: di:copyparty
+          glance/url: https://files.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/9001/copyparty-ac
+              tag: 1.20.18@sha256:59fe48c65b5f527c98abf0dfb9eb59e4177923c6a97287974524a6dacc0dbea7
+            env:
+              TZ: Europe/Warsaw
+            # probes:
+            #   liveness:
+            #     enabled: true
+            #     spec:
+            #       periodSeconds: 30
+            #       timeoutSeconds: 5
+            #       failureThreshold: 5
+            #   readiness:
+            #     enabled: true
+            #     custom: true
+            #     spec:
+            #       httpGet:
+            #         path: /alive
+            #         port: *port
+            #       periodSeconds: 10
+            #       timeoutSeconds: 5
+            #       failureThreshold: 5
+            #   startup:
+            #     enabled: true
+            #     spec:
+            #       failureThreshold: 30
+            #       periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 4Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: 3923
+    route:
+      app:
+        hostnames:
+          - "files.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: copyparty
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      config:
+        type: configMap
+        name: copyparty-configmap
+        globalMounts:
+          - path: /cfg/coopyparty.conf
+            subPath: copyparty.conf
+      data:
+        existingClaim: copyparty
+        advancedMounts:
+          main:
+            app:
+              - path: /cfg/copyparty
+                subPath: config
+              - path: /data
+                subPath: data
