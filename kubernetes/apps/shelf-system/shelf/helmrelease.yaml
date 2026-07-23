@@ -83,6 +83,7 @@ spec:
               SERVER_URL: https://shelf.${ROOT_DOMAIN}
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
               SMTP_HOST: "smtp-relay.network.svc.cluster.local"
+              SMTP_PORT: "25"
               SMTP_PWD: ""
               SMTP_USER: ""
               SUPABASE_URL: &supabaseUrl https://shelf-supabase.${ROOT_DOMAIN}
