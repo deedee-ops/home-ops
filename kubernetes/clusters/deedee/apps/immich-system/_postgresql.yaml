@@ -10,6 +10,26 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      namespace: immich-system
+      name: immich-db
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: has(status.conditions) && status.conditions.exists(e, e.type == 'Ready' && e.status == 'True')
+      failed: >-
+        has(status.phase) && status.phase in [
+          'Cluster cannot execute instance online upgrade due to missing architecture binary',
+          'Cluster cannot proceed to reconciliation due to an error while interacting with plugins',
+          'Cluster cannot proceed to reconciliation due to an unknown plugin being required',
+          'Cluster has incomplete or invalid image catalog',
+          'Cluster is unrecoverable and needs manual intervention',
+          'Invalid cluster definition',
+          'Unable to create required cluster objects',
+          'Waiting for user action'
+        ]
   interval: 1h
   patches:
     - patch: |-
