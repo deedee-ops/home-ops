@@ -152,13 +152,14 @@ spec:
               LLM_PROVIDER: openai
               OCR_PROCESS_MODE: image
               OCR_PROVIDER: llm
+              OCR_LIMIT_PAGES: "0" # no limit
               OPENAI_API_KEY: dummy
               OPENAI_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
               PAPERLESS_BASE_URL: http://localhost
               PAPERLESS_PUBLIC_URL: "https://paperless.${ROOT_DOMAIN}"
               PUID: 1000
               PGID: 1000
-              VISION_LLM_MODEL: vllm/Qwen/Qwen3-VL-30B-A3B-Thinking
+              VISION_LLM_MODEL: vllm/chandra
               VISION_LLM_PROVIDER: openai
               TZ: *tz
               PAPERLESS_API_TOKEN:
@@ -289,6 +290,8 @@ spec:
             gpt:
               - subPath: "gpt-config"
                 path: /app/config
+              - subPath: "gpt-db"
+                path: /app/db
               - subPath: "gpt-prompts"
                 path: /app/prompts
       homelab-root-ca:
@@ -329,8 +332,6 @@ spec:
               - subPath: tmp-app
                 path: /tmp
             gpt:
-              - subPath: gpt-app-db
-                path: /app/db
               - subPath: gpt-home
                 path: /home/paperless-gpt
               - subPath: tmp-gpt
