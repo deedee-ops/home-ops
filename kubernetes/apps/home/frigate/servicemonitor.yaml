@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frigate
+spec:
+  endpoints:
+    - port: http
+      path: /api/metrics
+  jobLabel: frigate
+  namespaceSelector:
+    matchNames:
+      - home
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: frigate
+      app.kubernetes.io/name: frigate
+      app.kubernetes.io/service: frigate

@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: frigate-rules
+spec:
+  groups:
+    - name: frigate.rules
+      rules:
+        - alert: FrigateCameraOffline
+          expr: |-
+            frigate_camera_fps == 0
+          for: 10m
+          annotations:
+            summary: >-
+              The {{ $labels.camera_name }} camera device is offline.
+          labels:
+            sevkrity: warning

@@ -6,7 +6,7 @@ metadata:
   name: zigbee2mqtt-rules
 spec:
   groups:
-    - name: gatus.rules
+    - name: zigbee2mqtt.rules
       rules:
         - alert: ZigbeeDeviceWarm
           expr: |-
