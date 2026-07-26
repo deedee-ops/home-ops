@@ -14,6 +14,9 @@ spec:
       namespace: default
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
+      namespace: forgejo-system
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
       namespace: home
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
