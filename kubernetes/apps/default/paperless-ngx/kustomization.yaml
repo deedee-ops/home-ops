@@ -9,3 +9,4 @@ resources:
   - ./networkpolicy.yaml
   - ./pocketidoidcclient.yaml
   - ./secret.yaml
+  - ./securitypolicy.yaml

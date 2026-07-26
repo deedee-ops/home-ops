@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/securitypolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: paperless-gpt
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: paperless-ngx-gpt
+  oidc:
+    provider:
+      issuer: "https://id.${ROOT_DOMAIN}"
+      backendRefs:
+        - group: gateway.envoyproxy.io
+          kind: Backend
+          name: pocket-id
+          namespace: security
+          port: 443
+    clientIDRef:
+      group: ""
+      kind: Secret
+      name: paperless-gpt-oidc-credentials
+    clientSecret:
+      group: ""
+      kind: Secret
+      name: paperless-gpt-oidc-credentials
+    redirectURL: "https://paperless-gpt.${ROOT_DOMAIN}/oauth2/callback"
+    logoutPath: "/logout"
