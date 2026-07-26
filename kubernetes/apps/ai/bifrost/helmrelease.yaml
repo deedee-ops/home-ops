@@ -14,7 +14,7 @@ spec:
       main:
         annotations:
           glance/name: bifrost
-          glance/icon: di:bifrost
+          glance/icon: https://raw.githubusercontent.com/maximhq/bifrost/refs/heads/dev/.github/assets/bifrost-logo.png
           glance/url: https://bifrost.${ROOT_DOMAIN}
         type: statefulset
         containers:

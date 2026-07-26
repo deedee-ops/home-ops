@@ -14,6 +14,7 @@ spec:
       webapp:
         annotations:
           glance/name: Shelf
+          glance/icon: https://raw.githubusercontent.com/Shelf-nu/shelf.nu/refs/heads/main/apps/webapp/public/static/images/shelf-logo-x512.png
           glance/url: https://shelf.${ROOT_DOMAIN}
         initContainers:
           01-db-migrate:

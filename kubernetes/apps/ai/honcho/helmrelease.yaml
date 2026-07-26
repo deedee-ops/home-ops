@@ -14,6 +14,7 @@ spec:
       main:
         annotations:
           glance/name: honcho
+          glance/icon: https://raw.githubusercontent.com/offendingcommit/openconcho/refs/heads/main/packages/web/public/favicon.svg
           glance/url: https://honcho.${ROOT_DOMAIN}
         containers:
           app:
