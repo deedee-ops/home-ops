@@ -20,7 +20,7 @@ spec:
           app:
             image: &img
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 3.0.2@sha256:fef384c955d2ec2acf1bd0882ffc195ecc170266c803dfe28b79df6deabb3569
+              tag: 3.0.3@sha256:17312f00bac06f8dad09d67c6c8c069fc5c076c0c22313241c673102dfaf8ee9
             env:
               PAPERLESS_ACCOUNT_EMAIL_VERIFICATION: "true"
               PAPERLESS_AI_ENABLED: "false"
