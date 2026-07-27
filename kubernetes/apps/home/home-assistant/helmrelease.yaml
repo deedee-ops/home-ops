@@ -108,16 +108,15 @@ spec:
       config:
         existingClaim: home-assistant
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
         globalMounts:
-          - path: /certs/homelab.crt
-            subPath: ec.crt
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       tmp:
         type: emptyDir
         globalMounts:
-          - subPath: certs
-            path: /certs
           - subPath: logs
             path: /config/logs
           - subPath: tts

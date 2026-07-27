@@ -35,7 +35,7 @@ spec:
               INFERENCE_TEXT_MODEL: vllm/Google/gemma-4-31B-it
               MEILI_ADDR: http://localhost:7700
               NEXTAUTH_URL: "https://karakeep.${ROOT_DOMAIN}"
-              NODE_EXTRA_CA_CERTS: /certs/homelab.pem
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               OAUTH_AUTO_REDIRECT: "true"
               OAUTH_PROVIDER_NAME: "Pocket ID"
               OAUTH_WELLKNOWN_URL: "https://id.${ROOT_DOMAIN}/.well-known/openid-configuration"
@@ -192,13 +192,12 @@ spec:
               - path: /meili_data
                 subPath: meilisearch
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          main:
-            app:
-              - path: /certs/homelab.pem
-                subPath: ec.crt
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       tmp:
         type: emptyDir
         advancedMounts:

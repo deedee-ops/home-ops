@@ -23,6 +23,6 @@ spec:
   validation:
     caCertificateRefs:
       - name: homelab-root-ca
-        kind: Secret
+        kind: ConfigMap
         group: ""
     hostname: "id.${ROOT_DOMAIN}"

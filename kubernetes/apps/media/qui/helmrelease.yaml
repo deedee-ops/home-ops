@@ -125,6 +125,13 @@ spec:
     persistence:
       config:
         existingClaim: qui
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       media:
         type: custom
         volumeSpec:
@@ -137,11 +144,3 @@ spec:
         globalMounts:
           - path: /data/torrents
             subPath: torrents
-      homelab-root-ca:
-        type: secret
-        name: homelab-root-ca
-        advancedMounts:
-          main:
-            app:
-              - path: /etc/ssl/certs/homelab.crt
-                subPath: ec.crt

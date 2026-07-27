@@ -10,14 +10,14 @@ spec:
       kind: HelmRelease
       name: trust-manager
       namespace: cert-manager
-    - apiVersion: trust.cert-manager.io/v1
+    - apiVersion: trust.cert-manager.io/v1alpha1
       kind: Bundle
-      name: homelab
+      name: homelab-root-ca
   healthCheckExprs:
-    - apiVersion: trust.cert-manager.io/v1
+    - apiVersion: trust.cert-manager.io/v1alpha1
       kind: Bundle
-      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
-      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+      failed: status.conditions.filter(e, e.type == 'Synced').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Synced').all(e, e.status == 'True')
   interval: 1h
   patches: []
   path: ./kubernetes/apps/cert-manager/trust-manager

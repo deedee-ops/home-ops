@@ -58,7 +58,7 @@ spec:
               PAPERLESS_TRUSTED_PROXIES: "172.30.0.0/16"
               PAPERLESS_URL: "https://paperless.${ROOT_DOMAIN}"
               PAPERLESS_WEBSERVER_WORKERS: "1"
-              REQUESTS_CA_BUNDLE: /etc/ssl/certs/homelab.crt
+              REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               USERMAP_UID: 1000
               USERMAP_GID: 1000
               TZ: *tz
@@ -295,13 +295,12 @@ spec:
               - subPath: "gpt-prompts"
                 path: /app/prompts
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          main:
-            app:
-              - path: /etc/ssl/certs/homelab.crt
-                subPath: ec.crt
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       sync:
         type: custom
         volumeSpec:

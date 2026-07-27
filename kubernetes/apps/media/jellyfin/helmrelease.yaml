@@ -25,7 +25,6 @@ spec:
             env:
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
               JELLYFIN_PublishedServerUrl: &lbIP 192.168.42.35
-              SSL_CERT_DIR: /usr/local/share/ca-certificates
               TZ: Europe/Warsaw
             probes:
               liveness:
@@ -155,11 +154,12 @@ spec:
       config:
         existingClaim: jellyfin
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
         globalMounts:
-          - path: /usr/local/share/ca-certificates/homelab.crt
-            subPath: ec.crt
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       tank:
         type: custom
         volumeSpec:

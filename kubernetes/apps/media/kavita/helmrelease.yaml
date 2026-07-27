@@ -22,7 +22,6 @@ spec:
               repository: ghcr.io/kareadita/kavita
               tag: 0.9.0@sha256:36aab0c578d488f8b10bd33910953b50965aff9ac6adc476ef4692c38c60427e
             env:
-              SSL_CERT_FILE: /certs/homelab.pem
               TZ: Europe/Warsaw
             probes:
               liveness:
@@ -126,11 +125,12 @@ spec:
         globalMounts:
           - path: /kavita/config
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
         globalMounts:
-          - path: /certs/homelab.pem
-            subPath: ec.crt
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       media:
         type: custom
         volumeSpec:

@@ -46,6 +46,7 @@ spec:
               N8N_TEMPLATES_ENABLED: "false"
               N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
               NODES_EXCLUDE: "[]"
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               WEBHOOK_URL: "https://n8n.${ROOT_DOMAIN}"
               TZ: *tz
             envFrom:
@@ -106,9 +107,6 @@ spec:
               - "/bin/sh"
               - "-c"
               - |
-                # c_rehash needs writable certificates dir, so configmap mount won't work
-                cp /certs/* /opt/custom-certificates
-
                 cp -r /usr/local/lib/node_modules/n8n/dist/* /n8n/
                 sh /security-patches.sh
             securityContext: *sc
@@ -181,13 +179,12 @@ spec:
               - subPath: security-patches.sh
                 path: /security-patches.sh
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          main:
-            01-security-patches:
-              - path: /certs/ca.crt
-                subPath: ec.crt
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       sync-source:
         type: custom
         volumeSpec:
@@ -221,13 +218,9 @@ spec:
             01-security-patches:
               - subPath: n8n
                 path: /n8n
-              - subPath: certs
-                path: /opt/custom-certificates
             app:
               - subPath: n8n
                 path: /usr/local/lib/node_modules/n8n/dist
-              - subPath: certs
-                path: /opt/custom-certificates
         globalMounts:
           - subPath: cache
             path: /home/node/.cache

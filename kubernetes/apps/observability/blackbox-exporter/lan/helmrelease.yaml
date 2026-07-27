@@ -66,13 +66,11 @@ spec:
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
     extraVolumes:
       - name: homelab-root-ca
-        secret:
+        configMap:
+          name: homelab-root-ca
           defaultMode: 420
-          secretName: homelab-root-ca
     extraVolumeMounts:
       - name: homelab-root-ca
-        mountPath: /etc/ssl/certs/homelab-ec.crt
-        subPath: ec.crt
-      - name: homelab-root-ca
-        mountPath: /etc/ssl/certs/homelab-rsa.crt
-        subPath: rsa.crt
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: ca.crt
+        readOnly: true

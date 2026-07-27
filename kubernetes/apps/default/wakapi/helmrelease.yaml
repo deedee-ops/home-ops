@@ -143,13 +143,12 @@ spec:
       data:
         existingClaim: wakapi
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          main:
-            app:
-              - path: /etc/ssl/certs/ca-certificates.crt
-                subPath: ec.crt
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       # for sqlite temporary operations
       tmp:
         type: emptyDir

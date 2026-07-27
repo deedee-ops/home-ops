@@ -65,8 +65,8 @@ spec:
   scheme: HTTPS
   tlsConfig:
     ca:
-      secret:
-        key: ec.crt
+      configMap:
+        key: ca.crt
         name: homelab-root-ca
   staticConfigs:
     - targets:
@@ -93,8 +93,8 @@ spec:
       name: prometheus-secret
   tlsConfig:
     ca:
-      secret:
-        key: ec.crt
+      configMap:
+        key: ca.crt
         name: homelab-root-ca
   staticConfigs:
     - targets:

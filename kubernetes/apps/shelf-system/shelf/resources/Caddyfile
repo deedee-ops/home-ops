@@ -15,9 +15,6 @@
 		rewrite * /api/oidc/token
 		reverse_proxy https://id.${ROOT_DOMAIN} {
 			header_up Host id.${ROOT_DOMAIN}
-			transport http {
-				tls_trusted_ca_certs /certs/homelab.pem
-			}
 		}
 	}
 
@@ -26,9 +23,6 @@
 		rewrite * /api/oidc/userinfo
 		reverse_proxy https://id.${ROOT_DOMAIN} {
 			header_up Host id.${ROOT_DOMAIN}
-			transport http {
-				tls_trusted_ca_certs /certs/homelab.pem
-			}
 		}
 	}
 }

@@ -25,10 +25,12 @@ spec:
               - "9119"
             env:
               PYTHONPATH: /opt/data/.local/lib/python3.13/site-packages
-              CURL_CA_BUNDLE: /certs/ca-bundle.pem
-              REQUESTS_CA_BUNDLE: /certs/ca-bundle.pem
-              SSL_CERT_FILE: /certs/ca-bundle.pem
               TZ: Europe/Warsaw
+
+              # has to be via ENV, or it falls back to builtins
+              CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+              REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+              SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
             envFrom:
               - secretRef:
                   name: "hermes-agent-secret"
@@ -73,21 +75,6 @@ spec:
                 memory: 512Mi
               limits:
                 memory: 4Gi
-        initContainers:
-          01-merge-certificates:
-            image: *img
-            command:
-              - sh
-              - -c
-              - >-
-                cat /etc/ssl/certs/ca-certificates.crt /certs/homelab.crt
-                > /certs/ca-bundle.pem
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities:
-                drop:
-                  - ALL
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -138,11 +125,12 @@ spec:
         globalMounts:
           - path: /opt/data
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
         globalMounts:
-          - path: /certs/homelab.crt
-            subPath: ec.crt
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       obsidian:
         type: custom
         volumeSpec:
@@ -162,5 +150,3 @@ spec:
         globalMounts:
           - path: /tmp
             subPath: tmp
-          - path: /certs
-            subPath: certs

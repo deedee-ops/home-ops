@@ -161,21 +161,21 @@ spec:
         mountPath: /data/signing
         readOnly: true
       - name: homelab-root-ca
-        mountPath: /etc/ssl/certs/homelab.crt
-        subPath: ec.crt
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: ca.crt
         readOnly: true
     extraInitVolumeMounts:
       - name: signing-key
         mountPath: /data/signing
         readOnly: true
       - name: homelab-root-ca
-        mountPath: /etc/ssl/certs/homelab.crt
-        subPath: ec.crt
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: ca.crt
         readOnly: true
     extraVolumes:
       - name: homelab-root-ca
-        secret:
-          secretName: homelab-root-ca
+        configMap:
+          name: homelab-root-ca
           defaultMode: 0400
       - name: signing-key
         secret:

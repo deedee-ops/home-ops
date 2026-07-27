@@ -70,9 +70,10 @@ spec:
                   drop:
                     - ALL
               volumeMounts:
-                - mountPath: /etc/ssl/certs/homelab.crt
+                - mountPath: /etc/ssl/certs/ca-certificates.crt
                   name: homelab-root-ca
-                  subPath: ec.crt
+                  subPath: ca.crt
+                  readOnly: true
           dnsConfig:
             options:
               - name: ndots
@@ -90,8 +91,9 @@ spec:
               persistentVolumeClaim:
                 claimName: grafana-pvc
             - name: homelab-root-ca
-              secret:
-                secretName: homelab-root-ca
+              configMap:
+                name: homelab-root-ca
+                defaultMode: 420
   httpRoute:
     spec:
       hostnames:

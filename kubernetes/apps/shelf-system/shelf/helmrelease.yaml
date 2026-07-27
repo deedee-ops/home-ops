@@ -79,7 +79,7 @@ spec:
               DISABLE_SIGNUP: "false"
               DISABLE_SSO: "false"
               ENABLE_PREMIUM_FEATURES: "false"
-              NODE_EXTRA_CA_CERTS: /certs/homelab.pem
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               PORT: &webPort 8080
               SERVER_URL: https://shelf.${ROOT_DOMAIN}
               SMTP_FROM: "deedee@${ROOT_DOMAIN}"
@@ -198,7 +198,6 @@ spec:
               GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
               GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
               PORT: &authPort 9999
-              SSL_CERT_FILE: /certs/homelab.pem
               GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
                 secretKeyRef:
                   name: shelf-oidc-credentials
@@ -462,17 +461,12 @@ spec:
             app:
               - path: "/backups"
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          webapp:
-            app: &certMount
-              - path: /certs/homelab.pem
-                subPath: ec.crt
-          gotrue:
-            app: *certMount
-          oidc-shim:
-            app: *certMount
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       tmp:
         type: emptyDir
         advancedMounts:

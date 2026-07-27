@@ -236,16 +236,12 @@ spec:
                 path: /etc/dovecot/dovecot.oauth.conf
                 readOnly: true
       homelab-root-ca:
-        type: secret
+        type: configMap
         name: homelab-root-ca
-        advancedMounts:
-          main:
-            app:
-              - path: /etc/ssl/certs/ca-certificates.crt
-                subPath: ec.crt
-            dovecot:
-              - path: /etc/ssl/certs/ca-certificates.crt
-                subPath: ec.crt
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
       imapsync:
         existingClaim: "mail-archive-sync"
         advancedMounts:

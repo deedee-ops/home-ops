@@ -88,19 +88,20 @@ spec:
                 originRequest:
                   http2Origin: true
                   originServerName: external.${ROOT_DOMAIN}
-                  caPool: /etc/cloudflared/ca.crt
+                  caPool: /etc/ssl/certs/ca-certificates.crt
                 service: https://envoy-external:443
               - service: http_status:404
     persistence:
-      homelab-root-ca:
-        type: secret
-        name: homelab-root-ca
-        globalMounts:
-          - path: /etc/cloudflared/ca.crt
-            subPath: ec.crt
       config-file:
         type: configMap
         identifier: config
         globalMounts:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true

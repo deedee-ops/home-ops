@@ -32,10 +32,12 @@ spec:
       seccompProfile:
         type: RuntimeDefault
     volumeMounts:
-      - mountPath: /etc/ssl/certs
-        name: homelab-root-ca
+      - name: homelab-root-ca
+        mountPath: /etc/ssl/certs/ca-certificates.crt
+        subPath: ca.crt
+        readOnly: true
     volumes:
       - name: homelab-root-ca
-        secret:
+        configMap:
+          name: homelab-root-ca
           defaultMode: 420
-          secretName: homelab-root-ca
