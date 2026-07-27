@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: trust-manager
+spec:
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: trust-manager
+      namespace: cert-manager
+    - apiVersion: trust.cert-manager.io/v1
+      kind: Bundle
+      name: homelab
+  healthCheckExprs:
+    - apiVersion: trust.cert-manager.io/v1
+      kind: Bundle
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  interval: 1h
+  patches: []
+  path: ./kubernetes/apps/cert-manager/trust-manager
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: cert-manager

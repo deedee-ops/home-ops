@@ -43,3 +43,7 @@ releases:
     namespace: volsync-system
     chart: oci://ghcr.io/home-operations/charts-mirror/volsync-perfectra1n
     version: 0.18.5
+  - name: trust-manager
+    namespace: cert-manager
+    chart: oci://quay.io/jetstack/charts/trust-manager
+    version: 0.24.0

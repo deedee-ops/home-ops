@@ -45,6 +45,7 @@ in
   languages = lib.optionalAttrs isDevShell {
     helm = {
       enable = true;
+      package = inputs.nixpkgs-stable.legacyPackages.x86_64-linux.kubernetes-helm;
       lsp.enable = true;
       plugins = [ "helm-diff" ];
     };

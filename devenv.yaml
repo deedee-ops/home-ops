@@ -8,6 +8,8 @@ inputs:
         follows: nixpkgs
   nixpkgs:
     url: github:nixos/nixpkgs/nixos-unstable
+  nixpkgs-stable:
+    url: github:nixos/nixpkgs/nixos-26.05
   talos-pilot:
     url: github:Handfish/talos-pilot
 
