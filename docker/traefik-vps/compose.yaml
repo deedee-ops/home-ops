@@ -1,0 +1,40 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  traefik:
+    environment:
+      TZ: Europe/Warsaw
+    image: public.ecr.aws/docker/library/traefik:3.7.9@sha256:652929a140a32d7cafafb13c6cdfab5376cfeff800f51397b87b524501ed02a8
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    configs:
+      - source: traefik
+        target: /etc/traefik/traefik.yml
+      - source: extra-tcp
+        target: /config/extra/tcp.yaml
+    volumes:
+      - ${DATA_DOCKER_DIR}/traefik/certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - default
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+configs:
+  traefik:
+    file: ./config/traefik.yaml
+  extra-tcp:
+    file: ./config/extra/tcp.yaml
+
+networks:
+  internal:
+    name: internal
+    external: true

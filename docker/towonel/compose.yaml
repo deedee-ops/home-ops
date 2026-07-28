@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  towonel:
+    environment:
+      TOWONEL_EDGE_LISTEN_ADDR: 0.0.0.0:4443
+      TOWONEL_HUB_OPERATOR_API_KEY_PATH: /data/operator.key
+      TOWONEL_HUB_PUBLIC_URL: https://towonel.${ROOT_DOMAIN}
+      TOWONEL_INVITE_HASH_KEY: ${TOWONEL_INVITE_HASH_KEY}
+    image: codeberg.org/towonel/towonel-node:1.5.1
+    container_name: towonel
+    restart: unless-stopped
+    user: "10001:10001"
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - ${DATA_DOCKER_DIR}/towonel:/data
+    networks:
+      - internal
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "-fsS"
+        - "-o"
+        - "/dev/null"
+        - "http://127.0.0.1:8443/v1/health"
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+    labels:
+      - "traefik.enable=true"
+
+      # --- Catch-all TLS passthrough on :443 -> towonel:4443 (PROXY v2) ---
+      # Matches any SNI (and no-SNI) not claimed by a higher-priority router.
+      - "traefik.tcp.routers.towonel-edge.entrypoints=websecure"
+      - "traefik.tcp.routers.towonel-edge.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.towonel-edge.priority=1"
+      - "traefik.tcp.routers.towonel-edge.tls.passthrough=true"
+      - "traefik.tcp.routers.towonel-edge.service=towonel-edge"
+      - "traefik.tcp.services.towonel-edge.loadbalancer.server.port=4443"
+      - "traefik.tcp.services.towonel-edge.loadbalancer.serverstransport=proxyv2@file"
+
+      # --- Terminated HTTPS for the hub domain -> towonel:8443 (plain HTTP) ---
+      # Higher SNI priority than the catch-all, so this domain is handled here.
+      - "traefik.http.routers.towonel-hub.entrypoints=websecure"
+      - "traefik.http.routers.towonel-hub.rule=Host(`towonel.${ROOT_DOMAIN}`)"
+      - "traefik.http.routers.towonel-hub.tls=true"
+      - "traefik.http.routers.towonel-hub.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.towonel-hub.service=towonel-hub"
+      - "traefik.http.services.towonel-hub.loadbalancer.server.port=8443"
+
+networks:
+  internal:
+    name: internal
+    external: true

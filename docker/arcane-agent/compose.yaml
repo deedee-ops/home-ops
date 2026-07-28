@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+services:
+  arcane-agent:
+    image: ghcr.io/getarcaneapp/agent:v2.5.0
+    container_name: arcane-agent
+    restart: always
+    environment:
+      AGENT_MODE: "true"
+      EDGE_TRANSPORT: poll
+      AGENT_TOKEN: "${ARCANE_AGENT_TOKEN}"
+      MANAGER_API_URL: http://localhost:3552
+    volumes:
+      - ${DATA_DOCKER_DIR}/arcane:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.arcane-agent.entrypoints=websecure"
+      - "traefik.http.routers.arcane-agent.rule=Host(`docker.${ROOT_DOMAIN}`)"
+      - "traefik.http.routers.arcane-agent.tls=true"
+      - "traefik.http.routers.arcane-agent.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.arcane-agent.service=arcane-agent"
+      - "traefik.http.services.arcane-agent.loadbalancer.server.port=3553"

@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: false
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+    endpoint: "unix:///var/run/docker.sock"
+  file:
+    directory: /config
+
+# Let's Encrypt (production) via HTTP-01 challenge.
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: acme@ajgon.ovh
+      storage: /certs/acme.json
+      httpChallenge:
+        entryPoint: web
+
+log:
+  level: INFO
