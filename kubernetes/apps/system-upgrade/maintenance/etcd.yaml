@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag-blossom
+spec:
+  schedule: "0 0 * * 1,4"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: talosctl
+              image: ghcr.io/siderolabs/talosctl:v1.13.7
+              args:
+                - etcd
+                - defrag
+                - -n
+                - blossom
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: tuppr-talosconfig
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag-bubbles
+spec:
+  schedule: "0 0 * * 2,5"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: talosctl
+              image: ghcr.io/siderolabs/talosctl:v1.13.7
+              args:
+                - etcd
+                - defrag
+                - -n
+                - bubbles
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: tuppr-talosconfig
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag-buttercup
+spec:
+  schedule: "0 0 * * 3,6"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: talosctl
+              image: ghcr.io/siderolabs/talosctl:v1.13.7
+              args:
+                - etcd
+                - defrag
+                - -n
+                - buttercup
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: tuppr-talosconfig
