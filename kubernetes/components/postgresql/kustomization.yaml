@@ -8,3 +8,4 @@ resources:
   - ./networkpolicy.yaml
   - ./objectstore.yaml
   - ./scheduledbackup.yaml
+  - ./secret.yaml
