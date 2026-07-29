@@ -15,22 +15,22 @@ _... managed with [Flux](https://fluxcd.io/), [Arcane](https://getarcane.app/), 
 <div align="center">
 
 [![Discord](https://img.shields.io/discord/673534664354430999?label&logo=discord&logoColor=white&color=blue)](https://discord.gg/home-operations)&nbsp;&nbsp;
-[![Talos](https://kromgo.ajgon.casa/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
-[![Kubernetes](https://kromgo.ajgon.casa/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
-[![Flux](https://kromgo.ajgon.casa/badges/flux_version)](https://fluxcd.io)&nbsp;&nbsp;
+[![Talos](https://kromgo.rzegocki.dev/badges/talos_version)](https://talos.dev)&nbsp;&nbsp;
+[![Kubernetes](https://kromgo.rzegocki.dev/badges/kubernetes_version)](https://kubernetes.io)&nbsp;&nbsp;
+[![Flux](https://kromgo.rzegocki.dev/badges/flux_version)](https://fluxcd.io)&nbsp;&nbsp;
 
 </div>
 
 <div align="center">
 
-[![Age](https://kromgo.ajgon.casa/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Uptime](https://kromgo.ajgon.casa/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Nodes](https://kromgo.ajgon.casa/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Pods](https://kromgo.ajgon.casa/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![CPU](https://kromgo.ajgon.casa/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Memory](https://kromgo.ajgon.casa/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Power](https://kromgo.ajgon.casa/badges/cluster_power_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![Alerts](https://kromgo.ajgon.casa/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)
+[![Age](https://kromgo.rzegocki.dev/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Uptime](https://kromgo.rzegocki.dev/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Nodes](https://kromgo.rzegocki.dev/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Pods](https://kromgo.rzegocki.dev/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![CPU](https://kromgo.rzegocki.dev/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Memory](https://kromgo.rzegocki.dev/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Power](https://kromgo.rzegocki.dev/badges/cluster_power_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![Alerts](https://kromgo.rzegocki.dev/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)
 
 </div>
 <!-- markdownlint-enable MD013 MD033 -->

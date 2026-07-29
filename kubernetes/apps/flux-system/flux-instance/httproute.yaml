@@ -7,10 +7,10 @@ metadata:
   annotations:
     gatus.home-operations.com/endpoint: |-
       conditions: ["[STATUS] == any(403, 404)"]
-      url: "https://flux-webhook.${ROOT_DOMAIN}/hook/"
+      url: "https://flux-webhook.${EXTERNAL_ROOT_DOMAIN}/hook/"
 spec:
   hostnames:
-    - "flux-webhook.${ROOT_DOMAIN}"
+    - "flux-webhook.${EXTERNAL_ROOT_DOMAIN}"
   parentRefs:
     - name: envoy-external
       namespace: network

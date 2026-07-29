@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/externaldns.k8s.io/dnsendpoint_v1alpha1.json
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: towonel-agent
+spec:
+  endpoints:
+    - dnsName: "external.${EXTERNAL_ROOT_DOMAIN}"
+      recordType: A
+      targets:
+        - "${VPS_IP}"
+    - dnsName: "towonel.${EXTERNAL_ROOT_DOMAIN}"
+      recordType: A
+      targets:
+        - "${VPS_IP}"
+    - dnsName: "mandark.${EXTERNAL_ROOT_DOMAIN}"
+      recordType: A
+      targets:
+        - "${VPS_IP}"

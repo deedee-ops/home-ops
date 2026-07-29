@@ -7,8 +7,8 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
-  - ./cloudflare-tunnel.yaml
   - ./envoy-gateway.yaml
   - ./external-dns-cloudflare.yaml
   - ./external-dns-unifi.yaml
   - ./smtp-relay.yaml
+  - ./towonel-agent.yaml

@@ -14,7 +14,7 @@ spec:
   postBuild:
     substitute:
       CLUSTER: deedee
-      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository

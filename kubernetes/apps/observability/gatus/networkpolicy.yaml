@@ -37,6 +37,7 @@ spec:
             - port: "443"
     - toFQDNs:
         - matchPattern: "*.${ROOT_DOMAIN}"
+        - matchPattern: "*.${EXTERNAL_ROOT_DOMAIN}"
       toPorts:
         - ports:
             - port: "443"

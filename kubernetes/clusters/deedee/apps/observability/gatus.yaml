@@ -10,6 +10,7 @@ spec:
   path: ./kubernetes/apps/observability/gatus
   postBuild:
     substitute:
+      EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

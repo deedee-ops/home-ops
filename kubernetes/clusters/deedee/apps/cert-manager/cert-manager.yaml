@@ -24,7 +24,7 @@ spec:
   postBuild:
     substitute:
       CA_BUNDLE: "${CA_BUNDLE}"
-      VAULT_SIGNING_ROLE: ajgon-casa
+      EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
       VAULT_HOST: "bao.${ROOT_DOMAIN}"
   prune: true
   sourceRef:

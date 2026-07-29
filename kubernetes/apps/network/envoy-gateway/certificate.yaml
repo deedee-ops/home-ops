@@ -3,9 +3,9 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "${VAULT_SIGNING_ROLE}"
+  name: internal
 spec:
-  secretName: "${VAULT_SIGNING_ROLE}-tls"
+  secretName: internal-tls
   issuerRef:
     name: openbao
     kind: ClusterIssuer
@@ -14,3 +14,25 @@ spec:
     - "${ROOT_DOMAIN}"
     - "*.${ROOT_DOMAIN}"
     - "*.crypt.${ROOT_DOMAIN}"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: external
+spec:
+  secretName: external-tls
+  duration: 168h
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always
+  usages:
+    - digital signature
+  commonName: "${EXTERNAL_ROOT_DOMAIN}"
+  dnsNames:
+    - "${EXTERNAL_ROOT_DOMAIN}"
+    - "*.${EXTERNAL_ROOT_DOMAIN}"

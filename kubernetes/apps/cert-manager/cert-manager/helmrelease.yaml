@@ -9,6 +9,20 @@ spec:
     kind: OCIRepository
     name: cert-manager
   interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # Properly resolve DNS domains for cilium policies
+            patch: |-
+              - op: add
+                path: /spec/template/spec/dnsConfig
+                value:
+                  options:
+                    - name: ndots
+                      value: "1"
+            target:
+              kind: Deployment
+              name: cert-manager
   values:
     cainjector:
       podLabels: &egress

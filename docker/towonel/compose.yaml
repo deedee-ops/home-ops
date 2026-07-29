@@ -3,7 +3,9 @@
 services:
   towonel:
     environment:
+      RUST_LOG: debug
       TOWONEL_EDGE_LISTEN_ADDR: 0.0.0.0:4443
+      TOWONEL_EDGE_PROXY_PROTOCOL: "true"
       TOWONEL_HUB_OPERATOR_API_KEY_PATH: /data/operator.key
       TOWONEL_HUB_PUBLIC_URL: https://towonel.${ROOT_DOMAIN}
       TOWONEL_INVITE_HASH_KEY: ${TOWONEL_INVITE_HASH_KEY}

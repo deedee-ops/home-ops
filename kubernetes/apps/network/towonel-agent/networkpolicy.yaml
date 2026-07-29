@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: towonel-agent-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: towonel-agent
+    egress:
+      - toCIDRSet:
+          - cidr: "${VPS_IP}/32"
+        toPorts:
+          - ports:
+              - port: "443"
+              - port: "51820"
+      - toEndpoints:
+          - matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: envoy-external
+        toPorts:
+          - ports:
+              - port: "10443"
