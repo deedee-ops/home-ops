@@ -28,14 +28,16 @@ providers:
   file:
     directory: /config
 
-# Let's Encrypt (production) via HTTP-01 challenge.
 certificatesResolvers:
   letsencrypt:
     acme:
       email: acme@ajgon.ovh
       storage: /certs/acme.json
-      httpChallenge:
-        entryPoint: web
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
 
 log:
   level: INFO

@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh ASN firewall prefixes
+
+[Timer]
+OnBootSec=2min
+OnCalendar={{ asn_firewall_refresh_calendar }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

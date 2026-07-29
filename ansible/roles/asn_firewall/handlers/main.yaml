@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Reload systemd
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Refresh asn firewall
+  ansible.builtin.systemd_service:
+    name: asn-firewall-refresh.service
+    state: restarted

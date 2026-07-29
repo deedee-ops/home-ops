@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-inventory.json
+vps:
+  hosts:
+    mandark:
+      # override per run: ansible-playbook site.yaml -e vps_host=1.2.3.4
+      ansible_host: "{{ vps_host }}"
+
+      vps_root_domain: rzegocki.dev
+      vps_authorized_keys:
+        - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOrBLT88ZZ+lO8hHcj+4jqtor79OLhQZcDWF98kkWkfn"
+
+      docker_compose_stacks:
+        - arcane-agent
+        - traefik-vps

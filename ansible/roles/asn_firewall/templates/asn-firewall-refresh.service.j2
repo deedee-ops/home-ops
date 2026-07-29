@@ -1,0 +1,8 @@
+[Unit]
+Description=ASN firewall refresh (fetch prefixes, reapply)
+Wants=network-online.target
+After=network-online.target asn-firewall-boot.service
+
+[Service]
+Type=oneshot
+ExecStart={{ asn_firewall_worker }} refresh

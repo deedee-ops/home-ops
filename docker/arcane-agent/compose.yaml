@@ -13,11 +13,18 @@ services:
     volumes:
       - ${DATA_DOCKER_DIR}/arcane:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.arcane-agent.entrypoints=websecure"
-      - "traefik.http.routers.arcane-agent.rule=Host(`docker.${ROOT_DOMAIN}`)"
+      - "traefik.http.routers.arcane-agent.rule=Host(`${ARCANE_AGENT_HOST}`)"
       - "traefik.http.routers.arcane-agent.tls=true"
       - "traefik.http.routers.arcane-agent.tls.certresolver=letsencrypt"
       - "traefik.http.routers.arcane-agent.service=arcane-agent"
       - "traefik.http.services.arcane-agent.loadbalancer.server.port=3553"
+
+networks:
+  internal:
+    name: internal
+    external: true

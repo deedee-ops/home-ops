@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-meta.json
+galaxy_info:
+  role_name: asn_firewall
+  author: ajgon
+  description: Restrict inbound ports to the prefixes announced by given ASNs
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - firewall
+dependencies: []

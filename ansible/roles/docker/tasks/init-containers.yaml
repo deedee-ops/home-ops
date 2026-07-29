@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Assert the root domain is set
+  ansible.builtin.assert:
+    that:
+      - vps_root_domain is defined
+      - vps_root_domain | length > 0
+    fail_msg: >-
+      vps_root_domain is not set - add it to the host in inventory/hosts.yaml.
+      The stacks build their hostnames and the wildcard certificate from it.
+    quiet: true
+
+- name: Assert the compose environment is complete
+  ansible.builtin.assert:
+    that:
+      - "'DATA_DOCKER_DIR' in docker_compose_env"
+    fail_msg: docker_compose_env must define DATA_DOCKER_DIR - every stack mounts it
+    quiet: true
+
+- name: Assert every stack has a compose file
+  ansible.builtin.assert:
+    that:
+      - (docker_compose_src_dir ~ '/' ~ item ~ '/compose.yaml') is exists
+    fail_msg: "no compose.yaml for stack '{{ item }}' under {{ docker_compose_src_dir }}"
+    quiet: true
+  loop: "{{ docker_compose_stacks }}"
+
+- name: Create the stack and data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ docker_compose_dir }}"
+    - "{{ docker_compose_env.DATA_DOCKER_DIR }}"
+
+- name: Check the shared networks
+  ansible.builtin.command: "docker network inspect {{ item }}"
+  loop: "{{ docker_compose_networks }}"
+  register: docker_network_check
+  changed_when: false
+  failed_when: false
+
+- name: Create the missing shared networks
+  ansible.builtin.command: "docker network create {{ item.item }}"
+  loop: "{{ docker_network_check.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item.rc != 0
+  changed_when: true
+
+- name: Deploy the stacks
+  ansible.builtin.include_tasks: stack.yaml
+  loop: "{{ docker_compose_stacks }}"
+  loop_control:
+    loop_var: docker_stack

@@ -1,5 +1,7 @@
+.ansible
 .current-cluster
 .pre-commit-config.yaml
+.vault-pass
 kubeconfig
 talosconfig
 secrets.env

@@ -1,0 +1,25 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
+# ansible-lint merges this over its own built-in yamllint config. It exists only so
+# ansible-lint stops picking up the repo wide .yamllint, whose comments-indentation,
+# braces and octal-values settings it rejects - it needs those four to keep its fix
+# mode working, and the repo wide values cannot change without rewriting file modes
+# in the kubernetes manifests as decimals.
+#
+# YAML style under ansible/ is still enforced by the yamllint hook and .yamllint.
+rules:
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+  line-length:
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+    max: 120
+
+# vim:ft=yaml

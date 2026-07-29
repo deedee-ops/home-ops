@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Install apt repository prerequisites
+  ansible.builtin.package:
+    name:
+      - ca-certificates
+      - curl
+    state: present
+
+- name: Create apt keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Fetch Docker apt signing key
+  ansible.builtin.get_url:
+    url: "{{ docker_apt_key_url }}"
+    dest: /etc/apt/keyrings/docker.asc
+    owner: root
+    group: root
+    mode: "0644"
+    force: false
+
+- name: Configure Docker apt repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types:
+      - deb
+    uris: "{{ docker_apt_repo_uri }}"
+    suites: "{{ docker_apt_repo_suite }}"
+    components: "{{ docker_apt_repo_component }}"
+    architectures: "{{ docker_apt_repo_architecture }}"
+    signed_by: /etc/apt/keyrings/docker.asc
+    state: present
+
+- name: Refresh apt cache
+  ansible.builtin.apt:
+    update_cache: true

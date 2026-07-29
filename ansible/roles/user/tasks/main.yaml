@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Assert a password was provided
+  ansible.builtin.assert:
+    that:
+      - user_password | length > 0
+    fail_msg: ANSIBLE_USER_PASSWORD is empty - export it before running the playbook
+    quiet: true
+
+- name: Install sudo
+  ansible.builtin.package:
+    name: sudo
+    state: present
+
+- name: Create the unprivileged user
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    password: "{{ user_password | password_hash('sha512', user_password_salt[:16]) }}"
+    shell: "{{ user_shell }}"
+    groups: "{{ user_extra_groups }}"
+    append: true
+    create_home: true
+    state: present
+  no_log: true
+
+- name: Grant sudo with password
+  ansible.builtin.copy:
+    content: "{{ user_name }} ALL=(ALL:ALL) ALL\n"
+    dest: "/etc/sudoers.d/{{ user_name }}"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: visudo --check --file %s
+
+- name: Create the user ssh directory
+  ansible.builtin.file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0700"
+
+- name: Install authorized keys
+  ansible.builtin.copy:
+    content: "{{ user_authorized_keys | join('\n') }}\n"
+    dest: "/home/{{ user_name }}/.ssh/authorized_keys"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: "0600"
+  when: user_authorized_keys | length > 0
+
+# From here on the play talks to the box as the unprivileged user, so sudo is
+# proven to work before root logins are taken away below.
+- name: Switch the connection to the unprivileged user # noqa: var-naming[no-role-prefix]
+  ansible.builtin.set_fact:
+    ansible_user: "{{ user_name }}"
+    ansible_become: true
+
+- name: Reset the connection
+  ansible.builtin.meta: reset_connection
+
+- name: Harden sshd
+  ansible.builtin.include_tasks: sshd.yaml
+  when: user_harden_ssh
+
+- name: Verify key based login and sudo
+  ansible.builtin.command: id --user
+  changed_when: false
+  register: user_sudo_check
+  failed_when: user_sudo_check.stdout | trim != '0'

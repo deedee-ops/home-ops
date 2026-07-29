@@ -1,0 +1,84 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Assert the firewall rules are usable
+  ansible.builtin.assert:
+    that:
+      - asn_firewall_rules | length > 0
+      - asn_firewall_rules | selectattr('asn', 'defined') | list | length == asn_firewall_rules | length
+      - asn_firewall_rules | selectattr('ports', 'defined') | list | length == asn_firewall_rules | length
+    fail_msg: asn_firewall_rules must be a non empty list of mappings with `asn` and `ports`
+    quiet: true
+
+- name: Install the packages the worker needs
+  ansible.builtin.package:
+    name: "{{ asn_firewall_packages }}"
+    state: present
+
+- name: Configure rule persistence
+  ansible.builtin.include_tasks: "platform/{{ ansible_facts['os_family'] }}.yaml"
+
+- name: Create the configuration and state directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ asn_firewall_config_file | dirname }}"
+    - "{{ asn_firewall_state_dir }}"
+
+- name: Write the ASN to port mapping
+  ansible.builtin.copy:
+    content: |
+      {{ {
+           'wan_interface': asn_firewall_wan_interface,
+           'trusted_sources': asn_firewall_trusted_sources,
+           'rules': asn_firewall_rules,
+         } | to_nice_json }}
+    dest: "{{ asn_firewall_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Refresh asn firewall
+
+- name: Install the worker
+  ansible.builtin.template:
+    src: asn-firewall.sh.j2
+    dest: "{{ asn_firewall_worker }}"
+    owner: root
+    group: root
+    mode: "0755"
+    # bash array expansions such as ${#prefixes[@]} would otherwise open a jinja comment
+    comment_start_string: "[#"
+    comment_end_string: "#]"
+    validate: bash -n %s
+  notify: Refresh asn firewall
+
+- name: Install the systemd units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - asn-firewall-boot.service
+    - asn-firewall-refresh.service
+    - asn-firewall-refresh.timer
+  notify:
+    - Reload systemd
+    - Refresh asn firewall
+
+- name: Enable the boot time enforcement
+  ansible.builtin.systemd_service:
+    name: asn-firewall-boot.service
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Enable the refresh timer
+  ansible.builtin.systemd_service:
+    name: asn-firewall-refresh.timer
+    enabled: true
+    state: started

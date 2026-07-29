@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+# autosave=false: the worker manages saves itself; preseeding avoids the debconf prompt.
+- name: Preseed iptables-persistent
+  ansible.builtin.debconf:
+    name: iptables-persistent
+    question: "iptables-persistent/autosave_{{ item }}"
+    vtype: boolean
+    value: "false"
+  loop:
+    - v4
+    - v6
+
+- name: Install the persistence packages
+  ansible.builtin.package:
+    name:
+      - netfilter-persistent
+      - iptables-persistent
+    state: present
+
+- name: Create the netfilter-persistent drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/netfilter-persistent.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# netfilter-persistent restores rules that reference our ipsets, so order it after
+# the boot service that creates those sets.
+- name: Order netfilter-persistent after the boot service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=asn-firewall-boot.service
+      Wants=asn-firewall-boot.service
+    dest: /etc/systemd/system/netfilter-persistent.service.d/order-after-asn.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Enable netfilter-persistent
+  ansible.builtin.systemd_service:
+    name: netfilter-persistent.service
+    enabled: true
+    daemon_reload: true

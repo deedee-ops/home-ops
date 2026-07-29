@@ -1,0 +1,226 @@
+#!/usr/bin/env bash
+# Managed by Ansible - restrict the configured ports to the prefixes announced by the
+# ASNs they are listed under. Fail-closed: without prefix data the sets stay empty,
+# which means the ports stay closed rather than open.
+set -euo pipefail
+
+CONFIG={{ asn_firewall_config_file }}
+STATE={{ asn_firewall_state_dir }}
+RIPE_URL='{{ asn_firewall_ripe_url }}'
+CHAIN_IN="ASN-FW"
+CHAIN_FWD="ASN-FW-FWD"
+
+log() { echo "[asn-firewall] $*"; }
+
+[ -r "$CONFIG" ] || { log "missing $CONFIG"; exit 1; }
+install -d -m 0755 "$STATE"
+
+# Traffic reaching a published container port is DNAT'd and forwarded, so it never sees
+# INPUT. The DOCKER-USER half of the rules covers that path, and there it must apply
+# only to packets entering from the outside - container egress and container to
+# container traffic pass through the same chain.
+WAN_IF="$(jq -r '.wan_interface // empty' "$CONFIG")"
+if [ -z "$WAN_IF" ]; then
+  WAN_IF="$(ip route show default 2>/dev/null | awk '{for (i = 1; i < NF; i++) if ($i == "dev") print $(i + 1)}' | head -1)"
+fi
+[ -n "$WAN_IF" ] || log "no default route interface found - filtering every forwarded packet"
+
+asns() { jq -r '.rules[].asn' "$CONFIG"; }
+
+# Sources that are never filtered, split per address family.
+trusted_sources() {
+  if [ "$1" = 6 ]; then
+    jq -r '.trusted_sources[] | select(contains(":"))' "$CONFIG"
+  else
+    jq -r '.trusted_sources[] | select(contains(":") | not)' "$CONFIG"
+  fi
+}
+
+# One line per protocol/port: "<proto> <port> <asn>[,<asn>...]". Grouping by port is
+# what lets several ASNs share a port - all of their ACCEPTs must precede its DROP.
+port_map() {
+  jq -r '
+    [ .rules[] as $rule | $rule.ports[] | { proto: ($rule.proto // "tcp"), port: ., asn: $rule.asn } ]
+    | group_by([.proto, .port])
+    | .[]
+    | "\(.[0].proto) \(.[0].port) \([.[].asn] | unique | join(","))"
+  ' "$CONFIG"
+}
+
+ensure_sets() {
+  local asn
+  for asn in $(asns); do
+    ipset create "asn${asn}_v4" hash:net family inet -exist
+    ipset create "asn${asn}_v6" hash:net family inet6 -exist
+  done
+}
+
+# fail-closed: with no saved data the sets stay empty => everything dropped.
+restore_sets() {
+  local file
+  for file in "$STATE"/asn*_v[46].save; do
+    [ -f "$file" ] || continue
+    ipset restore -exist <"$file" || true
+  done
+}
+
+fetch_asn() {
+  local asn="$1" json p fam
+  if ! json="$(curl -fsS --max-time 30 "${RIPE_URL}${asn}")"; then
+    log "AS${asn}: fetch failed - keeping current prefixes, rules stay enforced"
+    return 1
+  fi
+  local prefixes
+  mapfile -t prefixes < <(jq -r '.data.prefixes[].prefix' <<<"$json" 2>/dev/null || true)
+  [ "${#prefixes[@]}" -gt 0 ] || {
+    log "AS${asn}: no prefixes parsed - keeping current prefixes"
+    return 1
+  }
+
+  ipset create "asn${asn}_v4_t" hash:net family inet -exist
+  ipset flush "asn${asn}_v4_t"
+  ipset create "asn${asn}_v6_t" hash:net family inet6 -exist
+  ipset flush "asn${asn}_v6_t"
+  for p in "${prefixes[@]}"; do
+    case "$p" in
+    *:*) ipset add "asn${asn}_v6_t" "$p" -exist ;;
+    *) ipset add "asn${asn}_v4_t" "$p" -exist ;;
+    esac
+  done
+  for fam in 4 6; do
+    ipset swap "asn${asn}_v${fam}_t" "asn${asn}_v${fam}"
+    ipset destroy "asn${asn}_v${fam}_t"
+    ipset save "asn${asn}_v${fam}" >"$STATE/asn${asn}_v${fam}.save"
+  done
+  log "AS${asn}: loaded ${#prefixes[@]} prefixes"
+}
+
+fetch_sets() {
+  local asn
+  for asn in $(asns); do
+    fetch_asn "$asn" || true
+  done
+}
+
+# docker creates this chain and its FORWARD jump when it starts, and never flushes its
+# contents - our rules survive a docker restart. Created here too so a host without
+# docker, or one where we run first, still gets the forward path filtered.
+ensure_docker_user() {
+  local ipt="$1"
+  $ipt -N DOCKER-USER 2>/dev/null || true
+  $ipt -C FORWARD -j DOCKER-USER 2>/dev/null || $ipt -I FORWARD 1 -j DOCKER-USER
+}
+
+# Build rules in a NEW chain, point the parent at it, THEN retire the old one - no gap.
+# $1 iptables command, $2 address family, $3 chain name, $4 parent chain
+install_chain() {
+  local ipt="$1" fam="$2" chain="$3" parent="$4"
+  local new="${chain}-n" allow proto port asn_csv asn net
+  local -a scope match
+
+  if [ "$parent" = DOCKER-USER ]; then
+    # An ACCEPT here would end the whole FORWARD traversal and skip docker's own
+    # isolation rules, so allowed traffic only RETURNs and lets docker decide.
+    allow=RETURN
+    scope=()
+    [ -n "$WAN_IF" ] && scope=(-i "$WAN_IF")
+  else
+    allow=ACCEPT
+    scope=()
+  fi
+
+  $ipt -N "$new" 2>/dev/null || $ipt -F "$new"
+
+  # Loopback and the private ranges leave the chain before any DROP can see them.
+  # RETURN rather than ACCEPT: this chain only decides what is none of its business,
+  # the rest of the parent chain still applies.
+  [ "$parent" = INPUT ] && $ipt -A "$new" -i lo -j RETURN
+  while read -r net; do
+    [ -n "$net" ] || continue
+    $ipt -A "$new" -s "$net" -j RETURN
+  done < <(trusted_sources "$fam")
+
+  while read -r proto port asn_csv; do
+    [ -n "$proto" ] || continue
+    if [ "$parent" = DOCKER-USER ]; then
+      # DNAT already rewrote the destination, so match the port the client asked for
+      # rather than the one the container listens on.
+      match=(-p "$proto" -m conntrack --ctorigdstport "$port" --ctdir ORIGINAL)
+    else
+      match=(-p "$proto" --dport "$port")
+    fi
+    $ipt -A "$new" "${scope[@]}" "${match[@]}" -m conntrack --ctstate ESTABLISHED,RELATED -j "$allow"
+    for asn in ${asn_csv//,/ }; do
+      $ipt -A "$new" "${scope[@]}" "${match[@]}" -m set --match-set "asn${asn}_v${fam}" src -j "$allow"
+    done
+    $ipt -A "$new" "${scope[@]}" "${match[@]}" -j DROP
+  done < <(port_map)
+
+  $ipt -I "$parent" 1 -j "$new"
+  while $ipt -D "$parent" -j "$chain" 2>/dev/null; do :; done
+  $ipt -F "$chain" 2>/dev/null || true
+  $ipt -X "$chain" 2>/dev/null || true
+  $ipt -E "$new" "$chain" # rename updates the jump reference in the parent
+}
+
+install_rules() {
+  local ipt fam
+  for ipt in iptables:4 ip6tables:6; do
+    fam="${ipt#*:}"
+    ipt="${ipt%:*}"
+    install_chain "$ipt" "$fam" "$CHAIN_IN" INPUT
+    ensure_docker_user "$ipt"
+    install_chain "$ipt" "$fam" "$CHAIN_FWD" DOCKER-USER
+  done
+}
+
+# Drop sets left behind by ASNs that are no longer configured. Safe after
+# install_rules, which is when nothing references them anymore.
+prune_sets() {
+  local name asn configured
+  configured="$(asns)"
+  for name in $(ipset list -n 2>/dev/null | grep -E '^asn[0-9]+_v[46]$' || true); do
+    asn="${name#asn}"
+    asn="${asn%_v[46]}"
+    if ! grep -qx "$asn" <<<"$configured"; then
+      ipset destroy "$name" 2>/dev/null || true
+      rm -f "$STATE/$name.save"
+      log "removed stale set $name"
+    fi
+  done
+}
+
+# Second persistence layer: write /etc/iptables/rules.v{4,6} for netfilter-persistent.
+persist_rules() { netfilter-persistent save >/dev/null 2>&1 || true; }
+
+case "${1:-refresh}" in
+boot)
+  ensure_sets
+  restore_sets
+  install_rules
+  persist_rules
+  log "boot: firewall enforced (fail-closed until first refresh)"
+  ;;
+refresh)
+  ensure_sets
+  fetch_sets
+  install_rules
+  prune_sets
+  persist_rules
+  ;;
+status)
+  for asn in $(asns); do
+    ipset list "asn${asn}_v4" -terse
+    ipset list "asn${asn}_v6" -terse
+  done
+  echo "wan interface: ${WAN_IF:-<none detected>}"
+  for chain in "$CHAIN_IN" "$CHAIN_FWD"; do
+    iptables -L "$chain" -n -v 2>/dev/null || echo "v4 chain $chain not present"
+    ip6tables -L "$chain" -n -v 2>/dev/null || echo "v6 chain $chain not present"
+  done
+  ;;
+*)
+  log "usage: $0 {boot|refresh|status}"
+  exit 1
+  ;;
+esac

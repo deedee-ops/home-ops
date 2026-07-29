@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+user_name: ajgon
+# Plain text, hashed on the control node. Sourced from $ANSIBLE_USER_PASSWORD - see inventory/group_vars/vps.yaml.
+user_password: ""
+user_password_salt: "{{ (user_name ~ 'home-ops') | hash('sha512') }}"
+user_shell: /bin/bash
+user_extra_groups: []
+
+user_authorized_keys: []
+
+user_harden_ssh: true
+user_sshd_binary: /usr/sbin/sshd
+user_sshd_service: "{{ 'ssh' if ansible_facts['os_family'] == 'Debian' else 'sshd' }}"

@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-lint-config.json
+profile: production
+
+exclude_paths:
+  - .direnv
+  - .devenv
+  # encrypted, and the linter is deliberately not given the vault password
+  - ansible/inventory/group_vars/vps/vault.yaml
+
+# yaml style is linted repo wide by the yamllint hook, with .yamllint
+skip_list:
+  - yaml
+
+# vim:ft=yaml

@@ -1,6 +1,7 @@
 {
   "ignoreFiles": [
     ".forgejo/actionlint.yaml",
+    "ansible/inventory/group_vars/*/vault.yaml",
     "docker/roms-server/config/roms-server.yaml",
     "docker/talos-factory/config/config.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",
@@ -17,6 +18,7 @@
   "allowOnlyURLs": [
     "https://www.schemastore.org",
     "https://schemas.ajgon.casa",
-    "https://devenv.sh"
+    "https://devenv.sh",
+    "https://raw.githubusercontent.com/ansible/ansible-lint"
   ]
 }

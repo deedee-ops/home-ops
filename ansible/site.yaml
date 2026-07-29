@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/playbook
+- name: Detect the connection user
+  hosts: vps
+  gather_facts: false
+  become: false
+  tasks:
+    # Key based probe: it fails while the user does not exist yet, or has no key
+    # installed, which is exactly when the bootstrap user is still needed.
+    - name: Probe ssh as the unprivileged user
+      ansible.builtin.command:
+        argv: >-
+          {{ ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=5', '-o', 'StrictHostKeyChecking=accept-new',
+              '-p', ansible_port | string]
+             + (['-i', ansible_ssh_private_key_file] if ansible_ssh_private_key_file is defined else [])
+             + [user_name ~ '@' ~ ansible_host, 'true'] }}
+      delegate_to: localhost
+      changed_when: false
+      failed_when: false
+      register: user_probe
+
+    - name: Select the connection user
+      ansible.builtin.set_fact:
+        ansible_user: "{{ user_name if user_probe.rc == 0 else vps_bootstrap_user }}"
+
+    - name: Escalate privileges unless already root
+      ansible.builtin.set_fact:
+        ansible_become: "{{ ansible_user != 'root' }}"
+
+    - name: Report the connection user
+      ansible.builtin.debug:
+        msg: "connecting as {{ ansible_user }}{{ ' (bootstrap)' if user_probe.rc != 0 else '' }}"
+
+- name: Provision VPS
+  hosts: vps
+  gather_facts: true
+  roles:
+    - role: user
+    - role: docker

@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+
+docker_service_enabled: true
+docker_service_state: started
+
+# Users added to the `docker` group (passwordless root on the host via "docker run chroot" hack)
+# Grant carefully.
+docker_users: []
+
+docker_daemon_config:
+  log-driver: json-file
+  log-opts:
+    max-size: 10m
+    max-file: "3"
+  live-restore: true
+
+docker_compose_stacks: []
+
+docker_compose_src_dir: "{{ playbook_dir }}/../docker"
+docker_compose_dir: /opt/stacks
+
+docker_compose_networks:
+  - internal
+
+# Written to <stack>/.env for compose to interpolate. ROOT_DOMAIN has no default on
+# purpose - set vps_root_domain on the host in inventory/hosts.yaml.
+docker_compose_env:
+  DATA_DOCKER_DIR: /opt/docker
+  ROOT_DOMAIN: "{{ vps_root_domain }}"
+
+# Same, but kept out of logs - fed from the vault, see inventory/group_vars/vps/.
+docker_compose_secret_env: {}
+
+# Debian family only - see tasks/repository/Debian.yaml. `stable` is the only
+# channel published for docker-ce.
+docker_apt_key_url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
+docker_apt_repo_uri: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}"
+docker_apt_repo_suite: "{{ ansible_facts['distribution_release'] }}"
+docker_apt_repo_component: stable
+docker_apt_repo_architecture: >-
+  {{ ansible_facts['architecture'] | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}

@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+user_name: "{{ vps_user | default('ajgon') }}"
+vps_bootstrap_user: "{{ vps_root_user | default('root') }}"
+
+user_password: "{{ lookup('env', 'ANSIBLE_USER_PASSWORD') }}"
+ansible_become_password: "{{ user_password }}"
+
+user_authorized_keys: "{{ vps_authorized_keys }}"
+
+ansible_port: "{{ vps_port | default(22) }}"
+ansible_python_interpreter: /usr/bin/python3
+
+docker_compose_secret_env:
+  ARCANE_AGENT_HOST: "{{ vault_arcane_agent_host }}"
+  ARCANE_AGENT_TOKEN: "{{ vault_arcane_agent_token }}"
+  CF_DNS_API_TOKEN: "{{ vault_cf_dns_api_token }}"

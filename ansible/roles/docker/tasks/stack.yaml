@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: "Copy the project files for {{ docker_stack }}"
+  ansible.builtin.copy:
+    src: "{{ docker_compose_src_dir }}/{{ docker_stack }}/"
+    dest: "{{ docker_compose_dir }}/{{ docker_stack }}/"
+    owner: root
+    group: root
+    mode: "0644"
+    directory_mode: "0755"
+
+- name: "Write the environment file for {{ docker_stack }}"
+  ansible.builtin.copy:
+    content: |
+      {% for key, value in (docker_compose_env | combine(docker_compose_secret_env) | dictsort) %}
+      {{ key }}={{ value }}
+      {% endfor %}
+    dest: "{{ docker_compose_dir }}/{{ docker_stack }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: "Start the stack {{ docker_stack }}"
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_compose_dir }}/{{ docker_stack }}"
+    state: present
+    remove_orphans: true

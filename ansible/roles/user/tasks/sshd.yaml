@@ -1,0 +1,44 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Assert an authorized key is present before disabling password logins
+  ansible.builtin.assert:
+    that:
+      - user_authorized_keys | length > 0
+    fail_msg: >-
+      user_authorized_keys is empty - disabling password authentication now would lock
+      everyone out. Set the keys, or set user_harden_ssh=false.
+    quiet: true
+
+- name: Create the sshd drop-in directory
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure sshd reads drop-ins
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: Include /etc/ssh/sshd_config.d/*.conf
+    regexp: '^\s*Include\s+/etc/ssh/sshd_config\.d/\*\.conf\s*$'
+    insertbefore: BOF
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "{{ user_sshd_binary }} -t -f %s"
+  notify: Reload sshd
+
+- name: Disable root login and password authentication
+  ansible.builtin.copy:
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PubkeyAuthentication yes
+    dest: /etc/ssh/sshd_config.d/99-home-ops.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "{{ user_sshd_binary }} -t -f %s"
+  notify: Reload sshd

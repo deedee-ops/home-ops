@@ -1,0 +1,15 @@
+[Unit]
+Description=ASN firewall (enforce rules at boot, fail-closed)
+DefaultDependencies=no
+After=local-fs.target
+Wants=network-pre.target
+Before=network-pre.target shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart={{ asn_firewall_worker }} boot
+
+[Install]
+WantedBy=sysinit.target

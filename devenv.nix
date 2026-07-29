@@ -15,6 +15,8 @@ in
   };
 
   env = lib.optionalAttrs isDevShell {
+    ANSIBLE_USER_PASSWORD = config.secretspec.secrets.ANSIBLE_USER_PASSWORD;
+    ANSIBLE_VAULT_PASSWORD = config.secretspec.secrets.ANSIBLE_VAULT_PASSWORD;
     AWS_ACCESS_KEY_ID = config.secretspec.secrets.AWS_ACCESS_KEY_ID;
     AWS_SECRET_ACCESS_KEY = config.secretspec.secrets.AWS_SECRET_ACCESS_KEY;
     TOFU_TFVARS = config.secretspec.secrets.TOFU_TFVARS;
@@ -43,6 +45,12 @@ in
   ];
 
   languages = lib.optionalAttrs isDevShell {
+    # pulls in ansible (with passlib, needed by password_hash), ansible-lint and
+    # ansible-language-server
+    ansible = {
+      enable = true;
+      lsp.enable = true;
+    };
     helm = {
       enable = true;
       package = inputs.nixpkgs-stable.legacyPackages.x86_64-linux.kubernetes-helm;
@@ -73,6 +81,14 @@ in
           ".forgejo/actionlint.yaml"
         ];
         files = ".forgejo/workflows/.+\.yaml";
+      };
+      # upstream entry lints the whole repo, which trips over kubernetes
+      # manifests - scope it to the ansible directory instead
+      ansible-lint = {
+        enable = true;
+        entry = "${pkgs.ansible-lint}/bin/ansible-lint -c ansible/.ansible-lint --yamllint-file ansible/.yamllint ansible";
+        files = "^ansible/";
+        pass_filenames = false;
       };
       check-json.enable = true;
       commitizen = {
@@ -106,7 +122,10 @@ in
       check-case-conflicts.enable = true;
       check-executables-have-shebangs.enable = true;
       check-merge-conflicts.enable = true;
-      check-shebang-scripts-are-executable.enable = true;
+      check-shebang-scripts-are-executable = {
+        enable = true;
+        excludes = [ "\\.j2$" ];
+      };
       end-of-file-fixer.enable = true;
       fix-byte-order-marker.enable = true;
       mixed-line-endings.enable = true;

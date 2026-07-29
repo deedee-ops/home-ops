@@ -3,6 +3,8 @@
 services:
   traefik:
     environment:
+      CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       TZ: Europe/Warsaw
     image: public.ecr.aws/docker/library/traefik:3.7.9@sha256:652929a140a32d7cafafb13c6cdfab5376cfeff800f51397b87b524501ed02a8
     container_name: traefik
@@ -15,6 +17,8 @@ services:
         target: /etc/traefik/traefik.yml
       - source: extra-tcp
         target: /config/extra/tcp.yaml
+      - source: extra-tls
+        target: /config/extra/tls.yaml
     volumes:
       - ${DATA_DOCKER_DIR}/traefik/certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -33,6 +37,8 @@ configs:
     file: ./config/traefik.yaml
   extra-tcp:
     file: ./config/extra/tcp.yaml
+  extra-tls:
+    file: ./config/extra/tls.yaml
 
 networks:
   internal:

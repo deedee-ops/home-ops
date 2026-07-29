@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Configure the Docker package repository
+  ansible.builtin.include_tasks: "repository/{{ ansible_facts['os_family'] }}.yaml"
+
+- name: Install Docker Engine with compose and buildx plugins
+  ansible.builtin.package:
+    name: "{{ docker_packages }}"
+    state: present
+
+- name: Create Docker configuration directory
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: docker_daemon_config | length > 0
+
+- name: Render Docker daemon configuration
+  ansible.builtin.copy:
+    content: "{{ docker_daemon_config | to_nice_json }}\n"
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+    validate: dockerd --validate --config-file %s
+  when: docker_daemon_config | length > 0
+  notify: Restart docker
+
+- name: Add users to the docker group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop: "{{ docker_users }}"
+
+- name: Manage the docker service
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: "{{ docker_service_enabled }}"
+    state: "{{ docker_service_state }}"
+
+- name: Deploy the compose stacks
+  ansible.builtin.include_tasks: init-containers.yaml
+  when: docker_compose_stacks | length > 0

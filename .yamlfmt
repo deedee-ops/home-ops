@@ -12,6 +12,8 @@ exclude:
   - ".pre-commit-config.yaml"
   - "talos/*/schematic.yaml.j2"
   - "kubernetes/apps/default/glance/resources/**/*.yaml"
+  # ansible-vault ciphertext - formatting it would corrupt the file
+  - "ansible/**/vault.yaml"
 formatter:
   type: basic
   disable_alias_key_correction: true

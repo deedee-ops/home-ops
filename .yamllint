@@ -15,9 +15,10 @@ rules:
     max: 120
 
 ignore:
-  - ".pre-commit-config.yaml"
-  - "*.tmpl.y*ml"
   - "**/charts/**/*.y*ml"
+  - "*.tmpl.y*ml"
+  - ".pre-commit-config.yaml"
+  - "ansible/**/vault.yaml"
   - "kubernetes/apps/default/glance/resources/**/*.yaml"
 
 # vim:ft=yaml

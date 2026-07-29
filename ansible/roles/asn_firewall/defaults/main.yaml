@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+asn_firewall_rules:
+  - asn: 16342
+    ports:
+      - 80
+      - 443
+    proto: tcp
+
+asn_firewall_trusted_sources:
+  - 127.0.0.0/8
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - 169.254.0.0/16
+  - ::1/128
+  - fc00::/7
+  - fe80::/10
+
+# Interface the outside world arrives on, used to scope the DOCKER-USER rules so that
+# container egress is not caught by them. Empty means: detect from the default route.
+asn_firewall_wan_interface: ""
+
+asn_firewall_config_file: /etc/asn-firewall/config.json
+asn_firewall_state_dir: /var/lib/asn-firewall
+asn_firewall_worker: /usr/local/sbin/asn-firewall.sh
+asn_firewall_ripe_url: "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS"
+
+asn_firewall_refresh_calendar: hourly
+
+asn_firewall_packages:
+  - curl
+  - ipset
+  - iptables
+  - jq
