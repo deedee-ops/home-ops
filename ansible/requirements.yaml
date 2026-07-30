@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-requirements.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-requirements.json
 # Bundled with pkgs.ansible, so devenv needs no extra step. On a plain ansible-core
 # control node: ansible-galaxy collection install -r requirements.yaml
 collections:

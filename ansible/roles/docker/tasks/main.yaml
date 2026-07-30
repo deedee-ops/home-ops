@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
 - name: Configure the Docker package repository
   ansible.builtin.include_tasks: "repository/{{ ansible_facts['os_family'] }}.yaml"
 

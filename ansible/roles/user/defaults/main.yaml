@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
 user_name: ajgon
 # Plain text, hashed on the control node. Sourced from $ANSIBLE_USER_PASSWORD - see inventory/group_vars/vps.yaml.
 user_password: ""

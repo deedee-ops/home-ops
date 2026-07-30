@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/renovate-operator.mogenius.com/renovatejob_v1alpha1.json
 apiVersion: renovate-operator.mogenius.com/v1alpha1
 kind: RenovateJob
 metadata:

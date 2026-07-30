@@ -17,7 +17,7 @@
   ],
   "allowOnlyURLs": [
     "https://www.schemastore.org",
-    "https://schemas.ajgon.casa",
+    "https://schemas.rzegocki.dev",
     "https://devenv.sh",
     "https://raw.githubusercontent.com/ansible/ansible-lint"
   ]

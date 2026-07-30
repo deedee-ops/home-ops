@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
 services:
   registry-docker-io: &service
     image: public.ecr.aws/docker/library/registry:3.1.1@sha256:1be55279f18a2fe1a74edf2664cac61c1bea305b7b4642dab412e7affdcb3e33

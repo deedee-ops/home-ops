@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/borgmatic.config.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/borgmatic.config.json
 
 # location
 source_directories:

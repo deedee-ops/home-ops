@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/pocketid.internal/pocketidoidcclient_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/pocketid.internal/pocketidoidcclient_v1alpha1.json
 apiVersion: pocketid.internal/v1alpha1
 kind: PocketIDOIDCClient
 metadata:

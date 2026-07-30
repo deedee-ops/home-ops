@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/namespace-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/namespace-v1.json
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -12,7 +12,7 @@ metadata:
     pod-security.kubernetes.io/warn: restricted
     resource.kubernetes.io/admin-access: "true"
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:

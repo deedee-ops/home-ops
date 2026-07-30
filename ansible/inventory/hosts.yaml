@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-inventory.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-inventory.json
 vps:
   hosts:
     mandark:

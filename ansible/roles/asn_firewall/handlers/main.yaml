@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
 - name: Reload systemd
   ansible.builtin.systemd_service:
     daemon_reload: true

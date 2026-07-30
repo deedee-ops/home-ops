@@ -1,6 +1,6 @@
 ---
 # yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicybinding-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -8,7 +8,7 @@ metadata:
 spec:
   policyName: volsync-mover-jitter
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicy-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicy
 metadata:
@@ -63,7 +63,7 @@ spec:
           ]
 ---
 # yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicybinding-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -71,7 +71,7 @@ metadata:
 spec:
   policyName: volsync-mover-nfs
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicy-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicy
 metadata:
@@ -129,7 +129,7 @@ spec:
           ]
 ---
 # yamllint disable-line rule:line-length
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicybinding-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicybinding-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicyBinding
 metadata:
@@ -137,7 +137,7 @@ metadata:
 spec:
   policyName: kopia-maintenance-nfs
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/mutatingadmissionpolicy-admissionregistration-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/mutatingadmissionpolicy-admissionregistration-v1.json
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingAdmissionPolicy
 metadata:

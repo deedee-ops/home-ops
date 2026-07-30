@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-lint-config.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-lint-config.json
 profile: production
 
 exclude_paths:

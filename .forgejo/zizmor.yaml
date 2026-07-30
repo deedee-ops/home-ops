@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/zizmor.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/zizmor.json
 rules:
   # false positives on forgejo, because `uses` stanza doesn't accept https:// proto in github
   impostor-commit:

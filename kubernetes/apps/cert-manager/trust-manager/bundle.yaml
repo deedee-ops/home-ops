@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/trust.cert-manager.io/bundle_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/trust.cert-manager.io/bundle_v1alpha1.json
 apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
 services:
   matchbox:
     image: quay.io/poseidon/matchbox:v0.11.0@sha256:06bcdae85335fd00e8277b007b55cfb49d96a0114628c0f70db2b92b079d246a

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/resourceclaimtemplate-resource-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/resourceclaimtemplate-resource-v1.json
 apiVersion: resource.k8s.io/v1
 kind: ResourceClaimTemplate
 metadata:

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
 user_name: "{{ vps_user | default('ajgon') }}"
 vps_bootstrap_user: "{{ vps_root_user | default('root') }}"
 

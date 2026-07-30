@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
 # autosave=false: the worker manages saves itself; preseeding avoids the debconf prompt.
 - name: Preseed iptables-persistent
   ansible.builtin.debconf:

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cronjob-batch-v1.json
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -41,7 +41,7 @@ spec:
               secret:
                 secretName: tuppr-talosconfig
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cronjob-batch-v1.json
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -83,7 +83,7 @@ spec:
               secret:
                 secretName: tuppr-talosconfig
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cronjob-batch-v1.json
 apiVersion: batch/v1
 kind: CronJob
 metadata:

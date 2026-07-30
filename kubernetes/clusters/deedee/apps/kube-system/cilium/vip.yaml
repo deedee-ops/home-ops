@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/service-v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/service-v1.json
 apiVersion: v1
 kind: Service
 metadata:

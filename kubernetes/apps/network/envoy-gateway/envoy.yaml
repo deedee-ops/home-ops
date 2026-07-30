@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/envoyproxy_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/envoyproxy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: EnvoyProxy
 metadata:
@@ -33,7 +33,7 @@ spec:
         compression:
           type: Zstd
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/gatewayclass_v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/gatewayclass_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
@@ -46,7 +46,7 @@ spec:
     name: envoy
     namespace: network
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/gateway_v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -81,7 +81,7 @@ spec:
           - kind: Secret
             name: external-tls
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/gateway_v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -130,7 +130,7 @@ spec:
         namespaces:
           from: All
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: BackendTrafficPolicy
 metadata:
@@ -158,7 +158,7 @@ spec:
     http:
       requestTimeout: 0s
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/clienttrafficpolicy_v1alpha1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/clienttrafficpolicy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: ClientTrafficPolicy
 metadata:
@@ -196,7 +196,7 @@ spec:
       - h2
       - http/1.1
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/httproute_v1.json
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/httproute_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
