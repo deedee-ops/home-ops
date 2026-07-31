@@ -1,0 +1,52 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+services:
+  wg-easy:
+    environment:
+      DISABLE_IPV6: "true"
+    image: ghcr.io/wg-easy/wg-easy:15.3.0
+    container_name: wg-easy
+    restart: unless-stopped
+    tmpfs:
+      - /run:mode=755,uid=0,gid=0
+    networks:
+      internal:
+      wg:
+        ipv4_address: 10.10.10.10
+    volumes:
+      - ${DATA_DOCKER_DIR}/wireguard:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - "57968:57968/udp"
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "internal"
+      traefik.http.services.wg-easy.loadbalancer.server.port: "51821"
+      traefik.http.routers.wg-easy.entrypoints: https
+      traefik.http.routers.wg-easy.rule: "Host(`wg.${ROOT_DOMAIN}`)"
+      traefik.http.routers.wg-easy.service: wg-easy
+      traefik.http.routers.wg-easy.tls: true
+      traefik.http.routers.wg-easy.tls.certresolver: openbao-ecdsa
+      traefik.http.routers.wg-easy.tls.domains[0].main: 'wg.${ROOT_DOMAIN}'
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    # security
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  wg:
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.10.0/24
+  internal:
+    name: internal
+    external: true
