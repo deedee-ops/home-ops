@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+services:
+  towonel-agent:
+    environment:
+      RUST_LOG: info
+      TOWONEL_INVITE_TOKEN: "${TOWONEL_INVITE_TOKEN}"
+      TOWONEL_AGENT_UDP_SERVICES: |-
+        [{"name":"wireguard","origin":"127.0.0.1:57968","listen_port":57968}]
+    image: codeberg.org/towonel/towonel-agent:1.5.1
+    container_name: towonel-agent
+    restart: unless-stopped
+    network_mode: host
