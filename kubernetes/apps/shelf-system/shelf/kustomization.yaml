@@ -13,5 +13,7 @@ configMapGenerator:
   - name: shelf-oidc-shim-configmap
     files:
       - ./resources/Caddyfile
+      - ./resources/mail-magic-link.html
+      - ./resources/mail-recovery.html
 generatorOptions:
   disableNameSuffixHash: true

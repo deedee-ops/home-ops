@@ -82,9 +82,9 @@ spec:
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               PORT: &webPort 8080
               SERVER_URL: https://shelf.${ROOT_DOMAIN}
-              SMTP_FROM: "deedee@${ROOT_DOMAIN}"
-              SMTP_HOST: "smtp-relay.network.svc.cluster.local"
-              SMTP_PORT: "25"
+              SMTP_FROM: &smtpFrom "deedee@${ROOT_DOMAIN}"
+              SMTP_HOST: &smtpHost "smtp-relay.network.svc.cluster.local"
+              SMTP_PORT: &smtpPort "25"
               SMTP_PWD: ""
               SMTP_USER: ""
               SUPABASE_URL: &supabaseUrl https://shelf-supabase.${ROOT_DOMAIN}
@@ -185,7 +185,7 @@ spec:
               GOTRUE_DB_DRIVER: postgres
               GOTRUE_DB_NAMESPACE: auth
               GOTRUE_DISABLE_SIGNUP: "false"
-              GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+              GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
               GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
               GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
               GOTRUE_EXTERNAL_KEYCLOAK_URL: https://shelf-oidc.${ROOT_DOMAIN}
@@ -195,7 +195,13 @@ spec:
               GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
               GOTRUE_JWT_EXP: "3600"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
+              GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/templates/mail-magic-link.html
+              GOTRUE_MAILER_TEMPLATES_RECOVERY: http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/templates/mail-recovery.html
               GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
+              GOTRUE_SMTP_ADMIN_EMAIL: *smtpFrom
+              GOTRUE_SMTP_HOST: *smtpHost
+              GOTRUE_SMTP_MAX_FREQUENCY: "5s"
+              GOTRUE_SMTP_PORT: *smtpPort
               GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
               PORT: &authPort 9999
               GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
@@ -423,6 +429,13 @@ spec:
           - matches:
               - path:
                   type: PathPrefix
+                  value: /verify
+            backendRefs:
+              - name: shelf-gotrue
+                port: *authPort
+          - matches:
+              - path:
+                  type: PathPrefix
                   value: /storage/v1
             filters:
               - type: URLRewrite
@@ -448,6 +461,10 @@ spec:
             app:
               - subPath: Caddyfile
                 path: /etc/caddy/Caddyfile
+              - subPath: mail-magic-link.html
+                path: /etc/caddy/templates/mail-magic-link.html
+              - subPath: mail-recovery.html
+                path: /etc/caddy/templates/mail-recovery.html
       dbbackup:
         type: custom
         volumeSpec:

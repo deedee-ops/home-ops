@@ -481,7 +481,53 @@ this dashboard is only for pre-printing blanks.
 
 ---
 
-## 11. Assumptions worth revisiting
+## 11. Email — OTP codes and the shared recovery timer
+
+Symptom: **"Forgot password" never delivers a mail**, while "Login by OTP" does.
+
+Two independent causes, both fixed in `helmrelease.yaml`:
+
+### 11.1 `/recover` is silently rate-limited by the preceding `/otp`
+
+GoTrue's magic-link and password-recovery flows **share one DB timer**:
+`sendMagicLink` reuses `users.recovery_sent_at` on purpose ("Magic Link is just a
+recovery with a different template", `internal/api/mail.go:486`), and both gate on
+`SMTP.MaxFrequency`, which defaults to **1 minute** (`conf/configuration.go:1169`).
+Shelf's *Forgot password* link sits on the login page right under the OTP form, so
+the usual click order (try OTP login → give up → forgot password) lands inside
+that window and GoTrue answers `429 over_email_send_rate_limit`.
+
+It fails **silently** because `supabase-js` returns errors instead of throwing and
+Shelf's `sendResetPasswordLink` never inspects the result
+(`modules/auth/service.server.ts`: `await getSupabaseAdmin().auth.resetPasswordForEmail(email)`),
+so the route still redirects to step 2 "enter OTP". Confirmed in the logs:
+GoTrue `POST /recover 429` at the same second as webapp `POST /forgot-password.data 202`.
+
+Fix: `GOTRUE_SMTP_MAX_FREQUENCY: "5s"`. (Upstream-side this is a Shelf bug; the
+per-hour cap `GOTRUE_RATE_LIMIT_EMAIL_SENT` (default 30) still applies.)
+
+### 11.2 The built-in templates carry a link, not the code
+
+Shelf asks the user to **type a 6-digit code** in both flows, but GoTrue's default
+`recovery` / `magic_link` bodies only render `{{ .ConfirmationURL }}`
+(`internal/mailer/templatemailer/templatemailer.go:43-53`) — no `{{ .Token }}`.
+The magic-link mail *appears* to work only because clicking its link hits
+`/verify` and logs you in; recovery has no such escape hatch (its link redirects
+to `SITE_URL` with the tokens in the URL fragment, which Shelf doesn't consume).
+
+`GOTRUE_MAILER_TEMPLATES_*` takes a **URL** — GoTrue fetches it over HTTP
+(`template.go:477`, no `file://`), so it can't just be a mounted file. The
+`oidc-shim` Caddy already exists in-namespace, so it also serves
+`resources/mail-{recovery,magic-link}.html` (same configMap) under `/templates/*`,
+and GoTrue points at `http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/…`.
+Plain HTTP on purpose: in-cluster, and it avoids the CA/TLS dance.
+
+**Coupling to note:** template fetch failures make GoTrue fail the *send*, so a
+broken `oidc-shim` now breaks OTP mail as well as OIDC login.
+
+---
+
+## 12. Assumptions worth revisiting
 
 - **Cert for `shelf-oidc.$ROOT_DOMAIN`** relies on the same wildcard/cert-manager
   path as the other `*.$ROOT_DOMAIN` hosts.

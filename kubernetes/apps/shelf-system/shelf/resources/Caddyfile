@@ -7,6 +7,11 @@
 :8080 {
 	respond /healthz "ok" 200
 
+	handle_path /templates/* {
+		root * /etc/caddy/templates
+		file_server
+	}
+
 	@auth path /protocol/openid-connect/auth
 	redir @auth https://id.${ROOT_DOMAIN}/authorize?{query} 302
 
