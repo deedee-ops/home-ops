@@ -12,6 +12,7 @@ spec:
     substitute:
       EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      VPS_IP: "${VPS_IP}"
   prune: true
   sourceRef:
     kind: GitRepository
