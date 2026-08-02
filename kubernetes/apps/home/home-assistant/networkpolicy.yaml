@@ -16,17 +16,15 @@ specs:
           - matchName: raw.githubusercontent.com
           - matchName: release-assets.githubusercontent.com
           - matchName: unifi.internal
+          # hass specific
+          - matchName: alerts.home-assistant.io
+          - matchName: brands.home-assistant.io
+          - matchName: version.home-assistant.io
           - matchName: wheels.home-assistant.io
           - matchPattern: "*.hacs.xyz"
         toPorts:
           - ports:
               - port: "443"
-      - toFQDNs:
-          - matchName: smtp.migadu.com
-        toPorts:
-          - ports:
-              - port: "465"
-              - port: "587"
       - toEndpoints:
           - matchLabels:
               app.kubernetes.io/name: mosquitto

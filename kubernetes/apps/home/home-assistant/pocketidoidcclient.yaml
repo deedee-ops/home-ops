@@ -6,9 +6,8 @@ metadata:
   name: home-assistant
 spec:
   launchUrl: https://home.${ROOT_DOMAIN}
-  # TODO:
-  # callbackUrls:
-  #   - "https://home.${ROOT_DOMAIN}/oauth2/callback"
+  callbackUrls:
+    - "https://home.${ROOT_DOMAIN}/auth/oidc/callback"
   secret:
     keys:
       clientID: HASS_OIDC_CLIENT_ID

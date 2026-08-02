@@ -19,6 +19,7 @@ spec:
         pod:
           labels:
             egress.cilium.io/auth: "true"
+            egress.cilium.io/smtp-relay: "true"
         type: statefulset
         containers:
           app:
@@ -27,6 +28,7 @@ spec:
               tag: 2026.7.4@sha256:17a97c2fc87b4311342c1a67b92ffa5d4b02cd64f514228d80385e96a888137e
             env:
               HASS_HTTP_TRUSTED_PROXY: 172.30.0.0/16
+              HASS_OIDC_DISCOVERY_URL: "https://id.ajgon.casa/.well-known/openid-configuration"
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
@@ -96,9 +98,6 @@ spec:
             targetPort: 8123
     route:
       app:
-        # annotations:
-        #   gatus.home-operations.com/endpoint: |-
-        #     conditions: ["[STATUS] == 200"]
         hostnames:
           - "home.${ROOT_DOMAIN}"
         parentRefs:
