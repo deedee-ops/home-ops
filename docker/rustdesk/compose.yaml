@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+services:
+  rustdesk-hbbs: &rustdesk
+    image: rustdesk/rustdesk-server:1.1.16@sha256:8ecdab65deb7c84652a626380e31d11a8f1fbafd97916d57f95c20628f943c00
+    container_name: rustdesk-hbbs
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /data
+    command:
+      - hbbs
+      - -r
+      - relay.${EXTERNAL_ROOT_DOMAIN}:21117
+      # -k _ rejects clients that do not use the server key (encrypted only)
+      - -k
+      - _
+    volumes:
+      - ${DATA_DOCKER_DIR}/rustdesk:/data
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    networks:
+      - internal
+    ports:
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+    depends_on:
+      - rustdesk-hbbr
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  rustdesk-hbbr:
+    <<: *rustdesk
+    container_name: rustdesk-hbbr
+    command:
+      - hbbr
+      - -k
+      - _
+    depends_on: []
+    ports:
+      - "21117:21117"
+
+networks:
+  internal:
+    name: internal
+    external: true
