@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-meta.json
+galaxy_info:
+  role_name: nut
+  author: ajgon
+  description: Monitor a USB UPS with Network UPS Tools and shut the host down on low battery
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - ups
+    - nut
+dependencies: []

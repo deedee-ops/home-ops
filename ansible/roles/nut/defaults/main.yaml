@@ -1,0 +1,3 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
+nut_mode: standalone

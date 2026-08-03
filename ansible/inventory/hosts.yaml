@@ -13,3 +13,8 @@ vps:
       docker_compose_stacks:
         - arcane-agent
         - traefik-vps
+
+nut:
+  hosts:
+    nutpi:
+      ansible_host: nutpi.internal
