@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: unpoller-rules
+spec:
+  groups:
+    # Recording rules normalise away port_ip / port_mac, which follow the attached
+    # client and would otherwise churn the series identity, resetting changes()
+    # and wiping max_over_time() history.
+    - name: unpoller.recording
+      rules:
+        - record: unifi:port_speed_bps
+          expr: |-
+            max by (name, port_num, port_name, site_name) (
+              unpoller_device_port_port_speed_bps
+            )
+
+        - record: unifi:port_rx_packets:rate5m
+          expr: |-
+            max by (name, port_num, port_name, site_name) (
+              rate(unpoller_device_port_receive_packets_total[5m])
+            )
+
+        - record: unifi:port_rx_errors:rate15m
+          expr: |-
+            max by (name, port_num, port_name, site_name) (
+              rate(unpoller_device_port_receive_errors_total[15m])
+            )
+
+    - name: unpoller.rules
+      rules:
+        # Every port is its own baseline, so no allowlist is needed: a port that
+        # always runs at 100M can never fall below its own maximum. The packet
+        # rate gate excludes sleeping / WoL hosts, which stop passing traffic,
+        # while a damaged pair keeps passing traffic at the degraded speed.
+        - alert: UnifiPortSpeedDegraded
+          expr: |-
+            ((unifi:port_speed_bps > 0) < max_over_time(unifi:port_speed_bps[7d]))
+            and (unifi:port_rx_packets:rate5m > 20)
+          for: 5m
+          annotations:
+            summary: >-
+              Port {{ $labels.port_num }} "{{ $labels.port_name }}" on {{ $labels.name }}
+              linked at {{ $value | humanize }}bps, below its 7d maximum, while passing traffic
+          labels:
+            severity: critical
+
+        # CRC/FCS errors are never legitimate on any port, whatever is plugged in,
+        # so this one needs no gating and has no baseline warm-up.
+        - alert: UnifiPortReceiveErrors
+          expr: |-
+            unifi:port_rx_errors:rate15m > 0.1
+          for: 15m
+          annotations:
+            summary: >-
+              Port {{ $labels.port_num }} "{{ $labels.port_name }}" on {{ $labels.name }}
+              is logging {{ $value | printf "%.2f" }} receive errors/sec
+          labels:
+            severity: warning
+
+        - alert: UnifiPortFlapping
+          expr: |-
+            changes(unifi:port_speed_bps[30m]) > 4
+            and (unifi:port_rx_packets:rate5m > 20)
+          annotations:
+            summary: >-
+              Port {{ $labels.port_num }} "{{ $labels.port_name }}" on {{ $labels.name }}
+              changed link state {{ $value | printf "%.0f" }} times in 30m
+          labels:
+            severity: critical
+
+        # Link loss cannot be distinguished from an intentional shutdown, hence
+        # warning severity and a long fuse rather than critical.
+        - alert: UnifiPortDown
+          expr: |-
+            unifi:port_speed_bps == 0
+            and max_over_time(unifi:port_speed_bps[1d]) > 0
+          for: 15m
+          annotations:
+            summary: >-
+              Port {{ $labels.port_num }} "{{ $labels.port_name }}" on {{ $labels.name }}
+              has lost link
+          labels:
+            severity: warning
