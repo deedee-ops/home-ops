@@ -22,10 +22,14 @@ spec:
   storage:
     size: ${PGDB_CAPACITY:=10Gi}
     storageClass: ${PGDB_STORAGE_CLASS:=ceph-block}
+  walStorage:
+    size: ${PGDB_WAL_CAPACITY:=8Gi}
+    storageClass: ${PGDB_STORAGE_CLASS:=ceph-block}
   postgresql:
     parameters:
       max_connections: "300"
       shared_buffers: 512MB
+      max_slot_wal_keep_size: 3GB
   monitoring:
     enablePodMonitor: true
   affinity:
