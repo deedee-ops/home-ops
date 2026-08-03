@@ -172,6 +172,42 @@ can match, so loopback, LAN and docker bridge traffic is never filtered.
 Inspect the live state on the host with `/usr/local/sbin/asn-firewall.sh status`. Note
 that `netfilter-persistent save` snapshots all live rules, docker's included.
 
+### nut
+
+Installs Network UPS Tools, points the `usbhid-ups` driver at a USB UPS, and runs
+`upsmon` so the host shuts itself down before the battery is exhausted. The `nut` group
+(`nutpi`) runs in `netserver` mode: it is the coordinator that owns the UPS over USB and
+serves its status on the LAN, so the other machines on the same UPS — the Talos nodes
+(via the `nut-client` system extension) and the NAS — attach as `secondary` clients and
+power themselves off when told.
+
+The low-battery point is a driver override, not the UPS default:
+`nut_ups_overrides.battery.runtime.low` (seconds) makes `upsmon` pull the plug once the
+estimated runtime drops below it — the fleet-wide "shut down with N seconds left" knob,
+since every secondary keys off this one host's `LB` status.
+
+`upsd` accounts are built from `nut_users`; entries whose password is empty are skipped,
+so the `admin` and `secondary` accounts appear only once their secrets are set. All three
+passwords live in `inventory/group_vars/nut/vault.yaml` (ansible-vault, `vault_`-prefixed
+and mapped in `group_vars/nut/main.yaml`) exactly like the vps group — nothing in git.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `nut_mode` | `standalone` | `standalone`, or `netserver` to serve secondaries |
+| `nut_ups_name` | `ups` | Name upsd publishes; `upsc <name>` reads it |
+| `nut_ups_driver` | `usbhid-ups` | NUT driver for the device |
+| `nut_ups_overrides` | `battery.runtime.low: 300` | `override.<key>` lines in `ups.conf` |
+| `nut_listen_addresses` | `[127.0.0.1]` | upsd listeners; add the LAN IP for secondaries |
+| `nut_admin_password` | — | upsrw/upscmd admin, from `vault_nut_admin_password` |
+| `nut_monitor_password` | — | primary upsmon, from `vault_nut_primary_password` |
+| `nut_secondary_password` | — | secondary clients, from `vault_nut_secondary_password` |
+| `nut_shutdown_command` | `/sbin/shutdown -h +0` | Run when the battery runs low |
+
+```sh
+export ANSIBLE_VAULT_PASSWORD='...'   # unlocks inventory/group_vars/nut/vault.yaml
+ansible-playbook site.yaml --limit nut
+```
+
 ## Linting
 
 `ansible-lint` runs as a pre-commit hook whenever anything under `ansible/` changes,

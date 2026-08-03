@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
+ansible_user: "{{ nut_user | default('ajgon') }}"
+ansible_python_interpreter: /usr/bin/python3
+
+user_password: "{{ lookup('env', 'ANSIBLE_USER_PASSWORD') }}"
+ansible_become_password: "{{ user_password }}"
+
+nut_mode: netserver
+
+nut_admin_password: "{{ vault_nut_admin_password }}"
+nut_monitor_password: "{{ vault_nut_primary_password }}"
+nut_secondary_password: "{{ vault_nut_secondary_password }}"

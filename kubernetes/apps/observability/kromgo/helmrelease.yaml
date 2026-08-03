@@ -75,7 +75,7 @@ spec:
 
         - title: Power
           id: cluster_power_usage
-          query: round(sum(homeassistant_sensor_power_w{entity=~"sensor.(k8s_.*|nas|switch)_power"}), 0.1)
+          query: homeassistant_sensor_power_w{entity="sensor.serwerownia_ups_power"}
           valueExpr: string(result) + "w"
           colorExpr: 'colorScale(result, [300.0, 500.0], ["green", "orange", "red"])'
     httpRoute:

@@ -1,0 +1,13 @@
+# Managed by Ansible.
+[admin]
+    password = {{ nut_admin_password }}
+    actions = SET
+    instcmds = ALL
+
+[upsmon]
+    password = {{ nut_monitor_password }}
+    upsmon primary
+
+[secondary]
+    password = {{ nut_secondary_password }}
+    upsmon secondary

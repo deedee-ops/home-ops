@@ -1,0 +1,92 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+- name: Assert the primary upsmon password is set
+  ansible.builtin.assert:
+    that:
+      - nut_monitor_password | length > 0
+    fail_msg: >-
+      nut_monitor_password is empty - set vault_nut_primary_password in
+      inventory/group_vars/nut/vault.yaml and export ANSIBLE_VAULT_PASSWORD
+    quiet: true
+
+- name: Install NUT
+  ansible.builtin.package:
+    name:
+      - nut-server
+      - nut-client
+    state: present
+  notify: Retrigger udev for the UPS
+
+- name: Check UPS node ownership
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      find /dev/bus/usb -type c -group nut | grep -q .
+    executable: /bin/bash
+  register: nut_dev_perms
+  changed_when: false
+  failed_when: false
+
+- name: Retrigger udev for the UPS
+  ansible.builtin.command:
+    cmd: udevadm trigger --action=add --subsystem-match=usb --attr-match=idVendor=0764
+  when: nut_dev_perms.rc != 0
+  changed_when: true
+  notify: Restart NUT
+
+- name: Select the operating mode
+  ansible.builtin.template:
+    src: nut.conf.j2
+    dest: /etc/nut/nut.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  notify: Restart nut
+
+- name: Define the UPS
+  ansible.builtin.template:
+    src: ups.conf.j2
+    dest: /etc/nut/ups.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  notify: Restart nut
+
+- name: Configure the upsd listeners
+  ansible.builtin.template:
+    src: upsd.conf.j2
+    dest: /etc/nut/upsd.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  notify: Restart nut
+
+- name: Write the upsd users
+  ansible.builtin.template:
+    src: upsd.users.j2
+    dest: /etc/nut/upsd.users
+    owner: root
+    group: nut
+    mode: "0640"
+  notify: Restart nut
+  no_log: true
+
+- name: Configure upsmon
+  ansible.builtin.template:
+    src: upsmon.conf.j2
+    dest: /etc/nut/upsmon.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  notify: Restart nut
+  no_log: true
+
+- name: Enable and start the NUT services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - nut-driver-enumerator
+    - nut-server
+    - nut-monitor

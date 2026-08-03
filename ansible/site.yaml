@@ -37,3 +37,9 @@
   roles:
     - role: user
     - role: docker
+
+- name: Provision NUT server
+  hosts: nut
+  gather_facts: true
+  roles:
+    - role: nut

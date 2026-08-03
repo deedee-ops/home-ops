@@ -44,6 +44,16 @@ specs:
           - cidr: 192.168.42.10/32
   - endpointSelector:
       matchLabels:
+        egress.cilium.io/nut: "true"
+    egress:
+      - toCIDRSet:
+          - cidr: 192.168.42.9/32
+      - toPorts:
+          - ports:
+              - port: "3493"
+                protocol: TCP
+  - endpointSelector:
+      matchLabels:
         egress.cilium.io/internet: "true"
     egress:
       # Public IP space without private subnets

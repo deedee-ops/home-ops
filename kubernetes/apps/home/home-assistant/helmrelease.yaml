@@ -19,6 +19,7 @@ spec:
         pod:
           labels:
             egress.cilium.io/auth: "true"
+            egress.cilium.io/nut: "true"
             egress.cilium.io/smtp-relay: "true"
         type: statefulset
         containers:

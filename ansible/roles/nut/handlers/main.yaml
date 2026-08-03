@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+- name: Restart nut
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+  loop:
+    - nut-driver-enumerator
+    - nut-server
+    - nut-monitor

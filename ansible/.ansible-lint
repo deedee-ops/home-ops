@@ -7,6 +7,7 @@ exclude_paths:
   - .devenv
   # encrypted, and the linter is deliberately not given the vault password
   - ansible/inventory/group_vars/vps/vault.yaml
+  - ansible/inventory/group_vars/nut/vault.yaml
 
 # yaml style is linted repo wide by the yamllint hook, with .yamllint
 skip_list:
