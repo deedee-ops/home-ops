@@ -10,6 +10,9 @@ spec:
   cooldownPeriod: 0
   minReplicaCount: 0
   maxReplicaCount: 1
+  fallback:
+    failureThreshold: 3
+    replicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: ${KEDA_KIND:=Deployment}
@@ -17,7 +20,7 @@ spec:
   triggers:
     - type: prometheus
       metadata:
-        serverAddress: http://prometheus-operated.observability.svc.cluster.local:9090
+        serverAddress: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
         query: >-
           probe_success{instance=~".+:2049"} *
           on() (node_filesystem_mount_info{mountpoint="/mnt/${KEDA_VOLUME}", node="nas"} == 1) or

@@ -11,6 +11,7 @@ spec:
   interval: 1h
   values:
     fullnameOverride: blackbox-exporter-lan
+    replicas: 2
     securityContext:
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
