@@ -110,6 +110,8 @@ spec:
                       style-src 'self' 'unsafe-inline';
       prometheusSpec:
         externalUrl: https://prometheus.${ROOT_DOMAIN}
+        replicas: 2
+        podAntiAffinity: hard
         version: v2.55.1 # override 'unsupported Prometheus version' error
         image:
           registry: mirror.gcr.io
