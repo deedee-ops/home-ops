@@ -150,6 +150,8 @@ spec:
         - reset
   connection:
     bufferLimit: 8Mi
+  healthCheck:
+    panicThreshold: 0
   targetSelectors:
     - group: gateway.networking.k8s.io
       kind: Gateway
@@ -157,6 +159,8 @@ spec:
   timeout:
     http:
       requestTimeout: 0s
+    tcp:
+      connectTimeout: 5s
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/clienttrafficpolicy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
