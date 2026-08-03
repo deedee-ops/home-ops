@@ -162,7 +162,7 @@ spec:
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: ClientTrafficPolicy
 metadata:
-  name: envoy
+  name: envoy-internal
 spec:
   clientIPDetection:
     xForwardedFor:
@@ -180,12 +180,56 @@ spec:
     initialStreamWindowSize: 2Mi
     initialConnectionWindowSize: 32Mi
     onInvalidMessage: TerminateStream
+  # LAN clients connect straight to the LoadBalancer, so QUIC works and there is
+  # no PROXY header to parse. Enabling proxyProtocol here would make Envoy reject
+  # the https-quic listener ("no registered implementation for
+  # envoy.filters.listener.proxy_protocol"), which is not valid on UDP listeners.
   http3: {}
-  proxyProtocol:
-    optional: true
-  targetSelectors:
+  targetRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
+      name: envoy-internal
+  tcpKeepalive: {}
+  timeout:
+    http:
+      requestReceivedTimeout: 0s
+  tls:
+    minVersion: "1.2"
+    alpnProtocols:
+      - h2
+      - http/1.1
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/clienttrafficpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: envoy-external
+spec:
+  clientIPDetection:
+    xForwardedFor:
+      trustedCIDRs:
+        - 172.30.0.0/16
+  connection:
+    bufferLimit: 8Mi
+    maxAcceptPerSocketEvent: 0
+  headers:
+    lateResponseHeaders:
+      add:
+        - name: "Strict-Transport-Security"
+          value: "max-age=31536000; includeSubDomains"
+  http2:
+    initialStreamWindowSize: 2Mi
+    initialConnectionWindowSize: 32Mi
+    onInvalidMessage: TerminateStream
+  # Traffic reaches this gateway only through the towonel agent, which is a TCP
+  # tunnel prepending a PROXY header. HTTP/3 is therefore unreachable and must
+  # stay off — see the comment on envoy-internal for why the two are exclusive.
+  proxyProtocol:
+    optional: true
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: envoy-external
   tcpKeepalive: {}
   timeout:
     http:
