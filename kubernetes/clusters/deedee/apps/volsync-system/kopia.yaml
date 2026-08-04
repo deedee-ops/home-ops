@@ -17,7 +17,7 @@ spec:
     substitute:
       APP: kopia
       CLUSTER: deedee
-      KEDA_VOLUME: fast
+      NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

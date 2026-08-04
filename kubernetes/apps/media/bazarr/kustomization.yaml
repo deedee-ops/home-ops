@@ -5,9 +5,9 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./scaledobject.yaml
 configMapGenerator:
   - name: bazarr-configmap
     files:

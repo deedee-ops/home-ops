@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheus-adapter-rules
+spec:
+  groups:
+    # Scaling gates consumed via external.metrics.k8s.io by the HPAs that
+    # replaced KEDA. Every gate is a single unlabelled series carrying only
+    # gate="<name>", so an HPA can AND several of them together with a label
+    # selector (the adapter aggregates the selected set with min()).
+    #
+    # The three-state contract every gate MUST honour:
+    #
+    #   1  -> condition satisfied, run
+    #   0  -> condition provably violated, scale to zero
+    #   -  -> unknown; the series is ABSENT, the HPA reports
+    #         FailedGetExternalMetric and leaves replicas untouched
+    #
+    # Absence must never collapse to 0. That is what makes a single Prometheus
+    # safe here: if Prometheus, blackbox or the NAS node-exporter go away we
+    # emit nothing and workloads keep running, whereas KEDA read a failing
+    # scaler as "inactive" and drained the cluster.
+    - name: scale-gate.recording
+      rules:
+        # /mnt/tank reachable over NFS *and* actually mounted on the NAS.
+        #
+        # Branch 1 - dataset mounted and NFS answering            -> 1
+        # Branch 2 - NFS not answering                            -> 0
+        # Branch 3 - NFS answering, NAS node-exporter reporting,
+        #            but the dataset is missing from its mount
+        #            table, i.e. the pool is still encrypted after
+        #            a NAS reboot                                 -> 0
+        #
+        # Branch 3 is what keeps pods off the exports during the manual ZFS
+        # decrypt window, where NFS is already up but the datasets are not
+        # mounted and the export paths resolve to empty directories.
+        - record: scale:gate
+          labels:
+            gate: volume-tank
+          expr: |-
+            max(
+              (
+                node_filesystem_mount_info{node="nas", mountpoint="/mnt/tank"}
+                  * on() group_left()
+                (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
+              )
+              or on()
+              (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 0)
+              or on()
+              (
+                (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
+                  * on() group_left()
+                (up{job="node-exporter", instance="nas.internal:9100"} == 1)
+                  * 0
+              )
+            )
+
+        - record: scale:gate
+          labels:
+            gate: volume-fast
+          expr: |-
+            max(
+              (
+                node_filesystem_mount_info{node="nas", mountpoint="/mnt/fast"}
+                  * on() group_left()
+                (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
+              )
+              or on()
+              (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 0)
+              or on()
+              (
+                (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
+                  * on() group_left()
+                (up{job="node-exporter", instance="nas.internal:9100"} == 1)
+                  * 0
+              )
+            )
+
+        # Waking hours, 10:00-22:59 Europe/Warsaw, from prom-timer.
+        # `bool` is deliberate: the bare `local_hour > 9` the ScaledObjects used
+        # returns the hour itself, not 1, which only ever worked because
+        # maxReplicaCount clamped the resulting nonsense.
+        # prom-timer down -> absent -> HPA no-op, not a shutdown.
+        - record: scale:gate
+          labels:
+            gate: daytime
+          expr: |-
+            max((local_hour > bool 9) * (local_hour < bool 23))
+
+        # Zigbee coordinator reachable. Not NFS related, same contract.
+        - record: scale:gate
+          labels:
+            gate: zigbee-controller
+          expr: |-
+            max(max_over_time(probe_success{instance=~"zigbee-controller.+"}[2m]))

@@ -20,8 +20,8 @@ spec:
   postBuild:
     substitute:
       APP: jellyfin
-      KEDA_KIND: StatefulSet
-      KEDA_VOLUME: tank
+      NFS_KIND: StatefulSet
+      NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VOLSYNC_CAPACITY: 50Gi
   prune: true

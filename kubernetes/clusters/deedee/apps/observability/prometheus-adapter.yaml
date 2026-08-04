@@ -3,22 +3,18 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: kiwix
+  name: prometheus-adapter
 spec:
-  components:
-    - ../../../components/nfs-scaler
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: observability
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/default/kiwix
-  postBuild:
-    substitute:
-      APP: kiwix-main
-      NFS_VOLUME: tank
-      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  path: ./kubernetes/apps/observability/prometheus-adapter
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: default
-  wait: false
+  targetNamespace: observability
+  wait: true

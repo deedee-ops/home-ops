@@ -6,10 +6,10 @@ resources:
   - ./database.yaml
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
-  - ./scaledobject.yaml
 configMapGenerator:
   - name: immich-configmap
     files:

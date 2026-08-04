@@ -5,8 +5,8 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./prometheusrule.yaml
-  - ./scaledobject.yaml
   - ./scrapeconfig.yaml

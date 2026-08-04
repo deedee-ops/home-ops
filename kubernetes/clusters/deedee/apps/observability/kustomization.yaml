@@ -13,5 +13,6 @@ resources:
   - ./kromgo.yaml
   - ./kube-prometheus-stack.yaml
   - ./prom-timer.yaml
+  - ./prometheus-adapter.yaml
   - ./silence-operator.yaml
   - ./unpoller.yaml
