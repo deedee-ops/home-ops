@@ -263,6 +263,9 @@ spec:
         folder: observability
         matchLabels:
           grafana.internal/instance: grafana
+    defaultRules:
+      disabled:
+        KubeHpaMaxedOut: true
     additionalPrometheusRulesMap:
       dockerhub-rules:
         groups:
