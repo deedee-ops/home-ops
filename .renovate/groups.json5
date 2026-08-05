@@ -61,6 +61,16 @@
       minimumGroupSize: 2,
     },
     {
+      description: "Talos Group",
+      groupName: "talos",
+      matchDatasources: ["docker", "custom.talos-factory"],
+      matchPackageNames: ["/siderolabs\\/talos/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
       description: "Towonel Group",
       groupName: "towonel",
       matchDatasources: ["docker"],
