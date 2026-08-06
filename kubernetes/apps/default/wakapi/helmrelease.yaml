@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Wakapi
           glance/icon: di:wakapi
           glance/url: https://wakapi.${ROOT_DOMAIN}

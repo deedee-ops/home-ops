@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Kavita
           glance/icon: di:kavita
           glance/url: https://kavita.${ROOT_DOMAIN}

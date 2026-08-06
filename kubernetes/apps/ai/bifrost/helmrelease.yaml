@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: bifrost
           glance/icon: https://raw.githubusercontent.com/maximhq/bifrost/refs/heads/dev/.github/assets/bifrost-logo.png
           glance/url: https://bifrost.${ROOT_DOMAIN}

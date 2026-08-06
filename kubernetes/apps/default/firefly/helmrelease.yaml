@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Firefly III
           glance/icon: di:firefly
           glance/url: https://firefly.${ROOT_DOMAIN}

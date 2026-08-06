@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: QUI
           glance/icon: di:qui
           glance/url: https://torrents.${ROOT_DOMAIN}

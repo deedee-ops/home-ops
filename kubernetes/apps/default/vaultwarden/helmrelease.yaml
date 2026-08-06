@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Vaultwarden
           glance/icon: di:vaultwarden-light
           glance/url: https://vaultwarden.${ROOT_DOMAIN}

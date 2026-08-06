@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Radarr
           glance/icon: di:radarr
           glance/url: https://radarr.${ROOT_DOMAIN}

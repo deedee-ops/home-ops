@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Gatus
           glance/icon: di:gatus
           glance/url: https://status.${ROOT_DOMAIN}

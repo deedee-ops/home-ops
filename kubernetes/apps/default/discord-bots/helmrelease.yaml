@@ -12,6 +12,8 @@ spec:
   values:
     controllers:
       fix-tweet-bot:
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
             image:

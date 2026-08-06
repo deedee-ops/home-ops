@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Mail Archive
           glance/icon: di:roundcube
           glance/url: https://mail.${ROOT_DOMAIN}

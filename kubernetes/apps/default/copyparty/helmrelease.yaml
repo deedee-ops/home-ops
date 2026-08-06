@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: copyparty
           glance/icon: di:copyparty
           glance/url: https://files.${ROOT_DOMAIN}

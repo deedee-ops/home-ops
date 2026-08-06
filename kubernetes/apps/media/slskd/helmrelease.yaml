@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: SLSKD
           glance/icon: di:slskd
           glance/url: https://soulseek.${ROOT_DOMAIN}

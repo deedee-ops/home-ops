@@ -12,9 +12,11 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
-            image: &img
+            image:
               repository: nousresearch/hermes-agent
               tag: main@sha256:42c1fac1684540e328ca93e0cb6e632e9be16a11e60b700a313c92c28e2c7cf8
             args:

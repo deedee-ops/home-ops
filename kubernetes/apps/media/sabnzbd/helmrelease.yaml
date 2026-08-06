@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: SabNZBD
           glance/icon: di:sabnzbd
           glance/url: https://sabnzbd.${ROOT_DOMAIN}

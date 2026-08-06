@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Paperless-NGX
           glance/icon: di:paperless-ngx
           glance/url: https://paperless.${ROOT_DOMAIN}

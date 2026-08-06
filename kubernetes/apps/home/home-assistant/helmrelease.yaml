@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Home Assistant
           glance/icon: di:home-assistant
           glance/url: https://home.${ROOT_DOMAIN}

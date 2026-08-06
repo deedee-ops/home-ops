@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: karakeep
           glance/icon: di:karakeep
           glance/url: https://karakeep.${ROOT_DOMAIN}

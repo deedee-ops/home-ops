@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Kopia
           glance/icon: di:kopia
           glance/url: https://kopia.${ROOT_DOMAIN}

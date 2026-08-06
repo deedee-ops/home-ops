@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         annotations:
+          reloader.stakater.com/auto: "true"
           glance/name: Zigbee2MQTT
           glance/icon: di:zigbee2mqtt
           glance/url: https://zigbee.${ROOT_DOMAIN}

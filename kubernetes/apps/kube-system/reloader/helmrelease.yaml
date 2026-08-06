@@ -12,9 +12,7 @@ spec:
   values:
     fullnameOverride: reloader
     reloader:
-      autoReloadAll: true
       enableHA: true
-      ignoreNamespaces: rook-ceph
       deployment:
         replicas: 1
       readOnlyRootFileSystem: true
