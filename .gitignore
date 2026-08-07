@@ -17,6 +17,9 @@ talos/**/*.iso
 charts
 Chart.lock
 
+__pycache__
+*.pyc
+
 # Devenv
 .devenv*
 devenv.local.nix

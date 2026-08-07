@@ -1,0 +1,16 @@
+[Unit]
+# Managed by Ansible.
+Description=UPS cascade boot recovery (uncordon Talos nodes)
+Documentation=file://{{ ups_cascade_lib_dir }}/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile={{ ups_cascade_etc_dir }}/ups-cascade.env
+ExecStart={{ ups_cascade_lib_dir }}/ups_cascade.py recover
+TimeoutStartSec={{ ups_cascade_recover_deadline + 300 }}
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

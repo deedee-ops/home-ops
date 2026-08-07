@@ -1,0 +1,14 @@
+#!/bin/sh
+# Managed by Ansible. Wired into upsmon.conf as SHUTDOWNCMD.
+set -eu
+
+if [ -r "{{ ups_cascade_etc_dir }}/ups-cascade.env" ]; then
+  set -a
+  . "{{ ups_cascade_etc_dir }}/ups-cascade.env"
+  set +a
+fi
+
+{{ ups_cascade_lib_dir }}/ups_cascade.py note pi_shutdown >/dev/null 2>&1 || true
+sync
+
+exec /sbin/shutdown -h +0

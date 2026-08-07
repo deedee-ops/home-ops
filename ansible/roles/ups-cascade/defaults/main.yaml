@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
+ups_cascade_ups: server-room-rack
+ups_cascade_cluster: deedee
+
+ups_cascade_poll_interval: 5
+ups_cascade_ride_through: 60
+ups_cascade_ol_stable: 30
+ups_cascade_talos_deadline: 420
+ups_cascade_nodes_down_deadline: 120
+ups_cascade_nas_deadline: 300
+ups_cascade_abort_cooldown: 900
+ups_cascade_recover_deadline: 1200
+
+ups_cascade_ups_drain_timeout: 180
+ups_cascade_ups_mount_timeout: 120
+
+ups_cascade_dry_run: false
+
+ups_cascade_nodes:
+  - name: blossom
+    addr: 192.168.42.21
+  - name: bubbles
+    addr: 192.168.42.22
+  - name: buttercup
+    addr: 192.168.42.23
+
+ups_cascade_ceph_namespace: rook-ceph
+
+ups_cascade_nas_host: nas.internal
+ups_cascade_nas_user: truenas_admin
+ups_cascade_nas_shutdown_cmd: sudo midclt call system.shutdown
+
+ups_cascade_vault_addr: https://bao.ajgon.casa
+ups_cascade_vault_path: "{{ ups_cascade_cluster }}/talos"
+
+ups_cascade_dir: /var/lib/ups-cascade
+ups_cascade_lib_dir: /usr/local/lib/ups-cascade
+ups_cascade_etc_dir: /etc/ups-cascade
+ups_cascade_shutdown_wrapper: /usr/local/sbin/ups-cascade-shutdown
+
+# renovate: datasource=github-releases depName=siderolabs/talos
+ups_cascade_talosctl_version: v1.13.8
+# renovate: datasource=github-releases depName=kubernetes/kubernetes
+ups_cascade_kubectl_version: v1.36.3
+
+ups_cascade_talosctl_arch:
+  aarch64: arm64
+  armv7l: armv7
+  x86_64: amd64
+
+ups_cascade_kubectl_arch:
+  aarch64: arm64
+  armv7l: arm
+  x86_64: amd64
+
+ups_cascade_logrotate_size: 8M
+ups_cascade_logrotate_keep: 24

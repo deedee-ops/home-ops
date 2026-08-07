@@ -1,3 +1,13 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
 nut_mode: standalone
+
+# LB fires on whichever of these is hit first. runtime.low is load-aware, so the
+# same threshold lands late once the cascade has shed the servers, and early if
+# the cascade never ran. charge.low stays disabled: this UPS reports charge
+# coarsely, runtime is the trustworthy signal.
+nut_battery_runtime_low: 300
+nut_battery_charge_low: 0
+
+nut_shutdown_cmd: /usr/local/sbin/ups-cascade-shutdown
+nut_powerdown_flag: /etc/killpower

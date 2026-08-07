@@ -1,0 +1,7 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+- name: Restart ups-cascade
+  ansible.builtin.systemd_service:
+    name: ups-cascade.service
+    state: restarted
+    daemon_reload: true

@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-meta.json
+galaxy_info:
+  role_name: ups_cascade
+  author: ajgon
+  description: Ordered homelab shutdown driven from the NUT primary when the UPS goes on battery
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - ups
+    - nut
+    - talos
+dependencies: []
