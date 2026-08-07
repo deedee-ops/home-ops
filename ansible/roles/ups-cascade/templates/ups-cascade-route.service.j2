@@ -1,0 +1,16 @@
+[Unit]
+# Managed by Ansible.
+Description=Host route forcing the Kubernetes API VIP onto the routed path
+Documentation=file:///usr/local/lib/ups-cascade/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/ip route replace {{ ups_cascade_api_vip }}/32{% for node in ups_cascade_nodes %} nexthop via {{ node.addr }}{% endfor %}
+
+ExecStop=-/usr/sbin/ip route del {{ ups_cascade_api_vip }}/32
+
+[Install]
+WantedBy=multi-user.target

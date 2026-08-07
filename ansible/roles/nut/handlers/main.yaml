@@ -1,5 +1,9 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+# The driver instance has to be restarted explicitly. nut-driver-enumerator only
+# reconciles ups.conf *sections* against service instances, so edits made inside
+# an existing section - the override.battery.* thresholds - never reach a running
+# driver (networkupstools/nut#2410).
 - name: Restart nut
   ansible.builtin.systemd_service:
     name: "{{ item }}"
@@ -7,5 +11,6 @@
     daemon_reload: true
   loop:
     - nut-driver-enumerator
+    - nut-driver@server-room-rack
     - nut-server
     - nut-monitor

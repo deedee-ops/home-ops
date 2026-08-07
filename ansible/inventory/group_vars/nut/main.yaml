@@ -11,3 +11,5 @@ nut_mode: netserver
 nut_admin_password: "{{ vault_nut_admin_password }}"
 nut_monitor_password: "{{ vault_nut_primary_password }}"
 nut_secondary_password: "{{ vault_nut_secondary_password }}"
+
+ups_cascade_nas_private_key: "{{ vault_ups_cascade_nas_private_key }}"

@@ -1,0 +1,13 @@
+#!/bin/sh
+# Managed by Ansible. NetworkManager flushes a device's routes when it
+# reactivates a connection, which drops the API VIP host route the boot-time
+# unit installed. Re-assert it on every link-up so a switch reboot or a cable
+# flap cannot leave the cascade unable to reach the Kubernetes API.
+set -eu
+
+case "${2:-}" in
+  up | dhcp4-change) ;;
+  *) exit 0 ;;
+esac
+
+exec /usr/sbin/ip route replace {{ ups_cascade_api_vip }}/32{% for node in ups_cascade_nodes %} nexthop via {{ node.addr }}{% endfor %}

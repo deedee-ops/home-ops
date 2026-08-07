@@ -1,2 +1,4 @@
 # Managed by Ansible.
 MONITOR server-room-rack@localhost 1 upsmon {{ nut_monitor_password }} primary
+SHUTDOWNCMD "/usr/local/sbin/ups-cascade-shutdown"
+POWERDOWNFLAG /etc/killpower

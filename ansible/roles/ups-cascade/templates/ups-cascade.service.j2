@@ -1,0 +1,19 @@
+[Unit]
+# Managed by Ansible.
+Description=UPS cascade orchestrator
+Documentation=file:///usr/local/lib/ups-cascade/README.md
+After=network-online.target nut-server.service nut-monitor.service ups-cascade-route.service
+Wants=network-online.target ups-cascade-route.service
+
+[Service]
+Type=simple
+Environment=HOME=/root
+EnvironmentFile=/etc/ups-cascade/ups-cascade.env
+ExecStart=/usr/local/lib/ups-cascade/ups_cascade.py monitor
+Restart=always
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

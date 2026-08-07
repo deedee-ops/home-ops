@@ -1,0 +1,20 @@
+#!/bin/sh
+# Managed by Ansible. Wired into upsmon.conf as SHUTDOWNCMD.
+#
+# NOTHING here may prevent the shutdown. Logging is best effort; the exec is not.
+# There is deliberately no `set -e`: a failure in this script leaves the Pi up
+# with the UPS running flat, which is the worst outcome available.
+#
+# Do NOT source /etc/ups-cascade/ups-cascade.env. It is a systemd
+# EnvironmentFile, not a shell script. systemd reads `KEY=value with spaces` as a
+# single variable; /bin/sh reads it as the assignment `KEY=value` followed by the
+# command `with spaces`. Sourcing it made the shell try to execute midclt - which
+# does not exist on the Pi - and `set -eu` aborted the shutdown. upsmon logged
+# "Unable to call shutdown command" and the bank was never cut (2026-08-09).
+# ups_cascade.py needs nothing from that file: its paths are module constants and
+# the UPS name defaults correctly.
+
+/usr/local/lib/ups-cascade/ups_cascade.py note pi_shutdown >/dev/null 2>&1 || true
+sync || true
+
+exec /sbin/shutdown -h +0

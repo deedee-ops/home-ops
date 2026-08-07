@@ -15,7 +15,6 @@
       - nut-server
       - nut-client
     state: present
-  notify: Retrigger udev for the UPS
 
 - name: Check UPS node ownership
   ansible.builtin.shell:
@@ -32,7 +31,7 @@
     cmd: udevadm trigger --action=add --subsystem-match=usb --attr-match=idVendor=0764
   when: nut_dev_perms.rc != 0
   changed_when: true
-  notify: Restart NUT
+  notify: Restart nut
 
 - name: Select the operating mode
   ansible.builtin.template:

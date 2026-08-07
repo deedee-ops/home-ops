@@ -1,0 +1,11 @@
+# Managed by Ansible.
+/var/lib/ups-cascade/events.jsonl {
+    size {{ ups_cascade_logrotate_size }}
+    rotate {{ ups_cascade_logrotate_keep }}
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    su root root
+}

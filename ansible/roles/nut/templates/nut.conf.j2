@@ -1,2 +1,10 @@
 # Managed by Ansible.
 MODE={{ nut_mode }}
+
+# Sourced by /usr/lib/systemd/system-shutdown/nutshutdown. Without it that hook
+# halts after commanding the UPS off, and if mains returned inside
+# ups.delay.shutdown the UPS cancels the cut - leaving this machine powered but
+# halted, with nothing to boot it. With it set the hook sleeps instead: if the
+# bank really was cut the sleep never returns, and if it was not the Pi reboots
+# itself back into service.
+POWEROFF_WAIT={{ nut_poweroff_wait }}

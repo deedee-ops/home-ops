@@ -1,0 +1,247 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+- name: Assert an OpenBao token is available
+  ansible.builtin.assert:
+    that:
+      - lookup('env', 'VAULT_TOKEN') | length > 0
+    fail_msg: >-
+      VAULT_TOKEN is empty - the role fetches the Talos credentials from
+      {{ ups_cascade_vault_addr }} at provision time
+    quiet: true
+  delegate_to: localhost
+  become: false
+  run_once: true
+
+- name: Assert the NAS private key is set
+  ansible.builtin.assert:
+    that:
+      - ups_cascade_nas_private_key is defined
+      - ups_cascade_nas_private_key | length > 0
+    fail_msg: >-
+      ups_cascade_nas_private_key is empty - set vault_ups_cascade_nas_private_key
+      in inventory/group_vars/nut/vault.yaml to the private key authorised for
+      {{ ups_cascade_nas_user }}@{{ ups_cascade_nas_host }}
+    quiet: true
+
+- name: Assert the host architecture is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['architecture'] in ups_cascade_talosctl_arch
+      - ansible_facts['architecture'] in ups_cascade_kubectl_arch
+    fail_msg: >-
+      unsupported architecture {{ ansible_facts['architecture'] }} - add it to
+      ups_cascade_talosctl_arch and ups_cascade_kubectl_arch
+    quiet: true
+
+# A stale index pins versions that have already left the pool, so the install
+# 404s on the archive rather than failing to resolve the package.
+- name: Refresh apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['pkg_mgr'] == 'apt'
+
+- name: Install supporting packages
+  ansible.builtin.package:
+    name:
+      - jq
+      - logrotate
+      - openssh-client
+      - python3
+    state: present
+
+- name: Create the directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  loop:
+    - path: /var/lib/ups-cascade
+      mode: "0750"
+    - path: /var/lib/ups-cascade/.ssh
+      mode: "0700"
+    - path: /usr/local/lib/ups-cascade
+      mode: "0755"
+    - path: /etc/ups-cascade
+      mode: "0750"
+
+- name: Install talosctl
+  ansible.builtin.get_url:
+    url: >-
+      https://github.com/siderolabs/talos/releases/download/{{ ups_cascade_talosctl_version }}/talosctl-linux-{{
+      ups_cascade_talosctl_arch[ansible_facts['architecture']] }}
+    dest: /usr/local/bin/talosctl
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart ups-cascade
+
+- name: Install kubectl
+  ansible.builtin.get_url:
+    url: >-
+      https://dl.k8s.io/release/{{ ups_cascade_kubectl_version }}/bin/linux/{{
+      ups_cascade_kubectl_arch[ansible_facts['architecture']] }}/kubectl
+    dest: /usr/local/bin/kubectl
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart ups-cascade
+
+- name: Fetch the Talos credentials from OpenBao
+  ansible.builtin.command:
+    argv:
+      - bao
+      - kv
+      - get
+      - -field={{ item.field }}
+      - "{{ ups_cascade_vault_path }}"
+  environment:
+    VAULT_ADDR: "{{ ups_cascade_vault_addr }}"
+    VAULT_TOKEN: "{{ lookup('env', 'VAULT_TOKEN') }}"
+  delegate_to: localhost
+  become: false
+  register: ups_cascade_credentials
+  changed_when: false
+  check_mode: false
+  no_log: true
+  loop:
+    - field: TALOSCONFIG
+      dest: talosconfig
+    - field: KUBECONFIG
+      dest: kubeconfig
+
+- name: Write the Talos credentials
+  ansible.builtin.copy:
+    content: "{{ item.stdout }}\n"
+    dest: /var/lib/ups-cascade/{{ item.item.dest }}
+    owner: root
+    group: root
+    mode: "0600"
+  loop: "{{ ups_cascade_credentials.results }}"
+  loop_control:
+    label: "{{ item.item.dest }}"
+  no_log: true
+  notify: Restart ups-cascade
+
+- name: Write the NAS private key
+  ansible.builtin.copy:
+    content: "{{ ups_cascade_nas_private_key }}\n"
+    dest: /var/lib/ups-cascade/.ssh/id_ed25519
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+# Best effort: the orchestrator connects with StrictHostKeyChecking=accept-new,
+# so a NAS that is powered off at provision time costs nothing here.
+- name: Seed the NAS host key
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      umask 077
+      ssh-keyscan -H {{ ups_cascade_nas_host | quote }} > /var/lib/ups-cascade/.ssh/known_hosts.new
+      test -s /var/lib/ups-cascade/.ssh/known_hosts.new
+      mv /var/lib/ups-cascade/.ssh/known_hosts.new /var/lib/ups-cascade/.ssh/known_hosts
+    executable: /bin/bash
+    creates: /var/lib/ups-cascade/.ssh/known_hosts
+  register: ups_cascade_keyscan
+  failed_when: false
+  changed_when: ups_cascade_keyscan.rc | default(1) == 0
+
+- name: Deploy the Talos shutdown script
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../scripts/talos-shutdown.sh"
+    dest: /usr/local/lib/ups-cascade/talos-shutdown.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Deploy the orchestrator
+  ansible.builtin.copy:
+    src: ups_cascade.py
+    dest: /usr/local/lib/ups-cascade/ups_cascade.py
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart ups-cascade
+
+- name: Write the orchestrator configuration
+  ansible.builtin.template:
+    src: ups-cascade.env.j2
+    dest: /etc/ups-cascade/ups-cascade.env
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Restart ups-cascade
+
+- name: Install the upsmon shutdown wrapper
+  ansible.builtin.copy:
+    src: ups-cascade-shutdown
+    dest: /usr/local/sbin/ups-cascade-shutdown
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the logrotate policy
+  ansible.builtin.template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/ups-cascade
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Assert the API VIP has next hops
+  ansible.builtin.assert:
+    that:
+      - ups_cascade_nodes | length > 0
+    fail_msg: >-
+      ups_cascade_nodes is empty - the node addresses are the next hops for
+      {{ ups_cascade_api_vip }}, without them the VIP is unreachable because
+      on-link ARP never resolves a BGP-advertised address
+    quiet: true
+
+- name: Install the systemd units
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: /etc/systemd/system/{{ item }}
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - ups-cascade-route.service
+    - ups-cascade.service
+    - ups-cascade-recover.service
+  notify: Restart ups-cascade
+
+# NetworkManager owns the link on Raspberry Pi OS and drops routes it does not
+# manage whenever it reactivates a connection, so the boot-time unit alone would
+# not survive a switch reboot or a cable flap.
+- name: Check for the NetworkManager dispatcher
+  ansible.builtin.stat:
+    path: /etc/NetworkManager/dispatcher.d
+  register: ups_cascade_nm_dispatcher
+
+- name: Re-assert the API VIP route on link-up
+  ansible.builtin.template:
+    src: ups-cascade-route-dispatcher.j2
+    dest: /etc/NetworkManager/dispatcher.d/50-ups-cascade-route
+    owner: root
+    group: root
+    mode: "0755"
+  when: ups_cascade_nm_dispatcher.stat.isdir | default(false)
+
+# Skipped under --check: the unit files above were never written, so systemd has
+# nothing to enable and the module fails on a service that does not exist yet.
+- name: Enable and start the orchestrator
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: not ansible_check_mode
+  loop:
+    - ups-cascade-route.service
+    - ups-cascade.service
+    - ups-cascade-recover.service

@@ -1,3 +1,20 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
 nut_mode: standalone
+
+# Power-race avoidance in the systemd shutdown hook. Must comfortably outlast
+# ups.delay.shutdown so a genuine bank cut always wins the race.
+nut_poweroff_wait: 15m
+
+# There are deliberately no LB threshold settings here. On this UPS the LB flag is
+# decided entirely by the device: usbhid-ups.c:1922 sets it from the HID status
+# bits (LOWBATT / TIMELIMITEXP / SHUTDOWNIMM) and never from battery.charge.low or
+# battery.runtime.low. Two things follow, both verified on 2026-08-09:
+#   - `override.battery.*` in ups.conf changes only the value the driver reports.
+#     Worse, main.c:298-302 marks overridden vars ST_FLAG_IMMUTABLE, which strips
+#     ST_FLAG_RW and blocks the SET that could have worked.
+#   - `upsrw -s battery.charge.low` / `battery.runtime.low` return OK and then
+#     revert; this firmware rejects both writes.
+# The hardware trips LB at runtime <= 300, which is a noisy, non-monotonic signal.
+# The cascade therefore does not rely on it for timing - ups-cascade triggers FSD
+# itself on battery.charge once the servers are down. See that role's README.

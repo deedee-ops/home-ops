@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
+ups_cascade_ups: server-room-rack
+ups_cascade_cluster: deedee
+
+ups_cascade_poll_interval: 5
+ups_cascade_ride_through: 60
+ups_cascade_ol_stable: 30
+ups_cascade_talos_deadline: 420
+ups_cascade_nodes_down_deadline: 120
+ups_cascade_nas_deadline: 300
+ups_cascade_abort_cooldown: 900
+ups_cascade_recover_deadline: 1200
+
+# battery.charge at which the orchestrator tells upsmon to declare FSD, once the
+# servers are already down. Not a NUT setting: this UPS decides LB itself and
+# rejects any attempt to move its thresholds, so we pick the moment instead.
+ups_cascade_fsd_charge: 20
+
+ups_cascade_ups_drain_timeout: 180
+ups_cascade_ups_mount_timeout: 120
+
+ups_cascade_dry_run: false
+
+ups_cascade_nodes:
+  - name: blossom
+    addr: 192.168.42.21
+  - name: bubbles
+    addr: 192.168.42.22
+  - name: buttercup
+    addr: 192.168.42.23
+
+ups_cascade_nas_host: nas.internal
+ups_cascade_nas_user: truenas_admin
+# TrueNAS 25.04+ made the reason a required positional argument; without it the
+# job is created and then fails validation, so ssh still exits 0. -j makes midclt
+# wait for the job so a failure surfaces as a non-zero rc. Keep the reason a
+# single word: this value is read from a systemd EnvironmentFile, which strips
+# quotes, so an embedded space would split into two arguments.
+ups_cascade_nas_shutdown_cmd: sudo midclt call -j system.shutdown ups-cascade
+
+# The API VIP shares the Pi's subnet but is advertised over BGP, so on-link ARP
+# never resolves it. A /32 with the nodes as next hops is what fixes it - the
+# next hops are taken from ups_cascade_nodes.
+ups_cascade_api_vip: 192.168.42.20
+
+ups_cascade_vault_addr: https://bao.ajgon.casa
+ups_cascade_vault_path: "{{ ups_cascade_cluster }}/talos"
+
+# renovate: datasource=github-releases depName=siderolabs/talos
+ups_cascade_talosctl_version: v1.13.8
+# renovate: datasource=github-releases depName=kubernetes/kubernetes
+ups_cascade_kubectl_version: v1.36.3
+
+ups_cascade_talosctl_arch:
+  aarch64: arm64
+  armv7l: armv7
+  x86_64: amd64
+
+ups_cascade_kubectl_arch:
+  aarch64: arm64
+  armv7l: arm
+  x86_64: amd64
+
+ups_cascade_logrotate_size: 8M
+ups_cascade_logrotate_keep: 24

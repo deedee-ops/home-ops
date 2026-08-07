@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+# force_handlers is on, so this runs even when the play failed earlier. Under
+# --check the unit file does not exist on the host and the module would fail.
+- name: Restart ups-cascade
+  ansible.builtin.systemd_service:
+    name: ups-cascade.service
+    state: restarted
+    daemon_reload: true
+  when: not ansible_check_mode
