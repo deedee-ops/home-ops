@@ -26,7 +26,9 @@ spec:
       envoyService:
         externalTrafficPolicy: Local
   shutdown:
-    drainTimeout: 180s
+    # syncthing keeps the connection open all the time, so each timeout will be saturated
+    # so better keep it short, to speed up shutdowns
+    drainTimeout: 60s
   telemetry:
     metrics:
       prometheus:
