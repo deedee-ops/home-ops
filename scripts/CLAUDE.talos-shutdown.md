@@ -287,6 +287,74 @@ when no node is schedulable.
 Not theoretical: `ai-db-primary`, `immich-db-primary` and `shelf-db-primary` all
 show **ALLOWED DISRUPTIONS = 0**. Without this flag the drain hangs on them.
 
+## Why the drain always burned its full timeout (2026-08-09)
+
+Two real runs both ended with the buttercup drain hitting `--timeout` while the
+same three pods sat there — `helm-controller` on buttercup, `tuppr` on bubbles
+and buttercup. They had **different causes and only one of them cost anything.**
+
+### `helm-controller` — the actual blocker
+
+`--disable-eviction` deletes with `--grace-period` unset (`-1`), so the pod's own
+`terminationGracePeriodSeconds` is used, and helm-controller ships with **600**.
+kubelet cannot `SIGKILL` before then, so a 180s drain can never win. Upstream
+picks 600 to match helm-controller's `--graceful-shutdown-timeout` default
+(`main.go:124`, wired to `mgr.GracefulShutdownTimeout` at `:286`) so an in-flight
+`helm upgrade` is not cut in half.
+
+A long grace period alone is not enough — `prometheus-kube-prometheus-stack-0`
+(600s, bubbles) and both `envoy` deployments (480s) drain fine. helm-controller
+is also genuinely slow to stop; the likely reason is that a cluster-wide drain
+makes every HelmRelease drift at once, so with `--concurrent=10` there is always
+a reconcile in flight and controller-runtime will not return from `Stop()`. That
+part is inference, not measurement.
+
+Fixed in `kubernetes/apps/flux-system/flux-instance/helmrelease.yaml`, not here:
+`--graceful-shutdown-timeout=25s` plus `terminationGracePeriodSeconds: 30`. A
+controller that can take ten minutes to stop is a liability during every
+tuppr-driven Talos upgrade too, not only during a UPS event.
+
+### `tuppr` — a red herring, do not "fix" it
+
+`tuppr` is the only non-DaemonSet workload in the cluster that tolerates
+`node.kubernetes.io/unschedulable:NoSchedule`. Drain deletes the pod, the
+ReplicaSet makes a replacement, and the scheduler puts it straight back on the
+same cordoned node about three seconds later. The originals die well inside
+their 30s grace; bubbles drained *successfully* in the run that failed on
+buttercup, with a tuppr pod running on it throughout.
+
+The toleration is a chart default and it is correct — tuppr cordons nodes to
+perform Talos upgrades and has to survive its own cordons. It holds no Ceph
+mount, so the invariant is unaffected; it is simply alive at power-off.
+
+Two things make tuppr *look* stuck, and both will mislead again:
+
+- `There are pending pods in node "..."` is a **fresh re-list** at error time
+  (`deleteOrEvictPodsSimple` calls `GetPodsForDeletion` a second time after the
+  failure), not the set drain was blocked on. It names the replacement.
+- Any "drain-eligible pods remaining" counter has the same blind spot. Count by
+  UID against the pre-drain list, or the count never reaches zero.
+
+### Why `ups_cascade_ups_drain_timeout` stays at 180
+
+kubelet does not issue a pod's final `DELETE` until `podResourcesAreReclaimed` —
+containers stopped **and all volumes unmounted**. The drain wait is therefore
+gated on volume teardown and scales with mounted volumes, not pod count: 23 NFS
+mounts per node plus the Ceph set, and 77 drain-eligible pods holding a PVC.
+
+The two runs measured different clusters. The 17:16 run saw 123 drain-eligible
+pods at cordon and finished its bulk phase in ~50s; the 13:26 run was converged
+and took ~170s (the same query returns 147 on an idle cluster today, and 183 was
+recorded on 2026-08-01). **A real mains cut hits a converged cluster, so 170s is
+the number to budget for — do not cut the timeout to 60s.** 240 was also wrong
+and is already reverted.
+
+The win from the helm-controller fix is not a lower ceiling, it is that the
+ceiling stops being hit unconditionally: the drain now returns when the work is
+done and hands the remainder back to the mount gate and the shutdown stagger.
+Before touching the number again, make `talos_drained` carry the elapsed seconds
+and collect real runs.
+
 ## Ceph mount detection
 
 **Never pattern-match the mount source.** CephFS on this cluster renders as:
