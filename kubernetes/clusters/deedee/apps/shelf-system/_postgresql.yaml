@@ -8,6 +8,10 @@ spec:
   components:
     - ./components/postgresql
   dependsOn:
+    - name: cloudnative-pg
+      namespace: database
+    - name: plugin-barman-cloud
+      namespace: database
     - name: rook-ceph-cluster
       namespace: rook-ceph
   healthChecks:

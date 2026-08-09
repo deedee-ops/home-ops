@@ -32,6 +32,7 @@ spec:
       max_slot_wal_keep_size: 3GB
   monitoring:
     enablePodMonitor: true
+  priorityClassName: cnpg-instance
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname

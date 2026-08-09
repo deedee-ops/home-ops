@@ -20,6 +20,7 @@ spec:
           pluginConfig:
             - name: DefaultEvictor
               args:
+                nodeFit: true
                 podProtections:
                   defaultDisabled:
                     - FailedBarePods
@@ -30,13 +31,13 @@ spec:
                 metricsUtilization:
                   source: KubernetesMetrics
                 thresholds:
-                  cpu: 20
-                  memory: 20
-                  pods: 20
-                targetThresholds:
-                  cpu: 50
-                  memory: 50
+                  cpu: 30
+                  memory: 40
                   pods: 50
+                targetThresholds:
+                  cpu: 60
+                  memory: 65
+                  pods: 70
             - name: PodLifeTime
               args:
                 states:

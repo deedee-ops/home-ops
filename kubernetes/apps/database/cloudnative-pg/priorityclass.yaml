@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/priorityclass-scheduling-v1.json
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: cnpg-instance
+value: 100000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: >-
+  CloudNativePG instances. Required pod anti-affinity pins one replica per node,
+  so a node that is full on pods leaves the replica Pending forever. This lets it
+  preempt ordinary workloads instead.
