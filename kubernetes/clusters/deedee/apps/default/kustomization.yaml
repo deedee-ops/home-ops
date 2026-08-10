@@ -19,6 +19,7 @@ resources:
   - ./karakeep.yaml
   - ./kiwix.yaml
   - ./mail-archive.yaml
+  - ./mindwtr.yaml
   - ./n8n.yaml
   - ./paperless-ngx.yaml
   - ./searxng.yaml
