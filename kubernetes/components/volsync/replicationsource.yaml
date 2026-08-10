@@ -13,10 +13,20 @@ spec:
       - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce} # Use ReadOnlyMany for CephFS
     cacheAccessModes:
       - ${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}
-    cacheCapacity: ${VOLSYNC_CAPACITY:=5Gi}
+    cacheCapacity: ${VOLSYNC_CACHE_CAPACITY:=4Gi}
     cacheStorageClassName: ${VOLSYNC_CACHE_STORAGECLASS:=openebs-hostpath}
     compression: zstd-fastest
     copyMethod: Snapshot
+    moverAffinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              namespaceSelector: {}
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/created-by: volsync
     moverSecurityContext:
       runAsNonRoot: true
       runAsUser: ${VOLSYNC_PUID:=1000}
