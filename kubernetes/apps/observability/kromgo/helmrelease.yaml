@@ -75,7 +75,7 @@ spec:
 
         - title: Power
           id: cluster_power_usage
-          query: homeassistant_sensor_power_w{entity="sensor.serwerownia_ups_power"}
+          query: homeassistant_sensor_power_w{entity="sensor.ups_serwerownia_power"}
           valueExpr: string(result) + "w"
           colorExpr: 'colorScale(result, [300.0, 500.0], ["green", "orange", "red"])'
     httpRoute:
