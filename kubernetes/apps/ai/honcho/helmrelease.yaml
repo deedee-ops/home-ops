@@ -119,7 +119,7 @@ spec:
           openconcho:
             image:
               repository: ghcr.io/offendingcommit/openconcho-web
-              tag: 0.16.1@sha256:7ba5906d9499ca2c62694be5fb98905534c1610a0ba40c9fbdf3053572faa985
+              tag: 0.16.2@sha256:9d131061a4d45a6b9a850d85cffe74b56e5135f4710c00c5485ccd7e8f8c6120
             env:
               OPENCONCHO_DEFAULT_HONCHO_URL: http://127.0.0.1:8000
               OPENCONCHO_UPSTREAM_ALLOWLIST: 127.0.0.1
