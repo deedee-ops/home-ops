@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/k8s.cni.cncf.io/networkattachmentdefinition_v1.json
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: iot-wan
+spec:
+  config: |-
+    {
+      "cniVersion": "0.3.1",
+      "name": "iot-wan",
+      "plugins": [
+        {
+          "type": "macvlan",
+          "master": "bond1.4",
+          "mode": "bridge",
+          "ipam": {
+            "type": "static"
+          }
+        }
+      ]
+    }

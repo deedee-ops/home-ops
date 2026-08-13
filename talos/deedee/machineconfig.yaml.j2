@@ -375,6 +375,14 @@ clientIdentifier: mac
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
 apiVersion: v1alpha1
 kind: VLANConfig
+name: bond1.3
+up: true
+vlanID: 3
+parent: multus
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: VLANConfig
 name: bond1.4
 up: true
 vlanID: 4

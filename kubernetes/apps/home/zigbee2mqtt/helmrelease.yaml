@@ -80,7 +80,7 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
           [{
-            "name": "iot",
+            "name": "iot-wan",
             "namespace": "kube-system",
             "ips": ["192.168.4.31/24"],
             "mac": "02:00:c0:a8:04:1f"
