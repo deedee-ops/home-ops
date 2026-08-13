@@ -104,6 +104,8 @@ spec:
             appProtocol: kubernetes.io/wss
             port: 80
             targetPort: *port
+          rtsp:
+            port: 8554
     route:
       app:
         hostnames:

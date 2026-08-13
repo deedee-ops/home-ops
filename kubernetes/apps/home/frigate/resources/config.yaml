@@ -9,7 +9,9 @@ database:
   path: /config/frigate.db
 
 mqtt:
-  enabled: false
+  enabled: true
+  host: mosquitto
+  port: 1883
 
 detectors:
   ov:

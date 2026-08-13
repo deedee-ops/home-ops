@@ -31,6 +31,13 @@ specs:
         toPorts:
           - ports:
               - port: "1883"
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: frigate
+        toPorts:
+          - ports:
+              - port: "5000"
+              - port: "8554"
       - toEntities:
           - world
         toPorts:
