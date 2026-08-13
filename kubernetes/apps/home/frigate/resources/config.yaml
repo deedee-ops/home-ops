@@ -62,17 +62,21 @@ lpr:
 go2rtc:
   streams:
     doorbell_street_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=0#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=0#media=video
     doorbell_street_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=1#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=1#media=video
     doorbell_alley_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=0#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=0#media=video
     doorbell_alley_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=1#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=1#media=video
     garage_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=0#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=0#media=video
     garage_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=1#video=copy
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=1#media=video
+    tapo_main:
+      - ffmpeg:rtsp://{FRIGATE_TAPO_USERNAME}:{FRIGATE_TAPO_PASSWORD}@tapo.internal:554/stream1#video=copy#audio=aac
+    tapo_detect:
+      - rtsp://{FRIGATE_TAPO_USERNAME}:{FRIGATE_TAPO_PASSWORD}@tapo.internal:554/stream2#media=video
 
 cameras:
   doorbell_street:
@@ -145,4 +149,32 @@ cameras:
         - car
         # https://docs.frigate.video/configuration/license_plate_recognition#model-requirements
         # - license_plate
+
+  tapo:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/tapo_detect
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/tapo_main
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+    detect:
+      width: 640
+      height: 360
+      fps: 5
+    onvif:
+      host: tapo.internal
+      port: 2020
+      user: "{FRIGATE_TAPO_USERNAME}"
+      password: "{FRIGATE_TAPO_PASSWORD}"
+    objects:
+      track:
+        - person
+    live:
+      streams:
+        main_stream: tapo_main
+        sub_stream: tapo_detect
 version: 0.16-0
