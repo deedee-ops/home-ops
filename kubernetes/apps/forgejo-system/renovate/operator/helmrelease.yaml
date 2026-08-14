@@ -20,6 +20,11 @@ spec:
         redirectScheme: https
         additionalScopes:
           - groups
+    authorization:
+      enabled: true
+      defaults:
+        adminGroups:
+          - admins
     deployment:
       annotations:
         glance/name: Renovate Operator
