@@ -172,9 +172,14 @@ spec:
             email:
               value: "ajgon@${ROOT_DOMAIN}"
             firstName:
-              value: Igor
+              value: &firstName Igor
             lastName:
-              value: Rzegocki
+              value: &lastName Rzegocki
+            customClaims:
+              - key: firstName
+                value: *firstName
+              - key: lastName
+                value: *lastName
       userGroups:
         - name: admins
           spec:
