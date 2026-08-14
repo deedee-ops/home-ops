@@ -3,25 +3,15 @@
   extends: [
     ":timezone(Europe/Warsaw)",
 
-    "github>home-operations/renovate-presets//config/baseConfig.json5#6.0.0",
-    "github>home-operations/renovate-presets//config/dependencyDashboard.json5#6.0.0",
-    "github>home-operations/renovate-presets//config/managerFilePatterns.json5#6.0.0",
-    "github>home-operations/renovate-presets//config/registryAliases.json5#6.0.0",
-    "github>home-operations/renovate-presets//managers/oci.json5#6.0.0",
-    "github>home-operations/renovate-presets//overrides/changelogs.json5#6.0.0",
-    "github>home-operations/renovate-presets//overrides/helmfile.json5#6.0.0",
-    "github>home-operations/renovate-presets//overrides/renovateOperator.json5#6.0.0",
-    "github>home-operations/renovate-presets//policies/semanticCommits.json5#6.0.0",
-    "github>home-operations/renovate-presets//policies/zer0ver.json5#6.0.0",
-    "github>home-operations/renovate-presets//apps/grafanaDashboards.json5#6.0.0",
-    "github>home-operations/renovate-presets//apps/searxng.json5#6.0.0",
+    "local>deedee/mark13//.renovate/homeOpsBase.json5",
+    "local>deedee/mark13//.renovate/homeOpsApps.json5",
 
-    "github>deedee-ops/home-ops//.renovate/autoMerge.json5",
-    "github>deedee-ops/home-ops//.renovate/customManagers.json5",
-    "github>deedee-ops/home-ops//.renovate/exclusions.json5",
-    "github>deedee-ops/home-ops//.renovate/groups.json5",
-    "github>deedee-ops/home-ops//.renovate/labels.json5",
-    "github>deedee-ops/home-ops//.renovate/talosFactory.json5",
+    "local>deedee/mark13//.renovate/autoMerge.json5",
+    "local>deedee/mark13//.renovate/customManagers.json5",
+    "local>deedee/mark13//.renovate/exclusions.json5",
+    "local>deedee/mark13//.renovate/groups.json5",
+    "local>deedee/mark13//.renovate/labels.json5",
+    "local>deedee/mark13//.renovate/talosFactory.json5",
   ],
   packageRules: [
     {

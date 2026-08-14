@@ -22,10 +22,5 @@
       matchPackageNames: ["/bifrost/"],
       allowedVersions: "<2.0.0",
     },
-    {
-      description: "Hold renovate presets at v6",
-      matchPackageNames: ["/home-operations\\/renovate-presets/"],
-      allowedVersions: "<7.0.0",
-    },
   ],
 }

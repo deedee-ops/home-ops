@@ -1,0 +1,84 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  customDatasources: {
+    "grafana-dashboards": {
+      defaultRegistryUrlTemplate: "https://grafana.com/api/dashboards/{{packageName}}",
+      format: "json",
+      transformTemplates: [
+        '{"releases":[{"version": $string(revision)}], "sourceDirectory": name}',
+      ],
+    },
+  },
+  customManagers: [
+    {
+      description: "Process Grafana dashboards",
+      customType: "regex",
+      managerFilePatterns: ["/grafanadashboard\\.ya?ml(?:\\.j2)?$/"],
+      matchStrings: [
+        "dashboards\\/(?<depName>\\d+)\\/revisions\\/(?<currentValue>\\d+)\\/download",
+      ],
+      datasourceTemplate: "custom.grafana-dashboards",
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+      autoReplaceStringTemplate: "dashboards/{{depName}}/revisions/{{newValue}}/download",
+    },
+    {
+      // grafana-operator's GrafanaDashboard CR expresses the same dependency as structured
+      // `spec.grafanaCom.{id,revision}` fields instead of a download URL. Everything between the
+      // two keys is captured in `gap` and replayed verbatim, so blank lines and comments survive
+      // the update, inline ones included.
+      //
+      // Both keys must sit at the same indent or the match would escape the mapping and rewrite an
+      // unrelated `revision:` further up the document. Renovate compiles match strings with RE2,
+      // which has no backreferences, so the indent cannot be captured and compared back; instead
+      // one match string per common indent width repeats that width literally on both key lines.
+      // YAML forbids tabs for indentation, so only spaces need covering, and a manifest indented
+      // some other way is simply left untracked, which is the safe way to fail.
+      //
+      // Key order is handled by a second manager below rather than more match strings, because the
+      // replacement template has to emit the keys in the order it matched them.
+      description: "Process Grafana dashboards in grafana-operator GrafanaDashboard CRs",
+      customType: "regex",
+      managerFilePatterns: ["/grafanadashboard\\.ya?ml(?:\\.j2)?$/"],
+      matchStrings: [
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {2})id:\\s*(?<depName>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {2})revision:\\s*(?<currentValue>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {4})id:\\s*(?<depName>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {4})revision:\\s*(?<currentValue>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {6})id:\\s*(?<depName>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {6})revision:\\s*(?<currentValue>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {8})id:\\s*(?<depName>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {8})revision:\\s*(?<currentValue>\\d+)",
+      ],
+      datasourceTemplate: "custom.grafana-dashboards",
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+      autoReplaceStringTemplate: "grafanaCom:{{{pad}}}\n{{{indent}}}id: {{{depName}}}{{{gap}}}revision: {{{newValue}}}",
+    },
+    {
+      // Same as above with the keys reversed (revision before id).
+      description: "Process Grafana dashboards in grafana-operator GrafanaDashboard CRs (reversed key order)",
+      customType: "regex",
+      managerFilePatterns: ["/grafanadashboard\\.ya?ml(?:\\.j2)?$/"],
+      matchStrings: [
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {2})revision:\\s*(?<currentValue>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {2})id:\\s*(?<depName>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {4})revision:\\s*(?<currentValue>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {4})id:\\s*(?<depName>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {6})revision:\\s*(?<currentValue>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {6})id:\\s*(?<depName>\\d+)",
+        "grafanaCom:(?<pad>[^\\n]*)\\n(?<indent> {8})revision:\\s*(?<currentValue>\\d+)(?<gap>[ \\t]*(?:#[^\\n]*)?(?:\\n[ \\t]*(?:#[^\\n]*)?)*?\\n {8})id:\\s*(?<depName>\\d+)",
+      ],
+      datasourceTemplate: "custom.grafana-dashboards",
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+      autoReplaceStringTemplate: "grafanaCom:{{{pad}}}\n{{{indent}}}revision: {{{newValue}}}{{{gap}}}id: {{{depName}}}",
+    },
+  ],
+  packageRules: [
+    {
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
+      commitMessageTopic: "dashboard {{sourceDirectory}}",
+      matchDatasources: ["custom.grafana-dashboards"],
+      matchUpdateTypes: ["major"],
+      semanticCommitScope: "grafana-dashboards",
+      semanticCommitType: "chore",
+    },
+    {
+      description: "searxng tags are shaped semver/calver + '-<commit-sha>' (sha varies per release so default compatibility logic blocks updates)",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/searxng/searxng"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-[a-f0-9]+$",
+    },
+  ],
+}

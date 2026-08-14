@@ -1,0 +1,148 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  description: [
+    "Stock Renovate presets that form the base of this bundle. Listed alphabetically first so subsequent presets in this repo can override.",
+    "Brand the Renovate dependency dashboard issue with a distinctive title so it's easy to spot among other issues.",
+    "Extend the built-in flux, helm-values, and kubernetes managers to also scan Jinja-templated YAML (`.yaml.j2` / `.yml.j2`).",
+    "Resolve `mirror.gcr.io` references against Docker Hub so Renovate finds tags and digests via the upstream registry.",
+    "Extend every general-purpose preset in this repo. App-specific presets under apps/ are opt-in.",
+  ],
+  extends: [
+    "config:recommended",
+    "docker:enableMajor",
+    "helpers:pinGitHubActionDigestsToSemver",
+    ":automergeBranch",
+    ":dependencyDashboard",
+    ":disableRateLimiting",
+  ],
+  dependencyDashboardTitle: "Renovate Dashboard 🤖",
+  flux: {
+    managerFilePatterns: ["/\\.ya?ml(?:\\.j2)?$/"],
+  },
+  "helm-values": {
+    managerFilePatterns: ["/\\.ya?ml(?:\\.j2)?$/"],
+  },
+  helmfile: {
+    managerFilePatterns: [
+      "/(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
+      "/(^|/)helmfile\\.d/.+\\.ya?ml(?:\\.gotmpl)?(?:\\.j2)?$/",
+    ],
+  },
+  kubernetes: {
+    managerFilePatterns: ["/\\.ya?ml(?:\\.j2)?$/"],
+  },
+  kustomize: {
+    managerFilePatterns: ["/(^|/)kustomization\\.ya?ml(?:\\.j2)?$/"],
+  },
+  registryAliases: {
+    "mirror.gcr.io": "docker.io",
+  },
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Pick up `oci://...` URI references (Flux OCIRepository, Helm OCI charts, ...)",
+      managerFilePatterns: ["/\\.ya?ml(?:\\.j2)?$/"],
+      matchStrings: ["oci://(?<depName>[^:]+):(?<currentValue>\\S+)"],
+      datasourceTemplate: "docker",
+    },
+  ],
+  packageRules: [
+    {
+      description: "Point 1Password Connect at its upstream changelog",
+      matchPackageNames: ["/1password/"],
+      changelogUrl: "https://github.com/1Password/connect/blob/main/CHANGELOG.md",
+    },
+    {
+      description: "Point Cloudflared at its upstream release notes",
+      matchPackageNames: ["/cloudflared/"],
+      changelogUrl: "https://github.com/cloudflare/cloudflared/blob/master/RELEASE_NOTES",
+    },
+    {
+      description: "Override Helmfile dependency name to the full package name",
+      matchDatasources: ["docker"],
+      matchManagers: ["helmfile"],
+      overrideDepName: "{{packageName}}",
+    },
+    {
+      description: "Normalize packageName for mise github-releases tools so single-word names (`lefthook`) resolve to `lefthook/lefthook`",
+      matchFileNames: [".mise.toml", "mise.toml"],
+      matchDatasources: ["github-releases", "github-tags"],
+      overridePackageName: "{{#if (lookup (split packageName '/') 1)}}{{packageName}}{{else if (lookup (split packageName ':') 1)}}{{ lookup (split packageName ':') 1 }}/{{ lookup (split packageName ':') 1 }}{{else}}{{packageName}}/{{packageName}}{{/if}}",
+    },
+    {
+      description: "Point mogenius/renovate-operator chart to its upstream repo for changelogs",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/mogenius/helm-charts/renovate-operator"],
+      sourceUrl: "https://github.com/mogenius/renovate-operator",
+    },
+    {
+      matchUpdateTypes: ["major"],
+      semanticCommitType: "feat",
+      commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}})!:",
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
+    },
+    {
+      matchUpdateTypes: ["minor"],
+      semanticCommitType: "feat",
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
+    },
+    {
+      matchUpdateTypes: ["patch"],
+      semanticCommitType: "fix",
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
+    },
+    {
+      matchUpdateTypes: ["digest"],
+      semanticCommitType: "fix",
+      commitMessageExtra: "({{currentDigestShort}} ➔ {{newDigestShort}})",
+    },
+    {
+      matchDatasources: ["docker"],
+      semanticCommitScope: "container",
+      commitMessageTopic: "image {{depName}}",
+    },
+    {
+      matchDatasources: ["helm"],
+      semanticCommitScope: "helm",
+      commitMessageTopic: "chart {{depName}}",
+    },
+    {
+      matchManagers: ["github-actions"],
+      semanticCommitType: "ci",
+      semanticCommitScope: "github-action",
+      commitMessageTopic: "action {{depName}}",
+    },
+    {
+      matchDatasources: ["github-releases"],
+      semanticCommitType: "chore",
+      semanticCommitScope: "github-release",
+      commitMessageTopic: "release {{depName}}",
+    },
+    {
+      matchManagers: ["renovate-config"],
+      semanticCommitType: "chore",
+      semanticCommitScope: "renovate-config",
+      commitMessageTopic: "config {{depName}}",
+    },
+    {
+      matchManagers: ["mise"],
+      semanticCommitType: "chore",
+      semanticCommitScope: "mise",
+      commitMessageTopic: "tool {{depName}}",
+    },
+    {
+      description: 'zer0ver: 0.x minors can break at any time, give them the breaking `!` prefix. No matchCurrentVersion guard is shipped for automerge: repo packageRules concatenate after presets, so add your own `matchCurrentVersion: "!/^v?0/"` if you automerge minors.',
+      matchUpdateTypes: ["minor"],
+      matchCurrentVersion: "/^v?0\\./",
+      semanticCommitType: "feat",
+      commitMessagePrefix: "{{semanticCommitType}}({{semanticCommitScope}})!:",
+      commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
+    },
+    {
+      description: "zer0ver: 0.x minors can break at any time, route them onto the major branches. The default branchName template includes additionalBranchPrefix, so this lands them on the same major-<groupSlug> branch Renovate uses for grouped majors; ungrouped deps just get a major- branch rename.",
+      matchUpdateTypes: ["minor"],
+      matchCurrentVersion: "/^v?0\\./",
+      additionalBranchPrefix: "major-",
+    },
+  ],
+}
