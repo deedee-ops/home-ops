@@ -4,7 +4,7 @@ services:
   wg-easy:
     environment:
       DISABLE_IPV6: "true"
-    image: ghcr.io/wg-easy/wg-easy:15.3.0
+    image: ghcr.io/wg-easy/wg-easy:15.4.0
     container_name: wg-easy
     restart: unless-stopped
     tmpfs:
