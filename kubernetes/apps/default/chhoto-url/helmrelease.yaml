@@ -1,0 +1,112 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: chhoto-url
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: chhoto-url
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: chhoto-url
+          glance/icon: di:chhoto-url
+          glance/url: https://u.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/sintan1729/chhoto-url
+              tag: 7.5.0@sha256:eb24d2a92e34013708f50ac0c380b0ab961f624d9d736a12061c712321e9eab1
+            env:
+              CHHOTO_ALLOW_CAPITAL_LETTERS: true
+              CHHOTO_DB_URL: /config/urls.sqlite
+              CHHOTO_EXTRA_PROTOCOLS: obsidian,obtainium
+              CHHOTO_HASH_ALGORITHM: Argon2
+              CHHOTO_LISTEN_ADDRESS: 0.0.0.0
+              CHHOTO_LISTEN_PORT: &port 80
+              CHHOTO_SITE_URL: https://u.${ROOT_DOMAIN}
+              CHHOTO_SLUG_LENGTH: 6
+              CHHOTO_SLUG_STYLE: UID
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: "chhoto-url-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/whoami
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "u.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: chhoto-url
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net;
+                        style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    persistence:
+      config:
+        existingClaim: chhoto-url

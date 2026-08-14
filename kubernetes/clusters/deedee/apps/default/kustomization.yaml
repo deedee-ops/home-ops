@@ -9,6 +9,7 @@ resources:
   - ./_namespace.yaml
   - ./atuin.yaml
   - ./bentopdf.yaml
+  - ./chhoto-url.yaml
   - ./copyparty.yaml
   - ./crypt.yaml
   - ./davis.yaml
