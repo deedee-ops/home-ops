@@ -10,13 +10,34 @@ spec:
     name: renovate-operator
   interval: 30m
   values:
+    auth:
+      oidc:
+        enabled: true
+        issuerUrl: "https://id.${ROOT_DOMAIN}"
+        clientId: 497f956c-92f8-463f-951f-ce1b0acc4b71
+        existingSecret: "renovate-operator-oidc-credentials"
+        secretKey: "client_secret"
+        redirectScheme: https
+        additionalScopes:
+          - groups
     deployment:
       annotations:
         glance/name: Renovate Operator
         glance/icon: di:renovate
         glance/url: https://renovate.${ROOT_DOMAIN}
       podLabels:
+        egress.cilium.io/auth: "true"
         egress.cilium.io/kube-apiserver: "true"
+    extraVolumeMounts:
+      - mountPath: /etc/ssl/certs/ca-certificates.crt
+        name: homelab-root-ca
+        readOnly: true
+        subPath: ca.crt
+    extraVolumes:
+      - configMap:
+          defaultMode: 420
+          name: homelab-root-ca
+        name: homelab-root-ca
     fullnameOverride: renovate-operator
     route:
       enabled: true
