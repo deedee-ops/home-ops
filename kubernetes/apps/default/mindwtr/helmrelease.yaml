@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/dongdongbh/mindwtr-app
-              tag: 1.1.6@sha256:fd6390105138196c8506849cdf9e8a24f691e16f338e2f677adf4e61d9b549a9
+              tag: 1.2.0@sha256:2b157a210c7b4b2f428b3a6e3adfa08dfed1fbf16a698108b7baa123b1d6b6ea
             ports:
               - containerPort: &appPort 5173
             probes:
@@ -61,7 +61,7 @@ spec:
           cloud:
             image:
               repository: ghcr.io/dongdongbh/mindwtr-cloud
-              tag: 1.1.6@sha256:83cfeb586fbe5ff045c2c99f4a50d9fa8ec9f0e63d0a23f8c002444d8a57e1a3
+              tag: 1.2.0@sha256:0ae94d6c4f0edb356375e209a17072ac953b6a12a7e6c7150ce3a26ee51e1d54
             env:
               MINDWTR_CLOUD_CORS_ORIGIN: "https://mindwtr.${ROOT_DOMAIN}"
               MINDWTR_CLOUD_DATA_DIR: /config
