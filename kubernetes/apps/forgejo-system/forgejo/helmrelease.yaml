@@ -86,6 +86,7 @@ spec:
           ROOT: /data/git/repositories
         repository.pull-request:
           DEFAULT_MERGE_STYLE: squash
+          POPULATE_SQUASH_COMMENT_WITH_COMMIT_MESSAGES: true
         repository.signing:
           CRUD_ACTIONS: pubkey, parentsigned
           FORMAT: ssh
