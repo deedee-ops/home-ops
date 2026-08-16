@@ -30,6 +30,10 @@ spec:
               args:
                 metricsUtilization:
                   source: KubernetesMetrics
+                # do not evict runner pods
+                evictableNamespaces:
+                  exclude:
+                    - forgejo-system
                 thresholds:
                   cpu: 30
                   memory: 40
