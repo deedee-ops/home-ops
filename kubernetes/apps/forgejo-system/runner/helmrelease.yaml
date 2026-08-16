@@ -50,6 +50,14 @@ spec:
               - env:
                   - name: DEBIAN_FRONTEND
                     value: noninteractive
+                  - name: CURL_CA_BUNDLE
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: NODE_EXTRA_CA_CERTS
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: REQUESTS_CA_BUNDLE
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: SSL_CERT_FILE
+                    value: /etc/ssl/certs/ca-certificates.crt
                 image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:fea96a5b525857bee41cc132cf95df67191b73cdd681569ada3000111420397e
                 imagePullPolicy: IfNotPresent
                 name: main
@@ -59,9 +67,19 @@ spec:
                   requests:
                     cpu: 100m
                     memory: 256Mi
+                volumeMounts:
+                  - name: homelab-root-ca
+                    mountPath: /etc/ssl/certs/ca-certificates.crt
+                    subPath: ca.crt
+                    readOnly: true
             restartPolicy: Never
             serviceAccount: forgejo-runner
             serviceAccountName: forgejo-runner
+            volumes:
+              - name: homelab-root-ca
+                configMap:
+                  name: homelab-root-ca
+                  defaultMode: 420
           podspec-dind.yaml: |-
             initContainers:
               - name: dind
@@ -72,6 +90,14 @@ spec:
                 env:
                   - name: DOCKER_TLS_CERTDIR
                     value: /certs
+                  - name: CURL_CA_BUNDLE
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: NODE_EXTRA_CA_CERTS
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: REQUESTS_CA_BUNDLE
+                    value: /etc/ssl/certs/ca-certificates.crt
+                  - name: SSL_CERT_FILE
+                    value: /etc/ssl/certs/ca-certificates.crt
                 resources:
                   requests:
                     cpu: 100m
@@ -83,6 +109,10 @@ spec:
                     mountPath: /var/lib/docker
                   - name: docker-certs
                     mountPath: /certs
+                  - name: homelab-root-ca
+                    mountPath: /etc/ssl/certs/ca-certificates.crt
+                    subPath: ca.crt
+                    readOnly: true
                 startupProbe:
                   exec:
                     command:
@@ -122,6 +152,10 @@ spec:
                 emptyDir: {}
               - name: docker-certs
                 emptyDir: {}
+              - name: homelab-root-ca
+                configMap:
+                  name: homelab-root-ca
+                  defaultMode: 420
             restartPolicy: Never
             serviceAccount: forgejo-runner
             serviceAccountName: forgejo-runner

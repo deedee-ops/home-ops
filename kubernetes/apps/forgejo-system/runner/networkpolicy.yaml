@@ -34,3 +34,10 @@ spec:
       toPorts:
         - ports:
             - port: "10443"
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: network
+            gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      toPorts:
+        - ports:
+            - port: "10443"
