@@ -16,7 +16,7 @@ services:
           {"name":"rustdesk-id","origin":"127.0.0.1:21116","listen_port":21116},
           {"name":"wireguard","origin":"127.0.0.1:57968","listen_port":57968}
         ]
-    image: codeberg.org/towonel/towonel-agent:1.5.2
+    image: codeberg.org/towonel/towonel-agent:1.5.3
     container_name: towonel-agent
     restart: unless-stopped
     network_mode: host

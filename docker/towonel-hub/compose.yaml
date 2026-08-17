@@ -9,7 +9,7 @@ services:
       TOWONEL_HUB_OPERATOR_API_KEY_PATH: /data/operator.key
       TOWONEL_HUB_PUBLIC_URL: https://towonel.${ROOT_DOMAIN}
       TOWONEL_INVITE_HASH_KEY: ${TOWONEL_INVITE_HASH_KEY}
-    image: codeberg.org/towonel/towonel-node:1.5.2
+    image: codeberg.org/towonel/towonel-node:1.5.3
     container_name: towonel-hub
     restart: unless-stopped
     user: "10001:10001"
