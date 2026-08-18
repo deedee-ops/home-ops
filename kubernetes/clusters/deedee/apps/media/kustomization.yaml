@@ -10,6 +10,7 @@ resources:
   - ./_postgresql.yaml
   - ./bazarr.yaml
   - ./beets-flask.yaml
+  - ./bookorbit.yaml
   - ./jellyfin.yaml
   - ./kavita.yaml
   - ./navidrome.yaml

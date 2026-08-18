@@ -1,0 +1,154 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bookorbit
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bookorbit
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: bookorbit
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/bookorbit.png
+          glance/url: https://bookorbit.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/bookorbit/bookorbit
+              tag: 2.6.0@sha256:a7fa6d124d99bb5cda302160be0736b67e858f6957153e711edbba19e1b93057
+            env:
+              APP_URL: https://bookorbit.${ROOT_DOMAIN}
+              LIBRARY_BROWSE_ROOT: /books
+              NODE_ENV: production
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
+              OIDC_ALLOW_LOCAL_ISSUERS: true
+              PORT: &port 80
+              TZ: Europe/Warsaw
+              POSTGRES_DB: bookorbit
+              POSTGRES_PORT: 5432
+              POSTGRES_HOST:
+                secretKeyRef:
+                  name: media-db-app
+                  key: host
+              POSTGRES_PASSWORD:
+                secretKeyRef:
+                  name: media-db-app
+                  key: password
+              POSTGRES_USER:
+                secretKeyRef:
+                  name: media-db-app
+                  key: username
+            envFrom:
+              - secretRef:
+                  name: "bookorbit-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "bookorbit.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: bookorbit
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      books:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: "/mnt/tank/media"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
+        globalMounts:
+          - path: /books
+            subPath: media/books/books
+      data:
+        existingClaim: bookorbit
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp

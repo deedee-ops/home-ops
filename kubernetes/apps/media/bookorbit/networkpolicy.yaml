@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: bookorbit-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: bookorbit
+  egress:
+    - toFQDNs:
+        - matchName: api.audnex.us
+        - matchName: api.hardcover.app
+        - matchName: assets.hardcover.app
+        - matchName: books.google.com
+        - matchName: duckduckgo.com
+        - matchName: itunes.apple.com
+        - matchName: lubimyczytac.pl
+        - matchName: openlibrary.org
+        - matchName: storeapi.kobo.com
+        - matchName: www.amazon.com
+        - matchName: www.audiobookcovers.com
+        - matchName: www.goodreads.com
+        - matchName: www.googleapis.com
+        - matchPattern: "*.gr-assets.com"
+        - matchPattern: "*.media-amazon.com"
+        - matchPattern: "*.mm.bing.net"
+        - matchPattern: "*.mzstatic.com"
+        - matchPattern: "*.ssl-images-amazon.com"
+      toPorts:
+        - ports:
+            - port: "443"
