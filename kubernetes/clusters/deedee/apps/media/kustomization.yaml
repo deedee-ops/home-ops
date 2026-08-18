@@ -7,6 +7,7 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
+  - ./_postgresql.yaml
   - ./bazarr.yaml
   - ./beets-flask.yaml
   - ./jellyfin.yaml
