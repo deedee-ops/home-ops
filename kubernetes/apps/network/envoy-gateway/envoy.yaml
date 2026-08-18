@@ -59,6 +59,8 @@ metadata:
       client:
         dns-resolver: tcp://1.1.1.1:53
       group: external
+  labels:
+    app.kubernetes.io/name: envoy-external
 spec:
   gatewayClassName: envoy
   infrastructure:
@@ -96,6 +98,8 @@ metadata:
       ui:
         hide-hostname: true
         hide-url: true
+  labels:
+    app.kubernetes.io/name: envoy-internal
 spec:
   gatewayClassName: envoy
   infrastructure:
@@ -267,3 +271,28 @@ spec:
           requestRedirect:
             scheme: https
             statusCode: 301
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/envoyextensionpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: eep
+spec:
+  targetSelectors:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      matchLabels:
+        app.kubernetes.io/name: envoy-internal
+  wasm:
+    - name: eep
+      rootID: eep
+      code:
+        type: Image
+        image:
+          url: oci://ghcr.io/ishioni/eep:0.2.1
+      config:
+        theme: app-down
+        showDetails: true
+        locale: auto
+        logLevel: warn
+      failOpen: false
