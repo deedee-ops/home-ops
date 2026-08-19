@@ -76,6 +76,14 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "vpn",
+            "namespace": "kube-system",
+            "ips": ["192.168.69.14/24"],
+            "mac": "02:00:c0:a8:45:0e"
+          }]
       labels:
         egress.cilium.io/auth: "true"
       securityContext:
