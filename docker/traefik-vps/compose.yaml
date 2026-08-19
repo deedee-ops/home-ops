@@ -6,7 +6,7 @@ services:
       CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       TZ: Europe/Warsaw
-    image: public.ecr.aws/docker/library/traefik:3.7.10@sha256:9c3b91d5fb7770853ca5c1124a23c34bf2d9b47ffaebeab2614cbaf410dcb2ac
+    image: public.ecr.aws/docker/library/traefik:v3.7.11@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
     container_name: traefik
     restart: always
     ports:
