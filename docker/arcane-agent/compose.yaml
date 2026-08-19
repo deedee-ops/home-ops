@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
 services:
   arcane-agent:
-    image: ghcr.io/getarcaneapp/agent:v2.8.0
+    image: ghcr.io/getarcaneapp/agent:v2.8.1
     container_name: arcane-agent
     restart: always
     environment:
