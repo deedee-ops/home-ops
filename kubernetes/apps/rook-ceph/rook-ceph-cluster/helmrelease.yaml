@@ -65,14 +65,33 @@ spec:
         ssl: false
         prometheusEndpoint: http://prometheus-operated.observability.svc.cluster.local:9090
       dataDirHostPath: /var/mnt/rook-ceph
+      healthCheck:
+        # @todo: remove this mutes when talos moves to 7.x kernel
+        #
+        # After that, do not delete it, flip them to `unmute`, reconcile,
+        # wait for CEPH_OK, then delete and reconcile again.
+        muteHealthWarning:
+          AUTH_INSECURE_CLIENT_KEY_TYPE:
+            policy: mute
+          AUTH_INSECURE_KEYS_ALLOWED:
+            policy: mute
+          AUTH_INSECURE_KEYS_CREATABLE:
+            policy: mute
+          AUTH_EMERGENCY_CIPHERS_SET:
+            policy: mute
       mgr:
         modules:
           - name: insights
             enabled: true
           - name: pg_autoscaler
             enabled: true
+          # Disabled, not unused: the prometheus mgr module polls this
+          # orchestrator backend for node-proxy hardware metrics, which it does
+          # not implement, crash-looping mgr every 15s (rook#18124). Only powers
+          # `ceph orch` + dashboard host/inventory pages; the operator drives
+          # Ceph via CRDs and never loads it. Re-enable once rook#18124 is fixed.
           - name: rook
-            enabled: true
+            enabled: false
       network:
         provider: host
         addressRanges:
@@ -102,6 +121,20 @@ spec:
             memory: 3Gi
           limits:
             memory: 8Gi
+      security:
+        cephx:
+          daemon:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+            keyType: aes256k
+          csi:
+            keyType: aes
+          # No CephRBDMirror/CephFilesystemMirror exists, so there is no peer
+          # cluster to stay aes-compatible with.
+          rbdMirrorPeer:
+            keyRotationPolicy: KeyGeneration
+            keyGeneration: 2
+            keyType: aes256k
       storage:
         useAllNodes: true
         useAllDevices: false
