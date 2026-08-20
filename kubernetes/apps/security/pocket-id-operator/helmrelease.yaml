@@ -69,6 +69,7 @@ spec:
                 secretKeyRef:
                   name: pocket-id-operator-secret
                   key: MAXMIND_LICENSE_KEY
+          image: ghcr.io/pocket-id/pocket-id:v2.14.0@sha256:01540977dcf4c7b41b1159f34d68e4632f2658d62790e460ca65a42722b13c4a
           labels:
             egress.cilium.io/smtp-relay: "true"
           logging:
@@ -165,6 +166,8 @@ spec:
             allowOwnAccountEdit: true
             allowUserSignups: "disabled"
           versionCheckDisabled: true
+          webauthn:
+            userVerification: preferred
       users:
         - name: ajgon
           spec:
