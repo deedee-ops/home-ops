@@ -48,7 +48,8 @@
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
-      minimumGroupSize: 5,
+      // renovate for some reason duplicates items here
+      minimumGroupSize: 9,
     },
     {
       description: "Mindwtr Group",
