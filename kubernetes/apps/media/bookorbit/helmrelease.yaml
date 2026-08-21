@@ -137,7 +137,7 @@ spec:
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /books
-            subPath: media/books/books
+            subPath: media/books
       data:
         existingClaim: bookorbit
       homelab-root-ca:
