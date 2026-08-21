@@ -42,6 +42,7 @@ spec:
                   crds: CreateReplace
                   strategy:
                     name: RetryOnFailure
+                maxHistory: 2
                 rollback:
                   cleanupOnFail: true
                 upgrade:
