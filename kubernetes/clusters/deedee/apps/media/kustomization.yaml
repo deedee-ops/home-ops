@@ -12,7 +12,6 @@ resources:
   - ./beets-flask.yaml
   - ./bookorbit.yaml
   - ./jellyfin.yaml
-  - ./kavita.yaml
   - ./navidrome.yaml
   - ./pinchflat.yaml
   - ./prowlarr.yaml
