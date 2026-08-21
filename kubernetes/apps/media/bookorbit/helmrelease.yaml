@@ -121,7 +121,7 @@ spec:
                   set:
                     - name: Content-Security-Policy
                       value: >-
-                        default-src 'self';
+                        default-src 'self' data: blob:;
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval';
                         style-src 'self' 'unsafe-inline';
