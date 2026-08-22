@@ -113,8 +113,6 @@ cameras:
           roles:
             - record
     detect:
-      height: 352
-      width: 288
       fps: 5
     objects:
       track:
@@ -138,8 +136,6 @@ cameras:
           roles:
             - record
     detect:
-      height: 352
-      width: 288
       fps: 5
     live:
       streams:
