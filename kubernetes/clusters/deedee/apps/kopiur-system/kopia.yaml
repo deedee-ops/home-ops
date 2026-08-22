@@ -5,8 +5,6 @@ kind: Kustomization
 metadata:
   name: kopia
 spec:
-  components:
-    - ../../../components/oidc
   dependsOn:
     - name: kopiur
   interval: 1h
