@@ -182,7 +182,7 @@ flip search_path on an existing install.
 - `STORAGE_S3_BUCKET: shelf` — **required even for the `file` backend.** The path
   is `FILE_STORAGE_BACKEND_PATH/STORAGE_S3_BUCKET/...`; without it the TUS init
   `mkdir`s `/var/lib/storage/undefined` and the process aborts.
-- `FILE_STORAGE_BACKEND_PATH: /var/lib/storage` — the volsync-backed PVC mount.
+- `FILE_STORAGE_BACKEND_PATH: /var/lib/storage` — the kopiur-backed PVC mount.
 - `DB_INSTALL_ROLES: "false"` — roles are pre-created by initdb (§2.2). **Side
   effect:** it also skips the migration that grants those roles access to the
   `storage` schema — see §3.2.
@@ -190,16 +190,7 @@ flip search_path on an existing install.
   directly.
 - `TENANT_ID` / `REGION` — arbitrary single-tenant identifiers.
 
-### 3.1 PVC ext4 corruption (one-off, not systemic)
-
-The first `shelf` RBD volume came up with a corrupt ext4 **root directory**
-(`talosctl dmesg`: `EXT4-fs error … inode #2 … No space for directory leaf
-checksum`), so every `mkdir` returned `EBADMSG (-74)`. This was a **fluke** on a
-volsync-provisioned RBD — ~30 other volsync/`ceph-block` volumes are healthy.
-Fix was wipe + recreate the PVC (`ceph-block` RWO, single writer — CephFS/RWX is
-**not** needed). Not a Caddy/libuv/io_uring issue (those were red herrings).
-
-### 3.2 Storage schema grants + buckets are not automatic
+### 3.1 Storage schema grants + buckets are not automatic
 
 storage-api connects as `app` but runs each request under the JWT's role via
 `SET ROLE` — for Shelf's uploads that's **`service_role`** (Shelf uses the service

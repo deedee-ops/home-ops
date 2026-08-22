@@ -126,7 +126,6 @@ rules:
       - talos.dev
       - toolhive.stacklok.dev
       - tuppr.home-operations.com
-      - volsync.backube
     resources:
       - "*"
     verbs:

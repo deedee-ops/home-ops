@@ -68,7 +68,7 @@ along with some of the practices I use here.
   management. For secrets, I use [external-secrets](https://github.com/external-secrets/external-secrets) with
   self-hosted [OpenBao](https://openbao.org/) to inject secrets into Kubernetes.
 - **Storage & Data Protection**: [rook](https://github.com/rook/rook) provides distributed storage for persistent
-  volumes, with [volsync](https://github.com/backube/volsync) handling backups and restores.
+  volumes, with [kopiur](https://github.com/home-operations/kopiur) handling backups and restores.
   [spegel](https://github.com/spegel-org/spegel) improves reliability by running a stateless, cluster-local OCI image mirror.
 - **Automation & CI/CD**: [forgejo-runner](https://code.forgejo.org/forgejo/runner) runs
   self-hosted GitHub Actions runners directly in the cluster for continuous integration workflows.

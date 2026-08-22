@@ -11,7 +11,7 @@ spec:
   interval: 1h
   values:
     feature:
-      enableInlineVolume: true # ephemeral mounts for volumes.csi in volsync workarounds
+      enableInlineVolume: true
     storageClass:
       create: true
       name: nfs-csi
