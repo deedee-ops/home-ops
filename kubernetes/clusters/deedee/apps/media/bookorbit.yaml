@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../components/kopiur
+    - ../../../components/nfs-scaler
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -15,6 +16,7 @@ spec:
   postBuild:
     substitute:
       APP: bookorbit
+      NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   patches: []
   prune: true

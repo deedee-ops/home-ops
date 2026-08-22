@@ -7,6 +7,7 @@ metadata:
 spec:
   components:
     - ../../../components/kopiur
+    - ../../../components/nfs-scaler
   dependsOn:
     - name: postgresql
       namespace: shelf-system
@@ -15,12 +16,20 @@ spec:
     - name: pocket-id-operator
       namespace: security
   interval: 1h
-  patches: []
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/scaleTargetRef/name
+          value: shelf-storage-api
+      target:
+        group: autoscaling/v2
+        kind: HorizontalPodAutoscaler
   path: ./kubernetes/apps/shelf-system/shelf
   postBuild:
     substitute:
       APP: shelf
       CLUSTER: deedee
+      NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 20Gi
     substituteFrom:
