@@ -27,6 +27,10 @@ releases:
     namespace: observability
     chart: oci://ghcr.io/grafana/helm-charts/grafana-operator
     version: 5.24.0
+  - name: kopiur
+    namespace: kopiur-system
+    chart: oci://ghcr.io/home-operations/charts/kopiur
+    version: 0.10.3
   - name: kube-prometheus-stack
     namespace: observability
     chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack

@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: kopiur-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: kopiur
+  egress:
+    - toCIDRSet:
+        # NAS
+        - cidr: 192.168.42.10/32
+        # backblaze
+        - cidr: 45.11.36.0/22
+        - cidr: 104.153.232.0/21
+        - cidr: 149.137.128.0/20
+        - cidr: 206.190.208.0/21
+        - cidr: 207.166.148.0/22
+        - cidr: 2605:72c0::/32
+      toPorts:
+        - ports:
+            - port: "443"
+    - toEntities:
+        - kube-apiserver

@@ -1,0 +1,54 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kopiur.home-operations.com/clusterrepository_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: backblaze-b2
+spec:
+  allowedNamespaces:
+    all: true
+  backend:
+    s3:
+      auth:
+        secretRef:
+          name: kopiur-backblaze-b2-secret
+          namespace: kopiur-system
+      bucket: ajgon-homelab
+      endpoint: s3.eu-central-003.backblazeb2.com
+      region: eu-central-003
+  encryption:
+    passwordSecretRef:
+      name: kopiur-backblaze-b2-secret
+      namespace: kopiur-system
+      key: KOPIA_PASSWORD
+  scheduleDefaults:
+    timezone: Europe/Warsaw
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kopiur.home-operations.com/clusterrepository_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: nas
+spec:
+  allowedNamespaces:
+    all: true
+  backend:
+    s3:
+      auth:
+        secretRef:
+          name: kopiur-nas-secret
+          namespace: kopiur-system
+      bucket: backup-homelab
+      endpoint: s3.ajgon.casa
+      region: eu-central-1
+      tls:
+        caBundleRef:
+          configMapName: homelab-root-ca-only
+          key: ca.crt
+  encryption:
+    passwordSecretRef:
+      name: kopiur-nas-secret
+      namespace: kopiur-system
+      key: KOPIA_PASSWORD
+  scheduleDefaults:
+    timezone: Europe/Warsaw
