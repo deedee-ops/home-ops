@@ -6,23 +6,21 @@ metadata:
   name: kopia
 spec:
   components:
-    - ../../../components/nfs-scaler
     - ../../../components/oidc
   dependsOn:
-    - name: volsync
+    - name: kopiur
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/volsync-system/kopia
+  path: ./kubernetes/apps/kopiur-system/kopia
   postBuild:
     substitute:
       APP: kopia
       CLUSTER: deedee
-      NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: volsync-system
+  targetNamespace: kopiur-system
   wait: false

@@ -20,13 +20,13 @@ spec:
       namespace: home
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
+      namespace: kopiur-system
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
       namespace: media
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: observability
-    - group: gateway.envoyproxy.io
-      kind: SecurityPolicy
-      namespace: volsync-system
   to:
     - group: gateway.envoyproxy.io
       kind: Backend

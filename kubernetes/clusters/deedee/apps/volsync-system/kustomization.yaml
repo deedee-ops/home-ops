@@ -7,5 +7,4 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
-  - ./kopia.yaml
   - ./volsync.yaml

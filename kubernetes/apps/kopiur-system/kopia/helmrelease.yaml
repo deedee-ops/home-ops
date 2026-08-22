@@ -1,0 +1,177 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kopia
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: kopia
+  interval: 1h
+  values:
+    controllers:
+      main:
+        containers:
+          backblaze-b2: &container
+            args:
+              - --without-password
+            image:
+              repository: ghcr.io/home-operations/kopia
+              tag: 0.23.1@sha256:27da0a33b44e1b902150a6c963514237217464bb13118a95bb056667be93cda5
+            env:
+              KOPIA_WEB_ENABLED: true
+              KOPIA_WEB_PORT: &b2Port 80
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: kopia-backblaze-b2-secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+          nas:
+            <<: *container
+            env:
+              KOPIA_WEB_ENABLED: true
+              KOPIA_WEB_PORT: &nasPort 81
+              TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: kopia-nas-secret
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        app.kubernetes.io/managed-by: kopiur
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      main:
+        ports:
+          backblaze-b2:
+            port: *b2Port
+          nas:
+            port: *nasPort
+    route:
+      backblaze-b2:
+        hostnames:
+          - "kopia-b2.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: kopia
+                port: 80
+            filters: &filters
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        style-src 'self' 'unsafe-inline';
+      nas:
+        hostnames:
+          - "kopia-nas.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: kopia
+                port: 81
+            filters: *filters
+    configMaps:
+      config-backblaze-b2:
+        data:
+          repository.config: |-
+            {
+              "storage": {
+                "type": "s3",
+                "config": {
+                  "bucket": "ajgon-homelab",
+                  "endpoint": "s3.eu-central-003.backblazeb2.com",
+                  "region": "eu-central-003"
+                }
+              },
+              "hostname": "kopiur",
+              "username": "kopiur",
+              "description": "kopiur",
+              "enableActions": false
+            }
+      config-nas:
+        data:
+          repository.config: |-
+            {
+              "storage": {
+                "type": "s3",
+                "config": {
+                  "bucket": "backup-homelab",
+                  "endpoint": "s3.${ROOT_DOMAIN}",
+                  "region": "eu-central-1"
+                }
+              },
+              "hostname": "kopiur",
+              "username": "kopiur",
+              "description": "kopiur",
+              "enableActions": false
+            }
+    persistence:
+      config-backblaze-b2:
+        type: configMap
+        identifier: config-backblaze-b2
+        advancedMounts:
+          main:
+            backblaze-b2:
+              - path: /config/repository.config
+                subPath: repository.config
+      config-nas:
+        type: configMap
+        identifier: config-nas
+        advancedMounts:
+          main:
+            nas:
+              - path: /config/repository.config
+                subPath: repository.config
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          main:
+            backblaze-b2:
+              - path: /config/cache
+                subPath: cache-b2
+              - path: /config/logs
+                subPath: logs-b2
+              - path: /tmp
+                subPath: tmp-b2
+            nas:
+              - path: /config/cache
+                subPath: cache-nas
+              - path: /config/logs
+                subPath: logs-nas
+              - path: /tmp
+                subPath: tmp-nas
