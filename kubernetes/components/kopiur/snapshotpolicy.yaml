@@ -32,4 +32,11 @@ spec:
     storageClassName: ${KOPIUR_STAGING_STORAGECLASS:=null}
     accessModes: ${KOPIUR_STAGING_ACCESSMODES:=[]}
     timeout: ${KOPIUR_STAGING_TIMEOUT:=10m}
+  verification:
+    deep:
+      schedule:
+        cron: H 4 1 * *
+    quick:
+      schedule:
+        cron: H 3 * * *
   volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=csi-ceph-blockpool}
