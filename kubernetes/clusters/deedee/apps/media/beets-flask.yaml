@@ -6,8 +6,8 @@ metadata:
   name: beets-flask
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -36,7 +36,6 @@ spec:
     substitute:
       APP: beets-flask
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:
     kind: GitRepository

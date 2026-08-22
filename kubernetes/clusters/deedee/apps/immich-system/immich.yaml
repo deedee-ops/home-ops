@@ -6,9 +6,9 @@ metadata:
   name: immich
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/dragonfly
     - ../../../components/gpu
-    - ../../../components/volsync
   dependsOn:
     - name: dragonfly-operator
       namespace: database
@@ -34,12 +34,13 @@ spec:
       APP: immich
       CLUSTER: deedee
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 50Gi
-      VOLSYNC_ACCESSMODES: ReadWriteMany
-      VOLSYNC_SNAP_ACCESSMODES: ReadOnlyMany
-      VOLSYNC_STORAGECLASS: ceph-filesystem
-      VOLSYNC_SNAPSHOTCLASS: csi-ceph-filesystem
-      VOLSYNC_SCHEDULE: "0 1 * * *"
+      KOPIUR_ACCESSMODES: ReadWriteMany
+      KOPIUR_CAPACITY: 50Gi
+      KOPIUR_SCHEDULE: "0 1 * * *"
+      KOPIUR_SNAPSHOTCLASS: csi-ceph-filesystem
+      KOPIUR_STAGING_ACCESSMODES: '["ReadOnlyMany"]'
+      KOPIUR_STAGING_STORAGECLASS: ceph-filesystem-shallow
+      KOPIUR_STORAGECLASS: ceph-filesystem
     substituteFrom:
       - kind: Secret
         name: immich-oidc-credentials

@@ -6,10 +6,10 @@ metadata:
   name: frigate
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/gpu
     - ../../../components/oidc
     - ../../../components/nfs-scaler
-    - ../../../components/volsync
   dependsOn:
     - name: intel-gpu-resource-driver
       namespace: kube-system
@@ -23,7 +23,6 @@ spec:
       APP: frigate
       NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:
     kind: GitRepository

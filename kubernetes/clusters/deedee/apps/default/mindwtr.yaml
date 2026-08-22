@@ -6,8 +6,8 @@ metadata:
   name: mindwtr
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -17,7 +17,7 @@ spec:
     substitute:
       APP: mindwtr
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 2Gi
+      KOPIUR_CAPACITY: 2Gi
   patches:
     - patch: |-
         - op: add

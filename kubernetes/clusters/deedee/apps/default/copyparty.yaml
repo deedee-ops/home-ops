@@ -6,8 +6,8 @@ metadata:
   name: copyparty
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -36,7 +36,7 @@ spec:
     substitute:
       APP: copyparty
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 10Gi
+      KOPIUR_CAPACITY: 10Gi
   prune: true
   sourceRef:
     kind: GitRepository

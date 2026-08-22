@@ -6,7 +6,7 @@ metadata:
   name: shelf
 spec:
   components:
-    - ../../../components/volsync
+    - ../../../components/kopiur
   dependsOn:
     - name: postgresql
       namespace: shelf-system
@@ -22,7 +22,7 @@ spec:
       APP: shelf
       CLUSTER: deedee
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 20Gi
+      KOPIUR_CAPACITY: 20Gi
     substituteFrom:
       - kind: Secret
         name: shelf-oidc-credentials

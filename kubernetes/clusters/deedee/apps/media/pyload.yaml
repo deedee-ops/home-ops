@@ -6,9 +6,9 @@ metadata:
   name: pyload
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/nfs-scaler
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: multus
       namespace: kube-system
@@ -22,7 +22,7 @@ spec:
       APP: pyload
       NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 2Gi
+      KOPIUR_CAPACITY: 2Gi
   prune: true
   sourceRef:
     kind: GitRepository

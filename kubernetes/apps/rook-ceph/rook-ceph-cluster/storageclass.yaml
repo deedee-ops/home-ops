@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/storageclass-storage-v1.json
+# shallow storage class for fast snapshots restores in kopiur backups
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-filesystem-shallow
+provisioner: rook-ceph.cephfs.csi.ceph.com
+reclaimPolicy: Delete
+allowVolumeExpansion: false
+volumeBindingMode: Immediate
+parameters:
+  clusterID: rook-ceph
+  fsName: ceph-filesystem
+  pool: ceph-filesystem-data0
+  backingSnapshot: "true"
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph

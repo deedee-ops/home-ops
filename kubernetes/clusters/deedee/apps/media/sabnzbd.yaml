@@ -6,9 +6,9 @@ metadata:
   name: sabnzbd
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/nfs-scaler
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: multus
       namespace: kube-system
@@ -21,7 +21,7 @@ spec:
       APP: sabnzbd
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 1Gi
+      KOPIUR_CAPACITY: 1Gi
   patches:
     - patch: |-
         - op: add

@@ -6,9 +6,9 @@ metadata:
   name: pinchflat
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/gpu
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -19,7 +19,7 @@ spec:
     substitute:
       APP: pinchflat
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 1Gi
+      KOPIUR_CAPACITY: 1Gi
   prune: true
   sourceRef:
     kind: GitRepository

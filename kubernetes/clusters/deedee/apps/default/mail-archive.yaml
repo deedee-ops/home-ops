@@ -6,7 +6,7 @@ metadata:
   name: mail-archive
 spec:
   components:
-    - ../../../components/volsync
+    - ../../../components/kopiur
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -17,7 +17,7 @@ spec:
     substitute:
       APP: mail-archive
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 25Gi
+      KOPIUR_CAPACITY: 25Gi
     substituteFrom:
       - kind: Secret
         name: mail-archive-oidc-credentials

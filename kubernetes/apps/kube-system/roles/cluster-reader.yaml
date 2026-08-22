@@ -103,6 +103,7 @@ rules:
       - helm.toolkit.fluxcd.io
       - infra.contrib.fluxcd.io
       - k8s.cni.cncf.io
+      - kopiur.home-operations.com
       - kustomize.toolkit.fluxcd.io
       - metrics.k8s.io
       - monitoring.coreos.com

@@ -6,8 +6,8 @@ metadata:
   name: navidrome
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/nfs-scaler
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -18,7 +18,6 @@ spec:
       APP: navidrome
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 5Gi
   patches:
     - patch: |-
         - op: add

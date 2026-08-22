@@ -6,9 +6,9 @@ metadata:
   name: paperless-ngx
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/dragonfly
     - ../../../components/nfs-scaler
-    - ../../../components/volsync
   dependsOn:
     - name: dragonfly-operator
       namespace: database
@@ -22,7 +22,7 @@ spec:
       APP: paperless-ngx
       NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 10Gi
+      KOPIUR_CAPACITY: 10Gi
     substituteFrom:
       - kind: Secret
         name: paperless-ngx-oidc-credentials

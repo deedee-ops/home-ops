@@ -6,7 +6,7 @@ metadata:
   name: n8n
 spec:
   components:
-    - ../../../components/volsync
+    - ../../../components/kopiur
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -17,7 +17,6 @@ spec:
     substitute:
       APP: n8n
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 5Gi
   prune: true
   sourceRef:
     kind: GitRepository

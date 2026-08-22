@@ -6,9 +6,9 @@ metadata:
   name: jellyfin
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/gpu
     - ../../../components/nfs-scaler
-    - ../../../components/volsync
   dependsOn:
     - name: intel-gpu-resource-driver
       namespace: kube-system
@@ -23,7 +23,7 @@ spec:
       NFS_KIND: StatefulSet
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 50Gi
+      KOPIUR_CAPACITY: 50Gi
   prune: true
   sourceRef:
     kind: GitRepository

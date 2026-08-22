@@ -6,9 +6,9 @@ metadata:
   name: sonarr
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/nfs-scaler
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -19,7 +19,6 @@ spec:
       APP: sonarr
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 5Gi
   patches:
     - patch: |-
         - op: add

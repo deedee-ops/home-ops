@@ -6,8 +6,8 @@ metadata:
   name: davis
 spec:
   components:
+    - ../../../components/kopiur
     - ../../../components/oidc
-    - ../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -18,8 +18,8 @@ spec:
       APP: davis
       CLUSTER_NAME: deedee
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_PUID: "82"
+      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_PUID: "82"
   patches:
     - patch: |-
         - op: add

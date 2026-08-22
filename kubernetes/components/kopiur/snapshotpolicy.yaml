@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kopiur.home-operations.com/snapshotpolicy_v1alpha1.json
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: ${APP}
+spec:
+  compression:
+    compressor: zstd
+  mover:
+    cache:
+      capacity: ${KOPIUR_CACHE_CAPACITY:=4Gi}
+      mode: Persistent
+      storageClassName: openebs-hostpath
+    securityContext:
+      runAsUser: ${KOPIUR_PUID:=1000}
+      runAsGroup: ${KOPIUR_PGID:=1000}
+  repositories:
+    - kind: ClusterRepository
+      name: backblaze-b2
+    - kind: ClusterRepository
+      name: nas
+  retention:
+    keepLatest: 3
+    keepHourly: 24
+    keepDaily: 7
+    keepWeekly: 4
+  sources:
+    - pvc:
+        name: ${APP}
+  staging:
+    storageClassName: ${KOPIUR_STAGING_STORAGECLASS:=null}
+    accessModes: ${KOPIUR_STAGING_ACCESSMODES:=[]}
+    timeout: ${KOPIUR_STAGING_TIMEOUT:=10m}
+  volumeSnapshotClassName: ${KOPIUR_SNAPSHOTCLASS:=csi-ceph-blockpool}
