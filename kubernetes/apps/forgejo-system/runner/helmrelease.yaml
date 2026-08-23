@@ -58,7 +58,7 @@ spec:
                     value: /etc/ssl/certs/ca-certificates.crt
                   - name: SSL_CERT_FILE
                     value: /etc/ssl/certs/ca-certificates.crt
-                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:fea96a5b525857bee41cc132cf95df67191b73cdd681569ada3000111420397e
+                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:dbb94e8977d600a7dac84d22fb5a1b6abe2c53bbc2fa7bcab7e8ea25f1284c6b
                 imagePullPolicy: IfNotPresent
                 name: main
                 resources:
@@ -134,7 +134,7 @@ spec:
                     value: "1"
                   - name: DOCKER_CERT_PATH
                     value: /certs/client
-                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:fea96a5b525857bee41cc132cf95df67191b73cdd681569ada3000111420397e
+                image: ghcr.io/bjw-s-labs/forgejo-runner:ubuntu-24.04@sha256:dbb94e8977d600a7dac84d22fb5a1b6abe2c53bbc2fa7bcab7e8ea25f1284c6b
                 imagePullPolicy: IfNotPresent
                 name: main
                 resources:
