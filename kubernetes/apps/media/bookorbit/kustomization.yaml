@@ -6,7 +6,6 @@ resources:
   - ./database.yaml
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml

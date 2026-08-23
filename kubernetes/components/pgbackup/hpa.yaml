@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/horizontalpodautoscaler-autoscaling-v2.json
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: &name ${APP}-dbbackup
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: *name
+  minReplicas: 0
+  maxReplicas: 1
+  metrics:
+    - type: External
+      external:
+        metric:
+          name: scale-gate
+          selector:
+            matchLabels:
+              gate: volume-fast
+        target:
+          type: AverageValue
+          averageValue: "1"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15

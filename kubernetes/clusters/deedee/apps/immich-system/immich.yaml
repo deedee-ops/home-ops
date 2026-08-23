@@ -9,6 +9,7 @@ spec:
     - ../../../components/kopiur
     - ../../../components/dragonfly
     - ../../../components/gpu
+    - ../../../components/pgbackup
   dependsOn:
     - name: dragonfly-operator
       namespace: database
@@ -33,6 +34,7 @@ spec:
     substitute:
       APP: immich
       CLUSTER: deedee
+      DBCLUSTER: immich
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_ACCESSMODES: ReadWriteMany
       KOPIUR_CAPACITY: 50Gi

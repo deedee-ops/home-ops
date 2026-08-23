@@ -7,6 +7,8 @@ metadata:
 spec:
   components:
     - ../../../components/kopiur
+    - ../../../components/nfs-scaler
+    - ../../../components/pgbackup
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -16,6 +18,8 @@ spec:
     substitute:
       APP: bookorbit
       CLUSTER: deedee
+      DBCLUSTER: media
+      NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   patches: []
   prune: true

@@ -1,0 +1,107 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/deployment-apps-v1.json
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/controller: dbbackup
+    app.kubernetes.io/instance: ${APP}
+    app.kubernetes.io/name: ${APP}
+  name: ${APP}-dbbackup
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: dbbackup
+      app.kubernetes.io/instance: ${APP}
+      app.kubernetes.io/name: ${APP}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/controller: dbbackup
+        app.kubernetes.io/instance: ${APP}
+        app.kubernetes.io/name: ${APP}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - env:
+            - name: BACKUP_DIR
+              value: /backups
+            - name: BACKUP_KEEP_DAYS
+              value: "14"
+            - name: BACKUP_KEEP_MINS
+              value: "240"
+            - name: BACKUP_KEEP_MONTHS
+              value: "0"
+            - name: BACKUP_KEEP_WEEKS
+              value: "0"
+            - name: HEALTHCHECK_PORT
+              value: "8080"
+            - name: POSTGRES_DB
+              value: ${APP}
+            - name: POSTGRES_EXTRA_OPTS
+              value: -b -C -c -Z6 --inserts
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: host
+                  name: ${DBCLUSTER}-db-app
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: ${DBCLUSTER}-db-app
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: ${DBCLUSTER}-db-app
+            - name: SCHEDULE
+              value: '@hourly'
+          image: docker.io/prodrigestivill/postgres-backup-local:18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: app
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsUser: 999
+          volumeMounts:
+            - mountPath: /backups
+              name: dbbackup
+              subPath: ${APP}
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas.internal
+              share: /mnt/fast/backups/kubernetes/deedee/databases
+          name: dbbackup

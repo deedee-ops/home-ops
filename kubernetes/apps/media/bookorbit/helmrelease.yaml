@@ -30,17 +30,17 @@ spec:
               OIDC_ALLOW_LOCAL_ISSUERS: true
               PORT: &port 80
               TZ: Europe/Warsaw
-              POSTGRES_DB: &dbname bookorbit
+              POSTGRES_DB: bookorbit
               POSTGRES_PORT: 5432
-              POSTGRES_HOST: &dbhost
+              POSTGRES_HOST:
                 secretKeyRef:
                   name: media-db-app
                   key: host
-              POSTGRES_PASSWORD: &dbpass
+              POSTGRES_PASSWORD:
                 secretKeyRef:
                   name: media-db-app
                   key: password
-              POSTGRES_USER: &dbuser
+              POSTGRES_USER:
                 secretKeyRef:
                   name: media-db-app
                   key: username
@@ -81,41 +81,6 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 2Gi
-      dbbackup:
-        containers:
-          app:
-            image:
-              repository: docker.io/prodrigestivill/postgres-backup-local
-              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
-            env:
-              BACKUP_DIR: "/backups"
-              BACKUP_KEEP_DAYS: "14"
-              BACKUP_KEEP_WEEKS: "0"
-              BACKUP_KEEP_MONTHS: "0"
-              BACKUP_KEEP_MINS: "240"
-              HEALTHCHECK_PORT: "8080"
-              SCHEDULE: "@hourly"
-              POSTGRES_EXTRA_OPTS: "-b -C -c -Z6 --inserts"
-              POSTGRES_DB: *dbname
-              POSTGRES_HOST: *dbhost
-              POSTGRES_PASSWORD: *dbpass
-              POSTGRES_USER: *dbuser
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 8080
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 10
-              readiness: *probes
-            securityContext:
-              <<: *sc
-              runAsUser: 999
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -172,18 +137,6 @@ spec:
             app:
               - path: /books
                 subPath: media/books
-      dbbackup:
-        type: custom
-        volumeSpec:
-          csi:
-            driver: nfs.csi.k8s.io
-            volumeAttributes:
-              server: nas.internal
-              share: "/mnt/fast/backups/kubernetes/${CLUSTER}/databases/bookorbit"
-        advancedMounts:
-          dbbackup:
-            app:
-              - path: "/backups"
       data:
         existingClaim: bookorbit
         advancedMounts:

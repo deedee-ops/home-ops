@@ -195,41 +195,6 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 512Mi # Python .__.
-      dbbackup:
-        containers:
-          app:
-            image:
-              repository: docker.io/prodrigestivill/postgres-backup-local
-              tag: 18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f
-            env:
-              BACKUP_DIR: "/backups"
-              BACKUP_KEEP_DAYS: "14"
-              BACKUP_KEEP_WEEKS: "0"
-              BACKUP_KEEP_MONTHS: "0"
-              BACKUP_KEEP_MINS: "240"
-              HEALTHCHECK_PORT: "8080"
-              SCHEDULE: "@hourly"
-              POSTGRES_EXTRA_OPTS: "-b -C -c -Z6 --inserts"
-              POSTGRES_DB: *dbname
-              POSTGRES_HOST: *dbhost
-              POSTGRES_PASSWORD: *dbpass
-              POSTGRES_USER: *dbuser
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 8080
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 10
-              readiness: *probes
-            securityContext:
-              <<: *sc
-              runAsUser: 999
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -309,18 +274,6 @@ spec:
               - subPath: server-data
                 path: /data
           microservices: *dataMount
-      dbbackup:
-        type: custom
-        volumeSpec:
-          csi:
-            driver: nfs.csi.k8s.io
-            volumeAttributes:
-              server: nas.internal
-              share: "/mnt/fast/backups/kubernetes/${CLUSTER}/databases/immich"
-        advancedMounts:
-          dbbackup:
-            app:
-              - path: "/backups"
       homelab-root-ca:
         type: configMap
         name: homelab-root-ca

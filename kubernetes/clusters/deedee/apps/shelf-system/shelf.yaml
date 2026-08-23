@@ -7,7 +7,7 @@ metadata:
 spec:
   components:
     - ../../../components/kopiur
-    - ../../../components/nfs-scaler
+    - ../../../components/pgbackup
   dependsOn:
     - name: postgresql
       namespace: shelf-system
@@ -29,7 +29,7 @@ spec:
     substitute:
       APP: shelf
       CLUSTER: deedee
-      NFS_VOLUME: fast
+      DBCLUSTER: shelf
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 20Gi
     substituteFrom:
