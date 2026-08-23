@@ -81,4 +81,20 @@ locals {
       }
     ]
   ])
+
+  static_site_zones = {
+    for hostname in keys(var.static_sites) : hostname => [
+      for domain_name, domain_opts in var.domains : domain_opts.zone_id
+      if hostname == domain_name || endswith(hostname, ".${domain_name}")
+    ]
+  }
+
+  static_sites = {
+    for hostname, content in var.static_sites : hostname => {
+      hostname    = hostname
+      content     = content
+      worker_name = "static-site-${replace(hostname, ".", "-")}"
+      zone_id     = length(local.static_site_zones[hostname]) == 1 ? local.static_site_zones[hostname][0] : null
+    }
+  }
 }

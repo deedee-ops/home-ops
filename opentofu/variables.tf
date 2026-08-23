@@ -52,6 +52,12 @@ variable "domains" {
   }))
 }
 
+variable "static_sites" {
+  description = "Map of hostname to static HTML served on every path of that hostname. The hostname must belong to one of the zones declared in `domains`."
+  type        = map(string)
+  default     = {}
+}
+
 variable "mailboxes" {
   description = "List of migadu mailboxes, and attached aliases and identities"
   type = map(map(object({

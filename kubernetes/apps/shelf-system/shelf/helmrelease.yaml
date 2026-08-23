@@ -373,9 +373,8 @@ spec:
           http:
             port: *shimPort
     route:
-      app:
+      app: &appRoute
         hostnames:
-          - "i.${ROOT_DOMAIN}"
           - "shelf.${ROOT_DOMAIN}"
         parentRefs:
           - name: envoy-internal
@@ -397,6 +396,12 @@ spec:
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
+      inventory:
+        <<: *appRoute
+        hostnames:
+          - "i.${ROOT_DOMAIN}"
+        annotations:
+          gatus.home-operations.com/enabled: "false"
       oidc:
         hostnames:
           - "shelf-oidc.${ROOT_DOMAIN}"
