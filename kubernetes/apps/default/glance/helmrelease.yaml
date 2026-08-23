@@ -78,10 +78,6 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: true
       enableServiceLinks: false
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       labels:
         egress.cilium.io/kube-apiserver: "true"
       securityContext:

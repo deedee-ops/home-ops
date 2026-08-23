@@ -54,11 +54,6 @@ spec:
           labels:
             egress.cilium.io/auth: "true"
             egress.cilium.io/smtp-relay: "true"
-        additionalConfig:
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
     kubeApiServer:
       enabled: true
     kubeControllerManager:
@@ -135,11 +130,6 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
-        additionalConfig:
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       namespaceOverride: kube-system

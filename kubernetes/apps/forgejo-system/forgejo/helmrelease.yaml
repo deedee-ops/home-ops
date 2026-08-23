@@ -153,10 +153,6 @@ spec:
         egress.cilium.io/internet: "true"
         egress.cilium.io/nas: "true"
         egress.cilium.io/smtp-relay: "true"
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
     extraContainerVolumeMounts:
       - name: signing-key
         mountPath: /data/signing

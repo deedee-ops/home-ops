@@ -85,10 +85,6 @@ spec:
             "ips": ["192.168.4.30/24"],
             "mac": "02:00:c0:a8:04:1e"
           }]
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

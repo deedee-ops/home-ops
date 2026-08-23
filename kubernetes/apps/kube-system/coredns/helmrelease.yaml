@@ -43,8 +43,11 @@ spec:
             configBlock: |-
               pods verified
               fallthrough in-addr.arpa ip6.arpa
-          - name: autopath
-            parameters: "@kubernetes"
+          # Do not re-add the `autopath` plugin. It answers the first
+          # search-path query with a CNAME chain, so Cilium's DNS proxy caches
+          # the resolved IPs against the search-suffixed name rather than the
+          # name in `toFQDNs`, and FQDN policies silently fail to match.
+          # See https://github.com/cilium/cilium/issues/20191
           - name: template
             parameters: ANY AAAA
             configBlock: |-

@@ -94,10 +94,6 @@ spec:
               runAsGroup: 999
             resources: *rs
     defaultPodOptions:
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       terminationGracePeriodSeconds: 5
       automountServiceAccountToken: false
       enableServiceLinks: false

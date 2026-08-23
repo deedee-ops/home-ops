@@ -46,17 +46,6 @@ spec:
             target:
               kind: Deployment
               name: (kustomize-controller|helm-controller|source-controller|notification-controller)
-          - # Properly resolve DNS domains for cilium policies
-            patch: |-
-              - op: add
-                path: /spec/template/spec/dnsConfig
-                value:
-                  options:
-                    - name: ndots
-                      value: "1"
-            target:
-              kind: Deployment
-              name: (kustomize-controller|helm-controller|source-controller|notification-controller)
           - # Increase the number of workers
             patch: |-
               - op: add

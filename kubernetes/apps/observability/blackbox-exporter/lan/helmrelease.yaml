@@ -16,10 +16,6 @@ spec:
       allowPrivilegeEscalation: false
       seccompProfile:
         type: RuntimeDefault
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
     config:
       modules:
         https:

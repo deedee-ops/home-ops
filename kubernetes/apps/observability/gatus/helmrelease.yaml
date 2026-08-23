@@ -84,10 +84,6 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: true # gatus-sidecar
       enableServiceLinks: false
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       labels:
         egress.cilium.io/envoy-http: "true"
         egress.cilium.io/kube-apiserver: "true"

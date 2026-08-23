@@ -134,10 +134,6 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       labels:
         egress.cilium.io/ai: "true"
         egress.cilium.io/auth: "true"

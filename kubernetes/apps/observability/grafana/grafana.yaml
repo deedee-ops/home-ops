@@ -74,10 +74,6 @@ spec:
                   name: homelab-root-ca
                   subPath: ca.crt
                   readOnly: true
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

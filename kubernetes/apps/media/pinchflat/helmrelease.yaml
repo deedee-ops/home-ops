@@ -75,10 +75,6 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       resourceClaims:
         - name: gpu
           resourceClaimTemplateName: jellyfin-gpu

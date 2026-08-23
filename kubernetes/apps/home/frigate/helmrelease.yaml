@@ -85,10 +85,6 @@ spec:
             "ips": ["192.168.3.32/24"],
             "mac": "02:00:c0:a8:03:20"
           }]
-      dnsConfig:
-        options:
-          - name: ndots
-            value: "1"
       resourceClaims:
         - name: gpu
           resourceClaimTemplateName: frigate-gpu
