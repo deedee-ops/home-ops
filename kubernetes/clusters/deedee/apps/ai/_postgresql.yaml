@@ -17,8 +17,8 @@ spec:
   healthChecks:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
-      namespace: immich-system
-      name: immich-db
+      namespace: ai
+      name: ai-db
   healthCheckExprs:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
