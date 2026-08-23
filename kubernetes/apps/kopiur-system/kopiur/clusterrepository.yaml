@@ -21,6 +21,13 @@ spec:
       name: kopiur-backblaze-b2-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
+  parameters:
+    blobRetention:
+      # Matches B2 object lock period
+      compliance:
+        period: 168h
+    epoch:
+      minDuration: 6h
   scheduleDefaults:
     timezone: Europe/Warsaw
 ---
@@ -50,5 +57,8 @@ spec:
       name: kopiur-nas-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
+  parameters:
+    epoch:
+      minDuration: 6h
   scheduleDefaults:
     timezone: Europe/Warsaw
