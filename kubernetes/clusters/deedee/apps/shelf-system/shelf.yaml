@@ -20,9 +20,9 @@ spec:
     - patch: |-
         - op: replace
           path: /spec/scaleTargetRef/name
-          value: shelf-storage-api
+          value: shelf-dbbackup
       target:
-        group: autoscaling/v2
+        group: autoscaling
         kind: HorizontalPodAutoscaler
   path: ./kubernetes/apps/shelf-system/shelf
   postBuild:
