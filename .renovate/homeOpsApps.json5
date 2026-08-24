@@ -80,5 +80,11 @@
       matchPackageNames: ["ghcr.io/searxng/searxng"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-[a-f0-9]+$",
     },
+    {
+      description: "CNPG extension images are shaped '<version>-<build stamp>-<pg major>-<debian codename>'; compatibility keeps them on the operand's major + distro",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/cloudnative-pg/postgis-extension"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)-(?<compatibility>\\d+-\\w+)$",
+    },
   ],
 }

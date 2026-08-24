@@ -1,0 +1,75 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgresql
+spec:
+  components:
+    - ./components/postgresql
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: database
+    - name: plugin-barman-cloud
+      namespace: database
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  healthChecks:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      namespace: default
+      name: default-db
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      current: has(status.conditions) && status.conditions.exists(e, e.type == 'Ready' && e.status == 'True')
+      failed: >-
+        has(status.phase) && status.phase in [
+          'Cluster cannot execute instance online upgrade due to missing architecture binary',
+          'Cluster cannot proceed to reconciliation due to an error while interacting with plugins',
+          'Cluster cannot proceed to reconciliation due to an unknown plugin being required',
+          'Cluster has incomplete or invalid image catalog',
+          'Cluster is unrecoverable and needs manual intervention',
+          'Invalid cluster definition',
+          'Unable to create required cluster objects',
+          'Waiting for user action'
+        ]
+  interval: 1h
+  patches:
+    - patch: |-
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        metadata:
+          name: _
+        spec:
+          bootstrap:
+            initdb:
+              database: app
+            # recovery:
+            #   source: default-db-restore
+            #   database: app
+          postgresql:
+            shared_preload_libraries:
+              - "vchord.so"
+            extensions:
+              - name: postgis
+                image:
+                  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgis-extension
+                  reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.1-202602082246-18-bookworm@sha256:822fe588375bbbd8319cb09f0f76a936f7b49be75b494179f6cb835d12ffb7fb
+                ld_library_path:
+                  - system
+      target:
+        group: postgresql.cnpg.io
+        kind: Cluster
+  path: ./kubernetes
+  postBuild:
+    substitute:
+      APP: default
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: true
