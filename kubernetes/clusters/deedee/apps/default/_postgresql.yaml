@@ -17,8 +17,8 @@ spec:
   healthChecks:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
-      namespace: media
-      name: media-db
+      namespace: default
+      name: default-db
   healthCheckExprs:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
@@ -43,26 +43,33 @@ spec:
           name: _
         spec:
           bootstrap:
-            # initdb:
-            #   database: app
-            recovery:
-              source: media-db-restore
+            initdb:
               database: app
+            # recovery:
+            #   source: default-db-restore
+            #   database: app
           postgresql:
             shared_preload_libraries:
               - "vchord.so"
+            extensions:
+              - name: postgis
+                image:
+                  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgis-extension
+                  reference: ghcr.io/cloudnative-pg/postgis-extension:3.6.4-202608201415-18-bookworm@sha256:f515a80448eed6b50789a49fe6a5991f299e7668d1e04404c26b6e7ff8f94681
+                ld_library_path:
+                  - system
       target:
         group: postgresql.cnpg.io
         kind: Cluster
   path: ./kubernetes
   postBuild:
     substitute:
-      APP: media
+      APP: default
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: media
+  targetNamespace: default
   wait: true
