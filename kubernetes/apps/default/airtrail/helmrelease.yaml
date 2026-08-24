@@ -1,0 +1,152 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: airtrail
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: airtrail
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: AirTrail
+          glance/icon: di:air-trail
+          glance/url: https://airtrail.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: johly/airtrail
+              tag: v3.12.0@sha256:c5616704defabd82d2dde97e93a5417e59c7acfdb06c0e589209257543b50f8c
+            command:
+              - /bin/sh
+              - -c
+            # yamllint disable rule:line-length
+            args:
+              - |
+                export DB_URL="postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@$${POSTGRES_HOST}:$${POSTGRES_PORT}/airtrail"
+                exec /app/bin/entrypoint.sh
+            # yamllint enable rule:line-length
+            env:
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+              OAUTH_ENABLED: true
+              OAUTH_AUTO_LOGIN: true
+              OAUTH_AUTO_REGISTER: false
+              OAUTH_BUTTON_TEXT: "Login with Pocket ID"
+              OAUTH_HIDE_PASSWORD_FORM: true
+              OAUTH_ISSUER_URL: https://id.${ROOT_DOMAIN}
+              OAUTH_SCOPE: "openid profile"
+              ORIGIN: https://airtrail.${ROOT_DOMAIN}
+              UPLOAD_LOCATION: /config/upload
+              TZ: Europe/Warsaw
+              POSTGRES_HOST:
+                secretKeyRef:
+                  name: default-db-app
+                  key: host
+              POSTGRES_PORT:
+                secretKeyRef:
+                  name: default-db-app
+                  key: port
+              POSTGRES_USER:
+                secretKeyRef:
+                  name: default-db-app
+                  key: username
+              POSTGRES_PASSWORD:
+                secretKeyRef:
+                  name: default-db-app
+                  key: password
+            envFrom:
+              - secretRef:
+                  name: "airtrail-secret"
+              - secretRef:
+                  name: "airtrail-oidc-credentials"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/ping
+                    port: &port 3000
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "airtrail.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: airtrail
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data: mediastream: blob: wss:
+                        https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://flagcdn.com
+                        https://api.github.com;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      config:
+        existingClaim: airtrail
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true

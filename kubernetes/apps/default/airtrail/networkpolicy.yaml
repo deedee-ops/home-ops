@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: airtrail-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: airtrail
+  egress:
+    - toFQDNs:
+        - matchName: aerodatabox.p.rapidapi.com
+        - matchName: api.github.com
+        - matchName: codeload.github.com
+        - matchName: davidmegginson.github.io
+        - matchName: raw.githubusercontent.com
+        - matchPattern: "api.*.openaip.net"
+        - matchPattern: "*.cartocdn.com"
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/component: database
