@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: geopulse-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: geopulse
+  egress:
+    - toFQDNs:
+        - matchName: download.geonames.org
+        - matchPattern: "*.openstreetmap.org"
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/component: database

@@ -63,4 +63,11 @@ spec:
   target:
     configMap:
       key: ca.crt
+    additionalFormats:
+      pkcs12:
+        key: truststore.p12
+        # Password is not a secret, see:
+        # https://cert-manager.io/docs/faq/#why-are-passwords-on-jks-or-pkcs12-files-not-helpful
+        password: dummy
+        profile: Modern2023
     namespaceSelector: {}

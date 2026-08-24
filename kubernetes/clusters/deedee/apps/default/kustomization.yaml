@@ -17,6 +17,7 @@ resources:
   - ./discord-bots.yaml
   - ./firefly.yaml
   - ./garmin.yaml
+  - ./geopulse.yaml
   - ./glance.yaml
   - ./karakeep.yaml
   - ./kiwix.yaml

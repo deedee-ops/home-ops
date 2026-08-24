@@ -1,0 +1,202 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: geopulse
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: geopulse
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: Geopulse
+          glance/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/svg/geopulse.svg
+          glance/url: https://geopulse.${ROOT_DOMAIN}
+        containers:
+          backend:
+            image:
+              repository: ghcr.io/tess1o/geopulse-backend
+              tag: 1.37.1-native@sha256:7ae1a7e4fceba3205f9aceca24329846c98668553ba5f27aebfced05acc89433
+            env: &env
+              GEOPULSE_ADMIN_EMAIL: ajgon@${ROOT_DOMAIN}
+              GEOPULSE_AUTH_ADMIN_LOGIN_BYPASS_ENABLED: true
+              GEOPULSE_AUTH_GUEST_ROOT_REDIRECT_TO_LOGIN_ENABLED: true
+              GEOPULSE_AUTH_OIDC_LOGIN_ENABLED: true
+              GEOPULSE_AUTH_PASSWORD_LOGIN_ENABLED: false
+              GEOPULSE_AUTH_REGISTRATION_ENABLED: false
+              GEOPULSE_AUTH_SECURE_COOKIES: true
+              GEOPULSE_CORS_ENABLED: true
+              GEOPULSE_CORS_ORIGINS: https://geopulse.${ROOT_DOMAIN}
+              GEOPULSE_OIDC_AUTO_LINK_ACCOUNTS: true
+              GEOPULSE_OIDC_ENABLED: true
+              GEOPULSE_OIDC_PROVIDER_GENERIC_DISCOVERY_URL: https://id.${ROOT_DOMAIN}/.well-known/openid-configuration
+              GEOPULSE_OIDC_PROVIDER_GENERIC_ENABLED: true
+              GEOPULSE_OIDC_PROVIDER_GENERIC_NAME: Pocket ID
+              GEOPULSE_PUBLIC_BASE_URL: https://geopulse.${ROOT_DOMAIN}
+              GEOPULSE_USER_DEFAULT_MEASURE_UNIT: METRIC
+              # renovate: datasource=docker depName=ghcr.io/tess1o/geopulse-backend
+              GEOPULSE_VERSION: 1.37.1
+              NATIVE_IMAGE_OPTS: >-
+                -XX:MaximumHeapSizePercent=70
+                -XX:MaximumYoungGenerationSizePercent=15
+                -Djavax.net.ssl.trustStore=/certs/truststore.p12
+                -Djavax.net.ssl.trustStoreType=PKCS12
+                -Djavax.net.ssl.trustStorePassword=dummy
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+              TZ: Europe/Warsaw
+              GEOPULSE_POSTGRES_URL: jdbc:postgresql://default-db-rw:5432/geopulse
+              GEOPULSE_POSTGRES_PASSWORD:
+                secretKeyRef:
+                  name: default-db-app
+                  key: password
+              GEOPULSE_POSTGRES_USERNAME:
+                secretKeyRef:
+                  name: default-db-app
+                  key: username
+            envFrom:
+              - secretRef:
+                  name: geopulse-oidc-credentials
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources: &resources
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 1Gi
+          ui:
+            image:
+              repository: ghcr.io/tess1o/geopulse-ui
+              tag: 1.37.1@sha256:9ec4fe23e8d51b24290c2d3efb0fe999a95c24dfd22551ffa6fdfc99b92a6376
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                # entrypoint uses 8080 which clashes with backend
+                sed -i "s|NGINX_PORT_PLACEHOLDER|80|g" /etc/nginx/conf.d/default.conf.template
+                exec /docker-entrypoint.sh
+            env:
+              <<: *env
+              GEOPULSE_BACKEND_URL: http://localhost:8080
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &uiPort 80
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              <<: *sc
+              readOnlyRootFilesystem: false
+            resources: *resources
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *uiPort
+    route:
+      app:
+        hostnames:
+          - "geopulse.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: geopulse
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data: blob: https://tiles.openfreemap.org;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
+          - path: /certs/truststore.p12
+            subPath: truststore.p12
+            readOnly: true
+      keys:
+        type: secret
+        name: geopulse-secret
+        advancedMounts:
+          main:
+            backend:
+              - path: /app/keys
+                readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
