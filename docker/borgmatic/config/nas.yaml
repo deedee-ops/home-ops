@@ -12,7 +12,7 @@ repositories:
   - path: "${BORGMATIC_NAS_REPO_BORGBASE_US}"
     label: borgbase-nas-us
 
-exclude_caches: true
+exclude_caches: false
 exclude_if_present:
   - .nobackup
 

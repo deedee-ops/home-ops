@@ -11,7 +11,7 @@ repositories:
   - path: "${BORGMATIC_HOMELAB_REPO_BORGBASE_US}"
     label: borgbase-homelab-us
 
-exclude_caches: true
+exclude_caches: false
 exclude_if_present:
   - .nobackup
 

@@ -33,6 +33,7 @@ in
     pkgs.jq
     pkgs.just
     pkgs.k9s
+    pkgs.kopia
     pkgs.kubectl
     pkgs.kubectl-node-shell
     pkgs.kustomize
