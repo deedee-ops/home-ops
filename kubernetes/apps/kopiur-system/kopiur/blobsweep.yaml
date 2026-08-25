@@ -20,6 +20,68 @@ data:
       "description": "blob-sweep",
       "enableActions": false
     }
+  list.sh: |-
+    #!/bin/sh
+    set -eu
+    K="kopia --config-file=/scripts/repository.config"
+
+    $K blob list > /work/all.txt
+
+    # probe everything except maintenance logs: ~35% of the bucket, not backup
+    # data, and a corrupt log blob costs nothing
+    awk 'NF>=3 && $1 !~ /^_log/ {print $1}' /work/all.txt | sort > /work/blobs.txt
+
+    # pack blobs present in the bucket (p = data packs, q = metadata packs)
+    awk 'NF>=3 && $1 ~ /^[pq]/ {print $1}' /work/all.txt | sort -u > /work/present.txt
+
+    # pack blobs the index still references. Entry layout:
+    #   <date> <time> <tz> <indexblob> <contentid> <created|deleted> \
+    #   <date> <time> <tz> <packblob> <offset> <length>
+    # so the pack is $(NF-2) and the liveness keyword is $(NF-6).
+    #
+    # Two things this must get right, both learned the hard way on 2026-08-25:
+    #  - use --active, not --all: --all includes inactive (pre-compaction) index
+    #    blobs that name packs GC has correctly deleted.
+    #  - count only "created" entries. A "deleted" entry is a tombstone whose
+    #    pack is legitimately gone until full-drop-deleted-content purges it;
+    #    including them reported 97 phantom missing packs.
+    #  - do NOT scan left-to-right for the first /^[pq]/ field: metadata content
+    #    IDs carry a letter prefix (e.g. m…, q…) and would match ahead of the
+    #    pack, putting non-blob names into the reference set.
+    $K index inspect --active > /work/index.txt
+    awk '$(NF-6) == "created" {p = $(NF-2); if (p ~ /^[pq][0-9a-f]/) print p}' \
+      /work/index.txt | sort -u > /work/referenced.txt
+
+    comm -23 /work/referenced.txt /work/present.txt > /work/missing.txt
+
+    idx_total=$(wc -l < /work/index.txt)
+    # deliberately counts every entry, live or tombstone: this measures whether
+    # positional parsing still works, not how many contents are live. Scoping it
+    # to "created" would sit near 87% and trip the guard below on healthy data.
+    idx_parsed=$(awk '{p = $(NF-2); if (p ~ /^[pq][0-9a-f]/) c++} END {print c+0}' /work/index.txt)
+    idx_live=$(awk '$(NF-6) == "created" {c++} END {print c+0}' /work/index.txt)
+
+    echo "objects listed        : $(wc -l < /work/all.txt)"
+    echo "to probe (no _log)    : $(wc -l < /work/blobs.txt)"
+    echo "packs present         : $(wc -l < /work/present.txt)"
+    echo "packs referenced live : $(wc -l < /work/referenced.txt)"
+    echo "referenced but missing: $(wc -l < /work/missing.txt)"
+    echo "index entries parsed  : ${idx_parsed}/${idx_total}"
+    echo "index entries live    : ${idx_live}/${idx_total}"
+
+    # a format change would silently shrink the reference set and turn check 2
+    # into a no-op that still reports success - fail loudly instead
+    if [ "${idx_total}" -gt 0 ] && [ $((idx_parsed * 100 / idx_total)) -lt 90 ]; then
+      echo "ABORT: only ${idx_parsed}/${idx_total} index entries parsed - output format changed"
+      exit 1
+    fi
+
+    # the liveness keyword moving would silently make every entry look like a
+    # tombstone, emptying the reference set - same failure, different field
+    if [ "${idx_total}" -gt 0 ] && [ "${idx_live}" -eq 0 ]; then
+      echo "ABORT: no 'created' entries found in ${idx_total} - liveness field moved"
+      exit 1
+    fi
   probe.sh: |-
     #!/bin/sh
     set -u
@@ -38,16 +100,35 @@ data:
   sweep.sh: |-
     #!/bin/sh
     set -eu
+    rc=0
+
+    # check 1: hollow objects - present in the bucket, but the backend serves no
+    # payload (206 with 0 bytes). This is what B2 did on 2026-08-22.
     total=$(wc -l < /work/blobs.txt)
-    echo "probing ${total} blobs in ${S3_BUCKET}"
+    echo "probing ${total} blobs in ${S3_BUCKET} (maintenance logs excluded)"
     xargs -P "${PARALLEL}" -n 1 /scripts/probe.sh < /work/blobs.txt > /work/bad.txt
     bad=$(wc -l < /work/bad.txt)
     if [ "${bad}" -gt 0 ]; then
       echo "DAMAGED BLOBS: ${bad} of ${total}"
       cat /work/bad.txt
-      exit 1
+      rc=1
+    else
+      echo "all ${total} blobs readable"
     fi
-    echo "all ${total} blobs readable"
+
+    # check 2: missing objects - referenced by the index but absent from the
+    # bucket. Check 1 is blind to these: it only probes what blob list returns.
+    missing=$(wc -l < /work/missing.txt)
+    referenced=$(wc -l < /work/referenced.txt)
+    if [ "${missing}" -gt 0 ]; then
+      echo "MISSING BLOBS: ${missing} of ${referenced} referenced packs absent from the bucket"
+      cat /work/missing.txt
+      rc=1
+    else
+      echo "all ${referenced} referenced pack blobs present"
+    fi
+
+    exit $rc
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/cronjob-batch-v1.json
 apiVersion: batch/v1
@@ -63,6 +144,7 @@ spec:
   jobTemplate:
     spec:
       backoffLimit: 0
+      activeDeadlineSeconds: 3600
       template:
         metadata:
           labels:
@@ -82,9 +164,7 @@ spec:
             - name: list
               image: ghcr.io/home-operations/kopia:0.23.1
               command:
-                - /bin/sh
-                - -c
-                - kopia --config-file=/scripts/repository.config blob list | awk 'NF>=3 {print $1}' > /work/blobs.txt
+                - /scripts/list.sh
               env:
                 - name: HOME
                   value: /tmp
@@ -92,6 +172,8 @@ spec:
                   value: /tmp/cache
                 - name: KOPIA_LOG_DIR
                   value: /tmp/logs
+                - name: KOPIA_ADVANCED_COMMANDS
+                  value: enabled
               envFrom:
                 - secretRef:
                     name: kopiur-backblaze-b2-secret

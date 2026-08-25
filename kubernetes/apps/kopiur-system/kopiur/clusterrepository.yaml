@@ -21,6 +21,8 @@ spec:
       name: kopiur-backblaze-b2-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
+  health:
+    indexBlobWarnThreshold: 8000
   parameters:
     blobRetention:
       # Matches B2 object lock period
@@ -57,6 +59,8 @@ spec:
       name: kopiur-nas-secret
       namespace: kopiur-system
       key: KOPIA_PASSWORD
+  health:
+    indexBlobWarnThreshold: 8000
   parameters:
     epoch:
       minDuration: 6h
