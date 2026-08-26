@@ -25,6 +25,39 @@ data:
     set -eu
     K="kopia --config-file=/scripts/repository.config"
 
+    # Index FIRST, bucket listing SECOND. A pack written between the two then
+    # shows up in the listing but not the index, which is harmless. The reverse
+    # order makes every pack written mid-run look missing - under heavy ingest
+    # on 2026-08-26 that alone accounted for 2 phantom findings.
+    #
+    # Entry layout:
+    #   <date> <time> <tz> <indexblob> <contentid> <created|deleted> \
+    #   <date> <time> <tz> <packblob> <offset> <length>
+    # contentid $(NF-7), keyword $(NF-6), content timestamp $(NF-5) $(NF-4),
+    # pack $(NF-2).
+    $K index inspect --active > /work/index.txt
+
+    # THE NEWEST-ENTRY RULE. A content legitimately has several index entries:
+    # full-rewrite-contents relocates contents into new packs and leaves the old
+    # `created` entries behind, pointing at packs GC then deletes on purpose.
+    # Only each content's newest entry describes where its data actually lives.
+    # Counting every `created` entry reported 987 phantom missing packs on
+    # 2026-08-26 (24514 refs vs 19744 real).
+    #
+    # Timestamps are YYYY-MM-DD HH:MM:SS.mmm, so string comparison orders them.
+    #
+    # Also, deliberately:
+    #  - --active, not --all: --all includes inactive pre-compaction index blobs
+    #    naming packs GC correctly deleted.
+    #  - keyword must be "created": a "deleted" entry is a tombstone whose pack
+    #    is legitimately gone until full-drop-deleted-content purges it.
+    #  - never scan left-to-right for the first /^[pq]/ field: metadata content
+    #    IDs carry a letter prefix (m…, q…) and match ahead of the pack.
+    awk '{c = $(NF-7); k = $(NF-6); p = $(NF-2); t = $(NF-5) " " $(NF-4)
+          if (!(c in ts) || t > ts[c]) {ts[c] = t; kw[c] = k; pk[c] = p}}
+         END {for (c in kw) if (kw[c] == "created" && pk[c] ~ /^[pq][0-9a-f]/) print pk[c]}' \
+      /work/index.txt | sort -u > /work/referenced.txt
+
     $K blob list > /work/all.txt
 
     # probe everything except maintenance logs: ~35% of the bucket, not backup
@@ -33,24 +66,6 @@ data:
 
     # pack blobs present in the bucket (p = data packs, q = metadata packs)
     awk 'NF>=3 && $1 ~ /^[pq]/ {print $1}' /work/all.txt | sort -u > /work/present.txt
-
-    # pack blobs the index still references. Entry layout:
-    #   <date> <time> <tz> <indexblob> <contentid> <created|deleted> \
-    #   <date> <time> <tz> <packblob> <offset> <length>
-    # so the pack is $(NF-2) and the liveness keyword is $(NF-6).
-    #
-    # Two things this must get right, both learned the hard way on 2026-08-25:
-    #  - use --active, not --all: --all includes inactive (pre-compaction) index
-    #    blobs that name packs GC has correctly deleted.
-    #  - count only "created" entries. A "deleted" entry is a tombstone whose
-    #    pack is legitimately gone until full-drop-deleted-content purges it;
-    #    including them reported 97 phantom missing packs.
-    #  - do NOT scan left-to-right for the first /^[pq]/ field: metadata content
-    #    IDs carry a letter prefix (e.g. m…, q…) and would match ahead of the
-    #    pack, putting non-blob names into the reference set.
-    $K index inspect --active > /work/index.txt
-    awk '$(NF-6) == "created" {p = $(NF-2); if (p ~ /^[pq][0-9a-f]/) print p}' \
-      /work/index.txt | sort -u > /work/referenced.txt
 
     comm -23 /work/referenced.txt /work/present.txt > /work/missing.txt
 
@@ -61,10 +76,12 @@ data:
     idx_parsed=$(awk '{p = $(NF-2); if (p ~ /^[pq][0-9a-f]/) c++} END {print c+0}' /work/index.txt)
     idx_live=$(awk '$(NF-6) == "created" {c++} END {print c+0}' /work/index.txt)
 
+    refs=$(wc -l < /work/referenced.txt)
+
     echo "objects listed        : $(wc -l < /work/all.txt)"
     echo "to probe (no _log)    : $(wc -l < /work/blobs.txt)"
     echo "packs present         : $(wc -l < /work/present.txt)"
-    echo "packs referenced live : $(wc -l < /work/referenced.txt)"
+    echo "packs referenced now  : ${refs}   (newest entry per content)"
     echo "referenced but missing: $(wc -l < /work/missing.txt)"
     echo "index entries parsed  : ${idx_parsed}/${idx_total}"
     echo "index entries live    : ${idx_live}/${idx_total}"
@@ -82,11 +99,20 @@ data:
       echo "ABORT: no 'created' entries found in ${idx_total} - liveness field moved"
       exit 1
     fi
+
+    # and if the newest-entry map yields nothing, check 2 is comparing an empty
+    # set against the bucket and will always report success
+    if [ "${idx_total}" -gt 0 ] && [ "${refs}" -eq 0 ]; then
+      echo "ABORT: newest-entry map produced 0 packs from ${idx_total} entries"
+      exit 1
+    fi
   probe.sh: |-
     #!/bin/sh
     set -u
+    # PROBE_RETRY/PROBE_TIMEOUT are raised for the serial re-verification pass,
+    # where there are few candidates and being thorough is cheap.
     out=$(curl -sS -o /dev/null -w '%{http_code} %{size_download}' \
-      --max-time 30 --retry 2 -r 0-0 \
+      --max-time "${PROBE_TIMEOUT:-30}" --retry "${PROBE_RETRY:-2}" -r 0-0 \
       --aws-sigv4 "aws:amz:${AWS_REGION}:s3" \
       --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
       "${S3_ENDPOINT}/${S3_BUCKET}/$1" 2>/dev/null)
@@ -104,16 +130,48 @@ data:
 
     # check 1: hollow objects - present in the bucket, but the backend serves no
     # payload (206 with 0 bytes). This is what B2 did on 2026-08-22.
+    #
+    # Two passes. At 32k probes with 24 concurrent TLS connections a handful of
+    # handshakes fail every run (curl=35, http=000); those are not data loss and
+    # must not fail the job. So pass 1 only produces CANDIDATES, and pass 2
+    # re-probes them serially with long timeouts. A genuinely hollow blob fails
+    # both passes, so nothing real is lost by confirming.
     total=$(wc -l < /work/blobs.txt)
     echo "probing ${total} blobs in ${S3_BUCKET} (maintenance logs excluded)"
-    xargs -P "${PARALLEL}" -n 1 /scripts/probe.sh < /work/blobs.txt > /work/bad.txt
-    bad=$(wc -l < /work/bad.txt)
-    if [ "${bad}" -gt 0 ]; then
-      echo "DAMAGED BLOBS: ${bad} of ${total}"
-      cat /work/bad.txt
+    xargs -P "${PARALLEL}" -n 1 /scripts/probe.sh < /work/blobs.txt > /work/cand.txt
+    cand=$(wc -l < /work/cand.txt)
+
+    : > /work/bad.txt
+    if [ "${cand}" -gt 0 ]; then
+      echo "pass 1: ${cand} candidate(s), re-probing serially to rule out transients"
+      awk '{print $NF}' /work/cand.txt > /work/cand-names.txt
+      PROBE_RETRY=6 PROBE_TIMEOUT=60 \
+        xargs -n 1 /scripts/probe.sh < /work/cand-names.txt > /work/bad.txt
+    fi
+
+    # classify what survived: 206 with 0 bytes means the server answered and
+    # sent nothing (data loss). Anything else is a transport failure.
+    awk '$2 == "http=206"' /work/bad.txt > /work/damaged.txt
+    awk '$2 != "http=206"' /work/bad.txt > /work/unreachable.txt
+    damaged=$(wc -l < /work/damaged.txt)
+    unreachable=$(wc -l < /work/unreachable.txt)
+
+    if [ "${damaged}" -gt 0 ]; then
+      echo "DAMAGED BLOBS: ${damaged} of ${total} (server returns no payload)"
+      cat /work/damaged.txt
       rc=1
-    else
-      echo "all ${total} blobs readable"
+    fi
+    if [ "${unreachable}" -gt 0 ]; then
+      echo "UNREACHABLE: ${unreachable} of ${total} still failing after 6 serial retries"
+      cat /work/unreachable.txt
+      rc=1
+    fi
+    if [ "${damaged}" -eq 0 ] && [ "${unreachable}" -eq 0 ]; then
+      if [ "${cand}" -gt 0 ]; then
+        echo "all ${total} blobs readable (${cand} transient failure(s) cleared on retry)"
+      else
+        echo "all ${total} blobs readable"
+      fi
     fi
 
     # check 2: missing objects - referenced by the index but absent from the
