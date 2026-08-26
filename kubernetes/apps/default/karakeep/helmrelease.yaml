@@ -23,7 +23,7 @@ spec:
               repository: ghcr.io/karakeep-app/karakeep
               tag: 0.33.2@sha256:b069e4307dec06ea06d16989c6861c30a1ff208568be44ed5fb5d422cd3e950c
             env:
-              BROWSER_WEB_URL: http://localhost:9222
+              BROWSER_WEB_URL: http://127.0.0.1:9222
               CRAWLER_FULL_PAGE_SCREENSHOT: "true"
               CRAWLER_MONOLITH_TIMEOUT_SEC: "90"
               CRAWLER_SCREENSHOT_TIMEOUT_SEC: "30"
@@ -34,7 +34,7 @@ spec:
               EMBEDDING_TEXT_MODEL: vllm/mixedbread-ai/mxbai-embed-large-v1
               INFERENCE_IMAGE_MODEL: vllm/Qwen/Qwen3-VL-30B-A3B-Thinking
               INFERENCE_TEXT_MODEL: vllm/Google/gemma-4-31B-it
-              MEILI_ADDR: http://localhost:7700
+              MEILI_ADDR: http://127.0.0.1:7700
               NEXTAUTH_URL: "https://karakeep.${ROOT_DOMAIN}"
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               OAUTH_AUTO_REDIRECT: "true"
@@ -91,8 +91,8 @@ spec:
                 memory: 1Gi
           chrome:
             image:
-              repository: gcr.io/zenika-hub/alpine-chrome
-              tag: 124@sha256:1a0046448e0bb6c275c88f86e01faf0de62b02ec8572901256ada0a8c08be23f
+              repository: zenika/alpine-chrome
+              tag: 124@sha256:e3048875b6f75d0332085b093d55a82009fb8e688a1394106800397b534b9b23
             args:
               - --no-sandbox
               - --disable-gpu
