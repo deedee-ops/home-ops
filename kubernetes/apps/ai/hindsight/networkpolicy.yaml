@@ -1,0 +1,20 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hindsight-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: hindsight
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: bifrost
+        - matchLabels:
+            app.kubernetes.io/name: embedder
+        - matchLabels:
+            app.kubernetes.io/name: reranker
+        - matchLabels:
+            app.kubernetes.io/component: database

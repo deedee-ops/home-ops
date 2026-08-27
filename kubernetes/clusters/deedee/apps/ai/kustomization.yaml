@@ -12,6 +12,7 @@ resources:
   - ./camofox.yaml
   - ./embedder.yaml
   - ./hermes-agent.yaml
+  - ./hindsight.yaml
   - ./honcho.yaml
   - ./reranker.yaml
   - ./whisper.yaml

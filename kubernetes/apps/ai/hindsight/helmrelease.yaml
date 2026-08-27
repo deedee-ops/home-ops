@@ -1,0 +1,194 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hindsight
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: hindsight
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: hindsight
+          glance/icon: https://hindsight.vectorize.io/img/favicon.png
+          glance/url: https://hindsight.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/vectorize-io/hindsight
+              tag: 0.9.2-slim@sha256:2e894dee607d98fa9cbc5ca8d9676ca803618f9570e1a473385050a899a3e1a1
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                DB_URL="postgresql://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/hindsight"
+                export HINDSIGHT_API_DATABASE_URL="$${DB_URL}"
+                exec /app/start-all.sh
+            env:
+              TZ: Europe/Warsaw
+              HINDSIGHT_API_HOST: 0.0.0.0
+              HINDSIGHT_API_PORT: "8888"
+              HINDSIGHT_API_LOG_LEVEL: info
+              HINDSIGHT_API_WORKER_ID: hindsight
+              HINDSIGHT_API_TENANT_EXTENSION: hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
+              HINDSIGHT_API_MCP_ENABLED: "true"
+              HINDSIGHT_API_LLM_PROVIDER: openai
+              HINDSIGHT_API_LLM_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
+              HINDSIGHT_API_EMBEDDINGS_PROVIDER: tei
+              HINDSIGHT_API_EMBEDDINGS_TEI_URL: http://embedder.ai.svc.cluster.local
+              HINDSIGHT_API_RERANKER_PROVIDER: tei
+              HINDSIGHT_API_RERANKER_TEI_URL: http://reranker.ai.svc.cluster.local
+              HINDSIGHT_CP_DATAPLANE_API_URL: http://localhost:8888
+              PGHOST:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: host
+              PGPORT:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: port
+              PGUSER:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: username
+              PGPASSWORD:
+                secretKeyRef:
+                  name: ai-db-app
+                  key: password
+            envFrom:
+              - secretRef:
+                  name: hindsight-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health/live
+                    port: &apiPort 8888
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  # /health also checks the database, so a pod that loses it
+                  # drops out of the Service and comes back on its own.
+                  httpGet:
+                    path: /health
+                    port: *apiPort
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health/live
+                    port: *apiPort
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              # The bundled Next.js control plane writes into its own build
+              # cache under /app; upstream's chart runs writable too.
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 25m
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        controller: main
+        ports:
+          http:
+            port: 80
+            targetPort: *apiPort
+      cp:
+        controller: main
+        ports:
+          http:
+            port: &cpPort 9999
+    route:
+      app:
+        hostnames:
+          - "hindsight.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - name: app
+            backendRefs:
+              - kind: Service
+                name: hindsight-cp
+                port: *cpPort
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        connect-src 'self';
+                        img-src 'self' data:;
+                        font-src 'self' data:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
+                        style-src 'self' 'unsafe-inline';
+          - name: api
+            backendRefs:
+              - kind: Service
+                name: hindsight-app
+                port: &apiSvcPort 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /v1
+          - name: mcp
+            backendRefs:
+              - kind: Service
+                name: hindsight-app
+                port: *apiSvcPort
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /mcp
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /home/hindsight/.cache
+            subPath: cache

@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/postgresql.cnpg.io/database_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: hindsight
+spec:
+  name: hindsight
+  owner: app
+  cluster:
+    name: ai-db
+  extensions:
+    - ensure: present
+      name: vector
