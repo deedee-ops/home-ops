@@ -3,11 +3,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: embedder
+  name: reranker
 spec:
   chartRef:
     kind: OCIRepository
-    name: embedder
+    name: reranker
   interval: 1h
   values:
     controllers:
@@ -19,8 +19,11 @@ spec:
               repository: ghcr.io/huggingface/text-embeddings-inference
               tag: cpu-latest@sha256:cb570aabbfa016b86684f576b5bd72d1ee96cc0b7a00b0ad221b298762b32157
             args:
+              # Canonical repo name. `...MiniLM-L-6-v2` still works but only via
+              # a 307 on the HF side, so pin what actually gets served.
               - --model-id
-              - mixedbread-ai/mxbai-embed-large-v1
+              - cross-encoder/ms-marco-MiniLM-L6-v2
+              - --auto-truncate
               # TEI defaults --hostname from $HOSTNAME, which is the pod name in
               # a StatefulSet. It fails to bind to that and silently falls back
               # to 0.0.0.0; bind deliberately instead.
@@ -28,6 +31,8 @@ spec:
               - 0.0.0.0
             env:
               TZ: Europe/Warsaw
+              MAX_CLIENT_BATCH_SIZE: "256"
+              PAYLOAD_LIMIT: "10000000"
             probes:
               liveness:
                 enabled: true
@@ -57,17 +62,22 @@ spec:
                 drop:
                   - ALL
             resources:
+              # Reranking sits on the hot path of every recall, so this needs a
+              # real CPU share rather than the 10m the idle-ish embedder gets.
+              # No CPU limit on purpose: scoring is bursty and throttling it
+              # would just add latency.
               requests:
-                cpu: 10m
-                memory: 3Gi
+                cpu: 250m
+                memory: 512Mi
               limits:
-                memory: 4Gi
+                memory: 1Gi
         statefulset:
           volumeClaimTemplates:
             - name: data
               storageClass: ceph-block
               accessMode: ReadWriteOnce
-              size: 5Gi
+              # The MiniLM cross-encoder is ~90MB, unlike the embedder's 1.3GB.
+              size: 1Gi
               advancedMounts:
                 app:
                   - path: /data

@@ -13,4 +13,5 @@ resources:
   - ./embedder.yaml
   - ./hermes-agent.yaml
   - ./honcho.yaml
+  - ./reranker.yaml
   - ./whisper.yaml
