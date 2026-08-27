@@ -196,7 +196,7 @@ spec:
                 cpu: "10m"
                 memory: "32Mi"
               limits:
-                memory: "1Gi"
+                memory: "4Gi"
         initContainers:
           01-download-languages:
             image: *img
