@@ -12,7 +12,6 @@ resources:
   - ./atuin.yaml
   - ./bentopdf.yaml
   - ./chhoto-url.yaml
-  - ./copyparty.yaml
   - ./crypt.yaml
   - ./davis.yaml
   - ./discord-bots.yaml
