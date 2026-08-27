@@ -51,7 +51,7 @@ spec:
                   periodSeconds: 10
             resources:
               requests:
-                cpu: 100m
+                cpu: 1500m
               claims:
                 - name: gpu
         initContainers:

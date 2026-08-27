@@ -89,7 +89,7 @@ spec:
                   - ALL
             resources:
               requests:
-                cpu: 10m
+                cpu: 100m
                 memory: 512Mi
               limits:
                 memory: 8192Mi
@@ -193,7 +193,7 @@ spec:
             securityContext: *sc
             resources:
               requests:
-                cpu: "10m"
+                cpu: "150m"
                 memory: "32Mi"
               limits:
                 memory: "4Gi"

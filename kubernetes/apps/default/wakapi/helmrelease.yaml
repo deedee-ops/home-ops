@@ -67,7 +67,7 @@ spec:
                   key: WAKAPI_PASSWORD_SALT
             resources:
               requests:
-                cpu: 10m
+                cpu: 25m
                 memory: 256Mi
               limits:
                 memory: 1Gi

@@ -34,6 +34,8 @@ spec:
                 evictableNamespaces:
                   exclude:
                     - forgejo-system
+                evictionLimits:
+                  node: 5
                 thresholds:
                   cpu: 30
                   memory: 40
