@@ -15,7 +15,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
           glance/name: hindsight
-          glance/icon: https://hindsight.vectorize.io/img/favicon.png
+          glance/icon: di:hindsight
           glance/url: https://hindsight.${ROOT_DOMAIN}
         containers:
           app:
@@ -31,20 +31,22 @@ spec:
                 export HINDSIGHT_API_DATABASE_URL="$${DB_URL}"
                 exec /app/start-all.sh
             env:
-              TZ: Europe/Warsaw
-              HINDSIGHT_API_HOST: 0.0.0.0
-              HINDSIGHT_API_PORT: "8888"
-              HINDSIGHT_API_LOG_LEVEL: info
-              HINDSIGHT_API_WORKER_ID: hindsight
-              HINDSIGHT_API_TENANT_EXTENSION: hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
-              HINDSIGHT_API_MCP_ENABLED: "true"
-              HINDSIGHT_API_LLM_PROVIDER: openai
-              HINDSIGHT_API_LLM_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
               HINDSIGHT_API_EMBEDDINGS_PROVIDER: tei
               HINDSIGHT_API_EMBEDDINGS_TEI_URL: http://embedder.ai.svc.cluster.local
+              HINDSIGHT_API_HOST: 0.0.0.0
+              HINDSIGHT_API_LLM_BASE_URL: http://bifrost.ai.svc.cluster.local/v1
+              HINDSIGHT_API_LLM_PROVIDER: openai
+              HINDSIGHT_API_LOG_LEVEL: info
+              HINDSIGHT_API_MCP_ENABLED: "true"
+              HINDSIGHT_API_PORT: &apiPort 8888
               HINDSIGHT_API_RERANKER_PROVIDER: tei
               HINDSIGHT_API_RERANKER_TEI_URL: http://reranker.ai.svc.cluster.local
+              HINDSIGHT_API_TENANT_EXTENSION: hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension
+              HINDSIGHT_API_WORKER_ID: hindsight
               HINDSIGHT_CP_DATAPLANE_API_URL: http://localhost:8888
+              # HINDSIGHT_API_MCP_STATELESS: true # enable if using multiple replicas
+              LITELLM_LOCAL_MODEL_COST_MAP: "True"
+              TZ: Europe/Warsaw
               PGHOST:
                 secretKeyRef:
                   name: ai-db-app
@@ -71,7 +73,7 @@ spec:
                 spec:
                   httpGet:
                     path: /health/live
-                    port: &apiPort 8888
+                    port: *apiPort
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 5
@@ -79,8 +81,6 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  # /health also checks the database, so a pod that loses it
-                  # drops out of the Service and comes back on its own.
                   httpGet:
                     path: /health
                     port: *apiPort
@@ -98,8 +98,6 @@ spec:
                   periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
-              # The bundled Next.js control plane writes into its own build
-              # cache under /app; upstream's chart runs writable too.
               readOnlyRootFilesystem: false
               capabilities:
                 drop:
