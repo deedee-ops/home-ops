@@ -7,7 +7,7 @@ terraform {
 
     migadu = {
       source  = "metio/migadu"
-      version = "2026.8.20"
+      version = "2026.8.27"
     }
   }
   required_version = ">= 1.6.0"
