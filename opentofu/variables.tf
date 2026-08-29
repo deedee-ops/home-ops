@@ -1,3 +1,32 @@
+variable "b2_application_key_id" {
+  description = "Backblaze B2 application key ID used by OpenTofu itself. Needs bucket management; this is NOT the key the fleet backs up with."
+  type        = string
+  sensitive   = true
+}
+
+variable "b2_application_key" {
+  description = "Backblaze B2 application key used by OpenTofu itself"
+  type        = string
+  sensitive   = true
+}
+
+variable "b2_backup_bucket_name" {
+  description = "Bucket holding the offsite kopia repository shared by kopiur and the NAS"
+  type        = string
+}
+
+variable "b2_backup_retention_days" {
+  description = "GOVERNANCE object-lock period, in days, applied to every blob written to the backup bucket"
+  type        = number
+  default     = 7
+}
+
+variable "b2_backup_noncurrent_expiry_days" {
+  description = "Days a hidden (non-current) file version survives before B2 deletes it. This is the window in which a plain delete is still reversible."
+  type        = number
+  default     = 30
+}
+
 variable "cloudflare_account_id" {
   description = "Account ID for Cloudflare account"
   type        = string
