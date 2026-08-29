@@ -17,10 +17,10 @@ actually needs to be. `/mnt/fast` is small enough to keep in both.
 
 The destinations:
 
-| Service     | Endpoint                            | Bucket            | Shared with           |
-| ----------- | ----------------------------------- | ----------------- | --------------------- |
-| `kopia-nas` | `s3.ajgon.casa` (garage)            | `backup-homelab`  | kopiur `nas`          |
-| `kopia-b2`  | `s3.eu-central-003.backblazeb2.com` | `ajgon-homelab`   | kopiur `backblaze-b2` |
+| Service     | Endpoint                            | Bucket                 | Shared with           |
+| ----------- | ----------------------------------- | ---------------------- | --------------------- |
+| `kopia-nas` | `s3.ajgon.casa` (garage)            | `backup-homelab`       | kopiur `nas`          |
+| `kopia-b2`  | `s3.eu-central-003.backblazeb2.com` | `ajgon-homelab-backup` | kopiur `backblaze-b2` |
 
 These are the same repositories declared in
 `kubernetes/apps/kopiur-system/kopiur/clusterrepository.yaml`. Nothing new is
@@ -80,13 +80,22 @@ schedule is a *repository-side* policy (`scheduling.cron` on each
 the container was down runs on the next start, which matters more at daily
 cadence than it did hourly.
 
+Because the policies live in the repository, **a new repository has none.** The
+containers come up, connect, and sit idle with nothing to schedule — no error,
+no log line, just silence. That is exactly what happened on 2026-08-29 when b2
+was rebuilt into `ajgon-homelab-backup`. `--run-missed` does not rescue it
+either: "missed" is measured against a source's snapshot history, and a new
+source has none, so the next run is simply tomorrow's slot. After any repository
+rebuild, re-run the `register` block below **and** kick off the first snapshot
+per source by hand (`kopia snapshot create <path>`, serially — the seed is slow).
+
 The two repositories are staggered an hour apart so they never walk the same
 disks at the same time:
 
 | Repository                  | Cron           | Local time |
 | --------------------------- | -------------- | ---------- |
 | `backup-homelab` (garage)   | `30 12 * * *`  | 12:30      |
-| `ajgon-homelab` (b2)        | `30 13 * * *`  | 13:30      |
+| `ajgon-homelab-backup` (b2) | `30 13 * * *`  | 13:30      |
 
 Both are clear of everything else on the box: borgmatic was moved to 14:30
 (`BACKUP_CRON` in `docker/borgmatic/compose.yaml`), kopiur's quick maintenance
@@ -163,6 +172,15 @@ a source dropped from the list, the server never having come up.
   downloads each unique object once across all sources and retained snapshots.
   Still worth watching against B2's free egress allowance (3× stored bytes per
   month); drop `DEEP_FILES_PERCENT` if it bites.
+- **A `kopiur-verify-*` failure is more often Backblaze than corruption.** B2's
+  S3 gateway intermittently answers a read with correct headers and an empty
+  body, so kopia reports `unexpected EOF` or `error getting blob`. It is
+  per-object, ranges from ~40% of requests to 100%, and decays to zero on its
+  own over minutes to hours. The object is undamaged throughout — a retried full
+  GET returns the declared length, and `backblaze-b2 file download` verifies the
+  SHA1. Confirm that way before treating a verify failure as data loss. On
+  2026-08-29 this defect caused a 13-hour repository outage and 43 false
+  "damaged blob" findings without a single byte being lost.
 - **Run state lives in `/config/monitor-state`**, so a container restart cannot
   re-trigger a multi-hour deep verify, and a slot missed while the container was
   down runs on the next poll rather than being skipped for a month.
@@ -293,6 +311,7 @@ repositories are unrecoverable.
 - The source list is taken from `docker/borgmatic/config/{homelab,nas}.yaml` —
   paths only. borgmatic still backs all five up daily to BorgBase with its own
   retention; this stack is additive and nothing here touches it.
-- The B2 repository already carries a COMPLIANCE object lock (168h, set by
-  kopiur's `blobRetention`). Nothing to configure here — it applies to every
-  blob written, including ours.
+- The B2 repository carries a GOVERNANCE object lock (168h). Nothing to
+  configure here: kopiur stamps it per blob via its `blobRetention`, and
+  `ajgon-homelab-backup` also has it as a bucket default, which is what covers
+  our uploads since this stack sets no retention of its own.

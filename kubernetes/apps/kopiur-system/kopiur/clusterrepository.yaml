@@ -13,9 +13,11 @@ spec:
         secretRef:
           name: kopiur-backblaze-b2-secret
           namespace: kopiur-system
-      bucket: ajgon-homelab
+      bucket: ajgon-homelab-backup
       endpoint: s3.eu-central-003.backblazeb2.com
       region: eu-central-003
+  create:
+    enabled: true
   encryption:
     passwordSecretRef:
       name: kopiur-backblaze-b2-secret
@@ -25,8 +27,7 @@ spec:
     indexBlobWarnThreshold: 8000
   parameters:
     blobRetention:
-      # Matches B2 object lock period
-      compliance:
+      governance:
         period: 168h
     epoch:
       minDuration: 6h

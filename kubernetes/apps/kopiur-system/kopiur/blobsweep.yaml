@@ -10,9 +10,24 @@ data:
       "storage": {
         "type": "s3",
         "config": {
-          "bucket": "ajgon-homelab",
+          "bucket": "ajgon-homelab-backup",
           "endpoint": "s3.eu-central-003.backblazeb2.com",
           "region": "eu-central-003"
+        }
+      },
+      "hostname": "kopiur",
+      "username": "kopiur",
+      "description": "blob-sweep",
+      "enableActions": false
+    }
+  repository-nas.config: |-
+    {
+      "storage": {
+        "type": "s3",
+        "config": {
+          "bucket": "backup-homelab",
+          "endpoint": "s3.ajgon.casa",
+          "region": "eu-central-1"
         }
       },
       "hostname": "kopiur",
@@ -23,7 +38,9 @@ data:
   list.sh: |-
     #!/bin/sh
     set -eu
-    K="kopia --config-file=/scripts/repository.config"
+    # One script per repository would drift; the repo is selected by env instead.
+    # The default keeps the backblaze-b2 CronJob working unchanged.
+    K="kopia --config-file=${KOPIA_REPO_CONFIG:-/scripts/repository.config}"
 
     # Index FIRST, bucket listing SECOND. A pack written between the two then
     # shows up in the listing but not the index, which is harmless. The reverse
@@ -109,64 +126,222 @@ data:
   probe.sh: |-
     #!/bin/sh
     set -u
-    # PROBE_RETRY/PROBE_TIMEOUT are raised for the serial re-verification pass,
-    # where there are few candidates and being thorough is cheap.
-    out=$(curl -sS -o /dev/null -w '%{http_code} %{size_download}' \
-      --max-time "${PROBE_TIMEOUT:-30}" --retry "${PROBE_RETRY:-2}" -r 0-0 \
-      --aws-sigv4 "aws:amz:${AWS_REGION}:s3" \
-      --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
-      "${S3_ENDPOINT}/${S3_BUCKET}/$1" 2>/dev/null)
-    rc=$?
-    [ -n "${out}" ] || out="000 0"
-    code=${out%% *}
-    got=${out##* }
-    if [ "$code" != "206" ] || [ "$got" != "1" ]; then
-      echo "BAD http=${code} bytes=${got} curl=${rc} $1"
+    # RETRY EXPLICITLY. `curl --retry` does NOT help here: curl only retries
+    # timeouts and 408/429/5xx, and B2's failure is a well-formed response with
+    # a declared Content-Length and an empty body, which is exit 18. The old
+    # `--retry 2` / `--retry 6` were no-ops, which is why both passes used to
+    # fail on the same object and produce false "data loss" findings.
+    #
+    # Measured 2026-08-29: ~40% of requests to a fault-prone object come back
+    # empty, ~0% for everything else. So a single probe is a coin flip, and any
+    # one success proves the object is readable.
+    attempts="${PROBE_ATTEMPTS:-2}"
+    code=000; got=0; rc=0
+    i=1
+    while [ "${i}" -le "${attempts}" ]; do
+      out=$(curl -sS -o /dev/null -w '%{http_code} %{size_download}' \
+        --max-time "${PROBE_TIMEOUT:-30}" -r 0-0 \
+        --aws-sigv4 "aws:amz:${AWS_REGION}:s3" \
+        --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
+        "${S3_ENDPOINT}/${S3_BUCKET}/$1" 2>/dev/null)
+      rc=$?
+      [ -n "${out}" ] || out="000 0"
+      code=${out%% *}
+      got=${out##* }
+      [ "${code}" = "416" ] && exit 0
+      [ "${code}" = "206" ] && [ "${got}" = "1" ] && exit 0
+      i=$((i + 1))
+      [ "${i}" -le "${attempts}" ] && sleep "${PROBE_SLEEP:-2}"
+    done
+    echo "BAD http=${code} bytes=${got} curl=${rc} tries=${attempts} $1"
+  verify.sh: |-
+    #!/bin/sh
+    set -u
+    # STAGE 3 - the discriminator. See probe.sh for why retries are mandatory.
+    #
+    # The fault is NOT limited to ranged reads: on 2026-08-29 a full unranged GET
+    # returned `200` with a declared Content-Length and a zero-byte body, which
+    # made an earlier version of this script report two demonstrably-intact packs
+    # as DAMAGED. A single full GET is therefore no more trustworthy than a single
+    # ranged probe.
+    #
+    # What IS sound: a missing object can never serve its declared length, while
+    # an intact object behind a flaky gateway eventually does. So retry, and treat
+    # ANY single good read as proof of intactness. At the measured ~40% failure
+    # rate, 8 attempts leaves roughly a 0.07% chance of a false DAMAGED.
+    key="$1"
+    S="--aws-sigv4 aws:amz:${AWS_REGION}:s3 --user ${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}"
+    U="${S3_ENDPOINT}/${S3_BUCKET}/${key}"
+    attempts="${VERIFY_ATTEMPTS:-8}"
+    hdr=$(mktemp)
+    body=$(mktemp)
+
+    # --- HEAD for the declared length. Retried, and only parsed on a 200: on a
+    # 404 the Content-Length describes the XML error document, not the object.
+    declared=""
+    etag=""
+    hcode=000
+    i=1
+    while [ "${i}" -le "${attempts}" ]; do
+      hcode=$(curl -sS -I -o "${hdr}" -w '%{http_code}' --max-time 60 ${S} "${U}" 2>/dev/null)
+      [ -n "${hcode}" ] || hcode=000
+      if [ "${hcode}" = "404" ]; then
+        rm -f "${hdr}" "${body}"
+        echo "VANISHED    deleted between listing and probe ${key}"
+        exit 0
+      fi
+      if [ "${hcode}" = "200" ]; then
+        declared=$(tr -d '\r' < "${hdr}" | awk 'tolower($1)=="content-length:"{print $2}' | tail -1)
+        etag=$(tr -d '\r' < "${hdr}" | awk 'tolower($1)=="etag:"{gsub(/"/,"",$2);print $2}' | tail -1)
+        [ -n "${declared}" ] && break
+      fi
+      i=$((i + 1))
+      [ "${i}" -le "${attempts}" ] && sleep "${VERIFY_SLEEP:-15}"
+    done
+
+    if [ -z "${declared}" ]; then
+      rm -f "${hdr}" "${body}"
+      echo "UNREACHABLE no declared length after ${attempts} HEADs, last=${hcode} ${key}"
+      exit 0
     fi
+
+    # --- full GET, retried until one succeeds. B2 returns a plain 32-hex ETag
+    # (MD5) for single-part uploads; multipart is md5-N and not comparable, so
+    # the checksum is only asserted when it is assertable.
+    good=0
+    sawbadetag=0
+    tries=0
+    i=1
+    while [ "${i}" -le "${attempts}" ]; do
+      tries="${i}"
+      gcode=$(curl -sS -o "${body}" -w '%{http_code}' --max-time 900 ${S} "${U}" 2>/dev/null)
+      [ -n "${gcode}" ] || gcode=000
+      got=$(wc -c < "${body}" | tr -d ' ')
+      if [ "${gcode}" = "200" ] && [ "${got}" = "${declared}" ]; then
+        if [ -n "${etag}" ] && [ "${#etag}" -eq 32 ] && command -v md5sum >/dev/null 2>&1; then
+          if [ "$(md5sum < "${body}" | cut -d' ' -f1)" = "${etag}" ]; then
+            good=1
+            break
+          fi
+          # right length, wrong bytes. Not the gateway fault - keep trying, but
+          # remember it: if no read ever verifies, that is real corruption.
+          sawbadetag=1
+        else
+          good=1
+          break
+        fi
+      fi
+      i=$((i + 1))
+      [ "${i}" -le "${attempts}" ] && sleep "${VERIFY_SLEEP:-15}"
+    done
+    rm -f "${hdr}" "${body}"
+
+    if [ "${good}" = "1" ]; then
+      echo "FLAKY       intact on attempt ${tries}/${attempts} size=${declared} ${key}"
+    elif [ "${sawbadetag}" = "1" ]; then
+      echo "DAMAGED     etag-mismatch on every good-length read size=${declared} ${key}"
+    else
+      echo "DAMAGED     no complete read in ${attempts} attempts declared=${declared} ${key}"
+    fi
+
   sweep.sh: |-
     #!/bin/sh
     set -eu
     rc=0
 
-    # check 1: hollow objects - present in the bucket, but the backend serves no
-    # payload (206 with 0 bytes). This is what B2 did on 2026-08-22.
+    # check 1: unreadable objects. THREE stages, and the third is the one that
+    # decides - see the header of verify.sh for why two were not enough.
     #
-    # Two passes. At 32k probes with 24 concurrent TLS connections a handful of
-    # handshakes fail every run (curl=35, http=000); those are not data loss and
-    # must not fail the job. So pass 1 only produces CANDIDATES, and pass 2
-    # re-probes them serially with long timeouts. A genuinely hollow blob fails
-    # both passes, so nothing real is lost by confirming.
+    #   1 parallel 1-byte ranged probe        -> candidates (cheap, 24-way)
+    #   2 serial ranged re-probe, long waits  -> clears TLS handshake flakes
+    #   3 full GET + length/ETag verification -> DAMAGED vs RANGEFAULT
+    #
+    # Stage 3 is what separates "the object is gone" from "the gateway will not
+    # serve this range right now". It only runs on stage-2 survivors, so it is
+    # a handful of full downloads per run, not 30k.
     total=$(wc -l < /work/blobs.txt)
-    echo "probing ${total} blobs in ${S3_BUCKET} (maintenance logs excluded)"
+    echo "stage 1: ranged-probing ${total} blobs in ${S3_BUCKET} (maintenance logs excluded)"
     xargs -P "${PARALLEL}" -n 1 /scripts/probe.sh < /work/blobs.txt > /work/cand.txt
     cand=$(wc -l < /work/cand.txt)
 
-    : > /work/bad.txt
+    : > /work/survivors.txt
     if [ "${cand}" -gt 0 ]; then
-      echo "pass 1: ${cand} candidate(s), re-probing serially to rule out transients"
+      echo "stage 2: ${cand} candidate(s), serial re-probe with ${PROBE_ATTEMPTS_SLOW:-8} tries each"
       awk '{print $NF}' /work/cand.txt > /work/cand-names.txt
-      PROBE_RETRY=6 PROBE_TIMEOUT=60 \
-        xargs -n 1 /scripts/probe.sh < /work/cand-names.txt > /work/bad.txt
+      PROBE_ATTEMPTS="${PROBE_ATTEMPTS_SLOW:-8}" PROBE_TIMEOUT=60 PROBE_SLEEP=3 \
+        xargs -n 1 /scripts/probe.sh < /work/cand-names.txt > /work/survivors.txt
+    fi
+    surv=$(wc -l < /work/survivors.txt)
+
+    : > /work/verdicts.txt
+    if [ "${surv}" -gt 0 ]; then
+      echo "stage 3: full-GET verification of ${surv} survivor(s)"
+      awk '{print $NF}' /work/survivors.txt > /work/surv-names.txt
+      xargs -n 1 /scripts/verify.sh < /work/surv-names.txt > /work/verdicts.txt
     fi
 
-    # classify what survived: 206 with 0 bytes means the server answered and
-    # sent nothing (data loss). Anything else is a transport failure.
-    awk '$2 == "http=206"' /work/bad.txt > /work/damaged.txt
-    awk '$2 != "http=206"' /work/bad.txt > /work/unreachable.txt
+    grep '^DAMAGED'     /work/verdicts.txt > /work/damaged.txt     || true
+    grep '^FLAKY'       /work/verdicts.txt > /work/flaky.txt       || true
+    grep '^VANISHED'    /work/verdicts.txt > /work/vanished.txt    || true
+    grep '^UNREACHABLE' /work/verdicts.txt > /work/unreachable.txt || true
     damaged=$(wc -l < /work/damaged.txt)
+    flaky=$(wc -l < /work/flaky.txt)
+    vanished=$(wc -l < /work/vanished.txt)
     unreachable=$(wc -l < /work/unreachable.txt)
 
     if [ "${damaged}" -gt 0 ]; then
-      echo "DAMAGED BLOBS: ${damaged} of ${total} (server returns no payload)"
+      echo "DAMAGED BLOBS: ${damaged} of ${total} - no complete read in ${VERIFY_ATTEMPTS:-8}"
+      echo "  attempts, or every good-length read failed its checksum. Verify by hand"
+      echo "  with the native B2 API before acting: it is a different code path."
       cat /work/damaged.txt
       rc=1
     fi
+    if [ "${flaky}" -gt 0 ]; then
+      # Split by blast radius. Kopia reads the CURRENT epoch's uncompacted index
+      # blobs plus every compaction/marker blob (xs/xr/xe/xw) at connect, so a
+      # flaky one of those stops the repository opening. Older xn<N>_ blobs have
+      # been superseded and are not read: on 2026-08-29 a flaky xn0_ sat in a
+      # repository that stayed Ready all evening, while a flaky xn13_ - current
+      # at the time - took it down for 13 hours. Packs only matter on restore.
+      cur=$(sed -n 's/^xn\([0-9][0-9]*\)_.*/\1/p' /work/blobs.txt | sort -n | tail -1)
+      if [ -n "${cur}" ]; then
+        crit=" xn${cur}_| x[esrw]"
+      else
+        crit=" x[esrw]"
+      fi
+      grep -E "${crit}"  /work/flaky.txt > /work/flaky-critical.txt || true
+      grep -vE "${crit}" /work/flaky.txt > /work/flaky-info.txt     || true
+      fcrit=$(wc -l < /work/flaky-critical.txt)
+      finfo=$(wc -l < /work/flaky-info.txt)
+
+      echo "GATEWAY FLAKINESS: ${flaky} of ${total} - objects are INTACT."
+      echo "  A retried full GET returned the declared length and matching ETag."
+      echo "  B2's S3 gateway intermittently answers with correct headers and an"
+      echo "  empty body, then recovers on its own over minutes. Do NOT delete these."
+      if [ "${fcrit}" -gt 0 ]; then
+        echo "FLAKY (current epoch index, epoch ${cur:-?}): ${fcrit} - kopia reads these at"
+        echo "  connect, so the repository may be down or about to be. Nothing to fix;"
+        echo "  it clears by itself. This is the only FLAKY line worth alerting on."
+        cat /work/flaky-critical.txt
+      fi
+      if [ "${finfo}" -gt 0 ]; then
+        echo "FLAKY (informational): ${finfo} - packs and superseded index blobs."
+        echo "  No effect until a restore touches them. Track the trend, not the items."
+        cat /work/flaky-info.txt
+      fi
+      [ "${FAIL_ON_FLAKY:-0}" = "0" ] || rc=1
+    fi
+    if [ "${vanished}" -gt 0 ]; then
+      echo "VANISHED: ${vanished} of ${total} deleted between listing and probe"
+      echo "  (maintenance GC and session cleanup run concurrently) - not an error."
+      cat /work/vanished.txt
+    fi
     if [ "${unreachable}" -gt 0 ]; then
-      echo "UNREACHABLE: ${unreachable} of ${total} still failing after 6 serial retries"
+      echo "UNREACHABLE: ${unreachable} of ${total} - no usable HEAD after retries"
       cat /work/unreachable.txt
       rc=1
     fi
-    if [ "${damaged}" -eq 0 ] && [ "${unreachable}" -eq 0 ]; then
+    if [ "${surv}" -eq 0 ]; then
       if [ "${cand}" -gt 0 ]; then
         echo "all ${total} blobs readable (${cand} transient failure(s) cleared on retry)"
       else
@@ -194,7 +369,11 @@ kind: CronJob
 metadata:
   name: kopiur-blob-sweep-backblaze-b2
 spec:
-  schedule: "0 6 * * *"
+  # 02/08/14/20. Six-hourly because B2 dropped 41 objects inside a single 24h
+  # gap between daily sweeps on 2026-08-29. Offset off the hour-0 boundary so it
+  # misses kopiur's quick maintenance (00/06/12/18) and full maintenance (03-04),
+  # and an hour after the nas sweep so the two never run together.
+  schedule: "0 2-23/6 * * *"
   timeZone: Europe/Warsaw
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
@@ -264,7 +443,7 @@ spec:
                 - name: S3_ENDPOINT
                   value: https://s3.eu-central-003.backblazeb2.com
                 - name: S3_BUCKET
-                  value: ajgon-homelab
+                  value: ajgon-homelab-backup
               envFrom:
                 - secretRef:
                     name: kopiur-backblaze-b2-secret
@@ -291,3 +470,126 @@ spec:
               emptyDir: {}
             - name: tmp
               emptyDir: {}
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cronjob-batch-v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kopiur-blob-sweep-nas
+spec:
+  # 01/07/13/19 — an hour ahead of the backblaze-b2 sweep, clear of kopiur's
+  # maintenance windows. The NAS copy is not assumed healthy just because it
+  # connects; see the b2 sweep above for why the cadence is six-hourly.
+  schedule: "0 1-23/6 * * *"
+  timeZone: Europe/Warsaw
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 3600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/managed-by: kopiur
+        spec:
+          restartPolicy: Never
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: list
+              image: ghcr.io/home-operations/kopia:0.23.1
+              command:
+                - /scripts/list.sh
+              env:
+                - name: HOME
+                  value: /tmp
+                - name: KOPIA_CACHE_DIRECTORY
+                  value: /tmp/cache
+                - name: KOPIA_LOG_DIR
+                  value: /tmp/logs
+                - name: KOPIA_ADVANCED_COMMANDS
+                  value: enabled
+                - name: KOPIA_REPO_CONFIG
+                  value: /scripts/repository-nas.config
+              envFrom:
+                - secretRef:
+                    name: kopiur-nas-secret
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: work
+                  mountPath: /work
+                - name: tmp
+                  mountPath: /tmp
+                - name: homelab-root-ca
+                  mountPath: /etc/ssl/certs/ca-certificates.crt
+                  subPath: ca.crt
+                  readOnly: true
+          containers:
+            - name: probe
+              image: docker.io/curlimages/curl:8.21.0
+              command:
+                - /scripts/sweep.sh
+              env:
+                - name: HOME
+                  value: /tmp
+                - name: PARALLEL
+                  value: "24"
+                - name: AWS_REGION
+                  value: eu-central-1
+                - name: S3_ENDPOINT
+                  value: https://s3.ajgon.casa
+                - name: S3_BUCKET
+                  value: backup-homelab
+                - name: CURL_CA_BUNDLE
+                  value: /etc/ssl/certs/ca-certificates.crt
+              envFrom:
+                - secretRef:
+                    name: kopiur-nas-secret
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+                  readOnly: true
+                - name: work
+                  mountPath: /work
+                - name: tmp
+                  mountPath: /tmp
+                - name: homelab-root-ca
+                  mountPath: /etc/ssl/certs/ca-certificates.crt
+                  subPath: ca.crt
+                  readOnly: true
+          volumes:
+            - name: scripts
+              configMap:
+                name: kopiur-blob-sweep
+                defaultMode: 0755
+            - name: work
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}
+            - name: homelab-root-ca
+              configMap:
+                name: homelab-root-ca
+                defaultMode: 420
