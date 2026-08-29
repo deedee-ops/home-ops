@@ -9,3 +9,5 @@ spec:
     name: ${APP}
   schedule:
     cron: ${KOPIUR_SCHEDULE:="H * * * *"}
+    concurrencyPolicy: Replace
+    startingDeadlineSeconds: 600
