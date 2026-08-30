@@ -182,12 +182,17 @@ spec:
               - image: nixos/nix:latest
                 imagePullPolicy: IfNotPresent
                 name: main
+                env:
+                  - name: NIX_CONFIG
+                    value: |-
+                      max-jobs = 2
+                      cores = 4
                 resources:
                   limits:
-                    memory: 16Gi
+                    memory: 24Gi
                   requests:
                     cpu: 100m
-                    memory: 256Mi
+                    memory: 8Gi
                 volumeMounts:
                   - name: runner-nix-data
                     mountPath: /nix
