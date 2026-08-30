@@ -9,11 +9,6 @@ spec:
     matchLabels:
       app.kubernetes.io/managed-by: kopiur
   egress:
-    - toFQDNs:
-        - matchName: s3.eu-central-003.backblazeb2.com
-      toPorts:
-        - ports:
-            - port: "443"
     - toCIDRSet:
         - cidr: 192.168.42.10/32 # NAS
       toPorts:

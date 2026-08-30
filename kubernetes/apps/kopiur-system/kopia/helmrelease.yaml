@@ -13,7 +13,7 @@ spec:
     controllers:
       main:
         containers:
-          backblaze-b2: &container
+          app:
             args:
               - --without-password
             image:
@@ -21,11 +21,11 @@ spec:
               tag: 0.23.1@sha256:27da0a33b44e1b902150a6c963514237217464bb13118a95bb056667be93cda5
             env:
               KOPIA_WEB_ENABLED: true
-              KOPIA_WEB_PORT: &b2Port 80
+              KOPIA_WEB_PORT: &port 80
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
-                  name: kopia-backblaze-b2-secret
+                  name: kopia-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -38,15 +38,6 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 1Gi
-          nas:
-            <<: *container
-            env:
-              KOPIA_WEB_ENABLED: true
-              KOPIA_WEB_PORT: &nasPort 81
-              TZ: Europe/Warsaw
-            envFrom:
-              - secretRef:
-                  name: kopia-nas-secret
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -63,14 +54,12 @@ spec:
     service:
       main:
         ports:
-          backblaze-b2:
-            port: *b2Port
-          nas:
-            port: *nasPort
+          app:
+            port: *port
     route:
-      backblaze-b2:
+      main:
         hostnames:
-          - "kopia-b2.${ROOT_DOMAIN}"
+          - "kopia.${ROOT_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
@@ -78,7 +67,7 @@ spec:
           - backendRefs:
               - name: kopia
                 port: 80
-            filters: &filters
+            filters:
               - type: ResponseHeaderModifier
                 responseHeaderModifier:
                   set:
@@ -87,36 +76,8 @@ spec:
                         default-src 'self';
                         object-src 'none';
                         style-src 'self' 'unsafe-inline';
-      nas:
-        hostnames:
-          - "kopia-nas.${ROOT_DOMAIN}"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
-        rules:
-          - backendRefs:
-              - name: kopia
-                port: 81
-            filters: *filters
     configMaps:
-      config-backblaze-b2:
-        data:
-          repository.config: |-
-            {
-              "storage": {
-                "type": "s3",
-                "config": {
-                  "bucket": "ajgon-homelab-backup",
-                  "endpoint": "s3.eu-central-003.backblazeb2.com",
-                  "region": "eu-central-003"
-                }
-              },
-              "hostname": "kopiur",
-              "username": "kopiur",
-              "description": "kopiur",
-              "enableActions": false
-            }
-      config-nas:
+      config:
         data:
           repository.config: |-
             {
@@ -134,20 +95,12 @@ spec:
               "enableActions": false
             }
     persistence:
-      config-backblaze-b2:
+      config:
         type: configMap
-        identifier: config-backblaze-b2
+        identifier: config
         advancedMounts:
           main:
-            backblaze-b2:
-              - path: /config/repository.config
-                subPath: repository.config
-      config-nas:
-        type: configMap
-        identifier: config-nas
-        advancedMounts:
-          main:
-            nas:
+            app:
               - path: /config/repository.config
                 subPath: repository.config
       homelab-root-ca:
@@ -161,17 +114,10 @@ spec:
         type: emptyDir
         advancedMounts:
           main:
-            backblaze-b2:
+            app:
               - path: /config/cache
-                subPath: cache-b2
+                subPath: cache
               - path: /config/logs
-                subPath: logs-b2
+                subPath: logs
               - path: /tmp
-                subPath: tmp-b2
-            nas:
-              - path: /config/cache
-                subPath: cache-nas
-              - path: /config/logs
-                subPath: logs-nas
-              - path: /tmp
-                subPath: tmp-nas
+                subPath: tmp

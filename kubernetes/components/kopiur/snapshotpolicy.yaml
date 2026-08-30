@@ -17,8 +17,6 @@ spec:
       runAsGroup: ${KOPIUR_PGID:=1000}
   repositories:
     - kind: ClusterRepository
-      name: backblaze-b2
-    - kind: ClusterRepository
       name: nas
   retention:
     keepLatest: 3

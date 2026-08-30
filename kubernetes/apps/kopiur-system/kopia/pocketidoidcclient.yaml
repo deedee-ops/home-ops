@@ -6,10 +6,9 @@ metadata:
   name: kopia
 spec:
   pkceEnabled: true
-  launchUrl: https://kopia-nas.ajgon.casa
+  launchUrl: https://kopia.ajgon.casa
   callbackUrls:
-    - https://kopia-b2.${ROOT_DOMAIN}/oauth2/callback
-    - https://kopia-nas.${ROOT_DOMAIN}/oauth2/callback
+    - https://kopia.${ROOT_DOMAIN}/oauth2/callback
   allowedUserGroups:
     - name: admins
       namespace: security

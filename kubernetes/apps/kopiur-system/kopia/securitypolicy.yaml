@@ -3,12 +3,12 @@
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
-  name: kopia-backblaze-b2
+  name: kopia
 spec:
   targetRefs:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      name: kopia-backblaze-b2
+      name: kopia
   oidc:
     provider:
       issuer: https://id.ajgon.casa
@@ -26,35 +26,5 @@ spec:
       group: ""
       kind: Secret
       name: kopia-oidc-credentials
-    redirectURL: https://kopia-b2.ajgon.casa/oauth2/callback
-    logoutPath: /logout
----
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.envoyproxy.io/securitypolicy_v1alpha1.json
-apiVersion: gateway.envoyproxy.io/v1alpha1
-kind: SecurityPolicy
-metadata:
-  name: kopia-nas
-spec:
-  targetRefs:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      name: kopia-nas
-  oidc:
-    provider:
-      issuer: https://id.ajgon.casa
-      backendRefs:
-        - group: gateway.envoyproxy.io
-          kind: Backend
-          name: pocket-id
-          namespace: security
-          port: 443
-    clientIDRef:
-      group: ""
-      kind: Secret
-      name: kopia-oidc-credentials
-    clientSecret:
-      group: ""
-      kind: Secret
-      name: kopia-oidc-credentials
-    redirectURL: https://kopia-nas.ajgon.casa/oauth2/callback
+    redirectURL: https://kopia.ajgon.casa/oauth2/callback
     logoutPath: /logout
