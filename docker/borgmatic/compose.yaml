@@ -3,7 +3,7 @@
 services:
   borgmatic:
     environment:
-      BACKUP_CRON: "30 14 * * *"
+      CRON: "30 14 * * *"
       TZ: "Europe/Warsaw"
 
       BORGMATIC_HOMELAB_ENCRYPTION_PASSPHRASE: "${BORGMATIC_HOMELAB_ENCRYPTION_PASSPHRASE}"
