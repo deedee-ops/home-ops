@@ -36,6 +36,7 @@
   gather_facts: true
   roles:
     - role: user
+    - role: swapfile
     - role: docker
 
 - name: Provision NUT server

@@ -1,8 +1,8 @@
 # Ansible
 
 Provisioning for plain (non-Talos) machines: the `vps` group (`mandark`) and the
-`nut` group (`nutpi`). The VPS gets the unprivileged user, Docker and its compose
-stacks, and a public-port allowlist by ASN. The Pi owns the UPS over USB and
+`nut` group (`nutpi`). The VPS gets the unprivileged user, a swapfile, Docker and its
+compose stacks, and a public-port allowlist by ASN. The Pi owns the UPS over USB and
 orchestrates the ordered shutdown of the rest of the homelab.
 
 ## Usage
@@ -106,6 +106,27 @@ Hardening refuses to run with no authorized key, which would lock everyone out.
 The user is deliberately **not** in the `docker` group: socket access to a root daemon is
 root, which would make the sudo password decorative. Use `sudo docker`, or set
 `docker_users` if you disagree.
+
+### swapfile
+
+Gives the VPS headroom beyond its physical RAM: allocates `/swapfile`, formats it,
+activates it and writes the `/etc/fstab` entry so it comes back after a reboot. The path
+is a literal, not a variable — one swapfile per host at the conventional location is the
+whole feature.
+
+Changing `swapfile_size` rebuilds the file, because the kernel pins the extent map of an
+area in use and it cannot be resized in place. The `swapoff` that precedes the rebuild
+fails if the swapped-out pages no longer fit in RAM; that failure is deliberate, since the
+alternative is the OOM killer picking a victim mid-play.
+
+The role refuses to run on a btrfs or zfs root: `fallocate` produces a file those
+filesystems cannot serve as swap (btrfs needs nocow and no compression, zfs deadlocks
+under memory pressure), and the failure would otherwise surface as an obscure `swapon`
+error rather than a clear one.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `swapfile_size` | `1G` | Anything `human_to_bytes` accepts; a change rebuilds the file |
 
 ### docker
 

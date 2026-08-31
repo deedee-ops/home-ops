@@ -1,0 +1,129 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+- name: Assert the requested size is usable
+  ansible.builtin.assert:
+    that:
+      - swapfile_size | human_to_bytes > 0
+    fail_msg: swapfile_size must be a positive size, such as `1G` or `512M`
+    quiet: true
+
+# fallocate leaves unwritten extents behind, which ext4 and xfs hand to the kernel as a
+# contiguous area. btrfs needs a nocow, uncompressed file and zfs cannot host swap at all
+# without deadlocking under memory pressure; both would fail later and less clearly.
+- name: Assert the root filesystem can hold a plain swapfile
+  ansible.builtin.assert:
+    that:
+      - swapfile_root_fstypes | intersect(['btrfs', 'zfs']) | length == 0
+    fail_msg: "/ is {{ swapfile_root_fstypes | join(', ') }}, which needs a swapfile this role does not build"
+    quiet: true
+  vars:
+    # a list rather than a scalar, so a host whose mount facts do not carry `/` at all -
+    # a container, mostly - passes instead of blowing up on an empty sequence
+    swapfile_root_fstypes: >-
+      {{ ansible_facts['mounts'] | selectattr('mount', 'eq', '/') | map(attribute='fstype') | list }}
+
+- name: Inspect the swapfile
+  ansible.builtin.stat:
+    path: /swapfile
+    get_checksum: false
+  register: swapfile_stat
+
+- name: List the active swap areas
+  ansible.builtin.command:
+    argv:
+      - swapon
+      - --show=NAME
+      - --noheadings
+  register: swapfile_active
+  changed_when: false
+  # read only, and every condition below depends on it, so --check must still see it
+  check_mode: false
+
+# A file in use cannot be resized in place: the kernel holds its extent map. Growing or
+# shrinking therefore means dropping it and building a new one, and the swapoff below
+# fails - loudly, which is what we want - when the pages no longer fit in RAM.
+- name: Deactivate the swapfile before rebuilding it
+  ansible.builtin.command:
+    argv:
+      - swapoff
+      - /swapfile
+  when:
+    - swapfile_stat.stat.exists
+    - swapfile_stat.stat.size != swapfile_size | human_to_bytes
+    - "'/swapfile' in swapfile_active.stdout_lines"
+  changed_when: true
+  register: swapfile_deactivated
+
+- name: Remove a swapfile of the wrong size
+  ansible.builtin.file:
+    path: /swapfile
+    state: absent
+  when:
+    - swapfile_stat.stat.exists
+    - swapfile_stat.stat.size != swapfile_size | human_to_bytes
+
+- name: Create the swapfile
+  ansible.builtin.command:
+    argv:
+      - fallocate
+      - --length
+      - "{{ swapfile_size | human_to_bytes }}"
+      - /swapfile
+    creates: /swapfile
+
+# Before mkswap, and before it is ever activated: the file is readable by anyone until
+# this runs, and swap holds whatever the processes on the host were holding.
+- name: Restrict the swapfile to root
+  ansible.builtin.file:
+    path: /swapfile
+    owner: root
+    group: root
+    mode: "0600"
+  # a --check run leaves the fallocate above unexecuted, so on a host without a swapfile
+  # yet there is nothing to chmod and the module would abort on the missing path
+  when: swapfile_stat.stat.exists or not ansible_check_mode
+
+- name: Read the swapfile signature
+  ansible.builtin.command:
+    argv:
+      - blkid
+      - --probe
+      - --match-tag
+      - TYPE
+      - --output
+      - value
+      - /swapfile
+  register: swapfile_signature
+  changed_when: false
+  # exits 2 when the file carries no signature at all, which is the fresh file case
+  failed_when: false
+  check_mode: false
+
+- name: Format the swapfile
+  ansible.builtin.command:
+    argv:
+      - mkswap
+      - /swapfile
+  when: swapfile_signature.stdout | trim != 'swap'
+  changed_when: true
+
+- name: Persist the swapfile across reboots
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '^\s*/swapfile\s'
+    line: /swapfile none swap sw 0 0
+    owner: root
+    group: root
+    mode: "0644"
+
+# swapfile_active predates the rebuild above, so a file that was resized still appears in
+# it and has to be activated again.
+- name: Activate the swapfile
+  ansible.builtin.command:
+    argv:
+      - swapon
+      - /swapfile
+  when: >-
+    '/swapfile' not in swapfile_active.stdout_lines
+    or swapfile_deactivated is changed
+  changed_when: true

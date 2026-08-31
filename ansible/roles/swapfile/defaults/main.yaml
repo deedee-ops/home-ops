@@ -1,0 +1,10 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible-vars.json
+# Anything human_to_bytes accepts: `1G`, `512M`, a plain byte count. Changing it on a
+# host that already swaps means the file is deactivated and rebuilt, which needs enough
+# free memory to take the pages back - see tasks/main.yaml.
+swapfile_size: 1G
+
+# The path is deliberately not a variable. One swapfile per host, at the conventional
+# location, is the whole feature; a second one would need its own fstab entry and its
+# own resize dance for no gain.
