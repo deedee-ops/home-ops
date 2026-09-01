@@ -30,7 +30,7 @@ releases:
   - name: kopiur
     namespace: kopiur-system
     chart: oci://ghcr.io/home-operations/charts/kopiur
-    version: 0.10.5
+    version: 0.10.6
   - name: kube-prometheus-stack
     namespace: observability
     chart: oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
