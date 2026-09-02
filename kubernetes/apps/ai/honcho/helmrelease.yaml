@@ -21,7 +21,7 @@ spec:
           app:
             image: &img
               repository: ghcr.io/plastic-labs/honcho
-              tag: v3.1.0@sha256:b73a8015f9e3ee51525e5b5cb238a915aa47de5107593d81b892213322fa369d
+              tag: v3.1.1@sha256:0f989114cab71424aabcd8ce7752ba086916abdeaef54b347ce99142c891e0ba
             command:
               - "/bin/sh"
               - "-c"
