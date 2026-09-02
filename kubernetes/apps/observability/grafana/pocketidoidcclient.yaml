@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: grafana
 spec:
+  pkceEnabled: true
   launchUrl: https://grafana.${ROOT_DOMAIN}
   callbackUrls:
     - "https://grafana.${ROOT_DOMAIN}/login/generic_oauth"

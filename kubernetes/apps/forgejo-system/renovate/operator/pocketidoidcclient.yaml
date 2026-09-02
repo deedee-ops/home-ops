@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: renovate-operator
 spec:
+  pkceEnabled: true
   clientID: 497f956c-92f8-463f-951f-ce1b0acc4b71
   launchUrl: https://renovate.${ROOT_DOMAIN}
   callbackUrls:

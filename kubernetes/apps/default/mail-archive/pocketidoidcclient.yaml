@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: mail-archive
 spec:
+  pkceEnabled: true
   launchUrl: https://mail.${ROOT_DOMAIN}
   callbackUrls:
     - "https://mail.${ROOT_DOMAIN}/index.php/login/oauth"

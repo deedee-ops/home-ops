@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: flux-operator
 spec:
+  pkceEnabled: true
   launchUrl: https://flux.${ROOT_DOMAIN}
   callbackUrls:
     - "https://flux.${ROOT_DOMAIN}/oauth2/callback"

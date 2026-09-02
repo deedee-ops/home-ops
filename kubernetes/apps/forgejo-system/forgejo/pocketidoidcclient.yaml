@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: forgejo
 spec:
+  pkceEnabled: true
   launchUrl: https://git.${ROOT_DOMAIN}
   callbackUrls:
     - "https://git.${ROOT_DOMAIN}/user/oauth2/Pocket%20ID/callback"

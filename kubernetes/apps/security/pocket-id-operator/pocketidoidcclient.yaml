@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: arcane
 spec:
+  pkceEnabled: true
   launchUrl: https://arcane.${ROOT_DOMAIN}
   callbackUrls:
     - "https://arcane.${ROOT_DOMAIN}/auth/oidc/callback"
@@ -35,6 +36,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: openbao
 spec:
+  pkceEnabled: true
   launchUrl: https://bao.${ROOT_DOMAIN}
   callbackUrls:
     - "https://bao.${ROOT_DOMAIN}/ui/vault/auth/oidc/oidc/callback"

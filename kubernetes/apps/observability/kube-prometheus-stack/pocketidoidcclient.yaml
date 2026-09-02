@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: alertmanager
 spec:
+  pkceEnabled: true
   launchUrl: https://alertmanager.${ROOT_DOMAIN}
   callbackUrls:
     - "https://alertmanager.${ROOT_DOMAIN}/oauth2/callback"
@@ -22,6 +23,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: prometheus
 spec:
+  pkceEnabled: true
   launchUrl: https://prometheus.${ROOT_DOMAIN}
   callbackUrls:
     - "https://prometheus.${ROOT_DOMAIN}/oauth2/callback"

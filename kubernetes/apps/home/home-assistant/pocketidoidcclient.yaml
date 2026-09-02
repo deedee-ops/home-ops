@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: home-assistant
 spec:
+  pkceEnabled: true
   launchUrl: https://home.${ROOT_DOMAIN}
   callbackUrls:
     - "https://home.${ROOT_DOMAIN}/auth/oidc/callback"

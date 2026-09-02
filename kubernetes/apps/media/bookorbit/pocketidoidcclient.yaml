@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: bookorbit
 spec:
+  pkceEnabled: true
   launchUrl: https://bookorbit.${ROOT_DOMAIN}
-  # callbackUrls:
-  #   - "https://bookorbit.${ROOT_DOMAIN}/signin-oidc"
+  callbackUrls:
+    - "https://bookorbit.${ROOT_DOMAIN}/oauth2-callback"
