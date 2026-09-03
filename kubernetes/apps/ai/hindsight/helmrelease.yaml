@@ -15,7 +15,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
           glance/name: hindsight
-          glance/icon: di:hindsight
+          glance/icon: https://cdn.jsdelivr.net/gh/vectorize-io/hindsight/hindsight-docs/static/img/favicon.png
           glance/url: https://hindsight.${ROOT_DOMAIN}
         containers:
           app:
