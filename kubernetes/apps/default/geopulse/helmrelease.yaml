@@ -98,7 +98,7 @@ spec:
           ui:
             image:
               repository: ghcr.io/tess1o/geopulse-ui
-              tag: 1.37.1@sha256:9ec4fe23e8d51b24290c2d3efb0fe999a95c24dfd22551ffa6fdfc99b92a6376
+              tag: 1.38.0@sha256:a45353018353573124dd794e8fba431611b0e7495d6bdc6efbdc64b39688537d
             command:
               - /bin/sh
               - -c
