@@ -7,140 +7,11 @@ machine:
     # {% if ENV.IS_CONTROLPLANE %}
     key: '{{ ENV[".machine.ca.key"] }}'
     # {% endif %}
-
   features:
     apidCheckExtKeyUsage: true
     diskQuotaSupport: true
-    hostDNS:
-      enabled: true
-      forwardKubeDNSToHost: false
-      resolveMemberNames: true
-    kubePrism:
-      enabled: true
-      port: 7445
-    # {% if ENV.IS_CONTROLPLANE %}
-    kubernetesTalosAPIAccess:
-      allowedKubernetesNamespaces:
-        - system-upgrade
-      allowedRoles:
-        - "os:admin"
-        - "os:reader"
-      enabled: true
-    # {% endif %}
-
     rbac: true
-  files:
-    # Spegel
-    - op: create
-      path: /etc/cri/conf.d/20-customization.part
-      content: |
-        [plugins."io.containerd.cri.v1.images"]
-          discard_unpacked_layers = false
-        [plugins."io.containerd.cri.v1.runtime"]
-          cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
-          device_ownership_from_security_context = true
-    # NFS
-    - op: overwrite
-      path: /etc/nfsmount.conf
-      permissions: 0o644
-      content: |
-        [ NFSMount_Global_Options ]
-        noac=True
-        nfsvers=4.1
-        nconnect=16
-        hard=True
-        noatime=True
-  install:
-    diskSelector:
-      model: "WD Blue SN570 500GB"
-    image: talos.ajgon.casa/installer-secureboot/3158c22eb3c614983204dc3033adff59b8e0de7cafc71c9d7aca10f69f84e43c:v1.14.0
-    wipe: true
-  kernel:
-    modules:
-      - name: nbd
-      - name: thunderbolt
-  kubelet:
-    defaultRuntimeSeccompProfileEnabled: true
-    disableManifestsDirectory: true
-    extraConfig:
-      featureGates:
-        UserNamespacesSupport: true
-      maxPods: 150
-      serializeImagePulls: false
-    image: "ghcr.io/siderolabs/kubelet:v1.37.0"
-    nodeIP:
-      validSubnets:
-        - 192.168.42.0/26
-  nodeLabels:
-    node.kubernetes.io/gpu: "true"
-    topology.kubernetes.io/region: homelab
-    topology.kubernetes.io/zone: deedee
-  registries:
-    mirrors:
-      docker.io:
-        endpoints:
-          - http://nas.internal:5000
-      codeberg.org:
-        endpoints:
-          - http://nas.internal:5001
-      ghcr.io:
-        endpoints:
-          - http://nas.internal:5002
-      gsoci.azurecr.io:
-        endpoints:
-          - http://nas.internal:5003
-      mirror.gcr.io:
-        endpoints:
-          - http://nas.internal:5004
-      quay.io:
-        endpoints:
-          - http://nas.internal:5005
-      registry.k8s.io:
-        endpoints:
-          - http://nas.internal:5006
-  sysctls:
-    fs.inotify.max_user_instances: "8192" # More inotify events
-    fs.inotify.max_user_watches: "1048576" # More inotify events
-    net.core.default_qdisc: fq # Enable pacing and fair queueing for smoother flow control
-    net.core.rmem_max: "67108864" # Cloudflared / QUIC
-    net.core.wmem_max: "67108864" # Cloudflared / QUIC
-    net.ipv4.neigh.default.gc_thresh1: "4096" # ARP neighbor GC thresholds
-    net.ipv4.neigh.default.gc_thresh2: "8192" # ARP neighbor GC thresholds
-    net.ipv4.neigh.default.gc_thresh3: "16384" # ARP neighbor GC thresholds
-    net.ipv4.ping_group_range: "0 2147483647" # allow unprivileged PINGs
-    net.ipv4.tcp_congestion_control: bbr # Use BBR congestion control for fast, low-latency delivery
-    net.ipv4.tcp_fastopen: "3" # Send and accept data in the opening SYN packet
-    net.ipv4.tcp_mtu_probing: "1" # Enable MTU probing in case of ICMP blackholes
-    net.ipv4.tcp_slow_start_after_idle: "0" # Handle traffic bursts better
-    net.ipv4.tcp_window_scaling: "1" # Enable TCP window scaling to go beyond 64KB receive windows
-    # net.ipv6.conf.all.disable_ipv6: "1" # Not used, causes lot of headaches
-    sunrpc.tcp_max_slot_table_entries: "128" # Faster NFS
-    sunrpc.tcp_slot_table_entries: "128" # Faster NFS
-    user.max_user_namespaces: "11255" # User Namespaces
-    vm.nr_hugepages: "1024" # PostgreSQL
-
-    # net.ipv4.tcp_rmem: 4096 87380 8388608  # Conservative receive buffer tuning (min, default, max in bytes)
-    # net.ipv4.tcp_wmem: 4096 65536 8388608  # Conservative send buffer tuning (min, default, max in bytes)
-    net.ipv4.tcp_rmem: 4096 87380 33554432 # Performant receive buffer tuning (min, default, max in bytes)
-    net.ipv4.tcp_wmem: 4096 65536 33554432 # Performant send buffer tuning (min, default, max in bytes)
-
-  systemDiskEncryption:
-    state:
-      provider: luks2
-      keys:
-        - slot: 0
-          tpm: {}
-    ephemeral:
-      provider: luks2
-      keys:
-        - slot: 0
-          tpm: {}
-
   token: '{{ ENV[".machine.token"] }}'
-  udev:
-    rules:
-      # Intel GPU
-      - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
 
 cluster:
   ca:
@@ -152,67 +23,12 @@ cluster:
   clusterName: deedee
   controlPlane:
     endpoint: https://deedee.internal:6443
-  discovery:
-    enabled: true
-    registries:
-      kubernetes:
-        disabled: true
-      service:
-        disabled: false
-  id: '{{ ENV[".cluster.id"] }}'
-  network:
-    cni:
-      name: none
-    dnsDomain: cluster.local
-    podSubnets:
-      - 172.30.0.0/16
-    serviceSubnets:
-      - 172.31.0.0/16
-  secret: '{{ ENV[".cluster.secret"] }}'
   token: '{{ ENV[".cluster.token"] }}'
 
   # {% if ENV.IS_CONTROLPLANE %}
   aggregatorCA:
     crt: '{{ ENV[".cluster.aggregatorCA.crt"] }}'
     key: '{{ ENV[".cluster.aggregatorCA.key"] }}'
-  allowSchedulingOnControlPlanes: true
-  apiServer:
-    auditPolicy:
-      apiVersion: audit.k8s.io/v1
-      kind: Policy
-      rules:
-        - level: Metadata
-    admissionControl:
-      - name: PodSecurity
-        configuration:
-          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
-          defaults:
-            audit: restricted
-            audit-version: latest
-            enforce: baseline
-            enforce-version: latest
-            warn: restricted
-            warn-version: latest
-          exemptions:
-            namespaces:
-              - kube-system
-            runtimeClasses: []
-            usernames: []
-          kind: PodSecurityConfiguration
-    certSANs:
-      - deedee.internal
-    disablePodSecurityPolicy: true
-    extraArgs:
-      enable-aggregator-routing: "true" # mandatory without kube-proxy
-      feature-gates: HPAScaleToZero=true
-    image: registry.k8s.io/kube-apiserver:v1.37.0
-  controllerManager:
-    extraArgs:
-      bind-address: 0.0.0.0
-      feature-gates: HPAScaleToZero=true
-    image: registry.k8s.io/kube-controller-manager:v1.37.0
-  coreDNS:
-    disabled: true
   etcd:
     advertisedSubnets:
       - 192.168.42.0/26
@@ -225,34 +41,19 @@ cluster:
       # do not wake up CPU so often
       heartbeat-interval: "500"
       election-timeout: "5000"
-  proxy:
-    disabled: true
-    image: registry.k8s.io/kube-proxy:v1.37.0
-  scheduler:
-    config:
-      apiVersion: kubescheduler.config.k8s.io/v1
-      kind: KubeSchedulerConfiguration
-      profiles:
-        - schedulerName: default-scheduler
-          plugins:
-            score:
-              disabled:
-                - name: ImageLocality
-          pluginConfig:
-            - name: PodTopologySpread
-              args:
-                defaultingType: List
-                defaultConstraints:
-                  - maxSkew: 1
-                    topologyKey: kubernetes.io/hostname
-                    whenUnsatisfiable: ScheduleAnyway
-    extraArgs:
-      bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-scheduler:v1.37.0
-  secretboxEncryptionSecret: '{{ ENV[".cluster.secretboxEncryptionSecret"] }}'
   serviceAccount:
     key: '{{ ENV[".cluster.serviceAccount.key"] }}'
     # {% endif %}
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: STATE
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm: {}
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
 apiVersion: v1alpha1
@@ -263,6 +64,11 @@ provisioning:
     match: system_disk
   minSize: 256GB
   maxSize: 256GB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm: {}
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
 apiVersion: v1alpha1
@@ -395,5 +201,344 @@ name: bond1.69
 up: true
 vlanID: 69
 parent: multus
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: ResolverConfig
+hostDNS:
+  enabled: true
+  forwardKubeDNSToHost: false
+  resolveMemberNames: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubePrismConfig
+port: 7445
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: containerd
+content: |
+  [plugins."io.containerd.cri.v1.images"]
+    discard_unpacked_layers = false
+  [plugins."io.containerd.cri.v1.runtime"]
+    cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
+    device_ownership_from_security_context = true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: EtcFileConfig
+name: nfsmount.conf
+mode: 0o644
+contents: |
+  [ NFSMount_Global_Options ]
+  nfsvers=4.1
+  hard=True
+  nconnect=16
+  noatime=True
+  noac=True
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: talos.ajgon.casa/installer-secureboot/3158c22eb3c614983204dc3033adff59b8e0de7cafc71c9d7aca10f69f84e43c:v1.14.0
+provisioning:
+  diskSelector:
+    match: disk.model == "WD Blue SN570 500GB"
+  wipe: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nbd
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: thunderbolt
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeletConfig
+config:
+  crashLoopBackOff:
+    maxContainerRestartPeriod: 60s
+  featureGates:
+    UserNamespacesSupport: true
+  imageMaximumGCAge: 168h
+  maxParallelImagePulls: 3
+  maxPods: 150
+  serializeImagePulls: false
+  shutdownGracePeriod: 90s
+  shutdownGracePeriodCriticalPods: 60s
+defaultRuntimeSeccompProfileEnabled: true
+image: ghcr.io/siderolabs/kubelet:v1.37.0
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+nodeIP:
+  validSubnets:
+    - 192.168.42.0/24
+labels:
+  node-role.kubernetes.io/control-plane: ""
+  node.kubernetes.io/gpu: "true"
+  topology.kubernetes.io/region: homelab
+  topology.kubernetes.io/zone: deedee
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: docker.io
+endpoints:
+  - url: http://nas.internal:5000
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: codeberg.org
+endpoints:
+  - url: http://nas.internal:5001
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: ghcr.io
+endpoints:
+  - url: http://nas.internal:5002
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: gsoci.azurecr.io
+endpoints:
+  - url: http://nas.internal:5003
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: mirror.gcr.io
+endpoints:
+  - url: http://nas.internal:5004
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: quay.io
+endpoints:
+  - url: http://nas.internal:5005
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: registry.k8s.io
+endpoints:
+  - url: http://nas.internal:5006
+skipFallback: true
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  fs.inotify.max_user_instances: "8192" # More inotify events
+  fs.inotify.max_user_watches: "1048576" # More inotify events
+  net.core.default_qdisc: fq # Enable pacing and fair queueing for smoother flow control
+  net.core.rmem_max: "67108864" # Cloudflared / QUIC
+  net.core.wmem_max: "67108864" # Cloudflared / QUIC
+  net.ipv4.neigh.default.gc_thresh1: "4096" # ARP neighbor GC thresholds
+  net.ipv4.neigh.default.gc_thresh2: "8192" # ARP neighbor GC thresholds
+  net.ipv4.neigh.default.gc_thresh3: "16384" # ARP neighbor GC thresholds
+  net.ipv4.ping_group_range: "0 2147483647" # allow unprivileged PINGs
+  net.ipv4.tcp_congestion_control: bbr # Use BBR congestion control for fast, low-latency delivery
+  net.ipv4.tcp_fastopen: "3" # Send and accept data in the opening SYN packet
+  net.ipv4.tcp_mtu_probing: "1" # Enable MTU probing in case of ICMP blackholes
+  net.ipv4.tcp_slow_start_after_idle: "0" # Handle traffic bursts better
+  net.ipv4.tcp_window_scaling: "1" # Enable TCP window scaling to go beyond 64KB receive windows
+  # net.ipv6.conf.all.disable_ipv6: "1" # Not used, causes lot of headaches
+  sunrpc.tcp_max_slot_table_entries: "128" # Faster NFS
+  sunrpc.tcp_slot_table_entries: "128" # Faster NFS
+  user.max_user_namespaces: "11255" # User Namespaces
+  vm.nr_hugepages: "1024" # PostgreSQL
+
+  # net.ipv4.tcp_rmem: 4096 87380 8388608  # Conservative receive buffer tuning (min, default, max in bytes)
+  # net.ipv4.tcp_wmem: 4096 65536 8388608  # Conservative send buffer tuning (min, default, max in bytes)
+  net.ipv4.tcp_rmem: 4096 87380 33554432 # Performant receive buffer tuning (min, default, max in bytes)
+  net.ipv4.tcp_wmem: 4096 65536 33554432 # Performant send buffer tuning (min, default, max in bytes)
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: UdevRulesConfig
+rules:
+  # Intel GPU
+  - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: DiscoveryServiceConfig
+name: default
+endpoint: https://discovery.talos.dev/
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: DiscoveryIdentityConfig
+clusterID: '{{ ENV[".cluster.id"] }}'
+clusterSecret: '{{ ENV[".cluster.secret"] }}'
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+dnsDomain: cluster.local
+podSubnets:
+  - 172.30.0.0/16
+serviceSubnets:
+  - 172.31.0.0/16
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: FilesystemTrimConfig
+interval: 168h0m0s
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: FilesystemScrubConfig
+interval: 168h0m0s
+
+# {% if ENV.IS_CONTROLPLANE %}
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+  - os:reader
+allowedKubernetesNamespaces:
+  - system-upgrade
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAuditPolicyConfig
+configuration:
+  apiVersion: audit.k8s.io/v1
+  kind: Policy
+  rules:
+    - level: Metadata
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+certExtraSANs:
+  - deedee.internal
+extraArgs:
+  enable-aggregator-routing: "true" # mandatory without kube-proxy
+  feature-gates: HPAScaleToZero=true
+image: registry.k8s.io/kube-apiserver:v1.37.0
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+  defaults:
+    audit: restricted
+    audit-version: latest
+    enforce: baseline
+    enforce-version: latest
+    warn: restricted
+    warn-version: latest
+  exemptions:
+    namespaces:
+      - kube-system
+    runtimeClasses: []
+    usernames: []
+  kind: PodSecurityConfiguration
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+  feature-gates: HPAScaleToZero=true
+image: registry.k8s.io/kube-controller-manager:v1.37.0
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeCoreDNSConfig
+enabled: false
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+image: registry.k8s.io/kube-proxy:v1.37.0
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+config:
+  profiles:
+    - schedulerName: default-scheduler
+      plugins:
+        score:
+          disabled:
+            - name: ImageLocality
+      pluginConfig:
+        - name: PodTopologySpread
+          args:
+            defaultingType: List
+            defaultConstraints:
+              - maxSkew: 1
+                topologyKey: kubernetes.io/hostname
+                whenUnsatisfiable: ScheduleAnyway
+extraArgs:
+  bind-address: 0.0.0.0
+image: registry.k8s.io/kube-scheduler:v1.37.0
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeEtcdEncryptionConfig
+config:
+  resources:
+    - providers:
+        - secretbox:
+            keys:
+              - name: key2
+                secret: '{{ ENV[".cluster.secretboxEncryptionSecret"] }}'
+        - identity: {}
+      resources:
+        - secrets
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAuthenticationConfig
+configuration:
+  anonymous:
+    conditions:
+      - path: /livez
+      - path: /readyz
+      - path: /healthz
+    enabled: true
+  jwt: []
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAuthorizerConfig
+name: node
+type: Node
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+apiVersion: v1alpha1
+kind: KubeAuthorizerConfig
+name: rbac
+type: RBAC
+# {% endif %}
 
 # vim:ft=yaml

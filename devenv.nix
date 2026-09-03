@@ -40,7 +40,15 @@ in
     pkgs.minijinja
     pkgs.openbao
     pkgs.sops
-    pkgs.talosctl
+    # pkgs.talosctl
+    # in case of a need of version override
+    (pkgs.talosctl.overrideAttrs (prev: {
+      version = "1.14.0";
+      src = prev.src.override {
+        hash = "sha256-zKxP5IM0/c4ntbujIYYe91r7VfdoolHWs/CdkYOOLJU=";
+      };
+      vendorHash = "sha256-XBqBYg+/yGECsHsmZuJzliyUVcWoby/IHs2WBaMw9jo=";
+    }))
     pkgs.yamlfmt
     pkgs.yq-go
   ];
