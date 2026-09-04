@@ -1,45 +1,45 @@
 [deriver.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [summary.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dream.deduction_model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dream.induction_model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dialectic.levels.minimal]
 MAX_TOOL_ITERATIONS = 1
 [dialectic.levels.minimal.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dialectic.levels.low]
 MAX_TOOL_ITERATIONS = 5
 [dialectic.levels.low.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dialectic.levels.medium]
 MAX_TOOL_ITERATIONS = 2
 [dialectic.levels.medium.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dialectic.levels.high]
 MAX_TOOL_ITERATIONS = 4
 [dialectic.levels.high.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"
 
 [dialectic.levels.max]
 MAX_TOOL_ITERATIONS = 10
 [dialectic.levels.max.model_config]
 transport = "openai"
-model = "vllm/Google/gemma-4-31B-it"
+model = "vllm/Qwen/Qwen3.8-27B-FP8"

@@ -149,7 +149,7 @@ spec:
               AUTO_GENERATE_TITLE: "false"
               HOME: /home/paperless-gpt
               LLM_LANGUAGE: "English,Polish"
-              LLM_MODEL: vllm/Google/gemma-4-31B-it
+              LLM_MODEL: vllm/Qwen/Qwen3.8-27B-FP8
               LLM_PROVIDER: openai
               OCR_PROCESS_MODE: image
               OCR_PROVIDER: llm
