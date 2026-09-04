@@ -25,6 +25,16 @@
       minimumGroupSize: 2,
     },
     {
+      description: "Geopulse Group",
+      groupName: "geopulse",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/geopulse/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
       description: "Kiwix Group",
       groupName: "kiwix",
       matchDatasources: ["docker"],
