@@ -21,7 +21,7 @@ spec:
           backend:
             image:
               repository: ghcr.io/tess1o/geopulse-backend
-              tag: 1.38.0-native@sha256:7bb3dddf63e48e9f72d149aaebed3af21abbf4d8edf5b5be3d7ef3d834c81f9a
+              tag: 1.38.1-native@sha256:72d6bc366836a937dfde214b2ca761af7fea4371cac257dcdac91481ad021201
             env: &env
               GEOPULSE_ADMIN_EMAIL: ajgon@${ROOT_DOMAIN}
               GEOPULSE_AUTH_ADMIN_LOGIN_BYPASS_ENABLED: true
@@ -98,7 +98,7 @@ spec:
           ui:
             image:
               repository: ghcr.io/tess1o/geopulse-ui
-              tag: 1.38.0@sha256:a45353018353573124dd794e8fba431611b0e7495d6bdc6efbdc64b39688537d
+              tag: 1.38.1@sha256:2f6924f8e1248d4bd4ebf3b6bb4e4c5bb1dfca9df3c9bd492ee7b02eff947474
             command:
               - /bin/sh
               - -c
