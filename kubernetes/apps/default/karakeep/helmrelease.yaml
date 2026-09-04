@@ -25,15 +25,17 @@ spec:
             env:
               BROWSER_WEB_URL: http://127.0.0.1:9222
               CRAWLER_FULL_PAGE_SCREENSHOT: "true"
-              CRAWLER_MONOLITH_TIMEOUT_SEC: "90"
+              CRAWLER_JOB_TIMEOUT_SEC: "480"
+              CRAWLER_MONOLITH_ARGS: --no-audio%%--no-video%%--no-frames
+              CRAWLER_MONOLITH_TIMEOUT_SEC: "300"
               CRAWLER_SCREENSHOT_TIMEOUT_SEC: "30"
               DATA_DIR: /data
               DISABLE_NEW_RELEASE_CHECK: "true"
               DISABLE_PASSWORD_AUTH: "true"
               DISABLE_SIGNUPS: "true"
               EMBEDDING_TEXT_MODEL: vllm/mixedbread-ai/mxbai-embed-large-v1
-              INFERENCE_IMAGE_MODEL: vllm/Qwen/Qwen3-VL-30B-A3B-Thinking
-              INFERENCE_TEXT_MODEL: vllm/Google/gemma-4-31B-it
+              INFERENCE_IMAGE_MODEL: vllm/Qwen/Qwen3.8-27B-FP8
+              INFERENCE_TEXT_MODEL: vllm/Qwen/Qwen3.8-27B-FP8
               MEILI_ADDR: http://127.0.0.1:7700
               NEXTAUTH_URL: "https://karakeep.${ROOT_DOMAIN}"
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
@@ -85,10 +87,10 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                memory: 256Mi
+                memory: 512Mi
               limits:
                 cpu: 1000m
-                memory: 1Gi
+                memory: 8Gi
           chrome:
             image:
               repository: zenika/alpine-chrome
