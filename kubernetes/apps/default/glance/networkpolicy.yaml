@@ -17,6 +17,7 @@ spec:
         - matchName: github.com
         - matchName: hacker-news.firebaseio.com
         - matchName: store-site-backend-static.ak.epicgames.com
+        - matchName: uselessfacts.jsph.pl
         - matchName: www.reddit.com
         - matchName: www.youtube.com
 

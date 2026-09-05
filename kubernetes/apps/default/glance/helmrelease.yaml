@@ -21,6 +21,7 @@ spec:
               tag: v0.8.6@sha256:9dfb09470b207dcb67ac715994bdb1929374ba3f9c0d7df7462c24adf10fd073
             env:
               GLANCE_PORT: &port 80
+              ROOT_DOMAIN: "${ROOT_DOMAIN}"
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
