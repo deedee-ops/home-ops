@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nitter-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: nitter
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app: nitter-dragonfly
+      toPorts:
+        - ports:
+            - port: "6379"

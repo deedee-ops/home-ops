@@ -24,6 +24,7 @@ resources:
   - ./mail-archive.yaml
   - ./mindwtr.yaml
   - ./n8n.yaml
+  - ./nitter.yaml
   - ./paperless-ngx.yaml
   - ./searxng.yaml
   - ./syncthing.yaml
