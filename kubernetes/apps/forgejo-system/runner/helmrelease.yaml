@@ -147,6 +147,10 @@ spec:
                   - name: docker-certs
                     mountPath: /certs
                     readOnly: true
+                  - name: homelab-root-ca
+                    mountPath: /etc/ssl/certs/ca-certificates.crt
+                    subPath: ca.crt
+                    readOnly: true
             volumes:
               - name: docker-storage
                 emptyDir: {}
