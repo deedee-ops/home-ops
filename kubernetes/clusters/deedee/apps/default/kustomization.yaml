@@ -26,6 +26,7 @@ resources:
   - ./n8n.yaml
   - ./nitter.yaml
   - ./paperless-ngx.yaml
+  - ./redlib.yaml
   - ./searxng.yaml
   - ./syncthing.yaml
   - ./wakapi.yaml

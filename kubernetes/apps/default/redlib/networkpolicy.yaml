@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: redlib-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: redlib
+  egress:
+    - toFQDNs:
+        - matchName: oauth.reddit.com
+        - matchName: reddit-econ-prod-assets-permanent.s3.amazonaws.com
+        - matchName: www.reddit.com
+        - matchName: www.redditstatic.com
+        - matchPattern: "*.redd.it"
+        - matchPattern: "*.redditmedia.com"
+      toPorts:
+        - ports:
+            - port: "443"

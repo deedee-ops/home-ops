@@ -1,0 +1,109 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: redlib
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: redlib
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: redlib
+          glance/icon: di:redlib
+          glance/url: https://redlib.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: registry.${ROOT_DOMAIN}/tools/redlib
+              tag: latest@sha256:73fcfda2392938e8a80959e9a08a100393b37f8fff78eb4c4936e5c70d46232d
+            env:
+              PORT: &port 8080
+              # Instance-level settings.
+              REDLIB_ENABLE_RSS: "on"
+              REDLIB_FULL_URL: https://redlib.${ROOT_DOMAIN}
+              REDLIB_PUSHSHIFT_FRONTEND: undelete.pullpush.io
+              REDLIB_ROBOTS_DISABLE_INDEXING: "on"
+              REDLIB_SFW_ONLY: "off"
+              # Settings defaults
+              REDLIB_DEFAULT_BLUR_NSFW: "on"
+              REDLIB_DEFAULT_BLUR_SPOILER: "on"
+              REDLIB_DEFAULT_COMMENT_SORT: confidence
+              REDLIB_DEFAULT_DISABLE_VISIT_REDDIT_CONFIRMATION: "off"
+              REDLIB_DEFAULT_FRONT_PAGE: default
+              REDLIB_DEFAULT_HIDE_AWARDS: "on"
+              REDLIB_DEFAULT_HIDE_HLS_NOTIFICATION: "on"
+              REDLIB_DEFAULT_HIDE_SCORE: "off"
+              REDLIB_DEFAULT_HIDE_SIDEBAR_AND_SUMMARY: "off"
+              REDLIB_DEFAULT_LAYOUT: compact
+              REDLIB_DEFAULT_POST_SORT: hot
+              REDLIB_DEFAULT_SHOW_NSFW: "on"
+              REDLIB_DEFAULT_THEME: dark
+              REDLIB_DEFAULT_USE_HLS: "on"
+              REDLIB_DEFAULT_WIDE: "on"
+              TZ: Europe/Warsaw
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /settings
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "redlib.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: redlib
+                port: 80
