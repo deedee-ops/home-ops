@@ -31,6 +31,22 @@
           channels:
             - $include: secrets/youtube.yaml
 
+        - type: group
+          define: &shared-properties
+            type: reddit
+            style: vertical-list
+            show-thumbnails: true
+            comments-url-template: https://redlib.${ROOT_DOMAIN}/{POST-PATH}
+          widgets:
+            - subreddit: selfhosted
+              <<: *shared-properties
+
+            - subreddit: homelab
+              <<: *shared-properties
+
+            - subreddit: DataHoarder
+              <<: *shared-properties
+
     - size: small
       widgets:
         - $include: air-quality.yaml
@@ -38,7 +54,9 @@
           location: Krakow, Poland
           units: metric
           hour-format: 24h
-        - type: repository
-          repository: deedee-ops/home-ops
-          pull-requests-limit: 5
-          issues-limit: 3
+        - type: custom-api
+          title: Random Fact
+          cache: 6h
+          url: https://uselessfacts.jsph.pl/api/v2/facts/random
+          template: |
+            <p class="size-h4 color-paragraph">{{ .JSON.String "text" }}</p>
