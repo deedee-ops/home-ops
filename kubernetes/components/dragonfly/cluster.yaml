@@ -18,6 +18,15 @@ spec:
     - --proactor_threads=2
     - --cluster_mode=emulated
   networkPolicyEnabled: false
+  snapshot:
+    cron: "*/5 * * * *"
+    persistentVolumeClaimSpec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: ceph-block
+      resources:
+        requests:
+          storage: ${DRAGONFLY_STORAGE:=1Gi}
   resources:
     requests:
       cpu: 25m
@@ -34,5 +43,7 @@ spec:
     runAsNonRoot: true
     runAsUser: 999
     runAsGroup: 999
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
     seccompProfile:
       type: RuntimeDefault
