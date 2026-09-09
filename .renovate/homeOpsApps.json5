@@ -86,5 +86,11 @@
       matchPackageNames: ["ghcr.io/cloudnative-pg/postgis-extension"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)-(?<compatibility>\\d+-\\w+)$",
     },
+    {
+      description: "Jellyfin omits the patch component when it is 0 ('12.0'), and docker versioning's isCompatible only accepts candidates with an identical release-part count, so '10.11.11' can never reach '12.0'. Regex versioning defaults a missing patch to 0 instead, and the anchored pattern drops the '<version>.<date>-<time>' build tags, the '-rcN' prereleases and the '-amd64'/'-arm64' per-arch tags",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/jellyfin/jellyfin"],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?$",
+    },
   ],
 }

@@ -39,7 +39,7 @@ spec:
               GEOPULSE_OIDC_PROVIDER_GENERIC_NAME: Pocket ID
               GEOPULSE_PUBLIC_BASE_URL: https://geopulse.${ROOT_DOMAIN}
               GEOPULSE_USER_DEFAULT_MEASURE_UNIT: METRIC
-              # renovate: datasource=docker depName=ghcr.io/tess1o/geopulse-backend
+              # renovate: datasource=docker depName=ghcr.io/tess1o/geopulse-ui
               GEOPULSE_VERSION: 1.37.1
               NATIVE_IMAGE_OPTS: >-
                 -XX:MaximumHeapSizePercent=70
