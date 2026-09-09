@@ -160,7 +160,7 @@ spec:
               PAPERLESS_PUBLIC_URL: "https://paperless.${ROOT_DOMAIN}"
               PUID: 1000
               PGID: 1000
-              VISION_LLM_MODEL: vllm/chandra
+              VISION_LLM_MODEL: vllm/datalab-to/chandra-ocr-2
               VISION_LLM_PROVIDER: openai
               TZ: *tz
               PAPERLESS_API_TOKEN:

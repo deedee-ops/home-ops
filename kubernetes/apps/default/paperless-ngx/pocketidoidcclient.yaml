@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: paperless-ngx
 spec:
+  pkceEnabled: true
   launchUrl: https://paperless.${ROOT_DOMAIN}
   callbackUrls:
     - "https://paperless.${ROOT_DOMAIN}/accounts/oidc/pocket-id/login/callback/"
@@ -21,6 +22,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: paperless-gpt
 spec:
+  pkceEnabled: true
   launchUrl: https://paperless-gpt.${ROOT_DOMAIN}
   callbackUrls:
     - "https://paperless-gpt.${ROOT_DOMAIN}/oauth2/callback"
