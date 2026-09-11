@@ -54,7 +54,7 @@ kind: Gateway
 metadata:
   name: envoy-external
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname external.${EXTERNAL_ROOT_DOMAIN}
+    external-dns.kubernetes.io/target: &hostname external.${EXTERNAL_ROOT_DOMAIN}
     gatus.home-operations.com/endpoint: |-
       client:
         dns-resolver: tcp://1.1.1.1:53
@@ -65,7 +65,7 @@ spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
+      external-dns.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: ${LB_EXTERNAL_IP}
   listeners:
     - name: http
@@ -91,7 +91,7 @@ kind: Gateway
 metadata:
   name: envoy-internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname internal.${ROOT_DOMAIN}
+    external-dns.kubernetes.io/target: &hostname internal.${ROOT_DOMAIN}
     gatus.home-operations.com/endpoint: |-
       group: internal
       guarded: true
@@ -104,7 +104,7 @@ spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
+      external-dns.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: "${LB_INTERNAL_IP}"
   listeners:
     - name: ssh
@@ -256,7 +256,7 @@ kind: HTTPRoute
 metadata:
   name: https-redirect
   annotations:
-    external-dns.alpha.kubernetes.io/controller: none
+    external-dns.kubernetes.io/controller: none
 spec:
   parentRefs:
     - name: envoy-external
