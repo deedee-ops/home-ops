@@ -3,33 +3,40 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: searxng
+  name: hister
 spec:
   chartRef:
     kind: OCIRepository
-    name: searxng
+    name: hister
   interval: 1h
   values:
     controllers:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-          glance/name: SearXNG
-          glance/icon: di:searxng
-          glance/url: &url https://search.${ROOT_DOMAIN}
+          glance/name: Hister
+          glance/icon: di:hister
+          glance/url: &url https://hister.${ROOT_DOMAIN}
         containers:
           app:
             image:
-              repository: ghcr.io/searxng/searxng
-              tag: 2026.9.12-87bf8c86e@sha256:2f3d065068121ea3e366104b409d8a16ba10d9eb95a104dd94c63ccaad64cbc3
+              repository: ghcr.io/asciimoo/hister
+              tag: v0.19.0@sha256:dae5ae63f292bf6075c7c60cfef031e15d809a19b09db34d9e54306aab490e9b
             env:
-              SEARXNG_BASE_URL: *url
-              SEARXNG_PORT: &port 80
-              SEARXNG_VALKEY_URL: "redis://searxng-dragonfly:6379"
+              HISTER_DATA_DIR: /config/data
+              HISTER__APP__DIRECTORY: /config/app
+              HISTER__APP__REDIRECT_ON_NO_RESULTS: true
+              HISTER__APP__SEARCH_URL: "https://search.${ROOT_DOMAIN}/search?q={query}"
+              HISTER__SEMANTIC_SEARCH__DIMENSIONS: 1024
+              HISTER__SEMANTIC_SEARCH__EMBEDDING_ENDPOINT: http://embedder.ai.svc.cluster.local/v1/embeddings
+              HISTER__SEMANTIC_SEARCH__EMBEDDING_MODEL: mixedbread-ai/mxbai-embed-large-v1
+              HISTER__SEMANTIC_SEARCH__ENABLE: true
+              HISTER__SERVER__ADDRESS: 0.0.0.0:4433
+              HISTER__SERVER__BASE_URL: *url
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
-                  name: "searxng-secret"
+                  name: "hister-secret"
             probes:
               liveness:
                 enabled: true
@@ -42,8 +49,8 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /stats
-                    port: *port
+                    path: /health
+                    port: &port 4433
                   periodSeconds: 10
                   timeoutSeconds: 5
                   failureThreshold: 5
@@ -63,17 +70,17 @@ spec:
                 cpu: 10m
                 memory: 256Mi
               limits:
-                memory: 4Gi
+                memory: 2Gi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
       labels:
-        egress.cilium.io/internet: "true"
+        egress.cilium.io/smtp-relay: "true"
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
@@ -81,17 +88,18 @@ spec:
       app:
         ports:
           http:
-            port: *port
+            port: 80
+            targetPort: *port
     route:
       app:
         hostnames:
-          - "search.${ROOT_DOMAIN}"
+          - "hister.${ROOT_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
         rules:
           - backendRefs:
-              - name: searxng
+              - name: hister
                 port: 80
             filters:
               - type: ResponseHeaderModifier
@@ -99,24 +107,16 @@ spec:
                   set:
                     - name: Content-Security-Policy
                       value: >-
-                        default-src 'self';
-                        img-src 'self' data:;
-                        object-src 'self';
-                        script-src 'self' 'unsafe-inline';
+                        default-src 'self' data: blob:;
+                        img-src 'self' data: blob: https:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
                         style-src 'self' 'unsafe-inline';
     persistence:
       config:
-        type: configMap
-        name: searxng-configmap
-        globalMounts:
-          - path: /etc/searxng/settings.yml
-            subPath: settings.yaml
-            readOnly: true
-          - path: /etc/searxng/limiter.toml
-            subPath: limiter.toml
-            readOnly: true
+        existingClaim: hister
       tmp:
         type: emptyDir
         globalMounts:
-          - path: /tmp
-            subPath: tmp
+          - subPath: tmp
+            path: /tmp
