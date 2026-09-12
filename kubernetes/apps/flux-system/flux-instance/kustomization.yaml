@@ -10,5 +10,6 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./podmonitor.yaml
+  - ./probe.yaml
   - ./prometheusrule.yaml
   - ./receiver.yaml

@@ -6,3 +6,4 @@ resources:
   - iot-nowan.yaml
   - iot-wan.yaml
   - vpn.yaml
+  - vpn-strict.yaml

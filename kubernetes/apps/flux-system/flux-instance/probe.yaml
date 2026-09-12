@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: flux-webhook
+spec:
+  jobName: flux-webhook
+  interval: 1m
+  scrapeTimeout: 15s
+  module: https_external
+  prober:
+    url: blackbox-exporter-vpn.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - https://flux-webhook.${EXTERNAL_ROOT_DOMAIN}/
+  metricRelabelings:
+    - targetLabel: service
+      replacement: blackbox-exporter-external
+      action: replace

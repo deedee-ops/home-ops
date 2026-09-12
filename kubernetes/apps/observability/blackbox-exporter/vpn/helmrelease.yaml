@@ -16,11 +16,24 @@ spec:
     podAnnotations:
       k8s.v1.cni.cncf.io/networks: |-
         [{
-          "name": "vpn",
+          "name": "vpn-strict",
           "namespace": "kube-system",
           "ips": ["192.168.69.10/24"],
           "mac": "02:00:c0:a8:45:0a"
         }]
+    # Resolve like the outside world does, not like the LAN does: external-dns-unifi
+    # publishes every HTTPRoute hostname (including the rzegocki.dev ones) into the
+    # UDM, so cluster DNS returns the split-horizon answer. Going straight to public
+    # resolvers - over the VPN, since 1.1.1.1/9.9.9.9 route via 192.168.69.1 - is what
+    # makes this probe see the same records an external client sees.
+    dnsPolicy: None
+    dnsConfig:
+      nameservers:
+        - 1.1.1.1
+        - 9.9.9.9
+      options:
+        - name: ndots
+          value: "1"
     securityContext:
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
@@ -31,7 +44,26 @@ spec:
         https:
           prober: http
           timeout: 5s
-          http: &http
+          http:
+            valid_status_codes:
+              - 200
+              - 401
+              - 404
+            valid_http_versions:
+              - HTTP/1.1
+              - HTTP/2.0
+            follow_redirects: true
+            preferred_ip_protocol: ip4
+            fail_if_ssl: false
+            fail_if_not_ssl: true
+        # Reachability-only check for publicly exposed hostnames. Any well-formed HTTP
+        # response counts as success - the question this answers is "can the outside
+        # world get an answer from /", not "is the answer correct". blackbox has no
+        # wildcard for valid_status_codes, so the realistic surface is enumerated.
+        https_external:
+          prober: http
+          timeout: 10s
+          http:
             valid_status_codes:
               - 200
               - 401
@@ -69,6 +101,17 @@ spec:
           annotations:
             summary: |-
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
+
+        - alert: ExternalEndpointUnreachable
+          expr: |-
+            probe_success{service="blackbox-exporter-external"} == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: >-
+              {{ $labels.instance }} returned no usable HTTP response when probed from outside the LAN
+              - check its public DNS record and the VPS tunnel
   postRenderers:
     - kustomize:
         patches:

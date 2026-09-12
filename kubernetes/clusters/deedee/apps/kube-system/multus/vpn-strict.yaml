@@ -1,0 +1,89 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/k8s.cni.cncf.io/networkattachmentdefinition_v1.json
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: vpn-strict
+spec:
+  # Same as "vpn", but additionally models an off-LAN vantage point: RFC1918 space
+  # is routed to an intentionally unassigned on-link address (192.168.69.254), so it
+  # blackholes instead of falling back to eth0 and short-cutting through the cluster.
+  # This is what makes probes on this network fail when a *public* DNS record points
+  # at a private IP - which is exactly the blind spot it exists to catch.
+  #
+  # Deliberately NOT blackholed - every subnet with an IPv4 address on a node must stay
+  # reachable, because the host route to a pod carries no "src" and the kernel is free to
+  # pick any node address as the source of a kubelet probe. Blackholing one of them makes
+  # the probe reply undeliverable and the pod restart-loops:
+  #   192.168.41.0/24  - rook-ceph cluster network, bond0 on every node
+  #   192.168.42.0/24  - node subnet, bond1 on every node
+  #                      (the two envoy LB IPs inside it are blackholed as /32 instead)
+  #   192.168.69.0/24  - this interface's own subnet (on-link)
+  #   172.16.0.0/12    - contains the pod (172.30.0.0/16) and service (172.31.0.0/16)
+  #                      CIDRs, plus every cilium_host address; blackholing it would
+  #                      break scrape replies
+  config: |-
+    {
+      "cniVersion": "0.3.1",
+      "name": "vpn-strict",
+      "plugins": [
+        {
+          "type": "macvlan",
+          "master": "bond1.69",
+          "mode": "bridge",
+          "ipam": {
+            "type": "static",
+            "routes": [
+              {"dst": "0.0.0.0/5", "gw": "192.168.69.1"},
+              {"dst": "8.0.0.0/7", "gw": "192.168.69.1"},
+              {"dst": "11.0.0.0/8", "gw": "192.168.69.1"},
+              {"dst": "12.0.0.0/6", "gw": "192.168.69.1"},
+              {"dst": "16.0.0.0/4", "gw": "192.168.69.1"},
+              {"dst": "32.0.0.0/3", "gw": "192.168.69.1"},
+              {"dst": "64.0.0.0/2", "gw": "192.168.69.1"},
+              {"dst": "128.0.0.0/3", "gw": "192.168.69.1"},
+              {"dst": "160.0.0.0/5", "gw": "192.168.69.1"},
+              {"dst": "168.0.0.0/6", "gw": "192.168.69.1"},
+              {"dst": "172.0.0.0/12", "gw": "192.168.69.1"},
+              {"dst": "172.32.0.0/11", "gw": "192.168.69.1"},
+              {"dst": "172.64.0.0/10", "gw": "192.168.69.1"},
+              {"dst": "172.128.0.0/9", "gw": "192.168.69.1"},
+              {"dst": "173.0.0.0/8", "gw": "192.168.69.1"},
+              {"dst": "174.0.0.0/7", "gw": "192.168.69.1"},
+              {"dst": "176.0.0.0/4", "gw": "192.168.69.1"},
+              {"dst": "192.0.0.0/9", "gw": "192.168.69.1"},
+              {"dst": "192.128.0.0/11", "gw": "192.168.69.1"},
+              {"dst": "192.160.0.0/13", "gw": "192.168.69.1"},
+              {"dst": "192.169.0.0/16", "gw": "192.168.69.1"},
+              {"dst": "192.170.0.0/15", "gw": "192.168.69.1"},
+              {"dst": "192.172.0.0/14", "gw": "192.168.69.1"},
+              {"dst": "192.176.0.0/12", "gw": "192.168.69.1"},
+              {"dst": "192.192.0.0/10", "gw": "192.168.69.1"},
+              {"dst": "193.0.0.0/8", "gw": "192.168.69.1"},
+              {"dst": "194.0.0.0/7", "gw": "192.168.69.1"},
+              {"dst": "196.0.0.0/6", "gw": "192.168.69.1"},
+              {"dst": "200.0.0.0/5", "gw": "192.168.69.1"},
+              {"dst": "208.0.0.0/4", "gw": "192.168.69.1"},
+              {"dst": "224.0.0.0/3", "gw": "192.168.69.1"},
+
+              {"dst": "10.0.0.0/8", "gw": "192.168.69.254"},
+              {"dst": "192.168.0.0/19", "gw": "192.168.69.254"},
+              {"dst": "192.168.32.0/21", "gw": "192.168.69.254"},
+              {"dst": "192.168.40.0/24", "gw": "192.168.69.254"},
+              {"dst": "192.168.42.30/32", "gw": "192.168.69.254"},
+              {"dst": "192.168.42.31/32", "gw": "192.168.69.254"},
+              {"dst": "192.168.43.0/24", "gw": "192.168.69.254"},
+              {"dst": "192.168.44.0/22", "gw": "192.168.69.254"},
+              {"dst": "192.168.48.0/20", "gw": "192.168.69.254"},
+              {"dst": "192.168.64.0/22", "gw": "192.168.69.254"},
+              {"dst": "192.168.68.0/24", "gw": "192.168.69.254"},
+              {"dst": "192.168.70.0/23", "gw": "192.168.69.254"},
+              {"dst": "192.168.72.0/21", "gw": "192.168.69.254"},
+              {"dst": "192.168.80.0/20", "gw": "192.168.69.254"},
+              {"dst": "192.168.96.0/19", "gw": "192.168.69.254"},
+              {"dst": "192.168.128.0/17", "gw": "192.168.69.254"}
+            ]
+          }
+        }
+      ]
+    }
