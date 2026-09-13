@@ -1,0 +1,133 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+services:
+  ncps-secret:
+    image: alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce
+    container_name: ncps-secret
+    user: 1000:1000
+    restart: "no"
+    environment:
+      NCPS_CACHE_SECRET_KEY: "${NCPS_CACHE_SECRET_KEY}"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        : "$${NCPS_CACHE_SECRET_KEY:?refusing to write an empty signing key}"
+        printf '%s' "$$NCPS_CACHE_SECRET_KEY" > /secret/key
+    volumes:
+      - ${DATA_DOCKER_DIR}/ncps/secret:/secret
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  ncps-init:
+    image: ghcr.io/kalbasit/ncps:v0.9.4@sha256:5ce5baee6037ab2f4f757abfaf174d19c0122916c67dda8670c27d8d0f862933
+    container_name: ncps-init
+    user: 1000:1000
+    restart: "no"
+    command:
+      - /bin/dbmate
+      - --url=sqlite:/var/lib/ncps/db.sqlite
+      - up
+    volumes:
+      - ${DATA_DOCKER_DIR}/ncps/db:/var/lib/ncps
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  ncps:
+    depends_on:
+      ncps-init:
+        condition: service_completed_successfully
+      ncps-secret:
+        condition: service_completed_successfully
+    image: ghcr.io/kalbasit/ncps:v0.9.4@sha256:5ce5baee6037ab2f4f757abfaf174d19c0122916c67dda8670c27d8d0f862933
+    container_name: ncps
+    user: 1000:1000
+    restart: unless-stopped
+    environment:
+      CACHE_STORAGE_S3_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      CACHE_STORAGE_S3_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      # Written by the ncps-secret service above, mounted read-only below.
+      CACHE_SECRET_KEY_PATH: /secret/key
+      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+    command:
+      - /bin/ncps
+      - serve
+      - --cache-hostname=nix.${ROOT_DOMAIN}
+      - --cache-database-url=sqlite:/var/lib/ncps/db.sqlite
+      # NARs are streamed through a temp dir on the way to S3. Kept on disk rather
+      # than the tmpfs below so a large closure cannot balloon into RAM.
+      - --cache-temp-path=/var/tmp/ncps
+      # storage: garage, reached in-cluster to skip a TLS hop through traefik.
+      # path-style is mandatory for garage.
+      - --cache-storage-s3-bucket=nix
+      - --cache-storage-s3-endpoint=http://garage:3900
+      - --cache-storage-s3-region=eu-central-1
+      - --cache-storage-s3-force-path-style
+      # Accept `nix copy --to https://nix.${ROOT_DOMAIN}/upload` for our own builds.
+      # v0.9.4 has NO auth on PUT -- it is a bare on/off switch, and there is no
+      # --cache-require-trusted-signature until v0.10. Uploaded narinfos are
+      # re-signed with our key, which every client trusts, so this must stay
+      # unreachable from outside the LAN.
+      - --cache-allow-put-verb
+      # Pull-through upstreams. Public keys are passed as one flat list; ncps binds
+      # each to an upstream by matching ^<url-host>-[0-9]+:<base64>$, so ordering
+      # here is irrelevant. An upstream with no matching key is proxied WITHOUT
+      # signature verification and without warning, so every entry needs its key.
+      # Priority is settable per upstream via a ?priority=N query param (default
+      # 40, lower wins) but ncps does not strip it from outgoing requests, so it
+      # is left off here.
+      - --cache-upstream-url=https://cache.nixos.org
+      - --cache-upstream-url=https://nix-community.cachix.org
+      - --cache-upstream-url=https://deploy-rs.cachix.org
+      - --cache-upstream-url=https://noctalia.cachix.org
+      - --cache-upstream-url=https://vicinae.cachix.org
+      - --cache-upstream-public-key=cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+      - --cache-upstream-public-key=nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+      - --cache-upstream-public-key=deploy-rs.cachix.org-1:xfNobmiwF/vzvK1gpfediPwpdIP0rpDV2rYqx40zdSI=
+      - --cache-upstream-public-key=noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=
+      - --cache-upstream-public-key=vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc=
+      # NOTE: --cache-lru-schedule / --cache-max-size are deliberately unset. The
+      # LRU cron job is only registered when a schedule is given, so nothing is
+      # ever evicted and the mirror stays complete for offline use.
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${DATA_DOCKER_DIR}/ncps/db:/var/lib/ncps
+      - ${DATA_DOCKER_DIR}/ncps/tmp:/var/tmp/ncps
+      - ${DATA_DOCKER_DIR}/ncps/secret:/secret:ro
+    tmpfs:
+      - /tmp:mode=1777,uid=1000,gid=1000
+    networks:
+      - internal
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.ncps.loadbalancer.server.port: "8501"
+      traefik.http.routers.ncps.entrypoints: https
+      traefik.http.routers.ncps.rule: Host(`nix.${ROOT_DOMAIN}`)
+      traefik.http.routers.ncps.service: ncps
+      traefik.http.routers.ncps.tls: "true"
+      traefik.http.routers.ncps.tls.certresolver: openbao-ecdsa
+      traefik.http.routers.ncps.tls.domains[0].main: "nix.${ROOT_DOMAIN}"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+networks:
+  internal:
+    name: internal
+    external: true
