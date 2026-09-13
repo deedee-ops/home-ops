@@ -1,7 +1,29 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
 services:
+  attic-init:
+    image: keinos/sqlite3:3.53.4@sha256:6addaf450aea7e098e7d6f059d43501c317ec70494c1ace3cc94bfe1631cbfa5
+    container_name: attic-init
+    user: 1000:1000
+    restart: "no"
+    command:
+      - /usr/bin/sqlite3
+      - /var/lib/attic/server.db
+      - pragma journal_mode=WAL;
+    volumes:
+      - ${DATA_DOCKER_DIR}/attic/config:/var/lib/attic
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
   attic:
+    depends_on:
+      attic-init:
+        condition: service_completed_successfully
     environment:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
