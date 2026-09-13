@@ -22,8 +22,8 @@ spec:
             set:
               - name: Content-Security-Policy
                 value: >-
-                  default-src 'self';
-                  img-src 'self' https:;
+                  default-src data: blob: 'self';
+                  img-src 'self' data: blob: https:;
                   object-src 'none';
                   script-src 'self' 'unsafe-inline' 'unsafe-eval';
                   style-src 'self' 'unsafe-inline';

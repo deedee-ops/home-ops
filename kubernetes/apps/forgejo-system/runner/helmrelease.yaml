@@ -23,9 +23,6 @@ spec:
               workdir_parent: shared/workdir
             host:
               workdir_parent: /data/act
-            kubernetes:
-              namespace: forgejo-system
-              poll_timeout: 10m
             log:
               level: info
             plugins:
@@ -40,7 +37,7 @@ spec:
               file: /persistent/.runner
               labels:
                 - ubuntu-latest:k8s:/config/podspec-default.yaml
-                - ubuntu-24.04:k8spod:/config/podspec-default.yaml
+                - ubuntu-24.04:k8s:/config/podspec-default.yaml
                 - default:k8s:/config/podspec-default.yaml
                 - nix:k8s:/config/podspec-nix.yaml
                 - docker:k8s:/config/podspec-dind.yaml
@@ -228,8 +225,8 @@ spec:
         containers:
           runner:
             image:
-              repository: registry.erwanleboucher.dev/erwanleboucher.dev/eleboucher/runner
-              tag: 12.13.0@sha256:b71959782cea9cbc86eaeb47e5ba32bf8179fbd117dd849e001c9a13807b1a07
+              repository: data.forgejo.org/forgejo/runner
+              tag: 13.1.0@sha256:c4af85fd9f0dd03788676a534781a87c71aa2c6a37737143e017eb94d4312952
             command:
               - sh
               - -ec
