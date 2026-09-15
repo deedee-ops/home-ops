@@ -8,7 +8,6 @@ services:
     restart: unless-stopped
     user: 1000:1000
     command:
-      - /usr/bin/image-factory
       - --config
       - file=/config.yaml
     configs:
