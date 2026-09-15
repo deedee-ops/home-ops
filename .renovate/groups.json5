@@ -69,7 +69,7 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       // renovate for some reason duplicates items here
-      minimumGroupSize: 9,
+      minimumGroupSize: 11,
     },
     {
       description: "Mindwtr Group",
@@ -94,7 +94,7 @@
     {
       description: "Talos Group",
       groupName: "talos",
-      matchDatasources: ["docker", "custom.talos-factory"],
+      matchDatasources: ["docker", "custom.talos-factory", "github-releases"],
       matchPackageNames: ["/siderolabs\\/talos/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
