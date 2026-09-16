@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/pocketid.internal/pocketidoidcclient_v1alpha1.json
+apiVersion: pocketid.internal/v1alpha1
+kind: PocketIDOIDCClient
+metadata:
+  name: romm
+spec:
+  pkceEnabled: false
+  launchUrl: https://romm.${ROOT_DOMAIN}
+  callbackUrls:
+    - "https://romm.${ROOT_DOMAIN}/api/oauth/openid"
+  secret:
+    keys:
+      clientID: OIDC_CLIENT_ID
+      clientSecret: OIDC_CLIENT_SECRET

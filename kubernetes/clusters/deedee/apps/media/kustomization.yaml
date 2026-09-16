@@ -20,6 +20,7 @@ resources:
   - ./qui.yaml
   - ./radarr.yaml
   - ./recyclarr.yaml
+  - ./romm.yaml
   - ./sabnzbd.yaml
   - ./slskd.yaml
   - ./sonarr.yaml
