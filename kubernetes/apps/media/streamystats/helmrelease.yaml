@@ -1,0 +1,202 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: streamystats
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: streamystats
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: streamystats
+          glance/icon: di:streamystats
+          glance/url: https://streamystats.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/fredrikburmester/streamystats-nextjs
+              tag: latest@sha256:f6959c42a495a2f083bb268be1145b5857003bd5e646fb47053ff6f583fb59cb
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                export DATABASE_URL="postgresql://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/streamystats"
+                docker-entrypoint.sh node server.js
+            env:
+              HOSTNAME: 0.0.0.0
+              JOB_SERVER_URL: http://localhost:3005
+              NODE_ENV: production
+              PORT: &appPort 3000
+              TZ: Europe/Warsaw
+              PGHOST: &pghost
+                secretKeyRef:
+                  name: media-db-app
+                  key: host
+              PGPORT: &pgport
+                secretKeyRef:
+                  name: media-db-app
+                  key: port
+              PGUSER: &pguser
+                secretKeyRef:
+                  name: media-db-app
+                  key: username
+              PGPASSWORD: &pgpassword
+                secretKeyRef:
+                  name: media-db-app
+                  key: password
+            envFrom:
+              - secretRef:
+                  name: "streamystats-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *appPort
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: &sc
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources: &resources
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+          job:
+            image:
+              repository: ghcr.io/fredrikburmester/streamystats-job-server
+              tag: latest@sha256:845243da9c8f7e18d4100d7d45e5b1f56f52ff959cc7949469fdf762c20bb2a0
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                export DATABASE_URL="postgresql://$${PGUSER}:$${PGPASSWORD}@$${PGHOST}:$${PGPORT}/streamystats"
+                ./migrate-bin && exec ./server
+            env:
+              CRON_ACTIVITY_SYNC: "-*/1 * * * *"
+              CRON_DELETED_ITEMS_CLEANUP: "0 * * * *"
+              CRON_EMBEDDINGS_SYNC: "-*/15 * * * *"
+              CRON_FINGERPRINT_SYNC: "0 4 * * *"
+              CRON_FULL_SYNC: "0 2 * * *"
+              CRON_GEOLOCATION_SYNC: "-*/5 * * * *"
+              CRON_JOB_CLEANUP: "*/1 * * * *"
+              CRON_OLD_JOB_CLEANUP: "0 3 * * *"
+              CRON_PEOPLE_SYNC: "*/15 * * * *"
+              CRON_RECENT_ITEMS_SYNC: "*/1 * * * *"
+              CRON_USER_SYNC: "*/1 * * * *"
+              HOST: 0.0.0.0
+              NEXTJS_URL: http://localhost:3000
+              NODE_ENV: production
+              PORT: &jobPort 3005
+              SESSION_POLL_INTERVAL_MS: 5000
+              SKIP_STARTUP_FULL_SYNC: false
+              TZ: Europe/Warsaw
+              PGHOST: *pghost
+              PGPORT: *pgport
+              PGUSER: *pguser
+              PGPASSWORD: *pgpassword
+            envFrom:
+              - secretRef:
+                  name: "streamystats-secret"
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *jobPort
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext: *sc
+            resources: *resources
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *appPort
+    route:
+      app:
+        hostnames:
+          - "streamystats.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: streamystats
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - subPath: tmp
+            path: /tmp
+        advancedMounts:
+          main:
+            app:
+              - subPath: cache
+                path: /app/apps/nextjs-app/.next/cache

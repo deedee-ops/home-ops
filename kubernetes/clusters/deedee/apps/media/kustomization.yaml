@@ -23,3 +23,4 @@ resources:
   - ./sabnzbd.yaml
   - ./slskd.yaml
   - ./sonarr.yaml
+  - ./streamystats.yaml
