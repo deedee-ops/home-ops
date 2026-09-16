@@ -15,7 +15,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
           glance/name: Hister
-          glance/icon: di:hister
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/hister.png
           glance/url: &url https://hister.${ROOT_DOMAIN}
         containers:
           app:
