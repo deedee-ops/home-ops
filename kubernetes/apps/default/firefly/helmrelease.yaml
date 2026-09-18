@@ -26,7 +26,7 @@ spec:
               repository: docker.io/fireflyiii/core
               # yamllint disable-line rule:line-length
               # renovate: datasource=docker depName=fireflyiii/core versioning=regex:^(?<compatibility>version)-(?<major>\d+)(\.(?<minor>\d+))?(\.(?<patch>\d+))?$
-              tag: version-6.7.2@sha256:30f14402bb0b080313608c9e5ed6b7f1348faa16ab0f46a3b3ea4201fe16f14c
+              tag: version-6.7.3@sha256:ce60c4b9eaf79bc3ad7bec89386802fd836dd20c9d2f88852fb7fc2ae546ab4b
             env:
               APP_URL: "https://firefly.${ROOT_DOMAIN}"
               AUTHENTICATION_GUARD: "remote_user_guard"
