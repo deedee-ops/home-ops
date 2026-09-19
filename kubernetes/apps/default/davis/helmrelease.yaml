@@ -29,15 +29,18 @@ spec:
               AUTH_METHOD: Basic"
               AUTH_REALM: SabreDAV
               BIRTHDAY_REMINDER_OFFSET: "false"
-              CALDAV_ENABLED: "false"
+              CALDAV_ENABLED: "true"
               CARDDAV_ENABLED: "true"
               DATABASE_DRIVER: sqlite
               DATABASE_URL: sqlite:////config/davis-database.db
               INVITE_FROM_ADDRESS: "${CLUSTER_NAME}@${ROOT_DOMAIN}"
               LOG_FILE_PATH: "/tmp/davis.log"
               MAILER_DSN: "smtp://smtp-relay.network.svc.cluster.local:25"
+              PUBLIC_CALENDARS_ENABLED: "false"
               SYMFONY_TRUSTED_PROXIES: &proxies "172.30.0.0/16"
-              TRUSTED_HOSTS: "davis.${ROOT_DOMAIN}"
+              TRUSTED_HOSTS: >-
+                davis.${ROOT_DOMAIN}|davis|davis.{{ .Release.Namespace }}|davis.{{
+                .Release.Namespace }}.svc|davis.{{ .Release.Namespace }}.svc.cluster.local
               TRUSTED_PROXIES: *proxies
               TZ: *tz
               UMASK: "0002"
@@ -62,6 +65,8 @@ spec:
             image:
               repository: docker.io/library/caddy
               tag: "2.11.4@sha256:14a9c00d4e833ebc2b65d36515b37bde3b73f0b323a2663aaafc88953d8c4e3f"
+            env:
+              XDG_DATA_HOME: /tmp
             args:
               - caddy
               - run
@@ -150,6 +155,14 @@ spec:
                         default-src 'self';
                         object-src 'none';
                         style-src 'self' 'unsafe-inline';
+              - type: CORS
+                cors:
+                  allowOrigins:
+                    - 'https://*.${ROOT_DOMAIN}'
+                  allowHeaders:
+                    - '*'
+                  allowMethods:
+                    - '*'
           - name: dav
             backendRefs:
               - kind: Service
@@ -176,13 +189,16 @@ spec:
                 format console
               }
               http_port 8080
-              https_port 8443
               servers {
                 trusted_proxies static 172.30.0.0/16
                 trusted_proxies_strict
               }
             }
-            davis.${ROOT_DOMAIN}:8080 {
+            davis.${ROOT_DOMAIN}:8080,
+            davis:8080,
+            davis.{{ .Release.Namespace }}:8080,
+            davis.{{ .Release.Namespace }}.svc:8080,
+            davis.{{ .Release.Namespace }}.svc.cluster.local:8080 {
               log
               header -Server
               header -X-Powered-By

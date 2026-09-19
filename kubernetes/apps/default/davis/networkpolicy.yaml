@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: dav-egress-label
+specs:
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/dav: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: davis
+        toPorts:
+          - ports:
+              - port: "8080"

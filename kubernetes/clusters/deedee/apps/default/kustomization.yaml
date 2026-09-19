@@ -11,6 +11,7 @@ resources:
   - ./airtrail.yaml
   - ./atuin.yaml
   - ./bentopdf.yaml
+  - ./calino.yaml
   - ./chhoto-url.yaml
   - ./crypt.yaml
   - ./davis.yaml
