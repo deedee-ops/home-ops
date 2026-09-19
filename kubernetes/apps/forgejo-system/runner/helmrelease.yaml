@@ -226,7 +226,7 @@ spec:
           runner:
             image:
               repository: data.forgejo.org/forgejo/runner
-              tag: 13.1.0@sha256:c4af85fd9f0dd03788676a534781a87c71aa2c6a37737143e017eb94d4312952
+              tag: 13.2.0@sha256:ca3d5eea46004789a175d1369eec6829d3ea9bfbe2011a06625b4bdaa55f7552
             command:
               - sh
               - -ec
@@ -250,7 +250,7 @@ spec:
             image:
               pullPolicy: Always
               repository: registry.erwanleboucher.dev/erwanleboucher.dev/eleboucher/runner-k8s-plugin
-              tag: 13.1.0@sha256:9ae8a21340cde415b828adc95bc4f1345bed67c21a0e3be26032d367a64b20db
+              tag: 13.2.0@sha256:1ee698a62fadae1fe0ff8ae24c1012c2fda0bb9c97bbd1e57606ce4445932bf9
             args:
               - --listen
               - unix:///plugin/forgejo-runner-k8s.sock
