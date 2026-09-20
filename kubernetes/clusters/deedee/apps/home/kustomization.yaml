@@ -10,4 +10,5 @@ resources:
   - ./frigate.yaml
   - ./home-assistant.yaml
   - ./mosquitto.yaml
+  - ./music-assistant.yaml
   - ./zigbee2mqtt.yaml

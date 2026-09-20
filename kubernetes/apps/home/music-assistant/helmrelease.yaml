@@ -1,0 +1,132 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: music-assistant
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: music-assistant
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: music-assistant
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/music-assistant.png
+          glance/url: https://music.${ROOT_DOMAIN}
+        type: statefulset
+        containers:
+          app:
+            image:
+              repository: ghcr.io/music-assistant/server
+              tag: 2.10.4@sha256:37a9a2776e838a754c9f5b38c432567389952304e7cb8f6b44b6cd28043de6de
+            env:
+              TZ: Europe/Warsaw
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /info
+                    port: &port 8095
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+        statefulset:
+          volumeClaimTemplates:
+            - name: cache
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 1Gi
+              advancedMounts:
+                app:
+                  - path: /.cache
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "iot-nowan",
+            "namespace": "kube-system",
+            "ips": ["192.168.3.33/24"],
+            "mac": "02:00:c0:a8:03:21"
+          },{
+            "name": "iot-wan",
+            "namespace": "kube-system",
+            "ips": ["192.168.4.33/24"],
+            "mac": "02:00:c0:a8:04:21"
+          }]
+      labels:
+        egress.cilium.io/internet: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "music.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: music-assistant
+                port: 80
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self' data: blob:;
+                        object-src 'none';
+                        img-src 'self' data: blob: https:;
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      data:
+        existingClaim: music-assistant
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - subPath: tmp
+            path: /tmp

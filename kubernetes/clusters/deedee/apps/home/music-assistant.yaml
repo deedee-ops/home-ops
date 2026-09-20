@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: music-assistant
+spec:
+  components:
+    - ../../../components/kopiur
+  dependsOn:
+    - name: multus
+      namespace: kube-system
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  interval: 1h
+  patches: []
+  path: ./kubernetes/apps/home/music-assistant
+  postBuild:
+    substitute:
+      APP: music-assistant
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+      KOPIUR_CAPACITY: 5Gi
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: home
