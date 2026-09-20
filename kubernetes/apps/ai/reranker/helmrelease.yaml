@@ -24,6 +24,8 @@ spec:
               - --auto-truncate
               - --hostname
               - 0.0.0.0
+              - --tokenization-workers
+              - "2"
             env:
               TZ: Europe/Warsaw
               MAX_CLIENT_BATCH_SIZE: "256"
@@ -61,6 +63,7 @@ spec:
                 cpu: 250m
                 memory: 512Mi
               limits:
+                cpu: 2000m
                 memory: 1Gi
         statefulset:
           volumeClaimTemplates:

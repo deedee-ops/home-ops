@@ -22,7 +22,7 @@ spec:
               WHISPER_COMPUTE_TYPE: int8
               WHISPER_DEVICE: cpu
               WHISPER_MODEL: large-v3-turbo
-              WHISPER_THREADS: 12
+              WHISPER_THREADS: 4
               TZ: Europe/Warsaw
             probes:
               # big audio files kill healthchecks, so readiness/liveness is pointless
@@ -42,9 +42,10 @@ spec:
                   - ALL
             resources:
               requests:
-                cpu: 10m
+                cpu: 1000m
                 memory: 2Gi
               limits:
+                cpu: 4000m
                 memory: 12Gi
         statefulset:
           volumeClaimTemplates:

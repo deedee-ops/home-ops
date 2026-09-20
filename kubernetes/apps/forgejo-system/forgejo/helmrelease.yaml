@@ -188,6 +188,10 @@ spec:
     persistence:
       create: false
       claimName: forgejo
+    resources:
+      requests:
+        cpu: 100m
+        memory: 1Gi
     service:
       ssh:
         port: *sshPort

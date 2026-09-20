@@ -66,6 +66,12 @@ spec:
                   failureThreshold: 10
               readiness: *probes
               startup: *probes
+            resources:
+              requests:
+                cpu: 25m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
             securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -102,9 +108,14 @@ spec:
                   tcpSocket:
                     port: *msPort
               readiness: *msProbes
-            resources: &resources
+            resources:
               claims:
                 - name: gpu
+              requests:
+                cpu: 100m
+                memory: 768Mi
+              limits:
+                memory: 2Gi
             securityContext: *sc
       machinelearning:
         type: statefulset
@@ -150,7 +161,14 @@ spec:
                   failureThreshold: 10
               readiness: *probes
               startup: *probes
-            resources: *resources
+            resources:
+              claims:
+                - name: gpu
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
             securityContext: *sc
         statefulset:
           volumeClaimTemplates:
