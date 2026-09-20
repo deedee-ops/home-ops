@@ -20,7 +20,7 @@ spec:
         type: statefulset
         containers:
           app:
-            image:
+            image: &image
               repository: ghcr.io/music-assistant/server
               tag: 2.10.4@sha256:37a9a2776e838a754c9f5b38c432567389952304e7cb8f6b44b6cd28043de6de
             env:
@@ -59,6 +59,62 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 2Gi
+        # MA keeps all config in /data/settings.json and has no env/CLI override for it,
+        # and its own auto-detect always picks the default-route address (eth0) over the
+        # macvlan. This resolves the macvlan IP the same way MA does - inverted - and
+        # pins it before the app starts. Set PUBLISH_IP to override; more than one
+        # non-primary IPv4 (e.g. a second macvlan attachment) fails loudly by design.
+        initContainers:
+          publish-ip:
+            image: *image
+            command:
+              - "python3"
+              - "-c"
+            args:
+              - |
+                import ifaddr, ipaddress, json, os, pathlib, socket, sys
+                ip = os.environ.get("PUBLISH_IP", "")
+                if not ip:
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    try:
+                        s.connect(("10.254.254.254", 1))
+                        primary = s.getsockname()[0]
+                    finally:
+                        s.close()
+                    found = []
+                    for ad in ifaddr.get_adapters():
+                        for a in ad.ips:
+                            if not a.is_IPv4 or a.ip == primary:
+                                continue
+                            addr = ipaddress.ip_address(a.ip)
+                            if addr.is_loopback or addr.is_link_local:
+                                continue
+                            found.append((ad.name, a.ip))
+                    if len(found) != 1:
+                        sys.exit(f"need exactly 1 non-primary IPv4, found {found} (primary={primary})")
+                    ip = found[0][1]
+                p = pathlib.Path("/data/settings.json")
+                d = json.loads(p.read_text()) if p.exists() else {}
+                core = d.setdefault("core", {})
+                web = core.setdefault("webserver", {}).setdefault("values", {})
+                core.setdefault("streams", {}).setdefault("values", {})["publish_ip"] = ip
+                web["base_url"] = os.environ["BASE_URL"]
+                p.write_text(json.dumps(d, indent=2))
+                print(f"pinned publish_ip={ip} base_url={web['base_url']}")
+            env:
+              BASE_URL: https://music.${ROOT_DOMAIN}
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 128Mi
         statefulset:
           volumeClaimTemplates:
             - name: cache

@@ -31,6 +31,9 @@ spec:
               tag: 2026.9.3@sha256:638c4c8d62caad377e70bfa7beef75f70c9343a49aed64aad824f2cd06843c1c
             env:
               HASS_OIDC_DISCOVERY_URL: "https://id.ajgon.casa/.well-known/openid-configuration"
+              CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+              REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+              SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:
