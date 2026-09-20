@@ -15,7 +15,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
           glance/name: music-assistant
-          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/music-assistant.png
+          glance/icon: di:music-assistant
           glance/url: https://music.${ROOT_DOMAIN}
         type: statefulset
         containers:
@@ -74,15 +74,10 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
           [{
-            "name": "iot-nowan",
+            "name": "iot",
             "namespace": "kube-system",
             "ips": ["192.168.3.33/24"],
             "mac": "02:00:c0:a8:03:21"
-          },{
-            "name": "iot-wan",
-            "namespace": "kube-system",
-            "ips": ["192.168.4.33/24"],
-            "mac": "02:00:c0:a8:04:21"
           }]
       labels:
         egress.cilium.io/internet: "true"

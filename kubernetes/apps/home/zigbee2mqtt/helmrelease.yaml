@@ -47,7 +47,7 @@ spec:
               ZIGBEE2MQTT_CONFIG_PERMIT_JOIN: "false"
               ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE: 115200
               ZIGBEE2MQTT_CONFIG_SERIAL_DISABLE_LED: "true"
-              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: tcp://192.168.4.14:6638
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: tcp://192.168.3.14:6638
               ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER: ember
             envFrom:
               - secretRef:
@@ -80,10 +80,10 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
           [{
-            "name": "iot-wan",
+            "name": "iot",
             "namespace": "kube-system",
-            "ips": ["192.168.4.31/24"],
-            "mac": "02:00:c0:a8:04:1f"
+            "ips": ["192.168.3.31/24"],
+            "mac": "02:00:c0:a8:03:1f"
           }]
       securityContext:
         runAsNonRoot: true

@@ -160,8 +160,8 @@ graph TD
     subgraph VLANs [VLANs]
         direction TB
         HOME[Home Network<br/>192.168.2.0/24]:::vlan
-        IOTNOWAN["IoT Network (No WAN)<br/>192.168.3.0/24"]:::vlan
-        IOTWAN["IoT Network (WAN)<br/>192.168.4.0/24"]:::vlan
+        IOT["IoT Network<br/>192.168.3.0/24"]:::vlan
+        CAMERAS["Cameras Network<br/>192.168.4.0/24"]:::vlan
         KUBERNETES[Kubernetes Network<br/>192.168.42.0/24]:::vlan
         VPN[VPN Network<br/>192.168.69.0/24]:::vlan
         GUEST[Guest Network<br/>192.168.99.0/24]:::vlan

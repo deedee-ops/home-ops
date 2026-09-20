@@ -80,10 +80,10 @@ spec:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
           [{
-            "name": "iot-nowan",
+            "name": "cameras",
             "namespace": "kube-system",
-            "ips": ["192.168.3.32/24"],
-            "mac": "02:00:c0:a8:03:20"
+            "ips": ["192.168.4.32/24"],
+            "mac": "02:00:c0:a8:04:20"
           }]
       resourceClaims:
         - name: gpu

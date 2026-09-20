@@ -3,19 +3,23 @@
 apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
-  name: iot-nowan
+  name: iot
 spec:
+  # multicast (SSDP/mDNS) egresses here, not via the pod's default route on eth0
   config: |-
     {
       "cniVersion": "0.3.1",
-      "name": "iot-nowan",
+      "name": "iot",
       "plugins": [
         {
           "type": "macvlan",
           "master": "bond1.3",
           "mode": "bridge",
           "ipam": {
-            "type": "static"
+            "type": "static",
+            "routes": [
+              {"dst": "224.0.0.0/4"}
+            ]
           }
         }
       ]
