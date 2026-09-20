@@ -86,19 +86,26 @@ services:
       # each to an upstream by matching ^<url-host>-[0-9]+:<base64>$, so ordering
       # here is irrelevant. An upstream with no matching key is proxied WITHOUT
       # signature verification and without warning, so every entry needs its key.
-      # Priority is settable per upstream via a ?priority=N query param (default
-      # 40, lower wins) but ncps does not strip it from outgoing requests, so it
-      # is left off here.
+      #
+      # Cachix caches cannot be listed here ON v0.9.4. Cachix names its NAR objects
+      # with opaque UUIDs (`URL: nar/e6a13bb6-...-713dfa0a8e68.nar.zst`), while this
+      # release only accepts a 52-char nix32 or 64-char hex NAR hash
+      # (pkg/nar/hash.go: NormalizedHashPattern). ParseURL therefore fails in
+      # pullNarInfo, which aborts the request rather than falling back to another
+      # upstream, so the client gets `HTTP 500 / invalid nar hash`. Not limited to
+      # cachix-only content either: any path a cachix cache also mirrors breaks
+      # whenever ncps happens to pick that upstream.
+      #
+      # Fixed upstream by kalbasit/ncps#1331 (issue #1329), merged 2026-06-07 --
+      # after the v0.9.4 tag, so it lands in v0.10. main grew a real opaque-URL
+      # path (pkg/nar/url.go `opaquePath`) that falls back to the narinfo's NarHash
+      # as the storage key; the regex above is untouched, so grepping it alone is
+      # misleading. ON THE v0.10 BUMP: re-add the four cachix upstreams + keys here
+      # and empty extra-substituters in nixlab/flake.nix again.
+      # Until then the cachix caches are consumed directly by clients -- see
+      # extra-substituters in nixlab/flake.nix.
       - --cache-upstream-url=https://cache.nixos.org
-      - --cache-upstream-url=https://nix-community.cachix.org
-      - --cache-upstream-url=https://deploy-rs.cachix.org
-      - --cache-upstream-url=https://noctalia.cachix.org
-      - --cache-upstream-url=https://vicinae.cachix.org
       - --cache-upstream-public-key=cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
-      - --cache-upstream-public-key=nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
-      - --cache-upstream-public-key=deploy-rs.cachix.org-1:xfNobmiwF/vzvK1gpfediPwpdIP0rpDV2rYqx40zdSI=
-      - --cache-upstream-public-key=noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4=
-      - --cache-upstream-public-key=vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc=
       # NOTE: --cache-lru-schedule / --cache-max-size are deliberately unset. The
       # LRU cron job is only registered when a schedule is given, so nothing is
       # ever evicted and the mirror stays complete for offline use.
