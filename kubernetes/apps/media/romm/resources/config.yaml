@@ -1,6 +1,8 @@
 ---
 filesystem:
-  roms_folder: "roms"
+  structure:
+    default: "roms/{platform}/{game}"
+    firmware: "bios/{platform}"
 scan:
   priority:
     language:
