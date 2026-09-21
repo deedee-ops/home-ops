@@ -212,7 +212,7 @@ spec:
           app:
             image:
               repository: ghcr.io/supabase/storage-api
-              tag: v1.77.0@sha256:3999cfa4f3286f945fa68069fc9b8b6bf3929a6bd53916dcf2e8c209801173c0
+              tag: v1.79.12@sha256:6868bd9c9295de3358c73a844112b8a27ed6aa2a431a7f4de2cb61bd125b69db
             command:
               - /bin/sh
               - -c
