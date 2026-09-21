@@ -18,7 +18,7 @@ services:
       REGISTRY_STORAGE_S3_SECRETKEY: "${REGISTRY_STORAGE_S3_SECRETKEY}"
       REGISTRY_STORAGE_S3_SECURE: "false"
       REGISTRY_STORAGE_S3_V4AUTH: "true"
-    image: public.ecr.aws/docker/library/registry:3.1.1@sha256:fd374bae807c225661adfe2c0c1f9970a0b8fab1761fd7dfb91e0fd9a8748f9b
+    image: public.ecr.aws/docker/library/registry:3.1.1@sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0
     container_name: registry
     user: "1000:1000"
     restart: unless-stopped
