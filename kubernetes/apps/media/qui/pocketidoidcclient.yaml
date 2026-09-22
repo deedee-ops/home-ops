@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: qui
 spec:
+  pkceEnabled: true
   launchUrl: https://torrents.${ROOT_DOMAIN}
   callbackUrls:
     - "https://torrents.${ROOT_DOMAIN}/api/auth/oidc/callback"
