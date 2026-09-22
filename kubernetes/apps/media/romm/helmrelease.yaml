@@ -143,6 +143,7 @@ spec:
                     - name: Content-Security-Policy
                       value: >-
                         default-src 'self' data: blob:;
+                        img-src 'self' data: blob: https:;
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
                         style-src 'self' 'unsafe-inline';

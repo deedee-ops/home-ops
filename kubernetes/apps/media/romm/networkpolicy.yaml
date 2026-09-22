@@ -14,6 +14,7 @@ spec:
         - matchName: hasheous.org
         - matchName: howlongtobeat.com
         - matchName: id.twitch.tv
+        - matchName: gamefaqs.gamespot.com
         - matchName: images.launchbox-app.com
         - matchName: playmatch.retrorealm.dev
         - matchName: raw.githubusercontent.com
