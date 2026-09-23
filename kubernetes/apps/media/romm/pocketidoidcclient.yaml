@@ -5,7 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: romm
 spec:
-  pkceEnabled: false
+  pkceEnabled: true
   launchUrl: https://romm.${ROOT_DOMAIN}
   callbackUrls:
     - "https://romm.${ROOT_DOMAIN}/api/oauth/openid"
