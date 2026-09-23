@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: ghcr.io/huggingface/text-embeddings-inference
-              tag: cpu-latest@sha256:cc1f06b5b2e38d979aca1cc054675426bf4d94247f6d22e399d73e09131dfe79
+              tag: cpu-latest@sha256:1bd34a7178b00f822b951bb29944e696edcbc83cbf198ef36e3683571c71e9d4
             args:
               - --model-id
               - cross-encoder/ms-marco-MiniLM-L6-v2
