@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/ivan-malinovski/calino
-              tag: 0.33.8@sha256:c28d070cc54969a9708cb05bd0ce3a2c355fc36c90c3f57ecd3a0107fbf4eb11
+              tag: 0.34.0@sha256:f8d28e9eff8aca993dfdbb1a0d101f74199d4503bffcd5e96418f5ca4505c67a
             env:
               VITE_SITE_URL: *url
               TZ: Europe/Warsaw
