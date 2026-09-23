@@ -1,6 +1,6 @@
 ui = true
-storage "file" {
-  path = "/openbao/file"
+storage "pebbledb" {
+  path = "/openbao/data"
 }
 
 listener "tcp" {
@@ -12,8 +12,8 @@ listener "tcp" {
 
 listener "tcp" {
   address = "0.0.0.0:443"
-  tls_cert_file = "/openbao/file/cert.pem"
-  tls_key_file  = "/openbao/file/key.pem"
+  tls_cert_file = "/openbao/data/cert.pem"
+  tls_key_file  = "/openbao/data/key.pem"
   tls_min_version = "tls13"
 }
 
