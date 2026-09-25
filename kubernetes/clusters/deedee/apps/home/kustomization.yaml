@@ -7,6 +7,7 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
+  - ./esphome.yaml
   - ./frigate.yaml
   - ./home-assistant.yaml
   - ./mosquitto.yaml
