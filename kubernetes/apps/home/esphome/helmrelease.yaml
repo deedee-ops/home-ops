@@ -12,6 +12,7 @@ spec:
   values:
     controllers:
       main:
+        type: statefulset
         annotations:
           reloader.stakater.com/auto: "true"
           glance/name: esphome
@@ -57,10 +58,28 @@ spec:
                 cpu: 10m
                 memory: 256Mi
               limits:
-                memory: 2Gi
+                memory: 4Gi
+        statefulset:
+          volumeClaimTemplates:
+            - name: cache
+              storageClass: ceph-block
+              accessMode: ReadWriteOnce
+              size: 10Gi
+              advancedMounts:
+                app:
+                  - path: /.cache
+                  - path: /.platformio
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{
+            "name": "iot",
+            "namespace": "kube-system",
+            "ips": ["192.168.3.34/24"],
+            "mac": "02:00:c0:a8:03:20"
+          }]
       labels:
         egress.cilium.io/smtp-relay: "true"
       securityContext:
@@ -84,20 +103,11 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
-        rules:
-          - backendRefs:
-              - name: esphome
-                port: 80
-            filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  set:
-                    - name: Content-Security-Policy
-                      value: >-
-                        default-src 'self';
-                        object-src 'none';
-                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-                        style-src 'self' 'unsafe-inline';
     persistence:
       config:
         existingClaim: esphome
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
