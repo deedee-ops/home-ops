@@ -18,7 +18,6 @@ spec:
     - --proactor_threads=2
     - --cluster_mode=emulated
     - --dbfilename=dump
-  networkPolicyEnabled: false
   snapshot:
     cron: "*/5 * * * *"
     persistentVolumeClaimSpec:
