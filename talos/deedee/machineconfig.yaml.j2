@@ -267,7 +267,9 @@ config:
     maxContainerRestartPeriod: 60s
   featureGates:
     UserNamespacesSupport: true
-  imageMaximumGCAge: 168h
+  imageGCHighThresholdPercent: 70
+  imageGCLowThresholdPercent: 55
+  imageMaximumGCAge: 72h
   maxParallelImagePulls: 3
   maxPods: 150
   serializeImagePulls: false
