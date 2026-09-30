@@ -26,7 +26,6 @@ spec:
       failed: >-
         has(status.phase) && status.phase in [
           'Cluster cannot execute instance online upgrade due to missing architecture binary',
-          'Cluster cannot proceed to reconciliation due to an error while interacting with plugins',
           'Cluster cannot proceed to reconciliation due to an unknown plugin being required',
           'Cluster has incomplete or invalid image catalog',
           'Cluster is unrecoverable and needs manual intervention',
@@ -59,6 +58,7 @@ spec:
       APP: immich
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
+  retryInterval: 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
