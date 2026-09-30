@@ -41,6 +41,18 @@
     enabled: "{{ docker_service_enabled }}"
     state: "{{ docker_service_state }}"
 
+- name: Schedule daily pruning of stopped containers and unused images
+  ansible.builtin.cron:
+    name: docker-prune
+    cron_file: docker-prune
+    user: root
+    hour: "{{ docker_prune_hour }}"
+    minute: "{{ docker_prune_minute }}"
+    job: >-
+      /usr/bin/docker container prune --force >/dev/null &&
+      /usr/bin/docker image prune --all --force >/dev/null
+    state: "{{ 'present' if docker_prune_enabled else 'absent' }}"
+
 - name: Deploy the compose stacks
   ansible.builtin.include_tasks: init-containers.yaml
   when: docker_compose_stacks | length > 0

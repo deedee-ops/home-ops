@@ -21,6 +21,12 @@ docker_daemon_config:
     max-file: "3"
   live-restore: true
 
+# Daily cron removing all stopped/dead containers, then every image not used by a
+# running container. Volumes and networks are left alone.
+docker_prune_enabled: true
+docker_prune_hour: "4"
+docker_prune_minute: "0"
+
 docker_compose_stacks: []
 
 docker_compose_src_dir: "{{ playbook_dir }}/../docker"
