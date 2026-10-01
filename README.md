@@ -210,7 +210,7 @@ the DNS records to their respective platforms accordingly.
 <details>
   <summary>Click here to see my server rack</summary>
 
-  <img src="https://raw.githubusercontent.com/deedee-ops/home-ops/refs/heads/assets/rack-20251212.jpg" align="center" width="250px" alt="rack" />
+  <img src="https://raw.githubusercontent.com/deedee-ops/home-ops/refs/heads/assets/rack-20260928.jpg" align="center" width="250px" alt="rack" />
 </details>
 <!-- markdownlint-enable MD013 MD033 -->
 
