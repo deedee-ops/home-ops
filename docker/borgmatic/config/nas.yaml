@@ -6,6 +6,9 @@ source_directories:
   - /mnt/tank/documents
   - /mnt/tank/photos
   - /mnt/tank/private
+# tank is encrypted: fail instead of archiving (and pruning against) an
+# empty, locked pool
+source_directories_must_exist: true
 repositories:
   - path: "${BORGMATIC_NAS_REPO_BORGBASE_EU}"
     label: borgbase-nas-eu

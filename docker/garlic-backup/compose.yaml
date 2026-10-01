@@ -1,0 +1,60 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+services:
+  garlic-backup:
+    environment:
+      # advertised in PASV replies, container IP is unreachable from clients
+      PUBLIC_HOST: "${NAS_IP}"
+      # ftpserver can't read the password from env and compose `configs.content`
+      # doesn't work with read_only, so the config is written to tmpfs on start
+      FTPSERVER_CONFIG: |-
+        {
+          "version": 1,
+          "listen_address": "0.0.0.0:2121",
+          "passive_transfer_port_range": {
+            "start": 2122,
+            "end": 2130
+          },
+          "extensions": {
+            "enable_hash": true
+          },
+          "accesses": [
+            {
+              "user": "retro",
+              "pass": "${GARLIC_BACKUP_PASSWORD:?GARLIC_BACKUP_PASSWORD is required}",
+              "fs": "os",
+              "params": {
+                "basePath": "/data"
+              }
+            }
+          ]
+        }
+    image: fclairamb/ftpserver:0.15.1-alpine@sha256:b10f33978ad55a7e00ef5c3d209145919c9f26e28f0a44bf321ce6665eafa068
+    container_name: garlic-backup
+    restart: unless-stopped
+    user: "1000:1000"
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - printf '%s' "$$FTPSERVER_CONFIG" > /tmp/ftpserver.json && exec /bin/ftpserver -conf /tmp/ftpserver.json
+    volumes:
+      # tank is encrypted: refuse to start (instead of creating an empty
+      # dir on the locked pool) until it is unlocked
+      - type: bind
+        source: /mnt/tank/private/Memories/Save/PS5/GARLIC
+        target: /data
+        bind:
+          create_host_path: false
+    tmpfs:
+      - /tmp:mode=755,uid=1000,gid=1000
+    ports:
+      - "2121:2121"
+      # passive transfers
+      - "2122-2130:2122-2130"
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true

@@ -24,7 +24,12 @@ services:
         target: /etc/borgmatic.d/nas.yaml
     volumes:
       - /mnt/fast:/mnt/fast:ro
-      - /mnt/tank:/mnt/tank:ro
+      - type: bind
+        source: /mnt/tank
+        target: /mnt/tank
+        read_only: true
+        bind:
+          create_host_path: false
       - ${DATA_DOCKER_DIR}/borgmatic/config:/config
 
 configs:
