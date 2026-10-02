@@ -112,7 +112,7 @@ spec:
           sync:
             image:
               repository: docker.io/gilleslamiral/imapsync
-              tag: "2.319@sha256:161336e1a6db587bc42ea1126cfc9b6afa67ea92b408ea4c4454f7f771561aa4"
+              tag: "2.326@sha256:ece980cb0fd2806369975d2989a3e8d9fbf28d632cdd45a05961a1e511612ed5"
               pullPolicy: IfNotPresent
             command:
               - sh
