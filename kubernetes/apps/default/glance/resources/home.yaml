@@ -41,10 +41,10 @@
             - subreddit: selfhosted
               <<: *shared-properties
 
-            - subreddit: homelab
+            - subreddit: DataHoarder
               <<: *shared-properties
 
-            - subreddit: DataHoarder
+            - subreddit: PS5_Jailbreak
               <<: *shared-properties
 
     - size: small
