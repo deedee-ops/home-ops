@@ -64,7 +64,7 @@ spec:
           caddy:
             image:
               repository: docker.io/library/caddy
-              tag: "2.11.4@sha256:0c994536bddb66445885237f1a5dcc1916bccea922661c76b4e9fc24061f9b52"
+              tag: "2.11.6@sha256:907efba736324e43f891ccb9d760fe5abe545e313419b3d18d63d4ec670dad8d"
             env:
               XDG_DATA_HOME: /tmp
             args:
