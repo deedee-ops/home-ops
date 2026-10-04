@@ -163,13 +163,17 @@ spec:
           podspec-nix.yaml: |-
             initContainers:
               - name: 01-nix-store
-                image: nixos/nix:latest
+                image: nixos/nix:2.35.2@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c
                 command:
                   - sh
                   - -c
                   - |
-                    [ -d /data/store ] && exit 0
-                    cp -r /nix/* /data/
+                    if [ ! -d /data/store ]; then
+                      cp -a /nix/. /data/
+                    else
+                      # /etc in the image symlinks into /nix/store, so seed paths missing after image bumps
+                      cp -an /nix/store/. /data/store/
+                    fi
                 resources:
                   requests:
                     cpu: 100m
@@ -180,7 +184,7 @@ spec:
                   - name: runner-nix-data
                     mountPath: /data
             containers:
-              - image: nixos/nix:latest
+              - image: nixos/nix:2.35.2@sha256:7a007c766426c1877758ddc5cb87a965ac131fc78c582ce0083d922d51ae945c
                 imagePullPolicy: IfNotPresent
                 name: main
                 env:
