@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/sintan1729/chhoto-url
-              tag: 7.8.2@sha256:34599231f67dd4d0533aa8772ee77c7de60410de2473109dcec8f16d90940897
+              tag: 7.8.3@sha256:1ffb05d4d7bdfbf65e95b80289ff8da96edc7779a1bce427a996adf1902c8778
             env:
               CHHOTO_ALLOW_CAPITAL_LETTERS: true
               CHHOTO_DB_URL: /config/urls.sqlite
