@@ -11,6 +11,7 @@ spec:
   interval: 1h
   values:
     csi:
+      createCsiOperatorResources: true
       serviceMonitor:
         enabled: true
     image:
