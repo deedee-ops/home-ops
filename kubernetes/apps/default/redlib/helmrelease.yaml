@@ -104,6 +104,34 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - backendRefs:
+          - name: root
+            matches:
+              - path:
+                  type: Exact
+                  value: /
+            filters:
+              - type: RequestRedirect
+                requestRedirect:
+                  path:
+                    type: ReplaceFullPath
+                    replaceFullPath: /r/selfhosted
+                  statusCode: 302
+          - name: blocked
+            matches:
+              - path:
+                  type: RegularExpression
+                  value: (?i)/r/(all|popular|random|randnsfw)(/.*)?
+            filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: gateway.envoyproxy.io
+                  kind: HTTPRouteFilter
+                  name: redlib-not-found
+          - name: app
+            backendRefs:
               - name: redlib
                 port: 80
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
