@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/cilium.io/ciliumnetworkpolicy_v2.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -21,7 +21,6 @@ spec:
             - port: "443"
     - toFQDNs:
         - matchPattern: "*.${ROOT_DOMAIN}"
-        - matchPattern: "*.${EXTERNAL_ROOT_DOMAIN}"
       toPorts:
         - ports:
             - port: "443"

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/httproute_v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/httproute_v1.json
 # Public, backend-only slice of Pocket-ID for external relying parties (Tailscale).
 # Login UI and WebAuthn stay internal; anything not listed here gets a 404.
 apiVersion: gateway.networking.k8s.io/v1
@@ -8,8 +8,8 @@ metadata:
   name: pocket-id-external
   annotations:
     # Keep both external-dns instances off it: UniFi must keep pointing at
-    # envoy-internal, the public record lives in OpenTofu.
-    external-dns.alpha.kubernetes.io/controller: none
+    # envoy-internal, the public record comes from dnsendpoint.yaml.
+    external-dns.kubernetes.io/controller: none
 spec:
   hostnames:
     - "id.${ROOT_DOMAIN}"

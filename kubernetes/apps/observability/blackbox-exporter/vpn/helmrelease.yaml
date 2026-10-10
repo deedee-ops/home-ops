@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,7 +22,7 @@ spec:
           "mac": "02:00:c0:a8:45:0a"
         }]
     # Resolve like the outside world does, not like the LAN does: external-dns-unifi
-    # publishes every HTTPRoute hostname (including the rzegocki.dev ones) into the
+    # publishes every HTTPRoute hostname (including the envoy-external ones) into the
     # UDM, so cluster DNS returns the split-horizon answer. Going straight to public
     # resolvers - over the VPN, since 1.1.1.1/9.9.9.9 route via 192.168.69.1 - is what
     # makes this probe see the same records an external client sees.

@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   smartctl-exporter:
     image: quay.io/prometheuscommunity/smartctl-exporter:v0.15.0@sha256:4b2b5c9912c95899ad4720b3ada368e7b0d46f4c2fd6dc7d174922c325ef9855

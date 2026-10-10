@@ -69,18 +69,17 @@ locals {
     ]
   ])
 
-  redirects = flatten([
-    for domain_name, domain_opts in var.domains : [
-      for redirect_name, redirect_opts in(domain_opts.redirects == null ? {} : domain_opts.redirects) : {
-        key                 = "${domain_name}_${redirect_name}"
-        domain_name         = domain_name
-        redirect_name       = redirect_name
-        redirect_expression = redirect_opts.from == null ? redirect_opts.expression : "(http.request.full_uri wildcard \"${redirect_opts.from}\")"
-        redirect_to         = redirect_opts.to
-        redirect_permament  = redirect_opts.permament
+  redirects = {
+    for domain_name, domain_opts in var.domains : domain_name => [
+      for redirect_name, redirect_opts in domain_opts.redirects : {
+        redirect_name          = redirect_name
+        redirect_expression    = redirect_opts.from == null ? redirect_opts.expression : "(http.request.full_uri wildcard \"${redirect_opts.from}\")"
+        redirect_to            = redirect_opts.to
+        redirect_to_expression = redirect_opts.to_expression
+        redirect_permament     = redirect_opts.permament
       }
-    ]
-  ])
+    ] if domain_opts.redirects != null
+  }
 
   static_site_zones = {
     for hostname in keys(var.static_sites) : hostname => [

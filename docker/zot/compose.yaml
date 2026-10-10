@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 x-zot: &zot
   image: ghcr.io/project-zot/zot:v2.1.22@sha256:96cda11459ce6f8c60da3b03f03e9f67fd11b3ae2d82c4c04c92b3c608996080
   user: "1000:1000"

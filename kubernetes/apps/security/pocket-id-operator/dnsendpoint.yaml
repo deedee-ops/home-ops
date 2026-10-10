@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/externaldns.k8s.io/dnsendpoint_v1alpha1.json
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: pocket-id
+spec:
+  endpoints:
+    - dnsName: "id.${ROOT_DOMAIN}"
+      recordType: CNAME
+      targets:
+        - "external.${ROOT_DOMAIN}"

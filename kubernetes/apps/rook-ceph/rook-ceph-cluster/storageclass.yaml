@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/storageclass-storage-v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/storageclass-storage-v1.json
 # shallow storage class for fast snapshots restores in kopiur backups
 apiVersion: storage.k8s.io/v1
 kind: StorageClass

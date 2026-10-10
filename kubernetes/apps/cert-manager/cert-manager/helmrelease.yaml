@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/cert-manager-hr.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/cert-manager-hr.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -18,6 +18,11 @@ spec:
       egress.cilium.io/nas: "true"
     crds:
       enabled: true
+    # UniFi answers ${ROOT_DOMAIN} locally without SOA/NS, so the DNS-01 self-check
+    # never finds Cloudflare's nameservers. Resolve challenges like the outside world.
+    extraArgs:
+      - --dns01-recursive-nameservers-only
+      - --dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53
     prometheus:
       enabled: true
       servicemonitor:
