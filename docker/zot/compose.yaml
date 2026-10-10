@@ -77,17 +77,15 @@ services:
       - ${DATA_DOCKER_DIR}/zot/registry:/var/lib/registry
       # written by zot-secrets above
       - ${DATA_DOCKER_DIR}/zot/secret:/secret:ro
-      # TEMPORARY: sync staging for migration from docker/registry
-      - ${DATA_DOCKER_DIR}/zot/registry-downloads:/var/tmp/zot
     labels:
       traefik.enable: "true"
       traefik.http.services.zot.loadbalancer.server.port: "5000"
       traefik.http.routers.zot.entrypoints: https
-      traefik.http.routers.zot.rule: Host(`zot.${ROOT_DOMAIN}`)
+      traefik.http.routers.zot.rule: Host(`registry.${ROOT_DOMAIN}`)
       traefik.http.routers.zot.service: zot
       traefik.http.routers.zot.tls: "true"
       traefik.http.routers.zot.tls.certresolver: openbao-ecdsa
-      traefik.http.routers.zot.tls.domains[0].main: "zot.${ROOT_DOMAIN}"
+      traefik.http.routers.zot.tls.domains[0].main: "registry.${ROOT_DOMAIN}"
 
   # anonymous, no auth: talos/containerd pull through it without credentials
   zot-cache:

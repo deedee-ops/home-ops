@@ -1,5 +1,5 @@
 ---
-# zot: pull-through cache for all upstreams, successor of docker/registry-cache
+# zot: pull-through cache for all upstreams
 # Upstream images live under /<upstream-host>/..., e.g. ghcr.io/foo/bar -> /v2/ghcr.io/foo/bar
 # (talos: endpoint http://nas.internal:5010/v2/<upstream-host> with overridePath: true)
 distSpecVersion: 1.1.1

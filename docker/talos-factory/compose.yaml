@@ -1,12 +1,47 @@
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
 services:
+  talos-factory-secrets:
+    image: alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+    container_name: talos-factory-secrets
+    user: 1000:1000
+    restart: "no"
+    environment:
+      REGISTRY_USERNAME: "${REGISTRY_USERNAME}"
+      REGISTRY_API_KEY: "${REGISTRY_API_KEY}"
+    # docker config.json with zot API key; image-factory reads it via DOCKER_CONFIG
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        : "$${REGISTRY_USERNAME:?refusing to write an empty registry username}"
+        : "$${REGISTRY_API_KEY:?refusing to write an empty registry api key}"
+        auth="$$(printf '%s:%s' "$$REGISTRY_USERNAME" "$$REGISTRY_API_KEY" | base64 | tr -d '\n')"
+        printf '{"auths":{"zot-registry:5000":{"auth":"%s"}}}' "$$auth" > /docker/config.json
+    volumes:
+      - ${DATA_DOCKER_DIR}/talos-factory/docker:/docker
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
   talos-factory:
+    depends_on:
+      talos-factory-secrets:
+        condition: service_completed_successfully
     # don't need sha, these tags are immutable by design
     image: ghcr.io/siderolabs/image-factory:v1.7.2
     container_name: talos-factory
     restart: unless-stopped
     user: 1000:1000
+    environment:
+      # written by talos-factory-secrets above
+      DOCKER_CONFIG: /docker
     command:
       - --config
       - file=/config.yaml
@@ -16,6 +51,7 @@ services:
     volumes:
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - ${DATA_DOCKER_DIR}/talos-factory/config:/config:ro
+      - ${DATA_DOCKER_DIR}/talos-factory/docker:/docker:ro
     tmpfs:
       - /tmp:mode=755,uid=1000,gid=1000
     networks:

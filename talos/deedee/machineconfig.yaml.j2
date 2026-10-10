@@ -295,7 +295,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: docker.io
 endpoints:
-  - url: http://nas.internal:5000
+  - url: http://nas.internal:5010/v2/docker.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -303,7 +304,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: codeberg.org
 endpoints:
-  - url: http://nas.internal:5001
+  - url: http://nas.internal:5010/v2/codeberg.org
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -311,7 +313,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: ghcr.io
 endpoints:
-  - url: http://nas.internal:5002
+  - url: http://nas.internal:5010/v2/ghcr.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -319,7 +322,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: gsoci.azurecr.io
 endpoints:
-  - url: http://nas.internal:5003
+  - url: http://nas.internal:5010/v2/gsoci.azurecr.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -327,7 +331,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: mirror.gcr.io
 endpoints:
-  - url: http://nas.internal:5004
+  - url: http://nas.internal:5010/v2/mirror.gcr.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -335,7 +340,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: quay.io
 endpoints:
-  - url: http://nas.internal:5005
+  - url: http://nas.internal:5010/v2/quay.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
@@ -343,7 +349,8 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: registry.k8s.io
 endpoints:
-  - url: http://nas.internal:5006
+  - url: http://nas.internal:5010/v2/registry.k8s.io
+    overridePath: true
 skipFallback: true
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json

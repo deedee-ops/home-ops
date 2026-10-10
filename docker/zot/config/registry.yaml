@@ -1,5 +1,5 @@
 ---
-# zot: private registry (push/pull), successor of docker/registry
+# zot: private registry (push/pull)
 distSpecVersion: 1.1.1
 http:
   address: 0.0.0.0
@@ -7,7 +7,7 @@ http:
   # accept docker v2 schema2 manifests as-is (default is OCI-only)
   compat:
     - docker2s2
-  externalUrl: https://zot.ajgon.casa
+  externalUrl: https://registry.ajgon.casa
   realm: zot
   auth:
     failDelay: 5
@@ -17,7 +17,7 @@ http:
     sessionKeysFile: /secret/session-keys.json
     openid:
       providers:
-        # callback: https://zot.ajgon.casa/zot/auth/callback/oidc
+        # callback: https://registry.ajgon.casa/zot/auth/callback/oidc
         oidc:
           name: Pocket ID
           issuer: https://id.ajgon.casa
@@ -82,23 +82,3 @@ extensions:
     enable: true
   ui:
     enable: true
-  # TEMPORARY: migration from docker/registry, remove after cutover
-  sync:
-    enable: true
-    # synced images are staged locally before being uploaded to S3
-    downloadDir: /var/tmp/zot
-    registries:
-      - urls:
-          # old registry container, reached over the internal network
-          - http://registry:5000
-        onDemand: false
-        # first pass starts on boot, next one this long after the previous finished
-        pollInterval: 5m
-        tlsVerify: false
-        # repos sync in parallel, but all share this per-host request cap (default: 3)
-        reqConcurrent: 16
-        maxRetries: 3
-        retryDelay: 10s
-        # periodic sync is only enabled when content is set
-        content:
-          - prefix: "**"
