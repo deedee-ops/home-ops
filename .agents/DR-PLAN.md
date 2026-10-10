@@ -1,6 +1,7 @@
 # DR-PLAN: air-gapped disaster recovery (agent notes)
 
-Audience: Claude only. Terse by design. Verify every "FACT" again before acting (written 2026-10-10, may be stale).
+Audience: Claude only. Terse by design. Verify every "FACT" again before acting (written 2026-10-10, updated
+2026-10-11 after the towonel -> tailscale migration; may be stale).
 
 ## 0. Goal / scope
 
@@ -76,7 +77,6 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
 | code.forgejo.org | forgejo-system/forgejo |
 | data.forgejo.org | forgejo-system/runner |
 | registry.erwanleboucher.dev | forgejo-system/runner (runner-k8s-plugin) |
-| git.ow-ops.eu | network/towonel-agent |
 | public.ecr.aws | default/garmin (influxdb 1.x) |
 | nixery.dev | media/jellyfin init (`shell/xmlstarlet:latest`) |
 
@@ -84,7 +84,7 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   `registry.k8s.io/sig-storage/csi-node-driver-registrar`, `docker.io/library/caddy` -> current retention
   (keep 1) will evict one of each after 7d unless re-pulled.
 - Flux: 102 HelmReleases, ALL via `OCIRepository` (205 files match `kind: OCIRepository`). URLs by host:
-  ghcr.io 95, quay.io 3, code.forgejo.org 1, codeberg.org 1, gsoci.azurecr.io 1, mirror.gcr.io 1.
+  ghcr.io 95, quay.io 3, code.forgejo.org 1, gsoci.azurecr.io 1, mirror.gcr.io 1.
   No HelmRepository, no Bucket. Flux source-controller pulls directly (containerd mirrors DO NOT apply).
 - Flux GitRepository: `https://github.com/deedee-ops/home-ops` (only one).
 - FluxInstance: `distribution.artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.61.0`,
@@ -110,17 +110,42 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   when version listing fails? -> must test (task T6).
 - tuppr (system-upgrade) uses factory installer refs.
 - NAS compose images (non-zot, non-garage): ghcr.io (borgmatic, arcane agent, ncps, openbao, image-factory,
-  docker-socket-proxy, traefik-to-unifi, wg-easy), docker.io implicit (alpine, garage-ui, ftpserver,
-  rustdesk-server, ps3netsrv), quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
-  codeberg.org (towonel-agent/node), registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras, roms-server).
+  docker-socket-proxy, traefik-to-unifi, tailscale), docker.io implicit (alpine, garage-ui, ftpserver,
+  ps3netsrv), quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
+  registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras, roms-server).
 - NAS docker daemon: `Mirrors: null`, insecure CIDRs `127.0.0.0/8`, `::1/128` => `localhost:5010` works over http
   with NO daemon change. Only docker.io supports daemon `registry-mirrors`.
-- Some `docker/*` stacks run on VPS, not NAS (likely `traefik-vps`, `towonel-hub`, maybe `wg-easy`,
-  `arcane-agent`?). UNKNOWN -> ask user before rewriting.
+- VPS (mandark) stacks: `traefik-vps`, `arcane-agent` (ansible `docker_compose_stacks`), `rustdesk` (arcane).
+  Everything else under `docker/` runs on the NAS.
 - Renovate: `.renovate/homeOpsBase.json5` has `registryAliases: {"mirror.gcr.io": "docker.io"}` and customManager
   regex `oci://(?<depName>[^:]+):(?<currentValue>\S+)`. flux/kubernetes managers scan `*.yaml(.j2)`.
 - borgmatic (`docker/borgmatic/config/homelab.yaml`): sources `/mnt/fast/backups`, `/mnt/fast/docker`;
   `exclude_if_present: .nobackup`; repos on BorgBase (EU+US) = INTERNET to restore.
+
+### 1.4 Remote access + public ingress (tailnet, since 2026-10-11)
+
+- NOT part of the air-gapped bootstrap (needs internet by definition); restore after S11. Towonel/WireGuard are gone.
+- Tailscale SaaS, managed in `opentofu/tailscale.tf` (policy, DNS, settings, node keys). OAuth client tag
+  `tag:provisioner` owns `tag:router` + `tag:edge` (client can mint keys only for its exact tag set or owned tags).
+- Login: Pocket-ID OIDC (`id.${ROOT_DOMAIN}`, public backend-only route) + break-glass passkey.
+- Tailnet Lock ON, signing nodes liadtop + work, NOT manageable by tofu/API. New nodes need a key pre-signed on a
+  signing node: `tofu output -raw tailscale_<node>_auth_key | xargs tailscale lock sign`. Disablement secrets
+  offline (KeePassXC + offline copy).
+- NAS: `docker/tailscale` (host network) = subnet router `192.168.42.0/24`, `192.168.2.0/24` + exit node,
+  `tag:router`. State `/mnt/fast/docker/tailscale` IS in borg -> restored NAS keeps its identity, no new key needed.
+- NAS host routes (TrueNAS boot script, NOT in git): `ip route replace 192.168.42.{20,30,31,35}/32 via 192.168.2.1`.
+  Required, see gotcha in section 7. Without them the subnet router cannot reach any LB IP.
+- mandark (DO VPS, ansible `site.yaml`): tailscale role (`tag:edge`, accept-routes, no DNS, peer relay UDP 40000,
+  `tailscale serve` tcp/3553 -> loopback arcane-agent), `traefik-vps` = pure L4: `:443` TLS passthrough + PROXY v2
+  -> `192.168.42.31:443` over the tailnet, `:80` redirect. RustDesk hbbs/hbbr there too (keypair in ansible vault).
+  Policy: `tag:edge` may reach only `192.168.42.31:tcp/443` (policy `tests` enforce it).
+- envoy-external `proxyProtocol.optional: true` on purpose: internet comes via traefik with PROXY, LAN clients hit
+  `.31` directly without it (UniFi DNS resolves external-only hosts to `.31`).
+- Public DNS: `external.${ROOT_DOMAIN}` A -> VPS from `kubernetes/apps/network/envoy-gateway/dnsendpoint.yaml`
+  (`VPS_IP` in `kubernetes/clusters/deedee/bootstrap/entrypoint.yaml`); `mandark`/`relay` records in tofu.
+- Flux GitHub webhook comes in through this path; with ingress down Flux falls back to its 1h poll.
+- rebuild order (with internet): tofu apply -> restore NAS (tailscale state from borg) + boot routes -> ansible on
+  mandark (signed key in vault) -> cluster. Full mandark rebuild steps: `ansible/README.md` (tailscale role).
 
 ## 2. Target DR bootstrap chain
 
@@ -159,7 +184,8 @@ Format: ID | priority | deps | what | how | acceptance | risks.
   `docker/zot/config/cache.yaml`.
 - what: rewrite `image:` in NAS stacks to `localhost:5010/<host>/<repo>...`; implicit docker.io ->
   `localhost:5010/docker.io/library/<x>` or `.../docker.io/<ns>/<x>`.
-- exclude: `docker/zot`, `docker/garage`, VPS stacks (ASK user which), images from `registry.${ROOT_DOMAIN}` (local).
+- exclude: `docker/zot`, `docker/garage`, VPS stacks (`traefik-vps`, `arcane-agent`, `rustdesk`; mandark has no
+  zot), images from `registry.${ROOT_DOMAIN}` (local).
 - renovate: add `registryAliases` `"localhost:5010/ghcr.io": "ghcr.io"` etc. per host. VERIFY docker-compose manager
   honours registryAliases with path prefix (renovate docs) before mass rewrite; test with `renovate --dry-run` or
   local config validator if possible.
@@ -170,7 +196,7 @@ Format: ID | priority | deps | what | how | acceptance | risks.
 
 - deps: none.
 - what: add to `cache.yaml` sync registries + `talos/deedee/machineconfig.yaml.j2` RegistryMirrorConfig for:
-  code.forgejo.org, data.forgejo.org, registry.erwanleboucher.dev, git.ow-ops.eu, public.ecr.aws, nixery.dev
+  code.forgejo.org, data.forgejo.org, registry.erwanleboucher.dev, public.ecr.aws, nixery.dev
   (+ registry.gitlab.com for T2). Same pattern: `destination: /<host>`, `url: http://nas.internal:5010/v2/<host>`,
   `overridePath: true`, `skipFallback: true`.
 - check: each upstream supports anonymous pull + docker2s2; nixery builds on demand (`latest` tag, mutable).
@@ -268,11 +294,15 @@ T7 -> T1 -> T2 -> T3 -> T6 -> T4 -> T5 -> T8 -> T9 -> T10 -> T11.
 - LE certs (T10 mitigates).
 - new talos-factory builds (8.D2).
 - app runtime downloads; nix paths not in ncps.
+- Tailscale control plane + DigitalOcean VPS: remote access and public ingress (1.4). Not needed for the LAN
+  bootstrap itself.
 
 ## 6. Open questions (ask user)
 
-- Q1: which `docker/*` stacks run on VPS vs NAS?
-- Q2: where does Arcane manager run; how are NAS stacks deployed (git pull from github?) -> offline deploy path.
+- Q1: ANSWERED - see VPS stacks in section 1.
+- Q2: PARTLY ANSWERED: Arcane manager = TrueNAS app `ix-arcane` on the NAS, deploys stacks by GitOps sync of
+  `docker/<stack>/compose.yaml` from git (logs: `GitOps sync completed ... composePath=docker/...`); also manages
+  mandark via arcane-agent over the tailnet. STILL OPEN: which git remote it syncs from -> offline deploy path.
 - Q3: OK to relax cache retention (T8)?
 - Q4: T5 option A (runbook) or B (CI artifact)?
 - Q5: local offline copy of borg repos acceptable/possible?
@@ -287,6 +317,11 @@ T7 -> T1 -> T2 -> T3 -> T6 -> T4 -> T5 -> T8 -> T9 -> T10 -> T11.
 - sandbox cannot reach `*.ajgon.casa` over HTTPS; docker access = logs/inspect only (read-only socket proxy).
 - markdown/yaml line limit 120 (`.markdownlint.yaml`, `.yamllint`).
 - keep secrets out of config files: init container pattern (`ncps-secret`, `zot-secrets`, `talos-factory-secrets`).
+- LB IPs (`192.168.42.0/26` pool) are BGP-only (Cilium -> UniFi), nothing answers ARP. Hosts INSIDE
+  `192.168.42.0/24` (NAS `bond1` .10, nutpi, nodes) treat them as on-link -> ARP fails -> "no route to host" after
+  ~3s. Fix: /32 routes via a gateway on ANOTHER VLAN (NAS: via 192.168.2.1) or node next hops (nutpi, ups-cascade).
+  Via the same-VLAN gateway hairpins and UniFi drops it. All LB services use `externalTrafficPolicy: Local`, so
+  static node next hops are only safe for kube-api (`.20`, apiserver on every node).
 
 ## 8. Decisions log
 

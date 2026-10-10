@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-vars.json
+# Pinned, so an apt upgrade never moves the node on its own. Tracked by renovate through
+# the container image, which is released in lockstep with the apt package - the same
+# dependency as docker/tailscale/compose.yaml, so both bump in one PR. The leading `v`
+# is stripped for apt.
+# renovate: datasource=docker depName=ghcr.io/tailscale/tailscale
+tailscale_version: v1.102.5
+
+# Used only for the first login; afterwards the node identity lives in
+# /var/lib/tailscale. A tagged, preauthorized, single-use key from opentofu.
+tailscale_auth_key: ""
+
+tailscale_hostname: "{{ inventory_hostname }}"
+
+# Must match the tags baked into tailscale_auth_key.
+tailscale_advertise_tags: []
+
+# Install routes advertised by subnet routers. Linux defaults to off.
+tailscale_accept_routes: false
+
+# Use the tailnet DNS settings (MagicDNS + split DNS).
+tailscale_accept_dns: true
+
+# UDP port to serve as a peer relay on; empty disables the relay.
+tailscale_relay_server_port: ""
+
+# `tailscale serve` TCP forwards, tailnet port -> local target. Only reachable from the
+# tailnet, and only by whoever the policy grants that port to.
+#   tailscale_serve_tcp:
+#     3553: 127.0.0.1:3553
+tailscale_serve_tcp: {}
+
+# Debian family only - see tasks/repository/Debian.yaml.
+tailscale_apt_repo_uri: "https://pkgs.tailscale.com/stable/{{ ansible_facts['distribution'] | lower }}"
+tailscale_apt_repo_suite: "{{ ansible_facts['distribution_release'] }}"
+tailscale_apt_key_url: "{{ tailscale_apt_repo_uri }}/{{ tailscale_apt_repo_suite }}.noarmor.gpg"

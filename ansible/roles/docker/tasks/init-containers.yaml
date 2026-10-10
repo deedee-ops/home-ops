@@ -7,7 +7,7 @@
       - vps_root_domain | length > 0
     fail_msg: >-
       vps_root_domain is not set - add it to the host in inventory/hosts.yaml.
-      The stacks build their hostnames and the wildcard certificate from it.
+      The stacks build their hostnames from it.
     quiet: true
 
 - name: Assert the compose environment is complete

@@ -62,8 +62,9 @@ along with some of the practices I use here.
 ### Core Components
 
 - **Networking & Service Mesh**: [cilium](https://github.com/cilium/cilium) provides eBPF-based networking,
-  [towonel](https://towonel.dev/) secures ingress traffic via VPS, and [external-dns](https://github.com/kubernetes-sigs/external-dns)
-  keeps DNS records in sync automatically. All egress traffic is carefuly filtered using network policies.
+  [tailscale](https://tailscale.com/) carries public ingress from a VPS edge back home (and everything else remote),
+  and [external-dns](https://github.com/kubernetes-sigs/external-dns) keeps DNS records in sync automatically.
+  All egress traffic is carefuly filtered using network policies.
 - **Security & Secrets**: [cert-manager](https://github.com/cert-manager/cert-manager) automates SSL/TLS certificate
   management. For secrets, I use [external-secrets](https://github.com/external-secrets/external-secrets) with
   self-hosted [OpenBao](https://openbao.org/) to inject secrets into Kubernetes.
@@ -123,11 +124,12 @@ need whether my cluster is online or not and (3) The "hit by a bus factor" - wha
 |-------------------------------------------------|----------------------------------------------------------------|----------------|
 | [BorgBase](https://www.borgbase.com/)           | Borg Backups                                                   | $80/yr         |
 | [Cloudflare](https://www.cloudflare.com/)       | DNS                                                            | Free           |
-| [DigitalOcean](https://www.digitalocean.com/)   | VPS for towonel                                                | $48/yr         |
+| [DigitalOcean](https://www.digitalocean.com/)   | VPS: public ingress edge, RustDesk server, tailnet peer relay  | $48/yr         |
 | [GitHub](https://github.com/)                   | Hosting this repository and continuous integration/deployments | Free           |
 | [healthchecks.io](https://healthchecks.io/)     | Heartbeats monitoring                                          | Free           |
 | [Migadu](https://migadu.com/)                   | Email hosting                                                  | $19/yr         |
 | [NextDNS](https://nextdns.io/)                  | Ad filtering                                                   | ~$20/yr        |
+| [Tailscale](https://tailscale.com/)             | Remote access, VPS to home transport                           | Free           |
 |                                                 |                                                                | Total: ~$14/mo |
 
 ### Networking

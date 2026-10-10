@@ -12,6 +12,23 @@ ansible_port: "{{ vps_port | default(22) }}"
 ansible_python_interpreter: /usr/bin/python3
 
 docker_compose_secret_env:
-  ARCANE_AGENT_HOST: "{{ vault_arcane_agent_host }}"
   ARCANE_AGENT_TOKEN: "{{ vault_arcane_agent_token }}"
-  CF_DNS_API_TOKEN: "{{ vault_cf_dns_api_token }}"
+
+# Internet facing, so tag:edge: the tailnet policy (opentofu/tailscale.tf) lets it reach
+# envoy-external:443 and nothing else.
+tailscale_auth_key: "{{ vault_tailscale_auth_key }}"
+tailscale_advertise_tags:
+  - tag:edge
+# envoy-external sits behind the NAS subnet router.
+tailscale_accept_routes: true
+# The tailnet split DNS points ajgon.casa at 192.168.42.1:53, which tag:edge may not
+# reach - accepting it would break name resolution on the box.
+tailscale_accept_dns: false
+# Peer relay for devices stuck behind NAT (home is CGNAT). Open on UDP, publicly.
+tailscale_relay_server_port: 40000
+# arcane-agent listens on loopback only; the manager on the NAS reaches it here.
+tailscale_serve_tcp:
+  3553: 127.0.0.1:3553
+
+rustdesk_private_key: "{{ vault_rustdesk_private_key }}"
+rustdesk_public_key: "{{ vault_rustdesk_public_key }}"

@@ -84,6 +84,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: tailscale
 spec:
+  pkceEnabled: true
   launchUrl: https://login.tailscale.com
   callbackUrls:
     - "https://login.tailscale.com/a/oauth_response"

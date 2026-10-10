@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Create apt keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Fetch Tailscale apt signing key
+  ansible.builtin.get_url:
+    url: "{{ tailscale_apt_key_url }}"
+    dest: /etc/apt/keyrings/tailscale.gpg
+    owner: root
+    group: root
+    mode: "0644"
+    force: false
+
+- name: Configure Tailscale apt repository
+  ansible.builtin.deb822_repository:
+    name: tailscale
+    types:
+      - deb
+    uris: "{{ tailscale_apt_repo_uri }}"
+    suites: "{{ tailscale_apt_repo_suite }}"
+    components: main
+    signed_by: /etc/apt/keyrings/tailscale.gpg
+    state: present
+
+- name: Install Tailscale
+  ansible.builtin.apt:
+    name: "tailscale={{ tailscale_version | regex_replace('^v', '') }}"
+    update_cache: true
+    allow_downgrade: true
+    state: present

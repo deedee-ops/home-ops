@@ -245,9 +245,18 @@ spec:
     initialStreamWindowSize: 2Mi
     initialConnectionWindowSize: 32Mi
     onInvalidMessage: TerminateStream
-  # Traffic reaches this gateway only through the towonel agent, which is a TCP
-  # tunnel prepending a PROXY header. HTTP/3 is therefore unreachable and must
-  # stay off — see the comment on envoy-internal for why the two are exclusive.
+  # Two paths reach this gateway:
+  # - internet: traefik on mandark passes TLS through over the tailnet and
+  #   prepends a PROXY v2 header carrying the real client address (the TCP
+  #   source is the NAS subnet router, after SNAT);
+  # - LAN: UniFi DNS resolves external-only hostnames straight to this LB IP,
+  #   and those clients connect bare, without a PROXY header.
+  # HTTP/3 is unreachable through traefik and must stay off — see the comment on
+  # envoy-internal for why the two are exclusive.
+  #
+  # optional: true accepts both: the header is parsed when present and the TCP
+  # peer is used otherwise. optional: false would drop every LAN connection
+  # ("connection reset by peer"), so keep it true while the LAN path exists.
   proxyProtocol:
     optional: true
   targetRefs:

@@ -1,8 +1,10 @@
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 # Subnet router + on-demand exit node for the tailnet.
-# TS_AUTHKEY comes from `tofu output -raw tailscale_nas_auth_key` and is only
-# used for the first login (TS_AUTH_ONCE); identity lives in the state dir.
+# TS_AUTHKEY is the nas key from opentofu, pre-signed for Tailnet Lock on a
+# signing node (`tofu output -raw tailscale_nas_auth_key | xargs tailscale lock
+# sign`), see opentofu/tailscale.tf. Only used for the first login
+# (TS_AUTH_ONCE); identity lives in the state dir.
 services:
   tailscale:
     environment:
@@ -19,8 +21,6 @@ services:
     image: ghcr.io/tailscale/tailscale:v1.102.5
     container_name: tailscale
     restart: unless-stopped
-    # Host networking: routes LAN traffic and NATs exit-node traffic from the
-    # NAS itself, and lets tailscaled find direct paths.
     network_mode: host
     volumes:
       - ${DATA_DOCKER_DIR}/tailscale:/var/lib/tailscale

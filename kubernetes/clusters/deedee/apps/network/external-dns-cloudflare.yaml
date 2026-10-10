@@ -18,7 +18,6 @@ spec:
   path: ./kubernetes/apps/network/external-dns-cloudflare
   postBuild:
     substitute:
-      EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

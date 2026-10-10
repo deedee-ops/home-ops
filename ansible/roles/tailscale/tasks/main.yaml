@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+- name: Install Tailscale from its package repository
+  ansible.builtin.include_tasks: "repository/{{ ansible_facts['os_family'] }}.yaml"
+
+- name: Enable tailscaled
+  ansible.builtin.systemd_service:
+    name: tailscaled
+    enabled: true
+    state: started
+
+- name: Read the node state
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - status
+      - --json
+  register: tailscale_status
+  changed_when: false
+  # exits non-zero while logged out, the JSON is still printed
+  failed_when: tailscale_status.stdout | length == 0
+  check_mode: false
+
+- name: Log in to the tailnet
+  when: (tailscale_status.stdout | from_json).BackendState in ['NeedsLogin', 'NoState']
+  block:
+    - name: Assert an auth key is available for the first login
+      ansible.builtin.assert:
+        that:
+          - tailscale_auth_key | length > 0
+        fail_msg: >-
+          {{ inventory_hostname }} is not logged in to the tailnet and tailscale_auth_key is empty -
+          mint one (`tofu apply -replace=tailscale_tailnet_key.{{ inventory_hostname }}`), sign it
+          for Tailnet Lock on a signing device
+          (`tofu output -raw tailscale_{{ inventory_hostname }}_auth_key | xargs tailscale lock sign`)
+          and put the signed key in the vault.
+        quiet: true
+
+    - name: Bring the node up
+      ansible.builtin.command:
+        argv: >-
+          {{ ['tailscale', 'up', '--auth-key=' ~ tailscale_auth_key, '--hostname=' ~ tailscale_hostname]
+             + (['--advertise-tags=' ~ (tailscale_advertise_tags | join(','))] if tailscale_advertise_tags else []) }}
+      changed_when: true
+      no_log: true
+
+# `tailscale set` only touches the flags it is given and prints nothing, so it is safe to
+# run every time but cannot tell whether anything changed.
+- name: Apply the node preferences
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - set
+      - "--hostname={{ tailscale_hostname }}"
+      - "--accept-routes={{ tailscale_accept_routes | bool | lower }}"
+      - "--accept-dns={{ tailscale_accept_dns | bool | lower }}"
+      - "--relay-server-port={{ tailscale_relay_server_port }}"
+  changed_when: false
+
+- name: Read the serve configuration
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - serve
+      - status
+      - --json
+  register: tailscale_serve_status
+  changed_when: false
+  check_mode: false
+
+- name: Forward tailnet ports with tailscale serve
+  ansible.builtin.command:
+    argv:
+      - tailscale
+      - serve
+      - --bg
+      - "--tcp={{ item.key }}"
+      - "tcp://{{ item.value }}"
+  loop: "{{ tailscale_serve_tcp | dict2items }}"
+  loop_control:
+    label: "{{ item.key }} -> {{ item.value }}"
+  when: tailscale_serve_tcp_current[item.key | string].TCPForward | default('') != item.value
+  changed_when: true
+  vars:
+    tailscale_serve_tcp_current: >-
+      {{ (tailscale_serve_status.stdout | default('{}', true) | from_json).TCP | default({}) }}

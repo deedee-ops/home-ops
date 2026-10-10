@@ -1,8 +1,8 @@
 # Ansible
 
 Provisioning for plain (non-Talos) machines: the `vps` group (`mandark`) and the
-`nut` group (`nutpi`). The VPS gets the unprivileged user, a swapfile, Docker and its
-compose stacks, and a public-port allowlist by ASN. The Pi owns the UPS over USB and
+`nut` group (`nutpi`). The VPS gets the unprivileged user, a swapfile, Tailscale, Docker
+and its compose stacks, and the RustDesk server keypair. The Pi owns the UPS over USB and
 orchestrates the ordered shutdown of the rest of the homelab.
 
 ## Usage
@@ -38,7 +38,7 @@ missing, rather than silently provisioning something half-configured.
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `vps_host` | — | Address to connect to |
-| `vps_root_domain` | — | Hostnames and the wildcard certificate derive from it |
+| `vps_root_domain` | — | `ROOT_DOMAIN` in the stacks' `.env` |
 | `vps_authorized_keys` | — | Authoritative content of the user's `authorized_keys` |
 | `docker_compose_stacks` | `[]` | Directory names under `../docker` to deploy |
 | `vps_user` | `ajgon` | Unprivileged user to create and connect as |
@@ -128,6 +128,46 @@ error rather than a clear one.
 | --- | --- | --- |
 | `swapfile_size` | `1G` | Anything `human_to_bytes` accepts; a change rebuilds the file |
 
+### tailscale
+
+Installs `tailscale` from its own apt repository, pinned to `tailscale_version`. Renovate
+tracks that version through the `ghcr.io/tailscale/tailscale` image, the same dependency
+as `docker/tailscale` on the NAS, so both move in one PR. A pinned version never moves on
+an apt upgrade.
+
+The first run logs in with `tailscale_auth_key` — a tagged, preauthorized, single-use key
+minted by opentofu, stored in the vault. Once logged in, the node identity lives in
+`/var/lib/tailscale` and the key is never used again; a spent key in the vault is harmless.
+
+The tailnet has Tailnet Lock on, so the key must be **signed before it goes into the
+vault** — an unsigned key joins the node locked out. On a signing device (liadtop, work):
+
+```sh
+tofu output -raw tailscale_mandark_auth_key | xargs tailscale lock sign   # prints the signed key
+ansible-vault edit inventory/group_vars/vps/vault.yaml                   # vault_tailscale_auth_key
+```
+
+Keys expire 7 days after they are minted. To rebuild the VPS later, or after losing
+`/var/lib/tailscale`, remove the old `mandark` device from the tailnet, mint a fresh key with
+`tofu apply -replace=tailscale_tailnet_key.mandark`, sign it and put it in the vault as above.
+
+Every run then applies the preferences with `tailscale set` and the `tailscale serve` TCP
+forwards, so changing them in the inventory is enough.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `tailscale_version` | pinned | Apt package version, leading `v` stripped |
+| `tailscale_auth_key` | `""` | First login only; required while logged out |
+| `tailscale_advertise_tags` | `[]` | Must match the tags of the auth key |
+| `tailscale_accept_routes` | `false` | Install subnet routes (needed to reach the LAN) |
+| `tailscale_accept_dns` | `true` | Use the tailnet DNS config |
+| `tailscale_relay_server_port` | `""` | UDP peer relay port; empty disables |
+| `tailscale_serve_tcp` | `{}` | Tailnet port → local `host:port` forwards |
+
+On `mandark` (see `group_vars/vps/main.yaml`) the node is `tag:edge`, accepts routes, does
+**not** accept DNS (the split DNS server is outside what `tag:edge` may reach), runs a
+peer relay on UDP 40000 and forwards tailnet `:3553` to the loopback-only arcane-agent.
+
 ### docker
 
 Installs `docker-ce`, `containerd.io` and the compose and buildx plugins, writes
@@ -152,6 +192,20 @@ so compose will not create them and `up` would fail.
 | `docker_compose_networks` | `internal` | Created if missing before any stack starts |
 | `docker_users` | `[]` | Users added to the `docker` group |
 | `docker_daemon_config` | log rotation, `live-restore` | `/etc/docker/daemon.json`; `{}` skips |
+
+### rustdesk
+
+Writes the RustDesk server keypair (`id_ed25519`, `id_ed25519.pub`) into
+`<DATA_DOCKER_DIR>/rustdesk`, owned by the container user. The stack itself is deployed by
+Arcane; seeding the keys first makes `hbbs` reuse the identity every client already pins
+(`-k _`) instead of generating a new one. Take them from the old server's data directory
+the first time, and keep them in the vault.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `rustdesk_private_key` | `""` | Content of `id_ed25519`, from the vault |
+| `rustdesk_public_key` | `""` | Content of `id_ed25519.pub`, from the vault |
+| `rustdesk_data_dir` | `<DATA_DOCKER_DIR>/rustdesk` | Must match the stack's volume |
 
 ### asn_firewall
 

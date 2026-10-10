@@ -123,6 +123,8 @@ spec:
           route:
             enabled: true
             name: pocket-id
+            annotations:
+              gatus.home-operations.com/enabled: "false"
             parentRefs:
               - name: envoy-internal
                 namespace: network

@@ -11,4 +11,3 @@ resources:
   - ./external-dns-cloudflare.yaml
   - ./external-dns-unifi.yaml
   - ./smtp-relay.yaml
-  - ./towonel-agent.yaml

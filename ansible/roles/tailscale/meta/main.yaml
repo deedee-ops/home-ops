@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-meta.json
+galaxy_info:
+  role_name: tailscale
+  author: ajgon
+  description: Join a host to the tailnet, optionally as a peer relay with tailscale serve forwards
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - tailscale
+    - vpn
+dependencies: []

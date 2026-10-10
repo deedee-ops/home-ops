@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
+# The stack itself is deployed by arcane; this only puts the keypair in place before it
+# starts, so hbbs picks it up instead of generating a fresh identity.
+- name: Assert the keypair is set
+  ansible.builtin.assert:
+    that:
+      - rustdesk_private_key | length > 0
+      - rustdesk_public_key | length > 0
+    fail_msg: rustdesk_private_key and rustdesk_public_key must be set - see inventory/group_vars/vps/vault.yaml
+    quiet: true
+
+- name: Create the RustDesk data directory
+  ansible.builtin.file:
+    path: "{{ rustdesk_data_dir }}"
+    state: directory
+    owner: "{{ rustdesk_uid }}"
+    group: "{{ rustdesk_gid }}"
+    mode: "0750"
+
+- name: Write the RustDesk keypair
+  ansible.builtin.copy:
+    content: "{{ item.content | trim }}"
+    dest: "{{ rustdesk_data_dir }}/{{ item.name }}"
+    owner: "{{ rustdesk_uid }}"
+    group: "{{ rustdesk_gid }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - name: id_ed25519
+      content: "{{ rustdesk_private_key }}"
+      mode: "0600"
+    - name: id_ed25519.pub
+      content: "{{ rustdesk_public_key }}"
+      mode: "0644"
+  loop_control:
+    label: "{{ item.name }}"
+  no_log: true
