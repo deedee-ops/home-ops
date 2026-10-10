@@ -77,6 +77,8 @@ services:
       - ${DATA_DOCKER_DIR}/zot/registry:/var/lib/registry
       # written by zot-secrets above
       - ${DATA_DOCKER_DIR}/zot/secret:/secret:ro
+      # TEMPORARY: sync staging for migration from docker/registry
+      - ${DATA_DOCKER_DIR}/zot/registry-downloads:/var/tmp/zot
     labels:
       traefik.enable: "true"
       traefik.http.services.zot.loadbalancer.server.port: "5000"

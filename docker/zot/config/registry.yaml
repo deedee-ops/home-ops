@@ -82,3 +82,23 @@ extensions:
     enable: true
   ui:
     enable: true
+  # TEMPORARY: migration from docker/registry, remove after cutover
+  sync:
+    enable: true
+    # synced images are staged locally before being uploaded to S3
+    downloadDir: /var/tmp/zot
+    registries:
+      - urls:
+          # old registry container, reached over the internal network
+          - http://registry:5000
+        onDemand: false
+        # first pass starts on boot, next one this long after the previous finished
+        pollInterval: 5m
+        tlsVerify: false
+        # repos sync in parallel, but all share this per-host request cap (default: 3)
+        reqConcurrent: 16
+        maxRetries: 3
+        retryDelay: 10s
+        # periodic sync is only enabled when content is set
+        content:
+          - prefix: "**"
