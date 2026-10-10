@@ -8,3 +8,8 @@ provider "migadu" {
   timeout  = 30
   endpoint = "https://api.migadu.com/v1/"
 }
+
+provider "tailscale" {
+  oauth_client_id     = var.tailscale_oauth_client_id
+  oauth_client_secret = var.tailscale_oauth_client_secret
+}
