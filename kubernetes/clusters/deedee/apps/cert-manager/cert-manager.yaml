@@ -25,6 +25,7 @@ spec:
     substitute:
       CA_BUNDLE: "${CA_BUNDLE}"
       EXTERNAL_ROOT_DOMAIN: "${EXTERNAL_ROOT_DOMAIN}"
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       VAULT_HOST: "bao.${ROOT_DOMAIN}"
   prune: true
   sourceRef:

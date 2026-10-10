@@ -58,6 +58,12 @@ variable "static_sites" {
   default     = {}
 }
 
+variable "webfinger" {
+  description = "Map of domain to OIDC issuer URL advertised via WebFinger (/.well-known/webfinger) for acct:*@<domain>. The domain must be one of the zones declared in `domains`."
+  type        = map(string)
+  default     = {}
+}
+
 variable "mailboxes" {
   description = "List of migadu mailboxes, and attached aliases and identities"
   type = map(map(object({
