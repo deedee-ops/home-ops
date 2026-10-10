@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/ansible.json#/$defs/tasks
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible.json#/$defs/tasks
 # The driver instance has to be restarted explicitly. nut-driver-enumerator only
 # reconciles ups.conf *sections* against service instances, so edits made inside
 # an existing section - the override.battery.* thresholds - never reach a running

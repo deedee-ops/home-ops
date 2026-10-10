@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 version: v1alpha1
 machine:
   ca:
@@ -45,7 +45,7 @@ cluster:
     key: '{{ ENV[".cluster.serviceAccount.key"] }}'
     # {% endif %}
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VolumeConfig
 name: STATE
@@ -55,7 +55,7 @@ encryption:
     - slot: 0
       tpm: {}
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VolumeConfig
 name: EPHEMERAL
@@ -70,7 +70,7 @@ encryption:
     - slot: 0
       tpm: {}
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: rook-ceph
@@ -80,7 +80,7 @@ provisioning:
   minSize: 10GB
   maxSize: 10GB
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: extra
@@ -90,7 +90,7 @@ provisioning:
   minSize: 1GB
   grow: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: TrustedRootsConfig
 name: homelab-ca
@@ -148,7 +148,7 @@ certificates: |
   -----END CERTIFICATE-----
 # main interface for k8s
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: cluster
@@ -157,14 +157,14 @@ selector:
 
 # secondary interface for VLANs
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: multus
 selector:
   match: glob("48:21:0b:76:*", mac(link.permanent_addr))
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: BondConfig
 name: bond1
@@ -172,13 +172,13 @@ links:
   - multus
 bondMode: active-backup
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: DHCPv4Config
 name: bond1
 clientIdentifier: mac
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VLANConfig
 name: bond1.3
@@ -186,7 +186,7 @@ up: true
 vlanID: 3
 parent: multus
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VLANConfig
 name: bond1.4
@@ -194,7 +194,7 @@ up: true
 vlanID: 4
 parent: multus
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: VLANConfig
 name: bond1.69
@@ -202,7 +202,7 @@ up: true
 vlanID: 69
 parent: multus
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: ResolverConfig
 hostDNS:
@@ -210,12 +210,12 @@ hostDNS:
   forwardKubeDNSToHost: false
   resolveMemberNames: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubePrismConfig
 port: 7445
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: CRICustomizationConfig
 name: containerd
@@ -226,7 +226,7 @@ content: |
     cdi_spec_dirs = ["/var/cdi/static", "/var/cdi/dynamic"]
     device_ownership_from_security_context = true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: EtcFileConfig
 name: nfsmount.conf
@@ -239,7 +239,7 @@ contents: |
   noatime=True
   noac=True
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 installer:
@@ -249,17 +249,17 @@ provisioning:
     match: disk.model == "WD Blue SN570 500GB"
   wipe: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KernelModuleConfig
 name: nbd
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KernelModuleConfig
 name: thunderbolt
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeletConfig
 config:
@@ -278,7 +278,7 @@ config:
 defaultRuntimeSeccompProfileEnabled: true
 image: ghcr.io/siderolabs/kubelet:v1.37.1
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeNodeConfig
 nodeIP:
@@ -290,7 +290,7 @@ labels:
   topology.kubernetes.io/region: homelab
   topology.kubernetes.io/zone: deedee
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: docker.io
@@ -299,7 +299,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: codeberg.org
@@ -308,7 +308,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: ghcr.io
@@ -317,7 +317,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: gsoci.azurecr.io
@@ -326,7 +326,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: mirror.gcr.io
@@ -335,7 +335,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: quay.io
@@ -344,7 +344,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: registry.k8s.io
@@ -353,7 +353,7 @@ endpoints:
     overridePath: true
 skipFallback: true
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: SysctlConfig
 params:
@@ -382,26 +382,26 @@ params:
   net.ipv4.tcp_rmem: 4096 87380 33554432 # Performant receive buffer tuning (min, default, max in bytes)
   net.ipv4.tcp_wmem: 4096 65536 33554432 # Performant send buffer tuning (min, default, max in bytes)
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: UdevRulesConfig
 rules:
   # Intel GPU
   - SUBSYSTEM=="drm", KERNEL=="renderD*", GROUP="44", MODE="0660"
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: DiscoveryServiceConfig
 name: default
 endpoint: https://discovery.talos.dev/
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: DiscoveryIdentityConfig
 clusterID: '{{ ENV[".cluster.id"] }}'
 clusterSecret: '{{ ENV[".cluster.secret"] }}'
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeNetworkConfig
 dnsDomain: cluster.local
@@ -410,19 +410,19 @@ podSubnets:
 serviceSubnets:
   - 172.31.0.0/16
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: FilesystemTrimConfig
 interval: 168h0m0s
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: FilesystemScrubConfig
 interval: 168h0m0s
 
 # {% if ENV.IS_CONTROLPLANE %}
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeTalosAPIAccessConfig
 allowedRoles:
@@ -431,7 +431,7 @@ allowedRoles:
 allowedKubernetesNamespaces:
   - system-upgrade
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAuditPolicyConfig
 configuration:
@@ -440,7 +440,7 @@ configuration:
   rules:
     - level: Metadata
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAPIServerConfig
 certExtraSANs:
@@ -450,7 +450,7 @@ extraArgs:
   feature-gates: HPAScaleToZero=true
 image: registry.k8s.io/kube-apiserver:v1.37.1
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAdmissionControlConfig
 name: PodSecurity
@@ -470,7 +470,7 @@ configuration:
     usernames: []
   kind: PodSecurityConfiguration
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeControllerManagerConfig
 extraArgs:
@@ -478,18 +478,18 @@ extraArgs:
   feature-gates: HPAScaleToZero=true
 image: registry.k8s.io/kube-controller-manager:v1.37.1
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeCoreDNSConfig
 enabled: false
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeProxyConfig
 enabled: false
 image: registry.k8s.io/kube-proxy:v1.37.1
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeSchedulerConfig
 config:
@@ -511,7 +511,7 @@ extraArgs:
   bind-address: 0.0.0.0
 image: registry.k8s.io/kube-scheduler:v1.37.1
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeEtcdEncryptionConfig
 config:
@@ -525,7 +525,7 @@ config:
       resources:
         - secrets
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAuthenticationConfig
 configuration:
@@ -537,13 +537,13 @@ configuration:
     enabled: true
   jwt: []
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAuthorizerConfig
 name: node
 type: Node
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/talos.config.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
 kind: KubeAuthorizerConfig
 name: rbac

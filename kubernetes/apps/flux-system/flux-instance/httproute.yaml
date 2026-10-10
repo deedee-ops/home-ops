@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/httproute_v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/httproute_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -7,10 +7,10 @@ metadata:
   annotations:
     gatus.home-operations.com/endpoint: |-
       conditions: ["[STATUS] == any(403, 404)"]
-      url: "https://flux-webhook.${EXTERNAL_ROOT_DOMAIN}/hook/"
+      url: "https://flux-webhook.${ROOT_DOMAIN}/hook/"
 spec:
   hostnames:
-    - "flux-webhook.${EXTERNAL_ROOT_DOMAIN}"
+    - "flux-webhook.${ROOT_DOMAIN}"
   parentRefs:
     - name: envoy-external
       namespace: network

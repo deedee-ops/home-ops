@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -22,30 +22,6 @@ metadata:
   name: external
 spec:
   secretName: external-tls
-  duration: 168h
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-  privateKey:
-    algorithm: ECDSA
-    size: 256
-    rotationPolicy: Always
-  usages:
-    - digital signature
-  commonName: "${EXTERNAL_ROOT_DOMAIN}"
-  dnsNames:
-    - "${EXTERNAL_ROOT_DOMAIN}"
-    - "*.${EXTERNAL_ROOT_DOMAIN}"
----
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/cert-manager.io/certificate_v1.json
-# Publicly trusted cert for the few ${ROOT_DOMAIN} hosts exposed on envoy-external.
-# Wildcard only, so individual hostnames never show up in CT logs.
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: external-root
-spec:
-  secretName: external-root-tls
   duration: 168h
   issuerRef:
     name: letsencrypt-production

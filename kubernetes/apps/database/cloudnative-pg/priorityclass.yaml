@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://schemas.rzegocki.dev/priorityclass-scheduling-v1.json
+# yaml-language-server: $schema=https://schemas.ajgon.casa/priorityclass-scheduling-v1.json
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
