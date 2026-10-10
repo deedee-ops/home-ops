@@ -84,6 +84,20 @@ spec:
         certificateRefs:
           - kind: Secret
             name: external-tls
+    - name: https-id
+      protocol: HTTPS
+      port: 443
+      hostname: "id.${ROOT_DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: security
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: external-root-tls
 ---
 # yaml-language-server: $schema=https://schemas.rzegocki.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1

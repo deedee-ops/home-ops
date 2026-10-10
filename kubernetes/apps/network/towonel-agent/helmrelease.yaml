@@ -17,6 +17,8 @@ spec:
       services:
         - hostname: "*.${EXTERNAL_ROOT_DOMAIN}"
           origin: envoy-external:443
+        - hostname: "id.${ROOT_DOMAIN}"
+          origin: envoy-external:443
       inviteTokenSecret:
         name: towonel-agent-secret
     serviceMonitor:

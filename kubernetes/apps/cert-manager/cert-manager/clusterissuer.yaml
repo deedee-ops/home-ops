@@ -34,3 +34,4 @@ spec:
         selector:
           dnsZones:
             - "${EXTERNAL_ROOT_DOMAIN}"
+            - "${ROOT_DOMAIN}"
