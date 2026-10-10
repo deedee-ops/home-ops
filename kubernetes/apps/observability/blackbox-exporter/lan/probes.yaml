@@ -55,6 +55,28 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
+  name: lan-unifi-api
+spec:
+  jobName: unifi_api
+  module: unifi_api
+  interval: 1m
+  scrapeTimeout: 30s
+  prober:
+    url: blackbox-exporter-lan:9115
+  targets:
+    staticConfig:
+      static:
+        # same endpoint external-dns-unifi reads; unifi.internal's cert only covers unifi.${ROOT_DOMAIN}
+        - https://unifi.${ROOT_DOMAIN}/proxy/network/v2/api/site/default/static-dns
+  metricRelabelings:
+    - targetLabel: service
+      replacement: blackbox-exporter-lan
+      action: replace
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
   name: lan-nfs
 spec:
   jobName: nfs_probe

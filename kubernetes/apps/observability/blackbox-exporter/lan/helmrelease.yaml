@@ -34,6 +34,23 @@ spec:
             preferred_ip_protocol: ip4
             fail_if_ssl: false
             fail_if_not_ssl: true
+        # Authenticated call into the UniFi Network app (JVM). Unauthenticated requests are
+        # answered by nginx/unifi-core and stay fast even while the app is GC-thrashing.
+        unifi_api:
+          prober: http
+          timeout: 25s
+          http:
+            valid_status_codes:
+              - 200
+            valid_http_versions:
+              - HTTP/1.1
+              - HTTP/2.0
+            preferred_ip_protocol: ip4
+            fail_if_not_ssl: true
+            http_headers:
+              X-API-KEY:
+                files:
+                  - /etc/blackbox/secrets/UNIFI_API_KEY
         icmp:
           prober: icmp
           timeout: 5s
@@ -60,12 +77,32 @@ spec:
           annotations:
             summary: |-
               The probe targeting {{ $labels.instance }} is currently having connectivity issues
+        # Network app heap leak → back-to-back full GCs → API latency climbs from ~70ms
+        # to tens of seconds; external-dns-unifi crashloops once it passes ~15s.
+        - alert: UnifiNetworkApiSlow
+          expr: |-
+            avg_over_time(probe_duration_seconds{job="unifi_api"}[15m]) > 2
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: |-
+              UniFi Network API is slow ({{ $value | humanizeDuration }} avg over 15m)
+            description: |-
+              Likely the Network app JVM is GC-thrashing. Check on the gateway:
+              grep 'Pause Full' /data/unifi/logs/gc.log | tail; fix with: systemctl restart unifi
     extraVolumes:
       - name: homelab-root-ca
         configMap:
           name: homelab-root-ca
           defaultMode: 420
+      - name: secrets
+        secret:
+          secretName: blackbox-exporter-lan-secret
     extraVolumeMounts:
+      - name: secrets
+        mountPath: /etc/blackbox/secrets
+        readOnly: true
       - name: homelab-root-ca
         mountPath: /etc/ssl/certs/ca-certificates.crt
         subPath: ca.crt
