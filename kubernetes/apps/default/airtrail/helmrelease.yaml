@@ -136,7 +136,7 @@ spec:
                       value: >-
                         default-src 'self' data: mediastream: blob: wss:
                         https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://flagcdn.com
-                        https://api.github.com;
+                        https://services.arcgisonline.com https://api.github.com;
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
                         style-src 'self' 'unsafe-inline';
