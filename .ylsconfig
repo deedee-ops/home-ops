@@ -4,6 +4,7 @@
     "ansible/inventory/group_vars/*/vault.yaml",
     "docker/roms-server/config/roms-server.yaml",
     "docker/talos-factory/config/config.yaml",
+    "docker/zot/config/*.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",
     "kubernetes/apps/default/glance/resources/widgets/*.yaml",
     "kubernetes/apps/default/searxng/resources/*.y*ml",

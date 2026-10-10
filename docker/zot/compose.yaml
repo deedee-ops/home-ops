@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://schemas.rzegocki.dev/other/docker-compose.json
+x-zot: &zot
+  image: ghcr.io/project-zot/zot:v2.1.22@sha256:96cda11459ce6f8c60da3b03f03e9f67fd11b3ae2d82c4c04c92b3c608996080
+  user: "1000:1000"
+  restart: unless-stopped
+  environment:
+    AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+    AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+  # config is YAML, zot picks the parser by file extension
+  # (published image ships no HEALTHCHECK, binary name is arch-specific)
+  command:
+    - serve
+    - /etc/zot/config.yaml
+  healthcheck:
+    test:
+      - CMD
+      - /usr/local/bin/zot-linux-amd64
+      - healthcheck
+      - /etc/zot/config.yaml
+  tmpfs:
+    - /tmp:mode=1777,uid=1000,gid=1000
+  networks:
+    - internal
+  # security
+  cap_drop:
+    - all
+  security_opt:
+    - no-new-privileges
+  read_only: true
+
+services:
+  zot-secrets:
+    image: alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+    container_name: zot-secrets
+    user: 1000:1000
+    restart: "no"
+    environment:
+      ZOT_OIDC_CLIENT_ID: "${ZOT_OIDC_CLIENT_ID}"
+      ZOT_OIDC_CLIENT_SECRET: "${ZOT_OIDC_CLIENT_SECRET}"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        : "$${ZOT_OIDC_CLIENT_ID:?refusing to write an empty client id}"
+        : "$${ZOT_OIDC_CLIENT_SECRET:?refusing to write an empty client secret}"
+        printf '{"clientid":"%s","clientsecret":"%s"}' \
+          "$$ZOT_OIDC_CLIENT_ID" "$$ZOT_OIDC_CLIENT_SECRET" > /secret/oidc.json
+        # generated once and kept, so UI sessions survive restarts
+        if [ ! -s /secret/session-keys.json ]; then
+          printf '{"hashKey":"%s","encryptKey":"%s"}' \
+            "$$(head -c 48 /dev/urandom | base64)" "$$(head -c 24 /dev/urandom | base64)" > /secret/session-keys.json
+        fi
+    volumes:
+      - ${DATA_DOCKER_DIR}/zot/secret:/secret
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+
+  zot-registry:
+    <<: *zot
+    depends_on:
+      zot-secrets:
+        condition: service_completed_successfully
+    container_name: zot-registry
+    configs:
+      - source: zot-registry
+        target: /etc/zot/config.yaml
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${DATA_DOCKER_DIR}/zot/registry:/var/lib/registry
+      # written by zot-secrets above
+      - ${DATA_DOCKER_DIR}/zot/secret:/secret:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.services.zot.loadbalancer.server.port: "5000"
+      traefik.http.routers.zot.entrypoints: https
+      traefik.http.routers.zot.rule: Host(`zot.${ROOT_DOMAIN}`)
+      traefik.http.routers.zot.service: zot
+      traefik.http.routers.zot.tls: "true"
+      traefik.http.routers.zot.tls.certresolver: openbao-ecdsa
+      traefik.http.routers.zot.tls.domains[0].main: "zot.${ROOT_DOMAIN}"
+
+  # anonymous, no auth: talos/containerd pull through it without credentials
+  zot-cache:
+    <<: *zot
+    container_name: zot-cache
+    configs:
+      - source: zot-cache
+        target: /etc/zot/config.yaml
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
+      - ${DATA_DOCKER_DIR}/zot/cache:/var/lib/registry
+      - ${DATA_DOCKER_DIR}/zot/cache-downloads:/var/tmp/zot
+    ports:
+      - "5010:5000"
+
+configs:
+  zot-registry:
+    file: ./config/registry.yaml
+  zot-cache:
+    file: ./config/cache.yaml
+
+networks:
+  internal:
+    name: internal
+    external: true

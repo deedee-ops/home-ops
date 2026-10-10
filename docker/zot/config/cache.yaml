@@ -1,0 +1,101 @@
+---
+# zot: pull-through cache for all upstreams, successor of docker/registry-cache
+# Upstream images live under /<upstream-host>/..., e.g. ghcr.io/foo/bar -> /v2/ghcr.io/foo/bar
+# (talos: endpoint http://nas.internal:5010/v2/<upstream-host> with overridePath: true)
+distSpecVersion: 1.1.1
+http:
+  address: 0.0.0.0
+  port: "5000"
+  # accept docker v2 schema2 manifests as-is (default is OCI-only, sync would reject them)
+  compat:
+    - docker2s2
+log:
+  level: info
+storage:
+  # local dir only holds boltdb (dedupe cache + metadb with pull stats), blobs live in S3
+  rootDirectory: /var/lib/registry
+  dedupe: true
+  remoteCache: false
+  storageDriver:
+    name: s3
+    bucket: zot
+    rootdirectory: /cache
+    region: eu-central-1
+    regionendpoint: http://garage:3900
+    forcepathstyle: true
+    secure: false
+    v4auth: true
+    # credentials: AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY from env
+  gc: true
+  gcDelay: 1h
+  gcInterval: 24h
+  retention:
+    dryRun: false
+    delay: 24h
+    policies:
+      - repositories:
+          - "**"
+        deleteReferrers: true
+        deleteUntagged: true
+        # keep only the most recently pulled tag per repo
+        keepTags:
+          - mostRecentlyPulledCount: 1
+        # digest-pinned pulls are stored untagged - keep those in active use
+        keepUntagged:
+          mostRecentlyPulledCount: 1
+          pulledWithin: 168h
+extensions:
+  sync:
+    enable: true
+    # synced images are staged locally before being uploaded to S3
+    downloadDir: /var/tmp/zot
+    registries:
+      - urls:
+          - https://registry-1.docker.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /docker.io
+      - urls:
+          - https://codeberg.org
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /codeberg.org
+      - urls:
+          - https://ghcr.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /ghcr.io
+      - urls:
+          - https://gsoci.azurecr.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /gsoci.azurecr.io
+      - urls:
+          - https://mirror.gcr.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /mirror.gcr.io
+      - urls:
+          - https://quay.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /quay.io
+      - urls:
+          - https://registry.k8s.io
+        onDemand: true
+        tlsVerify: true
+        content:
+          - prefix: "**"
+            destination: /registry.k8s.io
