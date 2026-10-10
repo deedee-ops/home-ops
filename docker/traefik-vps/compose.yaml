@@ -1,10 +1,11 @@
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+# Pure L4 edge: no certificates, no docker provider. Everything on :443 is passed
+# through, TLS intact, to envoy-external at home over the tailnet (see
+# config/extra/tcp.yaml); :80 only redirects to https.
 services:
   traefik:
     environment:
-      CF_DNS_API_TOKEN: "${CF_DNS_API_TOKEN}"
-      ROOT_DOMAIN: "${ROOT_DOMAIN}"
       TZ: Europe/Warsaw
     image: public.ecr.aws/docker/library/traefik:3.7.14@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c
     container_name: traefik
@@ -17,14 +18,6 @@ services:
         target: /etc/traefik/traefik.yml
       - source: extra-tcp
         target: /config/extra/tcp.yaml
-      - source: extra-tls
-        target: /config/extra/tls.yaml
-    volumes:
-      - ${DATA_DOCKER_DIR}/traefik/certs:/certs
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - default
-      - internal
     # security
     cap_drop:
       - all
@@ -37,10 +30,3 @@ configs:
     file: ./config/traefik.yaml
   extra-tcp:
     file: ./config/extra/tcp.yaml
-  extra-tls:
-    file: ./config/extra/tls.yaml
-
-networks:
-  internal:
-    name: internal
-    external: true

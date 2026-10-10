@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/ansible-meta.json
+galaxy_info:
+  role_name: rustdesk
+  author: ajgon
+  description: Seed the RustDesk server keypair, so a rebuilt server keeps its identity
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - rustdesk
+dependencies: []

@@ -22,22 +22,8 @@ entryPoints:
     address: ":443"
 
 providers:
-  docker:
-    exposedByDefault: false
-    endpoint: "unix:///var/run/docker.sock"
   file:
     directory: /config
-
-certificatesResolvers:
-  letsencrypt:
-    acme:
-      email: acme@ajgon.ovh
-      storage: /certs/acme.json
-      dnsChallenge:
-        provider: cloudflare
-        resolvers:
-          - "1.1.1.1:53"
-          - "1.0.0.1:53"
 
 log:
   level: INFO

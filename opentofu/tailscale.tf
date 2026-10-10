@@ -2,21 +2,33 @@ locals {
   # Subnets advertised by the NAS (tag:router). Keep in sync with TS_ROUTES in
   # docker/tailscale/compose.yaml.
   tailscale_router_routes = ["192.168.42.0/24", "192.168.2.0/24"]
+
+  # envoy-external LoadBalancer IP. Keep in sync with LB_EXTERNAL_IP in
+  # kubernetes/clusters/deedee/apps/network/envoy-gateway.yaml.
+  tailscale_edge_ingress = "192.168.42.31"
 }
 
-# Single-user tailnet: allow-all. Tags only decide device ownership (no key
-# expiry for the NAS) and which routes get approved without a console click.
+# Members (me) get everything. Tagged devices get only what they need:
+# - tag:router (NAS) - subnet router + exit node; initiates nothing but arcane.
+# - tag:edge (mandark) - internet facing, so treat as hostile: it can reach
+#   envoy-external:443 and nothing else on the LAN or the tailnet.
 resource "tailscale_acl" "policy" {
   overwrite_existing_content = true
 
   acl = jsonencode({
+    # tag:provisioner is the only tag on the opentofu OAuth client. A client can mint
+    # keys only for exactly its own tag set, or for tags owned by those tags - so every
+    # node tag is owned by tag:provisioner, and new tags need no console change.
+    # Nothing ever runs as tag:provisioner; it grants no network access.
     tagOwners = {
-      "tag:router" = ["autogroup:admin"]
+      "tag:provisioner" = ["autogroup:admin"]
+      "tag:router"      = ["autogroup:admin", "tag:provisioner"]
+      "tag:edge"        = ["autogroup:admin", "tag:provisioner"]
     }
 
     grants = [
       {
-        src = ["*"]
+        src = ["autogroup:member"]
         dst = ["*"]
         ip  = ["*"]
       },
@@ -24,6 +36,47 @@ resource "tailscale_acl" "policy" {
         src = ["autogroup:member"]
         dst = ["autogroup:internet"]
         ip  = ["*"]
+      },
+      # Public ingress: traefik-vps passes TLS through to envoy-external.
+      {
+        src = ["tag:edge"]
+        dst = [local.tailscale_edge_ingress]
+        ip  = ["tcp:443"]
+      },
+      # Arcane manager (NAS) -> arcane-agent on mandark, exposed via `tailscale serve`.
+      {
+        src = ["tag:router"]
+        dst = ["tag:edge"]
+        ip  = ["tcp:3553"]
+      },
+      # mandark is a peer relay: roaming devices and the NAS are both behind
+      # NAT (home is CGNAT), so without it they fall back to DERP.
+      {
+        src = ["autogroup:member", "tag:router"]
+        dst = ["tag:edge"]
+        app = {
+          "tailscale.com/cap/relay" = []
+        }
+      },
+    ]
+
+    # Evaluated on every policy update - the apply fails if edge access widens.
+    tests = [
+      {
+        src    = "tag:edge"
+        accept = ["${local.tailscale_edge_ingress}:443"]
+        deny = [
+          "${local.tailscale_edge_ingress}:80",
+          "192.168.42.1:22",
+          "192.168.42.1:53",
+          "192.168.2.1:443",
+          "tag:router:22",
+        ]
+      },
+      {
+        src    = "tag:router"
+        accept = ["tag:edge:3553"]
+        deny   = ["tag:edge:22", "${local.tailscale_edge_ingress}:443"]
       },
     ]
 
@@ -89,5 +142,23 @@ resource "tailscale_tailnet_key" "nas" {
 
 output "tailscale_nas_auth_key" {
   value     = tailscale_tailnet_key.nas.key
+  sensitive = true
+}
+
+# Same, for mandark. Goes into the ansible vault as vault_tailscale_auth_key.
+resource "tailscale_tailnet_key" "mandark" {
+  description         = "mandark edge"
+  reusable            = false
+  ephemeral           = false
+  preauthorized       = true
+  tags                = ["tag:edge"]
+  expiry              = 7 * 24 * 3600
+  recreate_if_invalid = "never"
+
+  depends_on = [tailscale_acl.policy]
+}
+
+output "tailscale_mandark_auth_key" {
+  value     = tailscale_tailnet_key.mandark.key
   sensitive = true
 }

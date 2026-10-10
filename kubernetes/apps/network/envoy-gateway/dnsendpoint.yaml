@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/externaldns.k8s.io/dnsendpoint_v1alpha1.json
+# Public entrypoint: every external HTTPRoute is a CNAME to this record (see the
+# target annotation on envoy-external). mandark's traefik passes TLS through to
+# envoy-external over the tailnet.
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: envoy-external
+spec:
+  endpoints:
+    - dnsName: "external.${ROOT_DOMAIN}"
+      recordType: A
+      targets:
+        - "${VPS_IP}"

@@ -23,7 +23,7 @@ variable "migadu_token" {
 }
 
 variable "tailscale_oauth_client_id" {
-  description = "Tailscale OAuth client ID (scopes: policy_file, dns, feature_settings, auth_keys with tag:router)"
+  description = "Tailscale OAuth client ID (scopes: policy_file, dns, feature_settings, auth_keys with tag:provisioner)"
   type        = string
   sensitive   = true
 }
@@ -34,17 +34,10 @@ variable "tailscale_oauth_client_secret" {
   sensitive   = true
 }
 
-variable "cloudflare_domain_prefix" {
-  description = "Domain prefix (without root domain) used to expose instance to the Internet"
-  type        = string
-  default     = "external"
-}
-
 variable "domains" {
   description = "List of domains and their zone configuration options"
   type = map(object({
-    zone_id  = string
-    tunneled = optional(bool)
+    zone_id = string
     mail = optional(object({
       spam                     = bool,
       alias                    = optional(bool),

@@ -37,7 +37,9 @@
   roles:
     - role: user
     - role: swapfile
+    - role: tailscale
     - role: docker
+    - role: rustdesk
 
 - name: Provision NUT server
   hosts: nut

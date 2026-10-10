@@ -76,7 +76,6 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
 | code.forgejo.org | forgejo-system/forgejo |
 | data.forgejo.org | forgejo-system/runner |
 | registry.erwanleboucher.dev | forgejo-system/runner (runner-k8s-plugin) |
-| git.ow-ops.eu | network/towonel-agent |
 | public.ecr.aws | default/garmin (influxdb 1.x) |
 | nixery.dev | media/jellyfin init (`shell/xmlstarlet:latest`) |
 
@@ -84,7 +83,7 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   `registry.k8s.io/sig-storage/csi-node-driver-registrar`, `docker.io/library/caddy` -> current retention
   (keep 1) will evict one of each after 7d unless re-pulled.
 - Flux: 102 HelmReleases, ALL via `OCIRepository` (205 files match `kind: OCIRepository`). URLs by host:
-  ghcr.io 95, quay.io 3, code.forgejo.org 1, codeberg.org 1, gsoci.azurecr.io 1, mirror.gcr.io 1.
+  ghcr.io 95, quay.io 3, code.forgejo.org 1, gsoci.azurecr.io 1, mirror.gcr.io 1.
   No HelmRepository, no Bucket. Flux source-controller pulls directly (containerd mirrors DO NOT apply).
 - Flux GitRepository: `https://github.com/deedee-ops/home-ops` (only one).
 - FluxInstance: `distribution.artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.61.0`,
@@ -110,13 +109,13 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   when version listing fails? -> must test (task T6).
 - tuppr (system-upgrade) uses factory installer refs.
 - NAS compose images (non-zot, non-garage): ghcr.io (borgmatic, arcane agent, ncps, openbao, image-factory,
-  docker-socket-proxy, traefik-to-unifi, wg-easy), docker.io implicit (alpine, garage-ui, ftpserver,
-  rustdesk-server, ps3netsrv), quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
-  codeberg.org (towonel-agent/node), registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras, roms-server).
+  docker-socket-proxy, traefik-to-unifi, tailscale), docker.io implicit (alpine, garage-ui, ftpserver,
+  ps3netsrv), quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
+  registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras, roms-server).
 - NAS docker daemon: `Mirrors: null`, insecure CIDRs `127.0.0.0/8`, `::1/128` => `localhost:5010` works over http
   with NO daemon change. Only docker.io supports daemon `registry-mirrors`.
-- Some `docker/*` stacks run on VPS, not NAS (likely `traefik-vps`, `towonel-hub`, maybe `wg-easy`,
-  `arcane-agent`?). UNKNOWN -> ask user before rewriting.
+- VPS (mandark) stacks: `traefik-vps`, `arcane-agent` (ansible `docker_compose_stacks`), `rustdesk` (arcane).
+  Everything else under `docker/` runs on the NAS.
 - Renovate: `.renovate/homeOpsBase.json5` has `registryAliases: {"mirror.gcr.io": "docker.io"}` and customManager
   regex `oci://(?<depName>[^:]+):(?<currentValue>\S+)`. flux/kubernetes managers scan `*.yaml(.j2)`.
 - borgmatic (`docker/borgmatic/config/homelab.yaml`): sources `/mnt/fast/backups`, `/mnt/fast/docker`;
@@ -271,7 +270,7 @@ T7 -> T1 -> T2 -> T3 -> T6 -> T4 -> T5 -> T8 -> T9 -> T10 -> T11.
 
 ## 6. Open questions (ask user)
 
-- Q1: which `docker/*` stacks run on VPS vs NAS?
+- Q1: ANSWERED - see VPS stacks in section 1.
 - Q2: where does Arcane manager run; how are NAS stacks deployed (git pull from github?) -> offline deploy path.
 - Q3: OK to relax cache retention (T8)?
 - Q4: T5 option A (runbook) or B (CI artifact)?

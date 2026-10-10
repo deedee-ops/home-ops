@@ -1,5 +1,8 @@
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
+# Bound to loopback only. The arcane manager on the NAS reaches it over the
+# tailnet through `tailscale serve` on mandark (tcp/3553), see the ansible
+# tailscale role and the tag:router -> tag:edge grant in opentofu/tailscale.tf.
 services:
   arcane-agent:
     image: ghcr.io/getarcaneapp/agent:v2.15.1
@@ -10,21 +13,8 @@ services:
       EDGE_TRANSPORT: poll
       AGENT_TOKEN: "${ARCANE_AGENT_TOKEN}"
       MANAGER_API_URL: http://localhost:3552
+    ports:
+      - "127.0.0.1:3553:3553"
     volumes:
       - ${DATA_DOCKER_DIR}/arcane:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - internal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.arcane-agent.entrypoints=websecure"
-      - "traefik.http.routers.arcane-agent.rule=Host(`${ARCANE_AGENT_HOST}`)"
-      - "traefik.http.routers.arcane-agent.tls=true"
-      - "traefik.http.routers.arcane-agent.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.arcane-agent.service=arcane-agent"
-      - "traefik.http.services.arcane-agent.loadbalancer.server.port=3553"
-
-networks:
-  internal:
-    name: internal
-    external: true

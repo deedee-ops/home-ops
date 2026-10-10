@@ -1,7 +1,30 @@
 ---
 # yaml-language-server: $schema=https://www.schemastore.org/traefik-v3.json
 tcp:
+  routers:
+    # Every SNI (and no SNI) goes home. TLS is terminated by envoy-external, so
+    # this box never holds a certificate or sees plaintext.
+    envoy-external:
+      entryPoints:
+        - websecure
+      rule: HostSNI(`*`)
+      service: envoy-external
+      tls:
+        passthrough: true
+
+  services:
+    envoy-external:
+      loadBalancer:
+        serversTransport: proxyv2
+        servers:
+          # envoy-external LB IP, reached through the NAS subnet router. Keep in
+          # sync with local.tailscale_edge_ingress in opentofu/tailscale.tf - the
+          # tailnet policy allows exactly this address and port.
+          - address: "192.168.42.31:443"
+
   serversTransports:
+    # envoy-external parses the PROXY header (proxyProtocol, see envoy.yaml),
+    # it is how it learns the real client address.
     proxyv2:
       proxyProtocol:
         version: 2

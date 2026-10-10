@@ -10,7 +10,7 @@ services:
     command:
       - hbbs
       - -r
-      - relay.${EXTERNAL_ROOT_DOMAIN}:21117
+      - relay.${ROOT_DOMAIN}:21117
       # -k _ rejects clients that do not use the server key (encrypted only)
       - -k
       - _

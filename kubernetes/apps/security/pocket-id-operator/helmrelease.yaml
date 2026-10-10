@@ -123,6 +123,11 @@ spec:
           route:
             enabled: true
             name: pocket-id
+            annotations:
+              # envoy-internal makes this a `guarded` probe - asserting via 1.1.1.1 that the
+              # hostname is NOT public. id.${ROOT_DOMAIN} is public on purpose (Tailscale OIDC),
+              # so the guard always fails. Monitored by pocket-id-external instead.
+              gatus.home-operations.com/enabled: "false"
             parentRefs:
               - name: envoy-internal
                 namespace: network
