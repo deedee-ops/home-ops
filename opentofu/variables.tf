@@ -22,6 +22,18 @@ variable "migadu_token" {
   sensitive   = true
 }
 
+variable "tailscale_oauth_client_id" {
+  description = "Tailscale OAuth client ID (scopes: policy_file, dns, feature_settings, auth_keys with tag:router)"
+  type        = string
+  sensitive   = true
+}
+
+variable "tailscale_oauth_client_secret" {
+  description = "Tailscale OAuth client secret"
+  type        = string
+  sensitive   = true
+}
+
 variable "cloudflare_domain_prefix" {
   description = "Domain prefix (without root domain) used to expose instance to the Internet"
   type        = string

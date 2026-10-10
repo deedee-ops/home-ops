@@ -9,6 +9,11 @@ terraform {
       source  = "metio/migadu"
       version = "2026.10.1"
     }
+
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.29.2"
+    }
   }
   required_version = ">= 1.6.0"
 
