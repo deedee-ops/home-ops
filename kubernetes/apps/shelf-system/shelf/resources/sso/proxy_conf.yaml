@@ -1,0 +1,27 @@
+---
+# SATOSA: SAML IdP (frontend, consumed by GoTrue) <-> OIDC RP (backend, Pocket-ID).
+# See PITFALLS.md §5.
+BASE: https://shelf-sso.${ROOT_DOMAIN}
+COOKIE_STATE_NAME: SATOSA_STATE
+CONTEXT_STATE_DELETE: true
+STATE_ENCRYPTION_KEY: !ENV SATOSA_STATE_ENCRYPTION_KEY
+INTERNAL_ATTRIBUTES: /etc/satosa/conf/internal_attributes.yaml
+BACKEND_MODULES:
+  - /etc/satosa/conf/backend.yaml
+FRONTEND_MODULES:
+  - /etc/satosa/conf/frontend.yaml
+  - /etc/satosa/conf/ping.yaml
+LOGGING:
+  version: 1
+  formatters:
+    simple:
+      format: "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
+  handlers:
+    stdout:
+      class: logging.StreamHandler
+      stream: ext://sys.stdout
+      formatter: simple
+  root:
+    level: INFO
+    handlers:
+      - stdout

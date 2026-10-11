@@ -11,23 +11,4 @@
 		root * /etc/caddy/templates
 		file_server
 	}
-
-	@auth path /protocol/openid-connect/auth
-	redir @auth https://id.${ROOT_DOMAIN}/authorize?{query} 302
-
-	@token path /protocol/openid-connect/token
-	handle @token {
-		rewrite * /api/oidc/token
-		reverse_proxy https://id.${ROOT_DOMAIN} {
-			header_up Host id.${ROOT_DOMAIN}
-		}
-	}
-
-	@userinfo path /protocol/openid-connect/userinfo
-	handle @userinfo {
-		rewrite * /api/oidc/userinfo
-		reverse_proxy https://id.${ROOT_DOMAIN} {
-			header_up Host id.${ROOT_DOMAIN}
-		}
-	}
 }

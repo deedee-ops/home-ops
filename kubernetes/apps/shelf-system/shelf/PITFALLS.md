@@ -53,9 +53,39 @@ INSERT INTO storage.buckets (id, name, public) VALUES
 ON CONFLICT (id) DO NOTHING;
 ```
 
-**Not SQL, but also required:** add `firstname` / `lastname` **custom claims** to
-your user/group in Pocket-ID, or the login callback errors "First name is
-required" (§5.7).
+**SSO account linking — required for accounts that predate the SAML bridge.**
+Run after the `shelf-sso` pod has started once (its init container registers the
+SSO provider). Both are idempotent (§5.4):
+
+```sql
+-- 4) Link existing users to the SAML provider. The NameID SATOSA sends is the
+--    Pocket-ID `sub`, which is also the provider_id of the old keycloak
+--    identity, so seed an 'sso:<provider>' identity with the same subject.
+INSERT INTO auth.identities (user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
+SELECT i.user_id, i.provider_id, 'sso:' || d.sso_provider_id,
+       jsonb_build_object('sub', i.provider_id, 'email', u.email, 'email_verified', true),
+       now(), now(), now()
+FROM auth.identities i
+JOIN auth.users u ON u.id = i.user_id
+JOIN auth.sso_domains d ON lower(d.domain) = lower(split_part(u.email, '@', 2))
+WHERE i.provider = 'keycloak'
+ON CONFLICT DO NOTHING;
+
+-- 5) Shelf refuses SSO onto a non-SSO account first created by email/password.
+UPDATE auth.users u
+SET raw_app_meta_data = jsonb_set(u.raw_app_meta_data, '{provider}', to_jsonb('sso:' || d.sso_provider_id::text))
+FROM auth.sso_domains d
+WHERE lower(d.domain) = lower(split_part(u.email, '@', 2))
+  AND u.raw_app_meta_data->>'provider' = 'email'
+  AND u.is_sso_user = false;
+```
+
+Users who never logged in via the old keycloak flow have no identity to copy;
+for them seed one manually with `provider_id` = their Pocket-ID user ID.
+
+Pocket-ID's standard `given_name` / `family_name` claims are mapped by SATOSA;
+the old `firstname` / `lastname` **custom claims** in Pocket-ID are no longer
+needed.
 
 Situational one-offs (schema resets, re-provisioning) live in §9.
 
@@ -75,6 +105,9 @@ it's pinned to the `main` commit read during this work.
 | Shelf (`Shelf-nu/shelf.nu`) | `:latest` (main) | [`b5c36a8`](https://github.com/Shelf-nu/shelf.nu/tree/b5c36a862078830d1eb3ffc4272dcea1a4752bd9) |
 | `rs/cors` (bundled by GoTrue) | `v1.11.0` | [`4c32059`](https://github.com/rs/cors/tree/4c32059b2756926619f6bf70281b91be7b5dddb2) |
 | `gobuffalo/pop` (bundled by GoTrue) | `v6.1.1` | [`71505e8`](https://github.com/gobuffalo/pop/tree/71505e87de051f45b7097ee8b0f6127d6686d441) |
+| GoTrue — SAML (§5) | `v2.197.0` | [`4eee58f`](https://github.com/supabase/auth/tree/4eee58f296d9698a1c2c0ae14d7a0b379c7622d3) |
+| Shelf — SSO (§5) | `:latest` (main) | [`3dd2975`](https://github.com/Shelf-nu/shelf.nu/tree/3dd2975f7556fdcf65d74252a451285a6a62445a) |
+| SATOSA (§5) | `8.6.0` | [`f6c8994`](https://github.com/IdentityPython/SATOSA/tree/f6c8994554689f824ab6d47a8f4c2b4cabf2dd32) |
 
 Key files referenced below (deep-links to the pinned commits):
 
@@ -226,7 +259,7 @@ migrates), so they can't live in a manifest — insert them Post-install.
   `if (!premiumIsEnabled) return true` (`subscription.server.ts`), so self-hosting
   gets **everything** unlocked (unlimited custom fields, bookings, import/export,
   audits, barcodes). This is the whole point; do not set it true.
-- `DISABLE_SSO: "false"` — the OIDC `/oauth/callback` **403s** if SSO is disabled.
+- `DISABLE_SSO: "false"` — the SSO `/oauth/callback` **403s** if SSO is disabled.
 - `DISABLE_SIGNUP: "false"` — **critical & counter-intuitive.** This gates
   whether the OIDC callback provisions a user *and their personal workspace*
   (`createUser`: `shouldCreatePersonalOrg = !config.disableSignup`). Set to
@@ -285,94 +318,109 @@ reads the column, but any later *General* settings save resets it to `true`.)
 
 ---
 
-## 5. OIDC — the hard part
+## 5. SSO — Pocket-ID (OIDC) via a SAML bridge
 
 Goal: log in via **Pocket-ID** (OIDC-only) with **no Shelf fork**.
 
-### 5.1 Shelf has no OIDC — only email/OTP + SAML SSO
+```text
+browser ─► shelf /sso-login ─(DEFAULT_SSO_DOMAIN)─► GoTrue /sso ─SAML AuthnRequest─►
+SATOSA (shelf-sso) ─OIDC code flow─► Pocket-ID ─► SATOSA ─signed SAML Response─►
+GoTrue /sso/saml/acs ─► shelf /oauth/callback#access_token=…
+```
 
-So we drive login through GoTrue's OAuth machinery and reuse Shelf's existing
-`/oauth/callback` (which auto-provisions a personal workspace, per
-`sso.server.ts`). Login is initiated by an authorize URL, set in two places:
+### 5.1 Why SAML: Shelf only accepts SAML SSO sessions
 
-- the `/sso-login` HTTPRoute redirect (repurposes Shelf's SAML page), and
-- the `PocketIDOIDCClient.launchUrl`.
+Shelf has email/OTP + **SAML** SSO (via GoTrue's native SAML), no OIDC. We used
+to fake it with GoTrue's `keycloak` OAuth provider + a Caddy path-rewriting shim,
+landing on Shelf's `/oauth/callback`. Shelf commit
+[`cd5d42e`](https://github.com/Shelf-nu/shelf.nu/commit/cd5d42ecf) (2026-10-01,
+"accept only SSO sessions in the callback") broke that for good: the callback now
+calls `assertSsoAuthenticatedSession`, which **403s** ("Single sign-on required")
+unless the access token's `amr` contains `sso/saml`
+(`utils/sso.server.ts:154`). An OAuth login carries `amr=oauth`. It also reads
+name/group claims **only** from `auth.identities` rows with
+`provider LIKE 'sso:%'`. No env toggles either.
 
-### 5.2 `scopes=openid` goes in the authorize URL, NOT an env
+So the login has to be a real GoTrue SAML login. Pocket-ID has no SAML IdP
+(feature requests #604/#1250 closed), hence a translator in between.
 
-GoTrue reads provider scopes from the `/authorize` **query param**
-(`external.go:43: scopes := query.Get("scopes")`). There is **no**
-`GOTRUE_EXTERNAL_*_SCOPES` env. The keycloak provider hardcodes `[profile,email]`
-and *appends* whatever arrives in `scopes`. Pocket-ID (strict OIDC) rejects any
-request without `openid` → "something went wrong". Hence
-`?provider=keycloak&scopes=openid` in both authorize URLs.
+### 5.2 SATOSA = SAML IdP frontend + OIDC RP backend
 
-### 5.3 Why the `keycloak` provider + a Caddy shim (and NOT a custom provider)
+[SATOSA](https://github.com/IdentityPython/SATOSA) (official
+`docker.io/library/satosa` image) is a stateless protocol proxy (state lives in an
+encrypted cookie). Config in `resources/sso/`:
 
-- GoTrue's built-in **`keycloak` provider hardcodes** the Keycloak URL paths:
-  `/protocol/openid-connect/{auth,token,userinfo}`. Pocket-ID serves **none** of
-  them — its real endpoints (from its discovery doc) are `/authorize`,
-  `/api/oidc/token`, `/api/oidc/userinfo`. All Keycloak paths just return
-  Pocket-ID's SPA shell (HTTP 200), so the browser lands on an unrouted page →
-  "something went wrong".
-- GoTrue's **custom (discovery-based) OIDC provider** would read Pocket-ID's real
-  endpoints automatically — **but** its create/discovery has a hardcoded **SSRF
-  guard** (`internal/utilities/url_validator.go`) that rejects any issuer
-  resolving to a **private IP (RFC 1918)** with `400 URL cannot resolve to
-  private network addresses`. `id.$ROOT_DOMAIN` is an internal LB → blocked, and
-  there is **no config to disable it**. (Custom providers also require a
-  `custom:` identifier prefix and are DB-stored via `POST /admin/custom-providers`
-  — stateful, lost on any auth-schema reset.) Dead end.
-- **Solution:** keep the built-in keycloak provider (built-ins skip the SSRF
-  check — they don't do discovery) and point `GOTRUE_EXTERNAL_KEYCLOAK_URL` at an
-  in-namespace **Caddy shim** (`oidc-shim`, host `shelf-oidc.$ROOT_DOMAIN`,
-  `resources/Caddyfile`) that translates the paths:
-  - `/protocol/openid-connect/auth` → **302** to `id/authorize` (must be a
-    redirect, not a rewrite — the browser URL has to change so Pocket-ID's SPA
-    routes it, and the user stays on `id.$ROOT_DOMAIN` for its session cookie).
-    Envoy/Caddy preserve the query string.
-  - `/protocol/openid-connect/token` → reverse_proxy `id/api/oidc/token`
-  - `/protocol/openid-connect/userinfo` → reverse_proxy `id/api/oidc/userinfo`
-  - `header_up Host id.$ROOT_DOMAIN` + `tls_trusted_ca_certs /certs/homelab.pem`
-    for the upstream TLS.
-  This keeps everything in `shelf-system` and does **not** touch the shared
-  Pocket-ID route.
+- `backend.yaml` — OIDC RP against `https://id.$ROOT_DOMAIN` (discovery at
+  startup). Redirect URI is `<BASE>/<backend name>` =
+  `https://shelf-sso.$ROOT_DOMAIN/pocketid` → that's the
+  `PocketIDOIDCClient.callbackUrls`. Scopes `openid email profile groups`.
+- `frontend.yaml` — SAML IdP. Entity ID / metadata:
+  `https://shelf-sso.$ROOT_DOMAIN/idp/metadata`; SSO endpoints are prefixed with
+  the backend name: `/pocketid/sso/{redirect,post}`.
+  - **NameID = Pocket-ID `sub`, format persistent.** GoTrue rejects assertions
+    without a persistent NameID (or `subject-id` attribute).
+  - **`sign_assertion: true`** — GoTrue's SP metadata says
+    `WantAssertionsSigned="true"`; signing only the response isn't enough.
+- `internal_attributes.yaml` — OIDC claim → SAML attribute:
+  `email→mail`, `given_name→givenName`, `family_name→sn`, `groups→isMemberOf`
+  (emitted with `urn:oid` names + FriendlyName; GoTrue matches either).
+- `sp-gotrue.xml` — GoTrue's SP metadata, **hand-written** (entityID + ACS only).
+  GoTrue's live `/sso/saml/metadata` re-generates its cert on every start, and
+  the IdP doesn't require signed AuthnRequests, so the cert isn't needed.
+- `ping.yaml` — `/ping` for probes.
+- The container bypasses the image's `docker-entrypoint.sh` (it writes sample
+  configs into `/etc/satosa`, incompatible with a read-only rootfs) and runs
+  `gunicorn satosa.wsgi:app` directly with `SATOSA_CONFIG`.
+- `REQUESTS_CA_BUNDLE` — Python `requests` uses certifi, not the system bundle;
+  point it at the mounted homelab CA bundle or discovery to `id.$ROOT_DOMAIN`
+  fails.
 
-### 5.4 `GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI` is set explicitly
+### 5.3 GoTrue side: SAML enabled, provider registered by an init container
 
-GoTrue derives an external provider's redirect as `API_EXTERNAL_URL + "/callback"`
-(`external.go:693`). `API_EXTERNAL_URL` is `https://shelf-supabase.$ROOT_DOMAIN`
-(no `/auth/v1`), which would give the wrong, unrouted `…/callback`. The keycloak
-provider lets us override it directly, so we pin
-`GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI=https://shelf-supabase.$ROOT_DOMAIN/auth/v1/callback`
-— matching both the `supabase` route and the `PocketIDOIDCClient.callbackUrls`.
-(This is *why* we could revert `API_EXTERNAL_URL` after abandoning the custom
-provider, which had no redirect override.)
+- `GOTRUE_SAML_ENABLED=true`, `GOTRUE_SAML_PRIVATE_KEY` = **base64 of a DER
+  PKCS#1** RSA ≥2048 key (not PEM, not PKCS#8 — GoTrue refuses to start).
+- `GOTRUE_SAML_EXTERNAL_URL=https://shelf-supabase.$ROOT_DOMAIN/auth/v1` — SAML
+  URLs are derived as `<that>/sso/saml/{acs,metadata}`. Without it GoTrue uses
+  `API_EXTERNAL_URL` (no `/auth/v1`) → unrouted ACS. Same trap as the old
+  keycloak redirect URI.
+- The SSO provider + its domain live **in the DB** (`auth.sso_providers`,
+  `auth.sso_domains`), created via `POST /admin/sso/providers`. The `sso` pod's
+  init containers do this on every rollout:
+  1. `01-metadata` — `satosa-saml-metadata` renders the IdP metadata offline
+     (needs the IdP cert + Pocket-ID discovery).
+  2. `02-register-provider` — `register-sso-provider.py` **upserts** the provider
+     for `DEFAULT_SSO_DOMAIN` (PUT if one already owns the domain, else POST)
+     with the metadata and the attribute mapping
+     `{email:mail, firstname:givenName, lastname:sn, groups:isMemberOf[]}`.
+     Non-standard claim names land in `identity_data.custom_claims`, exactly where
+     Shelf reads `firstname`/`lastname`/`groups`.
+- ⚠️ **Never delete/recreate the provider.** Identities are keyed
+  `provider = 'sso:<provider uuid>'`; a new UUID orphans every linked identity and
+  the next login creates duplicate users. The upsert keeps the UUID stable.
+- Shelf: `DEFAULT_SSO_DOMAIN=$ROOT_DOMAIN` makes `/sso-login` jump straight to
+  `signInWithSSO(domain)` (no domain prompt). Uses the implicit flow, so tokens
+  arrive in the `/oauth/callback` URL fragment as before.
 
-### 5.5 `SSL_CERT_FILE: /certs/homelab.pem` (GoTrue is Go)
+### 5.4 Account linking — GoTrue never links SSO logins by email
 
-GoTrue reaches the shim (and Pocket-ID via the shim) over TLS with homelab-CA
-certs. **Caveat:** in Go, `SSL_CERT_FILE` *replaces* the system CA pool (it does
-not append). That's fine here because GoTrue only talks to homelab-CA hosts +
-Postgres. If GoTrue ever needs a public-CA endpoint, this must change.
+GoTrue's SAML ACS links only to an identity with the same
+`(provider='sso:<id>', provider_id=<NameID>)` (or same-provider email); it never
+merges into a non-SSO user (`models/linking.go:21`). A pre-existing account
+therefore needs a **seeded identity row** (Post-install step 4), the same trick
+Shelf's own "convert to SSO" admin action uses. Don't use that action here: it
+also deletes the password identity and sets `User.sso = true` (→ §8).
 
-### 5.6 `oidc-shim` (Caddy) needs `NET_BIND_SERVICE`
+Shelf additionally refuses an SSO login onto an account whose
+`User.sso = false` **and** whose auth user has `app_metadata.provider = 'email'`
+("Account not on single sign-on yet", `utils/sso.server.ts:567`). Post-install
+step 5 rewrites that field; password login keeps working.
 
-The official Caddy binary carries a `cap_net_bind_service` file capability. Under
-`allowPrivilegeEscalation: false` (NoNewPrivs) + `drop: [ALL]`, the kernel
-refuses to exec it (`operation not permitted`). Adding back `NET_BIND_SERVICE`
-(the only cap restricted-PSA allows) makes the fscap non-escalating and it runs.
-`Unconfined` seccomp is not an option under restricted PSA.
+### 5.5 Registering the SSO domain changes legacy login rules
 
-### 5.7 Claim mapping: Pocket-ID must emit `firstname` / `lastname`
-
-Shelf's callback reads `user_metadata.custom_claims.firstname` /
-`.lastname` (`app/utils/auth.ts`; also accepts `firstName`/`lastName`). GoTrue's
-keycloak provider copies **every non-standard claim** (all except
-`name`/`sub`/`email`/`email_verified`) into `custom_claims`. The standard OIDC
-`given_name`/`family_name` are **not** read by Shelf. So add custom claims named
-exactly `firstname` and `lastname` to the user/group in Pocket-ID, or the
-callback errors "First name is required".
+With `$ROOT_DOMAIN` in `auth.sso_domains`, Shelf's `sso-enforcement` refuses
+password/OTP login for addresses on that domain **that have no Shelf account**
+(they must use SSO). Existing `sso = false` accounts keep password/OTP login,
+because no workspace has SSO enforcement (`SsoDetails`) configured.
 
 ---
 
@@ -390,14 +438,11 @@ check.
 
 ---
 
-## 7. `/sso-login` redirect + query-string quirk
+## 7. `/sso-login`
 
-The `route.app` `/sso-login` rule is a Gateway API `RequestRedirect` with
-`ReplaceFullPath` containing an embedded query
-(`…/authorize?provider=keycloak&scopes=openid&redirect_to=…`). Envoy passes the
-query through **unencoded** (verified) — `:` and `/` are legal in a query value,
-matching `PocketIDOIDCClient.launchUrl`. This shadows Shelf's built-in SAML
-`/sso-login` page and is the SP-initiated OIDC entry point.
+Shelf's own `/sso-login` route is used as-is: `DEFAULT_SSO_DOMAIN` makes its
+loader redirect straight to GoTrue's `/sso` (`routes/_auth+/sso-login.tsx:115`).
+The old HTTPRoute `RequestRedirect` that shadowed it is gone.
 
 ---
 
@@ -430,6 +475,7 @@ The routine per-user SQL is at the top (**Post-install**). These are the
 | After flipping search_path on a live DB | `DROP SCHEMA auth CASCADE; CREATE SCHEMA auth AUTHORIZATION app;` restart GoTrue | migration-tracker moved schemas (§2.4) |
 | Re-provision an org-less user | `DELETE FROM public."User" WHERE email = …` then re-login | lets `createUser` rebuild the workspace |
 | Secrets in openbao `kubernetes/shelf-system/shelf` | `SESSION_SECRET`, `INVITE_TOKEN_SECRET`, `JWT_SECRET`, `ANON_KEY`, `SERVICE_ROLE_KEY`, `MAPTILER_TOKEN` | ANON/SERVICE are JWTs signed with JWT_SECRET (role anon/service_role); MAPTILER_TOKEN is your MapTiler API key (§4) |
+| SAML secrets, same openbao path | `GOTRUE_SAML_PRIVATE_KEY`: `openssl genrsa -traditional 2048 \| openssl rsa -outform DER -traditional \| base64 -w0`; `SATOSA_IDP_KEY` + `SATOSA_IDP_CERT`: `openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj /CN=shelf-sso -keyout idp.key -out idp.crt` (PEM); `SATOSA_STATE_ENCRYPTION_KEY`: `openssl rand -hex 32` | §5.3. Rotating the IdP cert is fine — the next `shelf-sso` rollout re-uploads the metadata to GoTrue |
 
 ---
 
@@ -507,25 +553,27 @@ The magic-link mail *appears* to work only because clicking its link hits
 to `SITE_URL` with the tokens in the URL fragment, which Shelf doesn't consume).
 
 `GOTRUE_MAILER_TEMPLATES_*` takes a **URL** — GoTrue fetches it over HTTP
-(`template.go:477`, no `file://`), so it can't just be a mounted file. The
-`oidc-shim` Caddy already exists in-namespace, so it also serves
-`resources/mail-{recovery,magic-link}.html` (same configMap) under `/templates/*`,
-and GoTrue points at `http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/…`.
+(`template.go:477`, no `file://`), so it can't just be a mounted file. A tiny
+in-namespace Caddy (`templates` controller, formerly the OIDC shim) serves
+`resources/mail-{recovery,magic-link}.html` under `/templates/*`, and GoTrue
+points at `http://shelf-templates.shelf-system.svc.cluster.local:8080/…`.
 Plain HTTP on purpose: in-cluster, and it avoids the CA/TLS dance.
 
 **Coupling to note:** template fetch failures make GoTrue fail the *send*, so a
-broken `oidc-shim` now breaks OTP mail as well as OIDC login.
+broken `templates` pod breaks OTP and recovery mail. The Caddy binary still needs
+`NET_BIND_SERVICE` (its file capability can't be exec'd under `drop: [ALL]` +
+NoNewPrivs otherwise).
 
 ---
 
 ## 12. Assumptions worth revisiting
 
-- **Cert for `shelf-oidc.$ROOT_DOMAIN`** relies on the same wildcard/cert-manager
+- **Cert for `shelf-sso.$ROOT_DOMAIN`** relies on the same wildcard/cert-manager
   path as the other `*.$ROOT_DOMAIN` hosts.
 - **Shelf image pinned by digest** but there's no semver tag stream — Renovate
   can't bump it cleanly.
 - **`npx prisma migrate deploy` at init** pulls from npm on every webapp start
   (allowed in the NetworkPolicy). Consider a prebuilt migration image.
-- Custom-provider registration (`register-oidc` job) and the API_EXTERNAL_URL
-  `/auth/v1` variant were **abandoned** — don't reintroduce them; they hit the
-  SSRF wall (§5.3).
+- GoTrue OAuth-provider approaches (built-in `keycloak` + Caddy shim; custom
+  OIDC providers, which also hit GoTrue's private-IP SSRF guard) are **dead**:
+  Shelf only accepts `amr=sso/saml` sessions since `cd5d42e` (§5.1).

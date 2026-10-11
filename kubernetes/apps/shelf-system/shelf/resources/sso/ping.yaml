@@ -1,0 +1,5 @@
+---
+# Liveness endpoint: GET /ping
+module: satosa.frontends.ping.PingFrontend
+name: ping
+config: {}

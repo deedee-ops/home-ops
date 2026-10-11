@@ -10,10 +10,19 @@ resources:
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
 configMapGenerator:
-  - name: shelf-oidc-shim-configmap
+  - name: shelf-templates-configmap
     files:
       - ./resources/Caddyfile
       - ./resources/mail-magic-link.html
       - ./resources/mail-recovery.html
+  - name: shelf-sso-configmap
+    files:
+      - ./resources/sso/backend.yaml
+      - ./resources/sso/frontend.yaml
+      - ./resources/sso/internal_attributes.yaml
+      - ./resources/sso/ping.yaml
+      - ./resources/sso/proxy_conf.yaml
+      - ./resources/sso/register-sso-provider.py
+      - ./resources/sso/sp-gotrue.xml
 generatorOptions:
   disableNameSuffixHash: true

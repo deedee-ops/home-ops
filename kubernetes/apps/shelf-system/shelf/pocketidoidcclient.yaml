@@ -7,7 +7,7 @@ metadata:
 spec:
   launchUrl: https://self.${ROOT_DOMAIN}
   callbackUrls:
-    - "https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback"
+    - "https://shelf-sso.${ROOT_DOMAIN}/pocketid"
   secret:
     additionalLabels:
       reconcile.fluxcd.io/watch: Enabled

@@ -1,0 +1,22 @@
+---
+# The redirect URI is <BASE>/<name>, i.e. https://shelf-sso.${ROOT_DOMAIN}/pocketid
+module: satosa.backends.openid_connect.OpenIDConnectBackend
+name: pocketid
+config:
+  provider_metadata:
+    issuer: https://id.${ROOT_DOMAIN}
+  client:
+    verify_ssl: true
+    auth_req_params:
+      response_type: code
+      scope:
+        - openid
+        - email
+        - profile
+        - groups
+    client_metadata:
+      client_id: !ENV SATOSA_OIDC_CLIENT_ID
+      client_secret: !ENV SATOSA_OIDC_CLIENT_SECRET
+      redirect_uris:
+        - <base_url>/<name>
+      token_endpoint_auth_method: client_secret_basic

@@ -1,0 +1,29 @@
+---
+# OIDC claim (Pocket-ID) -> SAML attribute (FriendlyName). GoTrue maps the SAML
+# attributes onto claims in register-sso-provider.py.
+attributes:
+  mail:
+    openid:
+      - email
+    saml:
+      - mail
+  givenname:
+    openid:
+      - given_name
+    saml:
+      - givenName
+  surname:
+    openid:
+      - family_name
+    saml:
+      - sn
+  displayname:
+    openid:
+      - name
+    saml:
+      - displayName
+  ismemberof:
+    openid:
+      - groups
+    saml:
+      - isMemberOf

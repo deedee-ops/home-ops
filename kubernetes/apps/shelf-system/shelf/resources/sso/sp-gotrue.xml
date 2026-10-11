@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+  GoTrue's SAML SP, hand-written: GoTrue's own /sso/saml/metadata embeds a
+  certificate re-generated on every start, and SATOSA doesn't need it (GoTrue
+  signs AuthnRequests, but the IdP doesn't require it). Only entityID + ACS matter.
+  Both derive from GOTRUE_SAML_EXTERNAL_URL.
+-->
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/sso/saml/metadata">
+  <SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" AuthnRequestsSigned="false" WantAssertionsSigned="true">
+    <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
+    <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/sso/saml/acs" index="1"/>
+  </SPSSODescriptor>
+</EntityDescriptor>

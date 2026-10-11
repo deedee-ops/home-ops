@@ -1,0 +1,35 @@
+---
+# SSO URL: <BASE>/pocketid/sso/redirect, metadata: <BASE>/idp/metadata
+module: satosa.frontends.saml2.SAMLFrontend
+name: idp
+config:
+  endpoints:
+    single_sign_on_service:
+      urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect: sso/redirect
+      urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST: sso/post
+  entityid_endpoint: true
+  idp_config:
+    entityid: <base_url>/<name>/metadata
+    key_file: /etc/satosa/keys/idp.key
+    cert_file: /etc/satosa/keys/idp.crt
+    metadata:
+      local:
+        - /etc/satosa/conf/sp-gotrue.xml
+    accepted_time_diff: 60
+    service:
+      idp:
+        name: Shelf SSO
+        endpoints:
+          single_sign_on_service: []
+        # NameID = Pocket-ID `sub`; GoTrue refuses transient NameIDs.
+        name_id_format:
+          - urn:oasis:names:tc:SAML:2.0:nameid-format:persistent
+        policy:
+          default:
+            attribute_restrictions: null
+            fail_on_missing_requested: false
+            lifetime: {minutes: 15}
+            name_form: urn:oasis:names:tc:SAML:2.0:attrname-format:uri
+            sign_response: true
+            # GoTrue's SP metadata sets WantAssertionsSigned="true"
+            sign_assertion: true

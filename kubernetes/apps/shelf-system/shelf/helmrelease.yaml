@@ -77,6 +77,7 @@ spec:
               <<: *pgEnv
               CHECKPOINT_DISABLE: "1"
               COLLECT_BUSINESS_INTEL: "false"
+              DEFAULT_SSO_DOMAIN: &ssoDomain ${ROOT_DOMAIN}
               DISABLE_SIGNUP: "false"
               DISABLE_SSO: "false"
               ENABLE_PREMIUM_FEATURES: "false"
@@ -156,17 +157,16 @@ spec:
               GOTRUE_DB_NAMESPACE: auth
               GOTRUE_DISABLE_SIGNUP: "false"
               GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
-              GOTRUE_EXTERNAL_KEYCLOAK_ENABLED: "true"
-              GOTRUE_EXTERNAL_KEYCLOAK_REDIRECT_URI: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1/callback
-              GOTRUE_EXTERNAL_KEYCLOAK_URL: https://shelf-oidc.${ROOT_DOMAIN}
               GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
               GOTRUE_JWT_ADMIN_ROLES: service_role
               GOTRUE_JWT_AUD: authenticated
               GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
               GOTRUE_JWT_EXP: "3600"
               GOTRUE_MAILER_AUTOCONFIRM: "true"
-              GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/templates/mail-magic-link.html
-              GOTRUE_MAILER_TEMPLATES_RECOVERY: http://shelf-oidc-shim.shelf-system.svc.cluster.local:8080/templates/mail-recovery.html
+              GOTRUE_MAILER_TEMPLATES_MAGIC_LINK: http://shelf-templates.shelf-system.svc.cluster.local:8080/templates/mail-magic-link.html
+              GOTRUE_MAILER_TEMPLATES_RECOVERY: http://shelf-templates.shelf-system.svc.cluster.local:8080/templates/mail-recovery.html
+              GOTRUE_SAML_ENABLED: "true"
+              GOTRUE_SAML_EXTERNAL_URL: https://shelf-supabase.${ROOT_DOMAIN}/auth/v1
               GOTRUE_SITE_URL: https://shelf.${ROOT_DOMAIN}
               GOTRUE_SMTP_ADMIN_EMAIL: *smtpFrom
               GOTRUE_SMTP_HOST: *smtpHost
@@ -174,14 +174,10 @@ spec:
               GOTRUE_SMTP_PORT: *smtpPort
               GOTRUE_URI_ALLOW_LIST: "https://shelf.${ROOT_DOMAIN}/**"
               PORT: &authPort 9999
-              GOTRUE_EXTERNAL_KEYCLOAK_CLIENT_ID:
+              GOTRUE_SAML_PRIVATE_KEY:
                 secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_ID
-              GOTRUE_EXTERNAL_KEYCLOAK_SECRET:
-                secretKeyRef:
-                  name: shelf-oidc-credentials
-                  key: OAUTH_CLIENT_SECRET
+                  name: shelf-secret
+                  key: GOTRUE_SAML_PRIVATE_KEY
               GOTRUE_JWT_SECRET: &jwtSecret
                 secretKeyRef:
                   name: shelf-secret
@@ -259,7 +255,81 @@ spec:
               limits:
                 memory: 512Mi
 
-      oidc-shim:
+      sso:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          01-metadata:
+            image: &satosaImg
+              repository: docker.io/library/satosa
+              tag: 8.6.0@sha256:4a8b648febb34d42a8b8114c4750dcd1208e2a77d7557499ea1a6d954e680a1f
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                mkdir -p /tmp/metadata
+                exec satosa-saml-metadata /etc/satosa/conf/proxy_conf.yaml --dir /tmp/metadata --no-sign
+            env: &satosaEnv
+              REQUESTS_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
+              SATOSA_CONFIG: /etc/satosa/conf/proxy_conf.yaml
+              SATOSA_OIDC_CLIENT_ID:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_ID
+              SATOSA_OIDC_CLIENT_SECRET:
+                secretKeyRef:
+                  name: shelf-oidc-credentials
+                  key: OAUTH_CLIENT_SECRET
+              SATOSA_STATE_ENCRYPTION_KEY:
+                secretKeyRef:
+                  name: shelf-secret
+                  key: SATOSA_STATE_ENCRYPTION_KEY
+            securityContext: *sc
+          02-register-provider:
+            image: *satosaImg
+            command:
+              - python
+              - -I
+              - /etc/satosa/conf/register-sso-provider.py
+            env:
+              GOTRUE_URL: http://shelf-gotrue.shelf-system.svc.cluster.local:9999
+              METADATA_FILE: /tmp/metadata/frontend.xml
+              SERVICE_ROLE_KEY: *serviceKey
+              SSO_DOMAIN: *ssoDomain
+            securityContext: *sc
+        containers:
+          app:
+            image: *satosaImg
+            # bypass docker-entrypoint.sh: it generates sample configs into /etc/satosa
+            command:
+              - gunicorn
+              - --bind=0.0.0.0:8080
+              - --worker-tmp-dir=/tmp
+              - satosa.wsgi:app
+            env: *satosaEnv
+            probes:
+              liveness: &ssoProbe
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &ssoPort 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 6
+              readiness: *ssoProbe
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 96Mi
+              limits:
+                memory: 256Mi
+
+      templates:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -278,18 +348,18 @@ spec:
               XDG_DATA_HOME: /tmp
               XDG_CONFIG_HOME: /tmp
             probes:
-              liveness: &shimProbe
+              liveness: &templatesProbe
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
                     path: /healthz
-                    port: &shimPort 8080
+                    port: &templatesPort 8080
                   initialDelaySeconds: 5
                   periodSeconds: 10
                   timeoutSeconds: 2
                   failureThreshold: 6
-              readiness: *shimProbe
+              readiness: *templatesProbe
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -334,11 +404,16 @@ spec:
         ports:
           http:
             port: *storagePort
-      oidc-shim:
-        controller: oidc-shim
+      sso:
+        controller: sso
         ports:
           http:
-            port: *shimPort
+            port: *ssoPort
+      templates:
+        controller: templates
+        ports:
+          http:
+            port: *templatesPort
     route:
       app: &appRoute
         hostnames:
@@ -347,19 +422,6 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - matches:
-              - path:
-                  type: Exact
-                  value: /sso-login
-            filters:
-              - type: RequestRedirect
-                requestRedirect:
-                  scheme: https
-                  hostname: "shelf-supabase.${ROOT_DOMAIN}"
-                  statusCode: 302
-                  path:
-                    type: ReplaceFullPath
-                    replaceFullPath: "/auth/v1/authorize?provider=keycloak&scopes=openid&redirect_to=https://shelf.${ROOT_DOMAIN}/oauth/callback"
           - backendRefs:
               - name: shelf-webapp
                 port: *webPort
@@ -369,16 +431,16 @@ spec:
           - "i.${ROOT_DOMAIN}"
         annotations:
           gatus.home-operations.com/enabled: "false"
-      oidc:
+      sso:
         hostnames:
-          - "shelf-oidc.${ROOT_DOMAIN}"
+          - "shelf-sso.${ROOT_DOMAIN}"
         parentRefs:
           - name: envoy-internal
             namespace: network
         rules:
           - backendRefs:
-              - name: shelf-oidc-shim
-                port: *shimPort
+              - name: shelf-sso
+                port: *ssoPort
       supabase:
         hostnames:
           - "shelf-supabase.${ROOT_DOMAIN}"
@@ -428,9 +490,9 @@ spec:
               - path: /var/lib/storage
       caddyfile:
         type: configMap
-        name: shelf-oidc-shim-configmap
+        name: shelf-templates-configmap
         advancedMounts:
-          oidc-shim:
+          templates:
             app:
               - subPath: Caddyfile
                 path: /etc/caddy/Caddyfile
@@ -438,6 +500,31 @@ spec:
                 path: /etc/caddy/templates/mail-magic-link.html
               - subPath: mail-recovery.html
                 path: /etc/caddy/templates/mail-recovery.html
+      sso-config:
+        type: configMap
+        name: shelf-sso-configmap
+        advancedMounts:
+          sso:
+            app: &ssoConfigMount
+              - path: /etc/satosa/conf
+                readOnly: true
+            01-metadata: *ssoConfigMount
+            02-register-provider: *ssoConfigMount
+      sso-keys:
+        type: secret
+        name: shelf-secret
+        defaultMode: 0440
+        items:
+          - key: idp.crt
+            path: idp.crt
+          - key: idp.key
+            path: idp.key
+        advancedMounts:
+          sso:
+            app: &ssoKeysMount
+              - path: /etc/satosa/keys
+                readOnly: true
+            01-metadata: *ssoKeysMount
       homelab-root-ca:
         type: configMap
         name: homelab-root-ca
@@ -456,5 +543,9 @@ spec:
             app: *tmpMount
           storage-api:
             app: *tmpMount
-          oidc-shim:
+          sso:
+            app: *tmpMount
+            01-metadata: *tmpMount
+            02-register-provider: *tmpMount
+          templates:
             app: *tmpMount
