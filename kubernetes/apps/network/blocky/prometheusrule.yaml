@@ -1,0 +1,70 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: blocky-rules
+spec:
+  groups:
+    - name: blocky.rules
+      rules:
+        - alert: BlockyReplicasCritical
+          expr: |-
+            kube_deployment_status_replicas_available{namespace="network", deployment="blocky"} < 2
+          for: 2m
+          annotations:
+            summary: >-
+              Only {{ $value }} blocky replica(s) available - one more failure and LAN DNS is down
+          labels:
+            severity: critical
+
+        - alert: BlockyReplicasDegraded
+          expr: |-
+            kube_deployment_status_replicas_available{namespace="network", deployment="blocky"} < 3
+          for: 30m
+          annotations:
+            summary: >-
+              blocky is running with {{ $value }}/3 replicas
+          labels:
+            severity: warning
+
+        - alert: BlockyBlockingDisabled
+          expr: |-
+            blocky_blocking_enabled == 0
+          for: 30m
+          annotations:
+            summary: >-
+              Blocking is disabled on {{ $labels.pod }}
+          labels:
+            severity: warning
+
+        - alert: BlockyDenylistEmpty
+          expr: |-
+            blocky_denylist_cache_entries == 0
+          for: 15m
+          annotations:
+            summary: >-
+              Denylist group {{ $labels.group }} is empty on {{ $labels.pod }}
+          labels:
+            severity: warning
+
+        - alert: BlockyListRefreshStale
+          expr: |-
+            time() - blocky_last_list_group_refresh_timestamp_seconds > 13 * 3600
+          for: 15m
+          annotations:
+            summary: >-
+              Lists on {{ $labels.pod }} haven't refreshed for over 12h
+          labels:
+            severity: warning
+
+        - alert: BlockyUpstreamErrors
+          expr: |-
+            sum by (pod) (rate(blocky_error_total[5m]))
+              / sum by (pod) (rate(blocky_query_total[5m])) > 0.05
+          for: 15m
+          annotations:
+            summary: >-
+              Over 5% of queries on {{ $labels.pod }} end in errors
+          labels:
+            severity: warning

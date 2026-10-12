@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+# List downloads (443) are covered by the egress.cilium.io/internet pod label.
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: blocky-egress
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: blocky
+    egress:
+      # DoT upstreams + bootstrap
+      - toCIDRSet:
+          - cidr: 9.9.9.9/32
+          - cidr: 149.112.112.112/32
+          - cidr: 1.1.1.1/32
+          - cidr: 1.0.0.1/32
+        toPorts:
+          - ports:
+              - port: "853"
+                protocol: TCP
+      # UniFi: local zones, reverse lookups, client names
+      - toCIDRSet:
+          - cidr: 192.168.42.1/32
+        toPorts:
+          - ports:
+              - port: "53"
+                protocol: ANY

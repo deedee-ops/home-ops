@@ -26,6 +26,17 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  # LAN resolver VIP, end to end (blocky -> DoT upstreams)
+  - name: Blocky
+    group: services
+    url: 192.168.42.53
+    interval: 1m
+    dns:
+      query-name: example.com
+      query-type: A
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
+
 metrics: true
 
 storage:

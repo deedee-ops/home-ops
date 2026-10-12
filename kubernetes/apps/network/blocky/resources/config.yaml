@@ -1,0 +1,89 @@
+---
+# Every pod is self-contained: no redis, no query-log database, no PVC.
+# Startup must never depend on DNS (upstreams and bootstrap are IPs) nor on
+# the internet (upstreams and lists load in the background).
+ports:
+  dns: 5353
+  http: 4000
+
+connectIPVersion: v4
+
+upstreams:
+  init:
+    strategy: fast
+  strategy: parallel_best
+  timeout: 2s
+  groups:
+    default:
+      - tcp-tls:9.9.9.9:853#dns.quad9.net
+      - tcp-tls:149.112.112.112:853#dns.quad9.net
+      - tcp-tls:1.1.1.1:853#cloudflare-dns.com
+      - tcp-tls:1.0.0.1:853#cloudflare-dns.com
+
+# Used for list downloads, so they don't go through CoreDNS -> UniFi.
+bootstrapDns:
+  - upstream: tcp-tls:dns.quad9.net
+    ips:
+      - 9.9.9.9
+      - 149.112.112.112
+  - upstream: tcp-tls:cloudflare-dns.com
+    ips:
+      - 1.1.1.1
+      - 1.0.0.1
+
+# Local zones stay authoritative on UniFi (external-dns-unifi writes there).
+conditional:
+  mapping:
+    ${ROOT_DOMAIN}: 192.168.42.1
+    internal: 192.168.42.1
+    168.192.in-addr.arpa: 192.168.42.1
+    ".": 192.168.42.1
+
+clientLookup:
+  upstream: 192.168.42.1
+  singleNameOrder:
+    - 1
+
+# Answered locally, so the readiness probe never depends on upstreams.
+customDNS:
+  mapping:
+    healthcheck.blocky: 127.0.0.1
+
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt
+    threats:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt
+  allowlists:
+    ads:
+      - |
+        # inline allowlist, one domain per line
+  clientGroupsBlock:
+    default:
+      - ads
+      - threats
+  blockType: zeroIp
+  blockTTL: 1m
+  loading:
+    strategy: fast
+    refreshPeriod: 4h
+    downloads:
+      timeout: 60s
+      attempts: 5
+      cooldown: 10s
+
+caching:
+  prefetching: true
+  cacheTimeNegative: 5m
+
+prometheus:
+  enable: true
+  path: /metrics
+
+queryLog:
+  type: none
+
+log:
+  level: info
+  format: json

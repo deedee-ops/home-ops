@@ -25,6 +25,12 @@ kind: CiliumBGPPeerConfig
 metadata:
   name: l3-bgp-peer-config
 spec:
+  # A dead node keeps receiving traffic for its routes until the hold timer
+  # expires (default 90s). 9s bounds the blackout for anycast VIPs (blocky).
+  timers:
+    connectRetryTimeSeconds: 5
+    holdTimeSeconds: 9
+    keepAliveTimeSeconds: 3
   families:
     - afi: ipv4
       safi: unicast
