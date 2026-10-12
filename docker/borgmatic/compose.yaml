@@ -14,7 +14,7 @@ services:
       BORGMATIC_NAS_HC_PING_URL: "${BORGMATIC_NAS_HC_PING_URL}"
       BORGMATIC_NAS_REPO_BORGBASE_EU: "${BORGMATIC_NAS_REPO_BORGBASE_EU}"
       BORGMATIC_NAS_REPO_BORGBASE_US: "${BORGMATIC_NAS_REPO_BORGBASE_US}"
-    image: ghcr.io/borgmatic-collective/borgmatic:2.1.9@sha256:8f3273d0ac5ab7592863d82cd58610c4d5888d284df2c1f12fd1229a99d42db1
+    image: ghcr.io/borgmatic-collective/borgmatic:2.1.10@sha256:b1d6d387efb9f4f1c51f24222aca44286f3d60566ffc6ff08d562726069e40f2
     container_name: borgmatic
     restart: always
     configs:
