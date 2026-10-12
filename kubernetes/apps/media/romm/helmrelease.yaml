@@ -27,7 +27,7 @@ spec:
               DB_NAME: romm
               DB_PORT: 5432
               ENABLE_RESCAN_ON_FILESYSTEM_CHANGE: "true"
-              ENABLE_SCHEDULED_CONVERT_IMAGES_TO_WEBP: "true"
+              ENABLE_SCHEDULED_CONVERT_IMAGES_TO_WEBP: "false"
               ENABLE_SCHEDULED_RESCAN: "true"
               ENABLE_SCHEDULED_UPDATE_LAUNCHBOX_METADATA: "true"
               HASHEOUS_API_ENABLED: "true"
