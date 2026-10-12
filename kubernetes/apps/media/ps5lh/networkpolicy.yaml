@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ps5lh-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: ps5lh
+  egress:
+    - toFQDNs:
+        - matchName: homebrew.page
+        - matchName: github.com
+        - matchName: objects.githubusercontent.com
+        - matchName: release-assets.githubusercontent.com
+      toPorts:
+        - ports:
+            - port: "443"
