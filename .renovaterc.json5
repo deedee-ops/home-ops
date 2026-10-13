@@ -7,6 +7,7 @@
     "local>deedee/mark13//.renovate/homeOpsApps.json5",
 
     "local>deedee/mark13//.renovate/autoMerge.json5",
+    "local>deedee/mark13//.renovate/changelogs.json5",
     "local>deedee/mark13//.renovate/customManagers.json5",
     "local>deedee/mark13//.renovate/exclusions.json5",
     "local>deedee/mark13//.renovate/groups.json5",

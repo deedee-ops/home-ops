@@ -1,0 +1,15 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      description: "Point bookorbit at its upstream release notes",
+      matchPackageNames: ["/bookorbit/"],
+      changelogUrl: "https://github.com/bookorbit/bookorbit/releases/latest",
+    },
+    {
+      description: "Point paperless-gpt at its upstream release notes",
+      matchPackageNames: ["/paperless-gpt/"],
+      changelogUrl: "https://github.com/icereed/paperless-gpt/releases/latest",
+    },
+  ],
+}
