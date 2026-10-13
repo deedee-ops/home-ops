@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/vectorize-io/hindsight
-              tag: 0.10.3-slim@sha256:c0bd6122a1d0d62dc5094ce43150780a28a96ec70109b44c688210231a5ac33a
+              tag: 1.0.0-slim@sha256:f284d0d63e92e993686e18c15f6e4a221cd80fdfd47625a7c5f6cd8568078440
             command:
               - "/bin/sh"
               - "-c"
