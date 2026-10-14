@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ps5lh-rules
+spec:
+  groups:
+    - name: ps5lh.rules
+      rules:
+        - alert: PS5LHCatalogSchemaDiverged
+          expr: |-
+            max by (source) (ps5lh_catalog_schema_diverged) > 0
+          for: 5m
+          annotations:
+            summary: >-
+              The {{ $labels.source }} catalog uses a schema newer than ps5lh supports;
+              nothing from it is stored until ps5lh is updated.
+          labels:
+            severity: warning
+        - alert: PS5LHDropInConflict
+          expr: |-
+            max by (kind) (ps5lh_dropins_conflicts) > 0
+          for: 5m
+          annotations:
+            summary: >-
+              {{ $value }} ps5lh {{ $labels.kind }} drop-in(s) clash with a catalog entry;
+              the drop-ins are served and the catalog versions ignored.
+          labels:
+            severity: warning

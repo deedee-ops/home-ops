@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.networking.k8s.io/listenerset_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: ListenerSet
+metadata:
+  name: ps5lh
+spec:
+  parentRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-internal
+  listeners:
+    - name: https-ps5lh
+      protocol: HTTPS
+      port: 443
+      hostname: "ps5lh.${ROOT_DOMAIN}"
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: media
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: external-tls

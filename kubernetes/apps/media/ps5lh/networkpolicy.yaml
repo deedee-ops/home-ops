@@ -11,6 +11,7 @@ spec:
   egress:
     - toFQDNs:
         - matchName: homebrew.page
+        - matchName: itsplk.github.io
         - matchName: github.com
         - matchName: objects.githubusercontent.com
         - matchName: release-assets.githubusercontent.com

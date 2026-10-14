@@ -47,6 +47,7 @@ spec:
             drop:
               - ALL
     triggerLoopOnEvent: true
+    enableGatewayListenerSets: true
     policy: sync
     sources:
       - gateway-httproute

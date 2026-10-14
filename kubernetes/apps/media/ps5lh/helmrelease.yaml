@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/ps5lh
-              tag: latest@sha256:a7f93e07b9f7fdf7909cbc8fc6bf5b320697bb9958553285f1dddb964d2f4b66
+              tag: latest@sha256:be55f98505e10a5b55d6a6f1e5bbdd8f93b80542b034e7e4be236ebef8a56d24
             env:
               PS5LH_SERVER__PORT: &port 8080
               PS5LH_SERVER__URL: https://ps5lh.${ROOT_DOMAIN}
@@ -80,13 +80,26 @@ spec:
         ports:
           http:
             port: *port
+    serviceMonitor:
+      app:
+        service:
+          identifier: app
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
     route:
       app:
         hostnames:
           - "ps5lh.${ROOT_DOMAIN}"
         parentRefs:
-          - name: envoy-internal
+          - group: gateway.networking.k8s.io
+            kind: ListenerSet
+            name: ps5lh
             namespace: network
+            sectionName: https-ps5lh
         rules:
           - backendRefs:
               - kind: Service

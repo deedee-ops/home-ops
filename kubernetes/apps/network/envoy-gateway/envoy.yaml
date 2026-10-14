@@ -116,6 +116,9 @@ metadata:
     app.kubernetes.io/name: envoy-internal
 spec:
   gatewayClassName: envoy
+  allowedListeners:
+    namespaces:
+      from: Same
   infrastructure:
     annotations:
       external-dns.kubernetes.io/hostname: *hostname
