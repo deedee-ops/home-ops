@@ -34,7 +34,7 @@ services:
       traefik.http.routers.s3.tls.certresolver: openbao-ecdsa
       traefik.http.routers.s3.tls.domains[0].main: 's3.${ROOT_DOMAIN}'
   garage-ui:
-    image: noooste/garage-ui:v0.13.0@sha256:a1444fa10585a0efc8ce3c33ebda873e5714d51dbc8f7f49d00143ff3b72fcc2
+    image: noooste/garage-ui:v0.14.0@sha256:e4a33c448304a3f6e60f08d6aa71b2471fd79ac870a5c7e178ea247dea3238b3
     container_name: garage-ui
     user: "1000:1000"
     restart: unless-stopped
