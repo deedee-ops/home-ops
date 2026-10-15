@@ -3,28 +3,28 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: ps5lh-rules
+  name: ps5brew-rules
 spec:
   groups:
-    - name: ps5lh.rules
+    - name: ps5brew.rules
       rules:
-        - alert: PS5LHCatalogSchemaDiverged
+        - alert: PS5BrewCatalogSchemaDiverged
           expr: |-
-            max by (source) (ps5lh_catalog_schema_diverged) > 0
+            max by (source) (ps5brew_catalog_schema_diverged) > 0
           for: 5m
           annotations:
             summary: >-
-              The {{ $labels.source }} catalog uses a schema newer than ps5lh supports;
-              nothing from it is stored until ps5lh is updated.
+              The {{ $labels.source }} catalog uses a schema newer than ps5brew supports;
+              nothing from it is stored until ps5brew is updated.
           labels:
             severity: warning
-        - alert: PS5LHDropInConflict
+        - alert: PS5BrewDropInConflict
           expr: |-
-            max by (kind) (ps5lh_dropins_conflicts) > 0
+            max by (kind) (ps5brew_dropins_conflicts) > 0
           for: 5m
           annotations:
             summary: >-
-              {{ $value }} ps5lh {{ $labels.kind }} drop-in(s) clash with a catalog entry;
+              {{ $value }} ps5brew {{ $labels.kind }} drop-in(s) clash with a catalog entry;
               the drop-ins are served and the catalog versions ignored.
           labels:
             severity: warning

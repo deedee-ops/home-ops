@@ -3,11 +3,11 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: ps5lh
+  name: ps5brew
 spec:
   chartRef:
     kind: OCIRepository
-    name: ps5lh
+    name: ps5brew
   interval: 1h
   values:
     controllers:
@@ -16,13 +16,15 @@ spec:
         containers:
           app:
             image:
-              repository: registry.ajgon.casa/tools/ps5lh
-              tag: latest@sha256:be55f98505e10a5b55d6a6f1e5bbdd8f93b80542b034e7e4be236ebef8a56d24
+              repository: registry.ajgon.casa/tools/ps5brew
+              tag: latest@sha256:be97db3f298e1d4a9b3d8ac83713ff583f9895efa9060afa2e52f18b2ec08065
+            args:
+              - "--payloads.name=ps5brew.${ROOT_DOMAIN}"
             env:
-              PS5LH_SERVER__PORT: &port 8080
-              PS5LH_SERVER__URL: https://ps5lh.${ROOT_DOMAIN}
-              PS5LH_STORE__CATALOGS: https://homebrew.page/api/v1/
-              PS5LH_STORAGE__DATA: /data
+              PS5BREW_SERVER__PORT: &port 8080
+              PS5BREW_SERVER__URL: https://ps5brew.${ROOT_DOMAIN}
+              PS5BREW_STORE__CATALOGS: https://homebrew.page/api/v1/
+              PS5BREW_STORAGE__DATA: /data
             probes:
               liveness:
                 enabled: true
@@ -93,17 +95,17 @@ spec:
     route:
       app:
         hostnames:
-          - "ps5lh.${ROOT_DOMAIN}"
+          - "ps5brew.${ROOT_DOMAIN}"
         parentRefs:
           - group: gateway.networking.k8s.io
             kind: ListenerSet
-            name: ps5lh
+            name: ps5brew
             namespace: network
-            sectionName: https-ps5lh
+            sectionName: https-ps5brew
         rules:
           - backendRefs:
               - kind: Service
-                name: ps5lh
+                name: ps5brew
                 port: *port
             matches:
               - path:

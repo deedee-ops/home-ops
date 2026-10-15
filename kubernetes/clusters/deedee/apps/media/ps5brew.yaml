@@ -3,16 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: ps5lh
+  name: ps5brew
 spec:
   components:
     - ../../../components/nfs-scaler
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/media/ps5lh
+  path: ./kubernetes/apps/media/ps5brew
   postBuild:
     substitute:
-      APP: ps5lh
+      APP: ps5brew
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
@@ -26,11 +26,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: ps5lh-gateway
+  name: ps5brew-gateway
 spec:
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/media/ps5lh/gateway
+  path: ./kubernetes/apps/media/ps5brew/gateway
   postBuild:
     substitute:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"

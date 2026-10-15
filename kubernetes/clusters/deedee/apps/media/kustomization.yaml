@@ -15,7 +15,7 @@ resources:
   - ./navidrome.yaml
   - ./pinchflat.yaml
   - ./prowlarr.yaml
-  - ./ps5lh.yaml
+  - ./ps5brew.yaml
   - ./pyload.yaml
   - ./qbittorrent.yaml
   - ./qui.yaml

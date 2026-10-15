@@ -3,11 +3,11 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: ps5lh-egress-external
+  name: ps5brew-egress-external
 spec:
   endpointSelector:
     matchLabels:
-      app.kubernetes.io/name: ps5lh
+      app.kubernetes.io/name: ps5brew
   egress:
     - toFQDNs:
         - matchName: homebrew.page

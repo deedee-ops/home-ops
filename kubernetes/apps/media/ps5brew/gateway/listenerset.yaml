@@ -3,17 +3,17 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: ListenerSet
 metadata:
-  name: ps5lh
+  name: ps5brew
 spec:
   parentRef:
     group: gateway.networking.k8s.io
     kind: Gateway
     name: envoy-internal
   listeners:
-    - name: https-ps5lh
+    - name: https-ps5brew
       protocol: HTTPS
       port: 443
-      hostname: "ps5lh.${ROOT_DOMAIN}"
+      hostname: "ps5brew.${ROOT_DOMAIN}"
       allowedRoutes:
         namespaces:
           from: Selector
