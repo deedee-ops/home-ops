@@ -7,7 +7,7 @@ terraform {
 
     migadu = {
       source  = "metio/migadu"
-      version = "2026.10.1"
+      version = "2026.10.15"
     }
 
     tailscale = {
