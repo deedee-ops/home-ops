@@ -53,6 +53,8 @@ extensions:
       - urls:
           - https://registry-1.docker.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -60,6 +62,8 @@ extensions:
       - urls:
           - https://codeberg.org
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -67,6 +71,8 @@ extensions:
       - urls:
           - https://ghcr.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -74,6 +80,8 @@ extensions:
       - urls:
           - https://gsoci.azurecr.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -81,6 +89,8 @@ extensions:
       - urls:
           - https://mirror.gcr.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -88,6 +98,8 @@ extensions:
       - urls:
           - https://quay.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
@@ -95,6 +107,8 @@ extensions:
       - urls:
           - https://registry.k8s.io
         onDemand: true
+        # serve cached manifests locally, only re-check upstream after this long
+        manifestCheckInterval: 24h
         tlsVerify: true
         content:
           - prefix: "**"
