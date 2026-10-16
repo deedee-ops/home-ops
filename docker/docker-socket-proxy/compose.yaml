@@ -23,7 +23,7 @@ services:
       - /run:mode=755,uid=1000,gid=1000
       - /tmp:mode=755,uid=1000,gid=1000
     ports:
-      - "${NAS_IP}:2375:2375"
+      - "2375:2375"
     cap_drop:
       - all
     security_opt:
