@@ -2,16 +2,18 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   docker-socket-proxy:
-    environment:
-      CONTAINERS: 1
-      IMAGES: 1
-      INFO: 1
-      NETWORKS: 1
-      VOLUMES: 1
-      EVENTS: 1
-      POST: 0
-      DELETE: 0
-    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0
+    # Strict path allowlist: list/logs/stats/events only. Container inspect (env vars),
+    # archive/export (file contents) and top (process args) are intentionally NOT allowed.
+    command:
+      - "-loglevel=info"
+      - "-listenip=0.0.0.0"
+      - "-allowfrom=192.168.0.0/16"
+      - "-allowHEAD=/_ping"
+      - "-allowGET=(/v1\\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9][a-zA-Z0-9_.-]*/(logs|stats)|images/json|networks|volumes)"
+      - "-watchdoginterval=3600"
+      - "-stoponwatchdog"
+      - "-shutdowngracetime=5"
+    image: ghcr.io/wollomatic/socket-proxy:1.13.1
     container_name: docker-socket-proxy
     restart: unless-stopped
     user: 1000:1000
@@ -19,11 +21,9 @@ services:
       - "999"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    tmpfs:
-      - /run:mode=755,uid=1000,gid=1000
-      - /tmp:mode=755,uid=1000,gid=1000
     ports:
       - "2375:2375"
+    mem_limit: 64M
     cap_drop:
       - all
     security_opt:
