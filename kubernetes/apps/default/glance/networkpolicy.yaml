@@ -16,6 +16,7 @@ spec:
         - matchName: geocoding-api.open-meteo.com
         - matchName: github.com
         - matchName: hacker-news.firebaseio.com
+        - matchName: oauth.reddit.com
         - matchName: store-site-backend-static.ak.epicgames.com
         - matchName: uselessfacts.jsph.pl
         - matchName: www.reddit.com
