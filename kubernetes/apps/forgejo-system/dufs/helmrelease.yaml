@@ -19,7 +19,7 @@ spec:
           app:
             image:
               repository: sigoden/dufs
-              tag: v0.46.0@sha256:8dd3b750015734703e64b55641fb7d2254c112e0ff3967074766177dc15dc982
+              tag: v0.47.0@sha256:e5152c04e41d5a9d785546278b632bf035c8a08c52d7e8d35f4b59681f5ff35a
             env:
               TZ: Europe/Warsaw
               DUFS_CONFIG: /config/dufs.yaml
