@@ -8,6 +8,8 @@ spec:
   launchUrl: https://geopulse.${ROOT_DOMAIN}
   callbackUrls:
     - "https://geopulse.${ROOT_DOMAIN}/oidc/callback"
+  logoutCallbackUrls:
+    - "https://geopulse.${ROOT_DOMAIN}/login"
   secret:
     additionalLabels:
       reconcile.fluxcd.io/watch: Enabled
