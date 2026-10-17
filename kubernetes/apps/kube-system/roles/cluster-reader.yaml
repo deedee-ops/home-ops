@@ -70,6 +70,19 @@ rules:
       - get
       - list
       - watch
+  # GET-only API server proxy to Prometheus/Alertmanager web ports (queries, alerts, silences listing).
+  # Their mutating endpoints need POST/PUT/DELETE (create/update/delete verbs), so stay out of reach.
+  - apiGroups:
+      - ""
+    resources:
+      - services/proxy
+    resourceNames:
+      - kube-prometheus-stack-alertmanager:9093
+      - kube-prometheus-stack-alertmanager:http-web
+      - kube-prometheus-stack-prometheus:9090
+      - kube-prometheus-stack-prometheus:http-web
+    verbs:
+      - get
   - apiGroups:
       - acme.cert-manager.io
       - actions.github.com
@@ -123,8 +136,10 @@ rules:
       - snapshot.storage.k8s.io
       - source.toolkit.fluxcd.io
       - storage.k8s.io
+      - storagemigration.k8s.io
       - talos.dev
       - toolhive.stacklok.dev
+      - trust.cert-manager.io
       - tuppr.home-operations.com
     resources:
       - "*"

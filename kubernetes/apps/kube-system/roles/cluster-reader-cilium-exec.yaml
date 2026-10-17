@@ -1,0 +1,88 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/role-rbac-v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cluster-reader-cilium-exec
+rules:
+  # RBAC can't select pods by label, so this allows exec into any kube-system pod;
+  # the ValidatingAdmissionPolicy below narrows it to read-only commands in cilium-agent.
+  - apiGroups:
+      - ""
+    resources:
+      - pods/exec
+    verbs:
+      - create
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/rolebinding-rbac-v1.json
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: reader-to-cluster-reader-cilium-exec
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cluster-reader-cilium-exec
+subjects:
+  - kind: ServiceAccount
+    name: cluster-reader
+    namespace: kube-system
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/validatingadmissionpolicy-admissionregistration-v1.json
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: cluster-reader-cilium-exec
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CONNECT
+        resources:
+          - pods/exec
+  matchConditions:
+    - name: cluster-reader
+      expression: request.userInfo.username == 'system:serviceaccount:kube-system:cluster-reader'
+  variables:
+    - name: cmd
+      expression: "has(object.command) ? object.command : []"
+    # hubble talks to the agent's local socket; --input-file/--config would read arbitrary files.
+    - name: hubble
+      expression: >-
+        size(variables.cmd) >= 2 && variables.cmd[0] == 'hubble' && variables.cmd[1] in ['observe', 'status'] &&
+        !variables.cmd.exists(a, a.startsWith('--input-file') || a.startsWith('--config'))
+    - name: dbg
+      expression: >-
+        size(variables.cmd) >= 2 && variables.cmd[0] in ['cilium', 'cilium-dbg'] && (
+          variables.cmd[1] in ['monitor', 'status', 'version'] ||
+          (size(variables.cmd) >= 3 && (
+            (variables.cmd[1] in ['endpoint', 'identity', 'ip', 'lrp', 'map', 'metrics', 'node', 'policy', 'service'] &&
+              variables.cmd[2] in ['get', 'list', 'selectors', 'subject-selectors']) ||
+            (variables.cmd[1] == 'bgp' && variables.cmd[2] in ['peers', 'route-policies', 'routes']) ||
+            (variables.cmd[1] == 'encrypt' && variables.cmd[2] == 'status'))) ||
+          (size(variables.cmd) >= 4 && variables.cmd[1] == 'bpf' && variables.cmd[3] in ['get', 'list', 'match']))
+  validations:
+    - expression: >-
+        request.namespace == 'kube-system' && object.container == 'cilium-agent' &&
+        (variables.hubble || variables.dbg)
+      message: cluster-reader may only run read-only cilium-dbg/hubble commands in the cilium-agent container
+      messageExpression: >-
+        'cluster-reader may only run read-only cilium-dbg/hubble commands in cilium-agent, got: '
+        + object.container + ': ' + variables.cmd.join(' ')
+# yamllint disable rule:line-length
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/validatingadmissionpolicybinding-admissionregistration-v1.json
+# yamllint enable rule:line-length
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: cluster-reader-cilium-exec
+spec:
+  policyName: cluster-reader-cilium-exec
+  validationActions:
+    - Deny
