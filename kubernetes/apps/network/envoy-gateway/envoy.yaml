@@ -11,11 +11,11 @@ spec:
   provider:
     type: Kubernetes
     kubernetes:
-      envoyDeployment:
+      # One envoy per node, so every node that advertises the LB IPs has a backend.
+      envoyDaemonSet:
         pod:
           labels:
             egress.cilium.io/kube-apiserver: "true"
-        replicas: 2
         container:
           resources:
             requests:
@@ -23,8 +23,18 @@ spec:
               memory: 256Mi
             limits:
               memory: 2Gi
+        # start the new pod before stopping the old one on each node
+        strategy:
+          type: RollingUpdate
+          rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
       envoyService:
-        externalTrafficPolicy: Local
+        # Cluster, not Local: UniFi ECMPs the BGP-advertised LB IPs over all nodes and can split a single
+        # flow across them (seen with syncthing re-dialing from a fixed source port). Cilium maglev picks
+        # the same envoy on every node, so split flows still land on one backend. Client IPs survive only
+        # because Cilium runs loadBalancer.mode=dsr; snat or hybrid would hide them behind node IPs.
+        externalTrafficPolicy: Cluster
   shutdown:
     # syncthing keeps the connection open all the time, so each timeout will be saturated
     # so better keep it short, to speed up shutdowns
