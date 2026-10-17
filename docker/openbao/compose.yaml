@@ -12,6 +12,10 @@ services:
     volumes:
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - ${DATA_DOCKER_DIR}/openbao/data:/openbao/data
+      - ${DATA_DOCKER_DIR}/openbao/secret:/secret:ro
+    depends_on:
+      openbao-unseal-secret:
+        condition: service_completed_successfully
     networks:
       - internal
     environment:
@@ -32,11 +36,35 @@ services:
       traefik.http.routers.openbao.tls.certresolver: openbao-ecdsa
       traefik.http.routers.openbao.tls.domains[0].main: "bao.${ROOT_DOMAIN}"
     post_start:
-      - command: >-
-          sh -c "
-          while ! bao operator unseal '${UNSEAL_KEY}'; do
-          sleep 1;
-          done"
+      - command:
+          - /bin/sh
+          - -ec
+          - 'until bao operator unseal "$(cat /secret/unseal-key)"; do sleep 1; done'
+
+  openbao-unseal-secret:
+    image: alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+    container_name: openbao-unseal-secret
+    user: 100:1000
+    restart: "no"
+    environment:
+      UNSEAL_KEY: "${UNSEAL_KEY}"
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        umask 077
+        : "$${UNSEAL_KEY:?refusing to write an empty unseal key}"
+        printf '%s' "$$UNSEAL_KEY" > /secret/unseal-key
+    volumes:
+      - ${DATA_DOCKER_DIR}/openbao/secret:/secret
+    networks:
+      - internal
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
 
 configs:
   openbao-config:
