@@ -13,7 +13,9 @@ spec:
         - matchName: api.open-meteo.com
         - matchName: archive-api.open-meteo.com
         - matchName: download.geonames.org
+        - matchName: query.wikidata.org
         - matchPattern: "*.openstreetmap.org"
+        - matchPattern: "*.wikimedia.org"
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/component: database
