@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: syncthing-tcp-keepalive
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: TCPRoute
+      name: syncthing-sync
+  tcpKeepalive:
+    probes: 9
+    idleTime: 60s
+    interval: 10s
