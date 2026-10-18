@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/ps5brew
-              tag: latest@sha256:be97db3f298e1d4a9b3d8ac83713ff583f9895efa9060afa2e52f18b2ec08065
+              tag: latest@sha256:7ab79001f4e58033ca080680123dfa91ccad8b369c69ec7ebda48bc615830c00
             args:
               - "--payloads.name=ps5brew.${ROOT_DOMAIN}"
             env:
@@ -107,6 +107,35 @@ spec:
               - kind: Service
                 name: ps5brew
                 port: *port
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+      manuals:
+        hostnames:
+          - "manuals.playstation.net"
+        parentRefs:
+          - group: gateway.networking.k8s.io
+            kind: ListenerSet
+            name: ps5brew
+            namespace: network
+            sectionName: https-manuals-playstation
+          - group: gateway.networking.k8s.io
+            kind: ListenerSet
+            name: ps5brew
+            namespace: network
+            sectionName: http-manuals-playstation
+        rules:
+          - backendRefs:
+              - kind: Service
+                name: ps5brew
+                port: *port
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Strict-Transport-Security
+                      value: max-age=0
             matches:
               - path:
                   type: PathPrefix
