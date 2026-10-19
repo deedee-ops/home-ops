@@ -133,7 +133,7 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   offline (KeePassXC + offline copy).
 - NAS: `docker/tailscale` (host network) = subnet router `192.168.42.0/24`, `192.168.2.0/24` + exit node,
   `tag:router`. State `/mnt/fast/docker/tailscale` IS in borg -> restored NAS keeps its identity, no new key needed.
-- NAS host routes (TrueNAS boot script, NOT in git): `ip route replace 192.168.42.{20,30,31,35}/32 via 192.168.2.1`.
+- NAS host routes (TrueNAS boot script, NOT in git): `ip route replace 192.168.42.{20,30,31,35,53}/32 via 192.168.2.1`.
   Required, see gotcha in section 7. Without them the subnet router cannot reach any LB IP.
 - mandark (DO VPS, ansible `site.yaml`): tailscale role (`tag:edge`, accept-routes, no DNS, peer relay UDP 40000,
   `tailscale serve` tcp/3553 -> loopback arcane-agent), `traefik-vps` = pure L4: `:443` TLS passthrough + PROXY v2

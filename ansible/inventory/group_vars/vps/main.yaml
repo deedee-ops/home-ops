@@ -21,8 +21,8 @@ tailscale_advertise_tags:
   - tag:edge
 # envoy-external sits behind the NAS subnet router.
 tailscale_accept_routes: true
-# The tailnet split DNS points ajgon.casa at 192.168.42.1:53, which tag:edge may not
-# reach - accepting it would break name resolution on the box.
+# The tailnet DNS server is blocky (192.168.42.53:53), which tag:edge may not reach -
+# accepting it would break name resolution on the box.
 tailscale_accept_dns: false
 # Peer relay for devices stuck behind NAT (home is CGNAT). Open on UDP, publicly.
 tailscale_relay_server_port: 40000
