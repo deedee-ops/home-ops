@@ -18,10 +18,6 @@ upstreams:
       - https://1.1.1.1/dns-query#cloudflare-dns.com
       - https://1.0.0.1/dns-query#cloudflare-dns.com
 
-bootstrapDns:
-  - upstream: https://9.9.9.9/dns-query#dns.quad9.net
-  - upstream: https://1.1.1.1/dns-query#cloudflare-dns.com
-
 conditional:
   mapping:
     ${ROOT_DOMAIN}: 192.168.42.1
@@ -37,21 +33,41 @@ clientLookup:
 customDNS:
   mapping:
     healthcheck.blocky: 127.0.0.1
+    manuals.playstation.net: 192.168.42.30
 
 blocking:
   denylists:
     ads:
-      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/hagezi/pro.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/majkiit/hostfile.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/perflyst/SmartTV.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/windowsspyblocker/spy.txt
     threats:
-      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/hagezi/tif.txt
+    private:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/private.txt
+    amazon:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/hagezi/native.amazon.txt
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/amazon.txt
+    samsung:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/samsung.txt
+    playstation:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/playstation.txt
   allowlists:
-    ads:
-      - |
-        # inline allowlist, one domain per line
+    playstation:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/allowlists/custom/playstation.txt
   clientGroupsBlock:
     default:
       - ads
       - threats
+      - private
+    192.168.3.0/24:
+      - ads
+      - threats
+      - private
+      - amazon
+      - samsung
+      - playstation
   blockType: zeroIp
   blockTTL: 1m
   loading:

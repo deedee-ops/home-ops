@@ -10,6 +10,23 @@ specs:
         app.kubernetes.io/name: blocky
     egress:
       - toCIDRSet:
+          - cidr: 9.9.9.9/32
+          - cidr: 149.112.112.112/32
+          - cidr: 1.1.1.1/32
+          - cidr: 1.0.0.1/32
+        toPorts:
+          - ports:
+              - port: "443"
+                protocol: TCP
+      - toEndpoints:
+          - matchLabels:
+              io.kubernetes.pod.namespace: forgejo-system
+              app.kubernetes.io/name: dufs-dnslists
+        toPorts:
+          - ports:
+              - port: "5000"
+                protocol: TCP
+      - toCIDRSet:
           - cidr: 192.168.42.1/32
         toPorts:
           - ports:

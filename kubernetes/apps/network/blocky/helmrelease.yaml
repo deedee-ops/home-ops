@@ -20,8 +20,6 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         pod:
-          labels:
-            egress.cilium.io/internet: "true"
           priorityClassName: system-cluster-critical
         containers:
           app:
