@@ -1,0 +1,78 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/blocky.config.json
+ports:
+  dns: 5353
+  http: 4000
+
+connectIPVersion: v4
+
+upstreams:
+  init:
+    strategy: fast
+  strategy: parallel_best
+  timeout: 2s
+  groups:
+    default:
+      - https://9.9.9.9/dns-query#dns.quad9.net
+      - https://149.112.112.112/dns-query#dns.quad9.net
+      - https://1.1.1.1/dns-query#cloudflare-dns.com
+      - https://1.0.0.1/dns-query#cloudflare-dns.com
+
+bootstrapDns:
+  - upstream: https://9.9.9.9/dns-query#dns.quad9.net
+  - upstream: https://1.1.1.1/dns-query#cloudflare-dns.com
+
+conditional:
+  mapping:
+    ${ROOT_DOMAIN}: 192.168.42.1
+    internal: 192.168.42.1
+    168.192.in-addr.arpa: 192.168.42.1
+    ".": 192.168.42.1
+
+clientLookup:
+  upstream: 192.168.42.1
+  singleNameOrder:
+    - 1
+
+customDNS:
+  mapping:
+    healthcheck.blocky: 127.0.0.1
+
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt
+    threats:
+      - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt
+  allowlists:
+    ads:
+      - |
+        # inline allowlist, one domain per line
+  clientGroupsBlock:
+    default:
+      - ads
+      - threats
+  blockType: zeroIp
+  blockTTL: 1m
+  loading:
+    strategy: fast
+    refreshPeriod: 4h
+    downloads:
+      timeout: 60s
+      attempts: 5
+      cooldown: 10s
+
+caching:
+  prefetching: true
+  cacheTimeNegative: 5m
+
+prometheus:
+  enable: true
+  path: /metrics
+
+queryLog:
+  type: none
+
+log:
+  level: info
+  format: json
