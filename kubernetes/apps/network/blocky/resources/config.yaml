@@ -53,6 +53,8 @@ blocking:
       - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/samsung.txt
     playstation:
       - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/custom/playstation.txt
+    bypass:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/hagezi/doh-vpn-proxy-bypass.txt
   allowlists:
     playstation:
       - http://dufs-dnslists.forgejo-system.svc.cluster.local/allowlists/custom/playstation.txt
@@ -68,6 +70,12 @@ blocking:
       - amazon
       - samsung
       - playstation
+      - bypass
+    192.168.4.0/24:
+      - ads
+      - threats
+      - private
+      - bypass
   blockType: zeroIp
   blockTTL: 1m
   loading:
