@@ -128,7 +128,6 @@ need whether my cluster is online or not and (3) The "hit by a bus factor" - wha
 | [GitHub](https://github.com/)                   | Hosting this repository and continuous integration/deployments | Free           |
 | [healthchecks.io](https://healthchecks.io/)     | Heartbeats monitoring                                          | Free           |
 | [Migadu](https://migadu.com/)                   | Email hosting                                                  | $19/yr         |
-| [NextDNS](https://nextdns.io/)                  | Ad filtering                                                   | ~$20/yr        |
 | [Tailscale](https://tailscale.com/)             | Remote access, VPS to home transport                           | Free           |
 |                                                 |                                                                | Total: ~$14/mo |
 
