@@ -56,6 +56,8 @@ blocking:
     bypass:
       - http://dufs-dnslists.forgejo-system.svc.cluster.local/denylists/hagezi/doh-vpn-proxy-bypass.txt
   allowlists:
+    false-positives:
+      - http://dufs-dnslists.forgejo-system.svc.cluster.local/allowlists/custom/false-positives.txt
     playstation:
       - http://dufs-dnslists.forgejo-system.svc.cluster.local/allowlists/custom/playstation.txt
   clientGroupsBlock:
@@ -63,10 +65,12 @@ blocking:
       - ads
       - threats
       - private
+      - false-positives
     192.168.3.0/24:
       - ads
       - threats
       - private
+      - false-positives
       - amazon
       - samsung
       - playstation
@@ -75,6 +79,7 @@ blocking:
       - ads
       - threats
       - private
+      - false-positives
       - bypass
   blockType: zeroIp
   blockTTL: 1m
