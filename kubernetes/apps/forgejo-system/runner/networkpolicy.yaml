@@ -21,8 +21,12 @@ spec:
             - protocol: TCP
               port: "3000"
     - toEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: dufs
+        - matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - dnslists
+                - dufs
       toPorts:
         - ports:
             - protocol: TCP
