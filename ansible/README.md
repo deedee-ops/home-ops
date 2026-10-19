@@ -165,7 +165,7 @@ forwards, so changing them in the inventory is enough.
 | `tailscale_serve_tcp` | `{}` | Tailnet port → local `host:port` forwards |
 
 On `mandark` (see `group_vars/vps/main.yaml`) the node is `tag:edge`, accepts routes, does
-**not** accept DNS (the split DNS server is outside what `tag:edge` may reach), runs a
+**not** accept DNS (the tailnet DNS server, blocky, is outside what `tag:edge` may reach), runs a
 peer relay on UDP 40000 and forwards tailnet `:3553` to the loopback-only arcane-agent.
 
 ### docker

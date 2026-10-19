@@ -19,7 +19,7 @@ tailscale_advertise_tags: []
 # Install routes advertised by subnet routers. Linux defaults to off.
 tailscale_accept_routes: false
 
-# Use the tailnet DNS settings (MagicDNS + split DNS).
+# Use the tailnet DNS settings (MagicDNS + global nameserver).
 tailscale_accept_dns: true
 
 # UDP port to serve as a peer relay on; empty disables the relay.

@@ -69,6 +69,7 @@ resource "tailscale_acl" "policy" {
           "${local.tailscale_edge_ingress}:80",
           "192.168.42.1:22",
           "192.168.42.1:53",
+          "192.168.42.53:53",
           "192.168.2.1:443",
           "tag:router:22",
         ]
@@ -106,22 +107,14 @@ resource "tailscale_tailnet_settings" "settings" {
   regional_routing_on            = false
 }
 
+# All tailnet DNS goes to blocky (it forwards local zones to UniFi itself), reached through
+# the NAS subnet router - the NAS needs a /32 route for it like the other LB IPs.
 resource "tailscale_dns_configuration" "dns" {
   magic_dns          = true
-  override_local_dns = false
+  override_local_dns = true
 
-  split_dns {
-    domain = "ajgon.casa"
-    nameservers {
-      address = "192.168.42.1"
-    }
-  }
-
-  split_dns {
-    domain = "internal"
-    nameservers {
-      address = "192.168.42.1"
-    }
+  nameservers {
+    address = "192.168.42.53"
   }
 }
 
