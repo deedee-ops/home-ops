@@ -7,8 +7,8 @@ components:
   - ../../../../components/namespace
 resources:
   - ./_namespace.yaml
-  - ./dnslists.yaml
-  - ./dufs.yaml
+  - ./dufs-dnslists.yaml
+  - ./dufs-schemas.yaml
   - ./forgejo.yaml
   - ./renovate.yaml
   - ./runner.yaml

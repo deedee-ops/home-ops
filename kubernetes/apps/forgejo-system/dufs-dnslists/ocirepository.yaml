@@ -3,7 +3,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: dufs
+  name: dufs-dnslists
 spec:
   interval: 15m
   layerSelector:
