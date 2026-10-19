@@ -3,14 +3,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: dufs
+  name: dufs-schemas
 spec:
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
   patches: []
-  path: ./kubernetes/apps/forgejo-system/dufs
+  path: ./kubernetes/apps/forgejo-system/dufs-schemas
   postBuild:
     substitute:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"

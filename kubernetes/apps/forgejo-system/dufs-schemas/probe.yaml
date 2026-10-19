@@ -3,9 +3,9 @@
 apiVersion: monitoring.coreos.com/v1
 kind: Probe
 metadata:
-  name: dufs
+  name: dufs-schemas
 spec:
-  jobName: dufs
+  jobName: dufs-schemas
   interval: 1m
   scrapeTimeout: 15s
   module: https_external
