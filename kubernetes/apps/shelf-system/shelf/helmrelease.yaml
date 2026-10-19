@@ -21,7 +21,7 @@ spec:
           01-db-migrate:
             image: &shelfImg
               repository: ghcr.io/shelf-nu/shelf.nu
-              tag: latest@sha256:98a2fbdc48ab084769ed6190c4b219a3c00cfe22011326e63bb3b2d21203b72f
+              tag: latest@sha256:97576850ec06448683ebdbbdcf2b5bb58733727a04ae48987bb2b3698cca7477
             command:
               - /bin/sh
               - -c
