@@ -24,18 +24,6 @@
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,
-      schedule: ["after 12pm on Monday"],
-    },
-    {
-      description: "Auto-merge super-high-cadence OCI packages weekly",
-      matchDatasources: ["docker"],
-      matchUpdateTypes: ["minor", "patch", "digest", "pinDigest"],
-      matchPackageNames: [
-        "/hermes-agent/",
-      ],
-      automerge: true,
-      automergeType: "pr",
-      ignoreTests: false,
       schedule: ["before 12pm on Monday"],
     },
     {
