@@ -82,9 +82,8 @@ spec:
     route:
       app:
         annotations:
-          gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 200"]
-            url: "https://dnslists.${ROOT_DOMAIN}/__dufs__/health"
+          gatus.home-operations.com/endpoint: |
+            name: dufs-dnslists
         hostnames:
           - "dnslists.${ROOT_DOMAIN}"
         parentRefs:
