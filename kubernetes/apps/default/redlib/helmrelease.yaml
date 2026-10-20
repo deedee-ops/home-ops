@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: registry.${ROOT_DOMAIN}/tools/redlib
-              tag: latest@sha256:73fcfda2392938e8a80959e9a08a100393b37f8fff78eb4c4936e5c70d46232d
+              tag: latest@sha256:5bf6834dc72725a211d98d3aad87cc18248eb5111ba0f6de1126756a2c5c2d09
             env:
               PORT: &port 8080
               # Instance-level settings.
