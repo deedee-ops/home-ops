@@ -40,7 +40,7 @@ spec:
               GEOPULSE_PUBLIC_BASE_URL: https://geopulse.${ROOT_DOMAIN}
               GEOPULSE_USER_DEFAULT_MEASURE_UNIT: METRIC
               # renovate: datasource=docker depName=ghcr.io/tess1o/geopulse-ui
-              GEOPULSE_VERSION: 2.0.0
+              GEOPULSE_VERSION: 2.1.0
               NATIVE_IMAGE_OPTS: >-
                 -XX:MaximumHeapSizePercent=70
                 -XX:MaximumYoungGenerationSizePercent=15
@@ -98,7 +98,7 @@ spec:
           ui:
             image:
               repository: ghcr.io/tess1o/geopulse-ui
-              tag: 2.0.0@sha256:cbcf809eeb1ae22b8230d4f8b488da02a89e3040b9a23d40a4edd1845ac83e5b
+              tag: 2.1.0@sha256:eb6b0f94fd058d2d8dd06f620d108130489499ceaf309200828fbf4331631476
             command:
               - /bin/sh
               - -c
