@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/bookorbit/bookorbit
-              tag: 3.4.0@sha256:99539be044c94f10fa5fba616cb08e1b128deb4996c975d181a950818a8632e4
+              tag: 3.5.0@sha256:1534bc7d696179141875b0298ea7916be4469eb2eb9250347873eaaa9728b5a8
             env:
               APP_URL: https://bookorbit.${ROOT_DOMAIN}
               LIBRARY_BROWSE_ROOT: /books
@@ -120,8 +120,8 @@ spec:
                       value: >-
                         default-src 'self' data: blob:;
                         object-src 'none';
-                        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-                        style-src 'self' 'unsafe-inline';
+                        script-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
+                        style-src 'self' 'unsafe-inline' data: blob:;
     persistence:
       books:
         type: custom
