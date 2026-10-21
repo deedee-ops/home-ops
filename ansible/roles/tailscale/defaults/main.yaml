@@ -5,7 +5,7 @@
 # dependency as docker/tailscale/compose.yaml, so both bump in one PR. The leading `v`
 # is stripped for apt.
 # renovate: datasource=docker depName=ghcr.io/tailscale/tailscale
-tailscale_version: v1.104.1
+tailscale_version: v1.104.2
 
 # Used only for the first login; afterwards the node identity lives in
 # /var/lib/tailscale. A tagged, preauthorized, single-use key from opentofu.
