@@ -18,7 +18,7 @@ services:
       TS_ROUTES: 192.168.42.0/24,192.168.2.0/24
       TS_EXTRA_ARGS: --advertise-tags=tag:router --advertise-exit-node
       TS_NO_LOGS_NO_SUPPORT: "true"
-    image: ghcr.io/tailscale/tailscale:v1.104.1
+    image: ghcr.io/tailscale/tailscale:v1.104.2
     container_name: tailscale
     restart: unless-stopped
     network_mode: host
