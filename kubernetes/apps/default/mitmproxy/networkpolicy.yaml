@@ -21,3 +21,4 @@ specs:
         toPorts:
           - ports:
               - port: "8080"
+              - port: "1053"
