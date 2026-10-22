@@ -15,6 +15,7 @@ spec:
         - matchName: www.reddit.com
         - matchName: www.redditstatic.com
         - matchPattern: "*.redd.it"
+        - matchPattern: "*.reddit.map.fastly.net"
         - matchPattern: "*.redditmedia.com"
       toPorts:
         - ports:
