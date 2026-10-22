@@ -14,6 +14,7 @@ repositories:
 exclude_caches: false
 exclude_if_present:
   - .nobackup
+files_cache: mtime,size
 
 # directories
 user_runtime_directory: /config/homelab/runtime
