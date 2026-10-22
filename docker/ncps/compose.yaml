@@ -27,7 +27,7 @@ services:
     read_only: true
 
   ncps-init:
-    image: ghcr.io/kalbasit/ncps:v0.10.0@sha256:25f2272a11ce267fce4af49812b6f5d9032c0cb348711928254ae5fa20e3f2de
+    image: ghcr.io/kalbasit/ncps:v0.10.1@sha256:75fe26ea14bc35d336eca877a2e94a768d30631f415198242bbf1e5203f26a47
     container_name: ncps-init
     user: 1000:1000
     restart: "no"
@@ -65,7 +65,7 @@ services:
         condition: service_completed_successfully
       ncps-secret:
         condition: service_completed_successfully
-    image: ghcr.io/kalbasit/ncps:v0.10.0@sha256:25f2272a11ce267fce4af49812b6f5d9032c0cb348711928254ae5fa20e3f2de
+    image: ghcr.io/kalbasit/ncps:v0.10.1@sha256:75fe26ea14bc35d336eca877a2e94a768d30631f415198242bbf1e5203f26a47
     container_name: ncps
     user: 1000:1000
     restart: unless-stopped
