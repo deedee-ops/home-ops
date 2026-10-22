@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mitmproxy-ingress
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: mitmproxy
+    ingress:
+      - fromEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: envoy
+              io.kubernetes.pod.namespace: network
+        toPorts:
+          - ports:
+              - port: "8081"
+      - fromCIDRSet:
+          - cidr: 192.168.0.0/16
+        toPorts:
+          - ports:
+              - port: "8080"

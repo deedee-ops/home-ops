@@ -1,0 +1,41 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: mitmproxy
+spec:
+  components:
+    - ../../../components/oidc
+  interval: 1h
+  patches:
+    - patch: |-
+        - op: replace
+          path: /spec/oidc/redirectURL
+          value: "https://mitm.${ROOT_DOMAIN}/oauth2/callback"
+      target:
+        group: gateway.envoyproxy.io
+        kind: SecurityPolicy
+    - patch: |-
+        - op: replace
+          path: /spec/callbackUrls
+          value:
+            - "https://mitm.${ROOT_DOMAIN}/oauth2/callback"
+        - op: replace
+          path: /spec/launchUrl
+          value: "https://mitm.${ROOT_DOMAIN}"
+      target:
+        group: pocketid.internal
+        kind: PocketIDOIDCClient
+  path: ./kubernetes/apps/default/mitmproxy
+  postBuild:
+    substitute:
+      APP: mitmproxy
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: default
+  wait: false
