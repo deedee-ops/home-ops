@@ -16,6 +16,7 @@ services:
       BORGMATIC_NAS_REPO_BORGBASE_US: "${BORGMATIC_NAS_REPO_BORGBASE_US}"
     image: ghcr.io/borgmatic-collective/borgmatic:2.1.10@sha256:b1d6d387efb9f4f1c51f24222aca44286f3d60566ffc6ff08d562726069e40f2
     container_name: borgmatic
+    cpu_shares: 128
     restart: always
     configs:
       - source: homelab
