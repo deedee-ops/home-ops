@@ -18,6 +18,21 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
+  name: openbao-trusted
+spec:
+  vault:
+    path: pki_trusted/sign/wildcard
+    server: https://${VAULT_HOST}
+    caBundle: ${CA_BUNDLE}
+    auth:
+      tokenSecretRef:
+        name: clusterissuer-secret
+        key: token
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/clusterissuer_v1.json
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
   name: letsencrypt-production
 spec:
   acme:

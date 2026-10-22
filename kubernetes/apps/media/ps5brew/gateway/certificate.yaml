@@ -1,12 +1,4 @@
 ---
-# yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/issuer_v1.json
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: ps5brew-selfsigned
-spec:
-  selfSigned: {}
----
 # yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -15,7 +7,8 @@ metadata:
 spec:
   secretName: ps5brew-manuals-tls
   issuerRef:
-    name: ps5brew-selfsigned
-    kind: Issuer
+    name: openbao-trusted
+    kind: ClusterIssuer
+  commonName: manuals.playstation.net
   dnsNames:
     - manuals.playstation.net
