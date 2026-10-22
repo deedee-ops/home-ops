@@ -21,7 +21,7 @@ spec:
           app:
             image: &img
               repository: ghcr.io/tchapi/davis
-              tag: 5.5.0@sha256:e29892cc435328d509606b1a719264a95925bf3cb41a77facbeb0ad26e06bbb3
+              tag: 5.5.1@sha256:182191533dbcc6b9dd659915fcd01088c6e1aa5675e45da440c5955d57a460b2
             env: &env
               ADMIN_AUTH_BYPASS: "true"
               APP_ENV: prod
