@@ -76,6 +76,48 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 1Gi
+          coredns:
+            image:
+              repository: mirror.gcr.io/coredns/coredns
+              tag: 1.14.7@sha256:7efd3c635b03efd68c4e8398fc45f0d993d0e9ab016f72c1cefb0fd6d01aa286
+            args:
+              - -conf
+              - /etc/coredns/Corefile
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8091
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ready
+                    port: 8181
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                add:
+                  - NET_BIND_SERVICE
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -110,6 +152,14 @@ spec:
           https:
             port: 443
             targetPort: *proxyPort
+          dns-tcp:
+            port: 53
+            targetPort: &dnsPort 1053
+            protocol: TCP
+          dns-udp:
+            port: 53
+            targetPort: *dnsPort
+            protocol: UDP
     route:
       app:
         hostnames:
@@ -125,8 +175,23 @@ spec:
       addons:
         type: configMap
         name: mitmproxy-configmap
-        globalMounts:
-          - path: /addons
-            readOnly: true
+        advancedMounts:
+          main:
+            app:
+              - path: /addons
+                readOnly: true
       config:
         type: emptyDir
+        advancedMounts:
+          main:
+            app:
+              - path: /config
+      corefile:
+        type: configMap
+        name: mitmproxy-configmap
+        advancedMounts:
+          main:
+            coredns:
+              - path: /etc/coredns/Corefile
+                subPath: Corefile
+                readOnly: true

@@ -9,6 +9,7 @@ resources:
 configMapGenerator:
   - name: mitmproxy-configmap
     files:
+      - ./resources/Corefile
       - ./resources/passthrough.py
 generatorOptions:
   disableNameSuffixHash: true

@@ -1,0 +1,11 @@
+.:1053 {
+    errors
+    health :8091
+    ready :8181
+    template IN A {
+        answer "{{ .Name }} 60 IN A 192.168.42.69"
+    }
+    template ANY ANY {
+        rcode NOERROR
+    }
+}
