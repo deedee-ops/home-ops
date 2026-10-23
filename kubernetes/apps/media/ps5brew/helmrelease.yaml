@@ -148,7 +148,7 @@ spec:
             driver: nfs.csi.k8s.io
             volumeAttributes:
               server: nas.internal
-              share: "/mnt/tank/retro/roms/PS5/homebrew"
+              share: "/mnt/tank/retro/ps5brew"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
           - path: /data
