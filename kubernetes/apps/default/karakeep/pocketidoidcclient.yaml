@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: karakeep
 spec:
+  pkceEnabled: true
   launchUrl: https://karakeep.${ROOT_DOMAIN}
   callbackUrls:
     - "https://karakeep.${ROOT_DOMAIN}/api/auth/callback/custom"
