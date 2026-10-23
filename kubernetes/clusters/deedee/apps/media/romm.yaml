@@ -22,6 +22,9 @@ spec:
         - op: replace
           path: /spec/resources/limits/memory
           value: 4Gi
+        - op: replace
+          path: /spec/args/1
+          value: --proactor_threads=4
   path: ./kubernetes/apps/media/romm
   postBuild:
     substitute:
