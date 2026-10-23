@@ -19,7 +19,7 @@ spec:
     - --cluster_mode=emulated
     - --dbfilename=dump
   snapshot:
-    cron: "*/5 * * * *"
+    cron: "0 * * * *"
     persistentVolumeClaimSpec:
       accessModes:
         - ReadWriteOnce
