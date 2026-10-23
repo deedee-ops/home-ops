@@ -3,4 +3,4 @@
 set -euo pipefail
 
 echo "INFO : Refreshing jellyfin ..."
-curl -X POST "http://jellyfin:8096/library/refresh?api_key=${JELLYFIN_API_KEY}"
+curl -X POST -H "Authorization: MediaBrowser Token=\"${JELLYFIN_API_KEY}\"" http://jellyfin:8096/Library/Refresh
