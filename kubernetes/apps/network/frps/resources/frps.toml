@@ -1,0 +1,15 @@
+bindPort = 7000
+vhostHTTPPort = 8080
+
+auth.method = "token"
+auth.token = "{{ .Envs.FRP_AUTH_TOKEN }}"
+
+transport.tls.force = true
+transport.tls.certFile = "/tls/tls.crt"
+transport.tls.keyFile = "/tls/tls.key"
+
+detailedErrorsToClient = false
+custom404Page = "/etc/frp/404.html"
+
+log.to = "console"
+log.level = "info"

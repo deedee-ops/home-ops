@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: frps
+spec:
+  secretName: frps-tls
+  issuerRef:
+    name: openbao
+    kind: ClusterIssuer
+  commonName: "frp.${ROOT_DOMAIN}"
+  dnsNames:
+    - "frp.${ROOT_DOMAIN}"

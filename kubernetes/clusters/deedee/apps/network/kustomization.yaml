@@ -11,4 +11,5 @@ resources:
   - ./envoy-gateway.yaml
   - ./external-dns-cloudflare.yaml
   - ./external-dns-unifi.yaml
+  - ./frps.yaml
   - ./smtp-relay.yaml
