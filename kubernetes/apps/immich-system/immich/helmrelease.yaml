@@ -190,7 +190,7 @@ spec:
           app:
             image:
               repository: ghcr.io/salvoxia/immich-folder-album-creator
-              tag: 1.0.0@sha256:0bfc95b501209d158bca089135efb236f276a8a4f4ec6b16ca8455ea562764ad
+              tag: 2.0.0@sha256:783d592b0c9fd9f9eb601d50706825a4fa4f4830b064445ef80eca9e3a62a548
             env:
               ALBUM_LEVELS: "1"
               API_URL: http://immich-api/api/
