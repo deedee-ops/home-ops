@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/ps5brew
-              tag: latest@sha256:18470e61c4f57194a8712a7d98600d4db05597d96b51b1d02320a8dac2549f81
+              tag: latest@sha256:8707b3661f66d454426aff5b6b85d31fc9c53e2c4a391c00a3bdcd0bc89c0fb3
             args:
               - "--payloads.name=ps5brew.${ROOT_DOMAIN}"
             env:
