@@ -262,7 +262,7 @@ spec:
           01-metadata:
             image: &satosaImg
               repository: docker.io/library/satosa
-              tag: 8.6.0@sha256:4ad3031d8ac5c07b4f15e7ccf589f1d3123d299873bf3336c5ed9cd8eb0c4254
+              tag: 8.6.0@sha256:596fca0edda8d86c2757ce71257efdebf5a686e2a4efb11b209a5821afbb8d9a
             command:
               - /bin/sh
               - -c
