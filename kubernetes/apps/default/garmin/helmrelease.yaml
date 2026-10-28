@@ -39,7 +39,7 @@ spec:
           influxdb:
             image:
               repository: public.ecr.aws/docker/library/influxdb
-              tag: 1.13.1@sha256:08c8d90702423fdc7e19e90b89b828772404f571e44abbd113880ab85ca47e1f
+              tag: 1.13.1@sha256:f2faf6a47ed44645d31fa7cee4961f26147626c2f82f8bd40647fff2a5379ae1
             env:
               INFLUXDB_DATA_INDEX_VERSION: tsi1
               INFLUXDB_DB: *dbName
