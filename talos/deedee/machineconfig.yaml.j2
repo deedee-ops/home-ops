@@ -276,7 +276,7 @@ config:
   shutdownGracePeriod: 90s
   shutdownGracePeriodCriticalPods: 60s
 defaultRuntimeSeccompProfileEnabled: true
-image: ghcr.io/siderolabs/kubelet:v1.37.1
+image: ghcr.io/siderolabs/kubelet:v1.37.2
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
@@ -448,7 +448,7 @@ certExtraSANs:
 extraArgs:
   enable-aggregator-routing: "true" # mandatory without kube-proxy
   feature-gates: HPAScaleToZero=true
-image: registry.k8s.io/kube-apiserver:v1.37.1
+image: registry.k8s.io/kube-apiserver:v1.37.2
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
@@ -476,7 +476,7 @@ kind: KubeControllerManagerConfig
 extraArgs:
   bind-address: 0.0.0.0
   feature-gates: HPAScaleToZero=true
-image: registry.k8s.io/kube-controller-manager:v1.37.1
+image: registry.k8s.io/kube-controller-manager:v1.37.2
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
@@ -487,7 +487,7 @@ enabled: false
 apiVersion: v1alpha1
 kind: KubeProxyConfig
 enabled: false
-image: registry.k8s.io/kube-proxy:v1.37.1
+image: registry.k8s.io/kube-proxy:v1.37.2
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
@@ -509,7 +509,7 @@ config:
                 whenUnsatisfiable: ScheduleAnyway
 extraArgs:
   bind-address: 0.0.0.0
-image: registry.k8s.io/kube-scheduler:v1.37.1
+image: registry.k8s.io/kube-scheduler:v1.37.2
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/talos.config.json
 apiVersion: v1alpha1
