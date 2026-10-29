@@ -23,7 +23,8 @@ spec:
               repository: ghcr.io/rommapp/romm
               tag: 5.4.1@sha256:8677fb7b81b1d3db20b849e989a1dadc2a11159e51eb34a2acdcb01102274edf
             env:
-              # DISABLE_USERPASS_LOGIN: "true"
+              DISABLE_USERPASS_LOGIN: "true"
+              DISABLE_DOWNLOAD_ENDPOINT_AUTH: "true"
               DB_NAME: romm
               DB_PORT: 5432
               ENABLE_RESCAN_ON_FILESYSTEM_CHANGE: "true"
@@ -128,7 +129,25 @@ spec:
           - name: envoy-internal
             namespace: network
         rules:
-          - backendRefs:
+          # romm returns 405 for HEAD, breaking PS3 pkgi refresh
+          - name: pkgi-head
+            matches:
+              - method: HEAD
+                path:
+                  type: PathPrefix
+                  value: /api/feeds/pkgi
+              - method: HEAD
+                path:
+                  type: PathPrefix
+                  value: /api/roms
+            filters:
+              - type: ExtensionRef
+                extensionRef:
+                  group: gateway.envoyproxy.io
+                  kind: HTTPRouteFilter
+                  name: romm-ok
+          - name: app
+            backendRefs:
               - kind: Service
                 name: romm
                 port: 80

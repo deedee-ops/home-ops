@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/gateway.envoyproxy.io/httproutefilter_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: romm-ok
+spec:
+  directResponse:
+    # hack for pkgi HEAD requests expecting success
+    statusCode: 200
+    # hack for pkgi HEAD requests expecting `Content-Length` header
+    body:
+      type: Inline
+      inline: "OK"
