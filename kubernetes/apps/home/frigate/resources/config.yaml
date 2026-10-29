@@ -62,15 +62,20 @@ lpr:
   min_plate_length: 4
 
 go2rtc:
+  ffmpeg:
+    rtsp/vaapi: >-
+      -hwaccel vaapi -hwaccel_output_format vaapi -hwaccel_flags allow_profile_mismatch
+      -fflags nobuffer -flags low_delay -timeout {timeout} -user_agent go2rtc/ffmpeg -rtsp_flags prefer_tcp -i {input}
+    hflip/vaapi: -vf transpose_vaapi=dir=hflip
   streams:
     doorbell_street_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=0#media=video
+      - ffmpeg:rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=0#video=h264/vaapi#input=rtsp/vaapi#raw=hflip/vaapi
     doorbell_street_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=1#media=video
+      - ffmpeg:rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=1#video=h264/vaapi#input=rtsp/vaapi#raw=hflip/vaapi
     doorbell_alley_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=0#media=video
+      - ffmpeg:rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=0#video=h264/vaapi#input=rtsp/vaapi#raw=hflip/vaapi
     doorbell_alley_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=1#media=video
+      - ffmpeg:rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=1#video=h264/vaapi#input=rtsp/vaapi#raw=hflip/vaapi
     garage_record:
       - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5105/cam/realmonitor?channel=1&subtype=0#media=video
     garage_detect:
