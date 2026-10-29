@@ -24,7 +24,7 @@ power cut is all-or-nothing.
 
 Ordering is forced by two dependencies:
 
-- Talos mounts **28 NFS shares from `nas.internal`**. If the NAS goes first those
+- Talos mounts **28 NFS shares from `nas-k8s.internal`**. If the NAS goes first those
   mounts hang and the drain stalls. NAS must follow Talos.
 - The switch carries all NUT traffic and the Pi coordinates everything, so the Pi
   cuts the bank last, killing itself, the switch and the router together.
@@ -100,7 +100,7 @@ NODES_DOWN   poll TCP 50000 on .21/.22/.23 until all refuse, or 120s
         │  still answering at the deadline → retry talosctl shutdown from here,
         │  where the per-node exit status is logged, then wait one more window
         ▼   talos_nodes_down | talos_nodes_down_timeout → talos_nodes_down_giving_up
-NAS     ssh truenas_admin@nas.internal 'midclt call -j system.shutdown <reason>'
+NAS     ssh truenas_admin@nas-k8s.internal 'midclt call -j system.shutdown <reason>'
         │    poll TCP 22 until it refuses, or 300s
         ▼                          nas_begin → nas_down | nas_timeout
 HANDOFF                            handoff
@@ -337,7 +337,7 @@ Three secrets reach the Pi at provision time and never at runtime:
   the `envconsul`/`bao` pattern in `devenv.nix`. Requires `VAULT_TOKEN` in the
   environment; the role asserts on it.
 - `ups_cascade_nas_private_key` — the private key authorised for
-  `truenas_admin@nas.internal`. Stored as `vault_ups_cascade_nas_private_key` in
+  `truenas_admin@nas-k8s.internal`. Stored as `vault_ups_cascade_nas_private_key` in
   `inventory/group_vars/nut/vault.yaml` and mapped to its real name in
   `group_vars/nut/main.yaml`, following the same `vault_`-prefix convention as
   the `nut` passwords. The role asserts it is set and writes it to

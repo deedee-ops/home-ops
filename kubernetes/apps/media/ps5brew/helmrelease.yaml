@@ -227,7 +227,7 @@ spec:
           csi:
             driver: nfs.csi.k8s.io
             volumeAttributes:
-              server: nas.internal
+              server: nas-k8s.internal
               share: "/mnt/tank/retro/ps5brew"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         advancedMounts:
@@ -246,7 +246,7 @@ spec:
           csi:
             driver: nfs.csi.k8s.io
             volumeAttributes:
-              server: nas.internal
+              server: nas-k8s.internal
               share: "/mnt/tank/retro/romm/library/mappings"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         advancedMounts:

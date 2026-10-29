@@ -52,7 +52,7 @@ spec:
               (
                 (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
                   * on() group_left()
-                (up{job="node-exporter", instance="nas.internal:9100"} == 1)
+                (up{job="node-exporter", instance="nas-k8s.internal:9100"} == 1)
                   * 0
               )
             )
@@ -73,7 +73,7 @@ spec:
               (
                 (max_over_time(probe_success{job="nfs_probe", instance=~".+:2049"}[2m]) == 1)
                   * on() group_left()
-                (up{job="node-exporter", instance="nas.internal:9100"} == 1)
+                (up{job="node-exporter", instance="nas-k8s.internal:9100"} == 1)
                   * 0
               )
             )

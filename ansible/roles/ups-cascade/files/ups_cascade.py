@@ -87,7 +87,7 @@ class Config:
         self.fsd_charge = env_int("UPS_CASCADE_FSD_CHARGE", 20)
         self.dry_run = env_bool("UPS_CASCADE_DRY_RUN", False)
 
-        self.nas_host = env_str("UPS_CASCADE_NAS_HOST", "nas.internal")
+        self.nas_host = env_str("UPS_CASCADE_NAS_HOST", "nas-k8s.internal")
         self.nas_user = env_str("UPS_CASCADE_NAS_USER", "truenas_admin")
         self.nas_shutdown_cmd = env_str("UPS_CASCADE_NAS_SHUTDOWN_CMD", "sudo midclt call system.shutdown")
 

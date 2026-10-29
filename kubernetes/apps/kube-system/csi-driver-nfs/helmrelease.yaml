@@ -16,7 +16,7 @@ spec:
       create: true
       name: nfs-csi
       parameters:
-        server: nas.internal
+        server: nas-k8s.internal
         share: "/mnt/fast/backups/kubernetes/${CLUSTER}"
       mountOptions:
         - noac

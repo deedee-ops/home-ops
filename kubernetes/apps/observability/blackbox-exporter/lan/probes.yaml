@@ -12,7 +12,7 @@ spec:
     staticConfig:
       static:
         - kvm.internal
-        - nas.internal
+        - nas-k8s.internal
         - unifi.internal
         - zigbee-controller.internal
         - zigbee-router.internal
@@ -86,7 +86,7 @@ spec:
   targets:
     staticConfig:
       static:
-        - nas.internal:2049
+        - nas-k8s.internal:2049
   metricRelabelings:
     - targetLabel: service
       replacement: blackbox-exporter-lan

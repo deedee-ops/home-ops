@@ -364,7 +364,7 @@ csi-cephfs-node.1@<fsid>.ceph-filesystem=/volumes/csi/csi-vol-.../<uuid>
 ```
 
 — which contains no `:/` at all, while the NAS NFS mounts
-(`nas.internal:/mnt/fast/media`) *do*. The obvious `host:/path` heuristic
+(`nas-k8s.internal:/mnt/fast/media`) *do*. The obvious `host:/path` heuristic
 therefore fails in **both** directions: it matches zero CephFS mounts (the
 dangerous direction — the gate passes while CephFS is live) and flags every NFS
 mount as Ceph (blocking direction).

@@ -44,7 +44,7 @@ specs:
         app.kubernetes.io/name: prometheus
     egress:
       - toFQDNs:
-          - matchName: nas.internal
+          - matchName: nas-k8s.internal
         toPorts:
           - ports:
               - port: "9100"

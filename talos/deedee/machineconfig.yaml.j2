@@ -295,7 +295,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: docker.io
 endpoints:
-  - url: http://nas.internal:5010/v2/docker.io
+  - url: http://nas-k8s.internal:5010/v2/docker.io
     overridePath: true
 skipFallback: true
 ---
@@ -304,7 +304,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: codeberg.org
 endpoints:
-  - url: http://nas.internal:5010/v2/codeberg.org
+  - url: http://nas-k8s.internal:5010/v2/codeberg.org
     overridePath: true
 skipFallback: true
 ---
@@ -313,7 +313,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: ghcr.io
 endpoints:
-  - url: http://nas.internal:5010/v2/ghcr.io
+  - url: http://nas-k8s.internal:5010/v2/ghcr.io
     overridePath: true
 skipFallback: true
 ---
@@ -322,7 +322,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: gsoci.azurecr.io
 endpoints:
-  - url: http://nas.internal:5010/v2/gsoci.azurecr.io
+  - url: http://nas-k8s.internal:5010/v2/gsoci.azurecr.io
     overridePath: true
 skipFallback: true
 ---
@@ -331,7 +331,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: mirror.gcr.io
 endpoints:
-  - url: http://nas.internal:5010/v2/mirror.gcr.io
+  - url: http://nas-k8s.internal:5010/v2/mirror.gcr.io
     overridePath: true
 skipFallback: true
 ---
@@ -340,7 +340,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: quay.io
 endpoints:
-  - url: http://nas.internal:5010/v2/quay.io
+  - url: http://nas-k8s.internal:5010/v2/quay.io
     overridePath: true
 skipFallback: true
 ---
@@ -349,7 +349,7 @@ apiVersion: v1alpha1
 kind: RegistryMirrorConfig
 name: registry.k8s.io
 endpoints:
-  - url: http://nas.internal:5010/v2/registry.k8s.io
+  - url: http://nas-k8s.internal:5010/v2/registry.k8s.io
     overridePath: true
 skipFallback: true
 ---

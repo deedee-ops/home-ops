@@ -48,7 +48,7 @@ spec:
     - name: alertname
       value: CephNodeNetworkPacketDrops
     - name: instance
-      value: nas\.internal.*
+      value: nas-k8s\.internal.*
       matchType: "=~"
 ---
 # yaml-language-server: $schema=https://schemas.ajgon.casa/observability.giantswarm.io/silence_v1alpha2.json

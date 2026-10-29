@@ -64,17 +64,17 @@ lpr:
 go2rtc:
   streams:
     doorbell_street_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=0#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=0#media=video
     doorbell_street_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5101/cam/realmonitor?channel=1&subtype=1#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5101/cam/realmonitor?channel=1&subtype=1#media=video
     doorbell_alley_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=0#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=0#media=video
     doorbell_alley_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5104/cam/realmonitor?channel=1&subtype=1#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5104/cam/realmonitor?channel=1&subtype=1#media=video
     garage_record:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=0#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5105/cam/realmonitor?channel=1&subtype=0#media=video
     garage_detect:
-      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas.internal:5105/cam/realmonitor?channel=1&subtype=1#media=video
+      - rtsp://{FRIGATE_DAHUA_USERNAME}:{FRIGATE_DAHUA_PASSWORD}@nas-k8s.internal:5105/cam/realmonitor?channel=1&subtype=1#media=video
 
 cameras:
   doorbell_street:

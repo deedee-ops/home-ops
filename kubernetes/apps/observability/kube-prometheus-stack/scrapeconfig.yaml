@@ -8,7 +8,7 @@ spec:
   scheme: HTTP
   staticConfigs:
     - targets:
-        - nas.internal:9100
+        - nas-k8s.internal:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
@@ -27,7 +27,7 @@ spec:
   scheme: HTTP
   staticConfigs:
     - targets:
-        - nas.internal:9633
+        - nas-k8s.internal:9633
   metricsPath: /metrics
   relabelings:
     - action: replace

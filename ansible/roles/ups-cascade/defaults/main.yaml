@@ -30,7 +30,7 @@ ups_cascade_nodes:
   - name: buttercup
     addr: 192.168.42.23
 
-ups_cascade_nas_host: nas.internal
+ups_cascade_nas_host: nas-k8s.internal
 ups_cascade_nas_user: truenas_admin
 # TrueNAS 25.04+ made the reason a required positional argument; without it the
 # job is created and then fails validation, so ssh still exits 0. -j makes midclt

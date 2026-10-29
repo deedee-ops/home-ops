@@ -11,7 +11,7 @@ specs:
         app.kubernetes.io/instance: blackbox-exporter-lan
     egress:
       - toFQDNs:
-          - matchName: nas.internal
+          - matchName: nas-k8s.internal
         toPorts:
           - ports:
               - port: "2049"

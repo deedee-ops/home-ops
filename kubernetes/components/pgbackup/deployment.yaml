@@ -102,6 +102,6 @@ spec:
         - csi:
             driver: nfs.csi.k8s.io
             volumeAttributes:
-              server: nas.internal
+              server: nas-k8s.internal
               share: /mnt/fast/backups/kubernetes/deedee/databases
           name: dbbackup

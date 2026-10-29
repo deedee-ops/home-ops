@@ -29,7 +29,7 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   (zot `pkg/storage/imagestore/imagestore.go:2061-2076`). LOSING cache.db BREAKS DEDUPED BLOBS. Must be in backup.
 - `${DATA_DOCKER_DIR}/zot/{registry,cache,secret}` are backed up; `cache-downloads` should have `.nobackup`.
 - Talos mirrors (`talos/deedee/machineconfig.yaml.j2` ~L293-360): 7x `RegistryMirrorConfig`
-  `url: http://nas.internal:5010/v2/<host>`, `overridePath: true`, `skipFallback: true`.
+  `url: http://nas-k8s.internal:5010/v2/<host>`, `overridePath: true`, `skipFallback: true`.
 - talos-factory pushes to `zot-registry:5000` using `DOCKER_CONFIG=/docker` written by `talos-factory-secrets`
   (env `REGISTRY_USERNAME`, `REGISTRY_API_KEY`). Core artifacts still pulled direct from ghcr.io (user decision,
   see 8.D2).
@@ -197,7 +197,7 @@ Format: ID | priority | deps | what | how | acceptance | risks.
 - deps: none.
 - what: add to `cache.yaml` sync registries + `talos/deedee/machineconfig.yaml.j2` RegistryMirrorConfig for:
   code.forgejo.org, data.forgejo.org, registry.erwanleboucher.dev, public.ecr.aws, nixery.dev
-  (+ registry.gitlab.com for T2). Same pattern: `destination: /<host>`, `url: http://nas.internal:5010/v2/<host>`,
+  (+ registry.gitlab.com for T2). Same pattern: `destination: /<host>`, `url: http://nas-k8s.internal:5010/v2/<host>`,
   `overridePath: true`, `skipFallback: true`.
 - check: each upstream supports anonymous pull + docker2s2; nixery builds on demand (`latest` tag, mutable).
 - accept: `zot verify` ok; on a node `crictl pull <img>` succeeds and zot-cache logs show sync for new host.
@@ -206,17 +206,18 @@ Format: ID | priority | deps | what | how | acceptance | risks.
 
 ### T4 charts + flux artifacts through zot-cache (MUST)
 
-- T4a bootstrap: `bootstrap/helmfile.d/*.yaml` `chart: oci://<host>/...` -> `oci://nas.internal:5010/<host>/...`;
+- T4a bootstrap: `bootstrap/helmfile.d/*.yaml` `chart: oci://<host>/...` -> `oci://nas-k8s.internal:5010/<host>/...`;
   helmfile/helm needs plain-http: helm `--plain-http` (helm >=3.13) via helmfile `args`/repository settings. VERIFY.
-- T4b apps: all `OCIRepository.spec.url` -> `oci://nas.internal:5010/<host>/...` + `spec.insecure: true`.
+- T4b apps: all `OCIRepository.spec.url` -> `oci://nas-k8s.internal:5010/<host>/...` + `spec.insecure: true`.
   Mechanical rewrite of ~102 files (generate list via `rg -l "kind: OCIRepository"`). Consider a Flux Kustomization
   patch instead? (JSON6902 cannot regex-rewrite URLs; per-file edit is the realistic path.)
 - T4c FluxInstance: `distribution.artifact` -> cache URL. Check flux-operator supports insecure/plain-http artifact
   pulls (option? annotation?). VERIFY in flux-operator docs/source. `distribution.registry: ghcr.io/fluxcd` = image
   prefix -> handled by containerd mirrors, leave.
 - renovate: extend customManager regex to strip cache prefix, e.g.
-  `oci://(?:nas\.internal:5010/)?(?<depName>[^:]+):(?<currentValue>\S+)`; flux manager handles OCIRepository
-  natively -> needs registryAliases `"nas.internal:5010/ghcr.io": "ghcr.io"` etc. VERIFY flux manager honours aliases.
+  `oci://(?:nas-k8s\.internal:5010/)?(?<depName>[^:]+):(?<currentValue>\S+)`; flux manager handles
+  OCIRepository natively -> needs registryAliases `"nas-k8s.internal:5010/ghcr.io": "ghcr.io"` etc. VERIFY flux
+  manager honours aliases.
 - cosign/`spec.verify`: currently 0 OCIRepositories use verify (checked) -> no issue.
 - accept: all OCIRepositories Ready with cache URLs; renovate dashboard still lists chart updates.
 - note: Flux polls each OCIRepository every interval -> keeps chart pull stats fresh (good for retention).
@@ -254,7 +255,7 @@ Format: ID | priority | deps | what | how | acceptance | risks.
 - what: daily in-cluster CronJob: collect image refs from Deployments/StatefulSets/DaemonSets/CronJobs/Jobs templates
   (incl. replicas=0), Talos core images (kubelet, kube-*, from machineconfig), kopiur mover images (find in kopiur
   config/HelmRelease values — CRITICAL for PVC restore), NAS compose images (from repo or a ConfigMap generated in
-  repo), bootstrap chart refs. For each: GET index + `linux/amd64` child via `nas.internal:5010/<host>/...`
+  repo), bootstrap chart refs. For each: GET index + `linux/amd64` child via `nas-k8s.internal:5010/<host>/...`
   (crane/regctl `--insecure`). Charts: pull chart manifest.
 - effect: fills cache for never-repulled images (IfNotPresent) + refreshes pull stats -> retention keeps in-use set.
 - RBAC: list workloads cluster-wide (read-only ClusterRole).

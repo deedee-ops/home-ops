@@ -163,7 +163,7 @@ spec:
           csi:
             driver: nfs.csi.k8s.io
             volumeAttributes:
-              server: nas.internal
+              server: nas-k8s.internal
               share: "/mnt/tank/media"
               mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
         globalMounts:
