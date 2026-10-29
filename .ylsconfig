@@ -2,7 +2,6 @@
   "ignoreFiles": [
     ".forgejo/actionlint.yaml",
     "ansible/inventory/group_vars/*/vault.yaml",
-    "docker/roms-server/config/roms-server.yaml",
     "docker/talos-factory/config/config.yaml",
     "docker/zot/config/*.yaml",
     "kubernetes/apps/default/glance/resources/*.y*ml",

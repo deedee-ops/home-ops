@@ -110,9 +110,9 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
   when version listing fails? -> must test (task T6).
 - tuppr (system-upgrade) uses factory installer refs.
 - NAS compose images (non-zot, non-garage): ghcr.io (borgmatic, arcane agent, ncps, openbao, image-factory,
-  docker-socket-proxy, traefik-to-unifi, tailscale), docker.io implicit (alpine, garage-ui, ftpserver,
-  ps3netsrv), quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
-  registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras, roms-server).
+  docker-socket-proxy, traefik-to-unifi, tailscale), docker.io implicit (alpine, garage-ui, ftpserver),
+  quay.io (matchbox, node-exporter, smartctl-exporter), public.ecr.aws (traefik),
+  registry.gitlab.com (tftpd), registry.${ROOT_DOMAIN} (cameras).
 - NAS docker daemon: `Mirrors: null`, insecure CIDRs `127.0.0.0/8`, `::1/128` => `localhost:5010` works over http
   with NO daemon change. Only docker.io supports daemon `registry-mirrors`.
 - VPS (mandark) stacks: `traefik-vps`, `arcane-agent` (ansible `docker_compose_stacks`), `rustdesk` (arcane).
