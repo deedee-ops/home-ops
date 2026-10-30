@@ -8,6 +8,11 @@ spec:
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: kube-prometheus-stack
+      namespace: observability
   interval: 1h
   patches: []
   path: ./kubernetes/apps/observability/kube-prometheus-stack

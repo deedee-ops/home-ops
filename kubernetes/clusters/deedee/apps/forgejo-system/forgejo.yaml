@@ -13,6 +13,11 @@ spec:
       namespace: database
     - name: rook-ceph-cluster
       namespace: rook-ceph
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: forgejo
+      namespace: forgejo-system
   interval: 1h
   patches: []
   path: ./kubernetes/apps/forgejo-system/forgejo

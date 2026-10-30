@@ -14,7 +14,6 @@ spec:
   patches: []
   path: ./kubernetes/apps/kopiur-system/kopiur
   prune: true
-  retryInterval: 30s
   sourceRef:
     kind: GitRepository
     name: flux-system

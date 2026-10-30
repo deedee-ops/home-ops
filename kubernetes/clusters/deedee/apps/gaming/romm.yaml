@@ -12,6 +12,8 @@ spec:
   dependsOn:
     - name: dragonfly-operator
       namespace: database
+    - name: postgresql
+      namespace: gaming
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h

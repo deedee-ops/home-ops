@@ -8,6 +8,11 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: database
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: barman-cloud
+      namespace: database
   interval: 1h
   patches: []
   path: ./kubernetes/apps/database/plugin-barman-cloud

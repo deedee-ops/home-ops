@@ -58,7 +58,6 @@ spec:
       APP: immich
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
-  retryInterval: 5m
   sourceRef:
     kind: GitRepository
     name: flux-system

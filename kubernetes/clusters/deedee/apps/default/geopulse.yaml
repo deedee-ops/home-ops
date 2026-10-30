@@ -7,6 +7,9 @@ metadata:
 spec:
   components:
     - ../../../components/pgbackup
+  dependsOn:
+    - name: postgresql
+      namespace: default
   interval: 1h
   patches: []
   path: ./kubernetes/apps/default/geopulse

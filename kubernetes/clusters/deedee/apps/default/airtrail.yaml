@@ -9,6 +9,8 @@ spec:
     - ../../../components/kopiur
     - ../../../components/pgbackup
   dependsOn:
+    - name: postgresql
+      namespace: default
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h

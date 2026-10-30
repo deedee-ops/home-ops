@@ -37,7 +37,6 @@ spec:
         name: shelf-oidc-credentials
         optional: true
   prune: true
-  retryInterval: 30s
   sourceRef:
     kind: GitRepository
     name: flux-system

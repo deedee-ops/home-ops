@@ -7,6 +7,9 @@ metadata:
 spec:
   components:
     - ../../../components/pgbackup
+  dependsOn:
+    - name: postgresql
+      namespace: media
   interval: 1h
   path: ./kubernetes/apps/media/streamystats
   postBuild:

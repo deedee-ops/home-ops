@@ -29,6 +29,9 @@ spec:
           path: /spec/deletionPolicy
           value: WaitForTermination
         - op: add
+          path: /spec/retryInterval
+          value: 1m
+        - op: add
           path: /spec/patches/-
           value:
             patch: |-

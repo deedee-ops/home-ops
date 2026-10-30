@@ -7,6 +7,9 @@ metadata:
 spec:
   dependsOn:
     - name: forgejo
+      namespace: forgejo-system
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   interval: 1h
   patches: []
   path: ./kubernetes/apps/forgejo-system/runner

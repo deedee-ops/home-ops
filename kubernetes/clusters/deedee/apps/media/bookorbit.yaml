@@ -10,6 +10,8 @@ spec:
     - ../../../components/nfs-scaler
     - ../../../components/pgbackup
   dependsOn:
+    - name: postgresql
+      namespace: media
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h

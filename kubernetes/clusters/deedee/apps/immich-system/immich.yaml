@@ -48,7 +48,6 @@ spec:
         name: immich-oidc-credentials
         optional: true
   prune: true
-  retryInterval: 30s
   sourceRef:
     kind: GitRepository
     name: flux-system
