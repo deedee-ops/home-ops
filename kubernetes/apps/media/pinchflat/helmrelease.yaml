@@ -77,7 +77,7 @@ spec:
       enableServiceLinks: false
       resourceClaims:
         - name: gpu
-          resourceClaimTemplateName: jellyfin-gpu
+          resourceClaimTemplateName: pinchflat-gpu
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
