@@ -5,8 +5,10 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: pool
 spec:
-  allowFirstLastIPs: "No"
   blocks:
-    - cidr: 192.168.42.0/26
-    - start: 192.168.42.69
-      stop: 192.168.42.69
+    # k8s VIP
+    - start: 192.168.42.20
+      stop: 192.168.42.20
+    # all remaining allowed LB IPs
+    - start: 192.168.42.30
+      stop: 192.168.42.100
