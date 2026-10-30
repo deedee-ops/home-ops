@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ps3netsrv
+spec:
+  components:
+    - ../../../components/nfs-scaler
+  interval: 1h
+  patches: []
+  path: ./kubernetes/apps/gaming/ps3netsrv
+  postBuild:
+    substitute:
+      APP: ps3netsrv
+      NFS_VOLUME: tank
+      ROOT_DOMAIN: "${ROOT_DOMAIN}"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: gaming
