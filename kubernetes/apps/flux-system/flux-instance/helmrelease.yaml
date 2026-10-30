@@ -56,7 +56,7 @@ spec:
                 value: --requeue-dependency=5s
             target:
               kind: Deployment
-              name: (kustomize-controller|helm-controller|source-controller)
+              name: (helm-controller|source-controller)
           - # Increase the memory limits
             patch: |-
               apiVersion: apps/v1
@@ -74,11 +74,14 @@ spec:
             target:
               kind: Deployment
               name: (kustomize-controller|helm-controller|source-controller)
-          - # Enable in-memory kustomize builds
+          - # More workers and in-memory builds for kustomize-controller
             patch: |-
               - op: add
                 path: /spec/template/spec/containers/0/args/-
                 value: --concurrent=20
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --requeue-dependency=5s
               - op: replace
                 path: /spec/template/spec/volumes/0
                 value:
@@ -88,20 +91,6 @@ spec:
             target:
               kind: Deployment
               name: kustomize-controller
-          - # Enable Helm repositories caching
-            patch: |-
-              - op: add
-                path: /spec/template/spec/containers/0/args/-
-                value: --helm-cache-max-size=10
-              - op: add
-                path: /spec/template/spec/containers/0/args/-
-                value: --helm-cache-ttl=60m
-              - op: add
-                path: /spec/template/spec/containers/0/args/-
-                value: --helm-cache-purge-interval=5m
-            target:
-              kind: Deployment
-              name: source-controller
           - # Cache Secrets and ConfigMaps
             patch: |-
               - op: add

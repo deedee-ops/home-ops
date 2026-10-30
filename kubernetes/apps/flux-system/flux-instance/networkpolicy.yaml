@@ -25,18 +25,12 @@ specs:
         app.kubernetes.io/component: source-controller
     egress:
       - toFQDNs:
-          # signatures
-          - matchName: tuf-repo-cdn.sigstore.dev
           # gitops repo
           - matchName: github.com
 
           # helm charts
-          ## codeberg
-          - matchName: codeberg.org
           ## forgejo
           - matchName: code.forgejo.org
-          ## fluentbit
-          - matchName: cr.fluentbit.io
           ## github
           - matchName: ghcr.io
           - matchName: pkg-containers.githubusercontent.com

@@ -31,5 +31,5 @@ resources:
   - ./redlib.yaml
   - ./searxng.yaml
   - ./syncthing.yaml
-  - ./wakapi.yaml
   - ./vaultwarden.yaml
+  - ./wakapi.yaml

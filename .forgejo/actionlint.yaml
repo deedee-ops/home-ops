@@ -1,6 +1,7 @@
 ---
 self-hosted-runner:
   labels:
+    - default
     - docker
 paths:
   .forgejo/workflows/**/*.yaml:

@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   main:
-    runs-on: docker
+    runs-on: default
     environment: production
     container: ghcr.io/cachix/devenv/devenv:v2.1.2
     steps:

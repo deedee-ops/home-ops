@@ -5,7 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: shelf
 spec:
-  launchUrl: https://self.${ROOT_DOMAIN}
+  launchUrl: https://shelf.${ROOT_DOMAIN}
   callbackUrls:
     - "https://shelf-sso.${ROOT_DOMAIN}/pocketid"
   secret:

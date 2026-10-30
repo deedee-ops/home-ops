@@ -10,8 +10,6 @@ spec:
     - deedee/mark13
     - deedee/schemas
   extraEnv:
-    - name: LOG_LEVEL
-      value: debug
     - name: GIT_SSL_CAINFO
       value: &certs /etc/ssl/certs/ca-certificates.crt
     - name: NODE_EXTRA_CA_CERTS
