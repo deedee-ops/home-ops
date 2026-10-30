@@ -7,7 +7,8 @@ services:
     command:
       - "-loglevel=info"
       - "-listenip=0.0.0.0"
-      - "-allowfrom=192.168.0.0/16"
+      # only claude uses it, so limit it to its box
+      - "-allowfrom=192.168.3.20/16"
       - "-allowHEAD=/_ping"
       - "-allowGET=(/v1\\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9][a-zA-Z0-9_.-]*/(logs|stats)|images/json|networks|volumes)"
       - "-watchdoginterval=3600"
