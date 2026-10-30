@@ -9,14 +9,11 @@ resources:
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
   - ./pvc.yaml
+  - ./secret.yaml
 configMapGenerator:
   - name: mail-archive-configmap
     files:
       - ./resources/dovecot.conf
       - ./resources/imapsync.sh
-  - name: mail-archive-configs-configmap
-    files:
-      - ./resources/dovecot.oauth.conf
-      - ./resources/roundcube.oauth.inc.php
 generatorOptions:
   disableNameSuffixHash: true

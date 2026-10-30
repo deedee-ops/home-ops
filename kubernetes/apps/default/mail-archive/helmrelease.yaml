@@ -220,8 +220,8 @@ spec:
             sync:
               - path: /secrets
       extra-configs:
-        type: configMap
-        name: mail-archive-configs-configmap
+        type: secret
+        name: mail-archive-configs-secret
         advancedMounts:
           main:
             app:

@@ -29,8 +29,8 @@ spec:
         readOnly: true
     extraVolumes:
       - name: web-config
-        configMap:
-          name: flux-operator-web-configmap
+        secret:
+          secretName: flux-operator-web-secret
       - name: homelab-root-ca
         configMap:
           name: homelab-root-ca

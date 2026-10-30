@@ -8,9 +8,4 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
-configMapGenerator:
-  - name: flux-operator-web-configmap
-    files:
-      - ./resources/config.yaml
-generatorOptions:
-  disableNameSuffixHash: true
+  - ./secret.yaml

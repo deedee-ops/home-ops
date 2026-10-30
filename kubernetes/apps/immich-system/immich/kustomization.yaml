@@ -10,9 +10,4 @@ resources:
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
-configMapGenerator:
-  - name: immich-configmap
-    files:
-      - ./resources/config.yaml
-generatorOptions:
-  disableNameSuffixHash: true
+  - ./secret.yaml
