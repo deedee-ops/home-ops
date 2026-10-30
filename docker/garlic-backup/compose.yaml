@@ -29,7 +29,7 @@ services:
             }
           ]
         }
-    image: fclairamb/ftpserver:0.15.1-alpine@sha256:b10f33978ad55a7e00ef5c3d209145919c9f26e28f0a44bf321ce6665eafa068
+    image: fclairamb/ftpserver:0.16.5-alpine@sha256:06b4870fa2efcea4dc1541083e56488afb18bc1d69282c8eb394b79b2bb561dd
     container_name: garlic-backup
     restart: unless-stopped
     user: "1000:1000"
