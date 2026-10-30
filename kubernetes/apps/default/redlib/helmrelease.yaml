@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/redlib
-              tag: latest@sha256:f041709aa7ec5ffbf467a9fc3f79666f6f1d16dab6607926e4341ea8be75aa65
+              tag: latest@sha256:4c44a752f88351a927e1a726fe1b1dee71d903588dd2467040227ef934d39134
             env:
               PORT: &port 8080
               # Instance-level settings.
