@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: garlic-backup
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: garlic-backup
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: fclairamb/ftpserver
+              tag: 0.16.5-alpine@sha256:06b4870fa2efcea4dc1541083e56488afb18bc1d69282c8eb394b79b2bb561dd
+            args:
+              - -conf
+              - /config/ftpserver.json
+            env:
+              TZ: Europe/Warsaw
+              # advertised in PASV replies, pod IP is unreachable from clients
+              PUBLIC_HOST: 192.168.42.37
+            probes:
+              liveness: &probe
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 2121
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probe
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        type: LoadBalancer
+        annotations:
+          external-dns.kubernetes.io/hostname: "garlic-backup.${ROOT_DOMAIN}"
+          lbipam.cilium.io/ips: 192.168.42.37
+          lbipam.cilium.io/sharing-key: gaming
+        externalTrafficPolicy: Cluster
+        ports:
+          ftp:
+            port: 2121
+          passive-2122:
+            port: 2122
+          passive-2123:
+            port: 2123
+          passive-2124:
+            port: 2124
+          passive-2125:
+            port: 2125
+          passive-2126:
+            port: 2126
+          passive-2127:
+            port: 2127
+          passive-2128:
+            port: 2128
+          passive-2129:
+            port: 2129
+          passive-2130:
+            port: 2130
+    persistence:
+      config:
+        type: secret
+        name: garlic-backup-secret
+        defaultMode: 0440
+        globalMounts:
+          - path: /config/ftpserver.json
+            subPath: ftpserver.json
+            readOnly: true
+      data:
+        type: custom
+        volumeSpec:
+          csi:
+            driver: nfs.csi.k8s.io
+            volumeAttributes:
+              server: nas-k8s.internal
+              share: "/mnt/tank/private/Memories/Save"
+              mountOptions: "noac,nfsvers=4.1,nconnect=16,hard,noatime"
+        globalMounts:
+          - path: /data
+            subPath: PS5/GARLIC
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

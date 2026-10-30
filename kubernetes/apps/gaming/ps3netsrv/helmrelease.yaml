@@ -101,6 +101,7 @@ spec:
         annotations:
           external-dns.kubernetes.io/hostname: "ps3netsrv.${ROOT_DOMAIN}"
           lbipam.cilium.io/ips: 192.168.42.37
+          lbipam.cilium.io/sharing-key: gaming
         externalTrafficPolicy: Cluster
         ports:
           ps3netsrv:
