@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ceph-node-rules
+spec:
+  groups:
+    - name: ceph-node
+      rules:
+        - alert: CephNodeInconsistentMTU
+          expr: |
+            node_network_mtu_bytes{service="node-exporter"}
+              * (node_network_up{service="node-exporter", device!="lo"} > 0)
+            != on (cluster, device) group_left
+              quantile by (cluster, device) (
+                0.5,
+                node_network_mtu_bytes{service="node-exporter"}
+                  * (node_network_up{service="node-exporter", device!="lo"} > 0)
+              )
+          labels:
+            severity: warning
+            type: ceph_default
+          annotations:
+            summary: Node {{ $labels.instance }} has inconsistent MTU settings
+            description: >-
+              Network interface {{ $labels.device }} on node {{ $labels.instance }} has MTU {{ $value }}
+              which differs from the other cluster nodes.

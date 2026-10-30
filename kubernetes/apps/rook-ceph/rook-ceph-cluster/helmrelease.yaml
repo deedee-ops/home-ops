@@ -29,6 +29,8 @@ spec:
       enabled: true
       createPrometheusRules: true
       prometheusRuleOverrides:
+        CephNodeInconsistentMTU:
+          disabled: true
         CephPoolGrowthWarning:
           disabled: true
     toolbox:

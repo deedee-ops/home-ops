@@ -7,5 +7,6 @@ resources:
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
+  - ./prometheusrule.yaml
   - ./silence.yaml
   - ./storageclass.yaml
