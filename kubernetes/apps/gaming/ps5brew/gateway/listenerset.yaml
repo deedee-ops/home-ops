@@ -19,7 +19,7 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              kubernetes.io/metadata.name: media
+              kubernetes.io/metadata.name: gaming
       tls:
         mode: Terminate
         certificateRefs:
@@ -34,7 +34,7 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              kubernetes.io/metadata.name: media
+              kubernetes.io/metadata.name: gaming
       tls:
         mode: Terminate
         certificateRefs:
@@ -49,4 +49,4 @@ spec:
           from: Selector
           selector:
             matchLabels:
-              kubernetes.io/metadata.name: media
+              kubernetes.io/metadata.name: gaming

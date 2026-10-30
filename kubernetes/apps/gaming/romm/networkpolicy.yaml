@@ -26,3 +26,12 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/component: database
+    - toEndpoints:
+        - matchLabels:
+            app: romm-dragonfly
+      toPorts:
+        - ports:
+            - port: "6379"

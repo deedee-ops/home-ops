@@ -25,11 +25,11 @@ spec:
         - op: replace
           path: /spec/args/1
           value: --proactor_threads=4
-  path: ./kubernetes/apps/media/romm
+  path: ./kubernetes/apps/gaming/romm
   postBuild:
     substitute:
       APP: romm
-      DBCLUSTER: media
+      DBCLUSTER: gaming
       DRAGONFLY_STORAGE: 8Gi
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
@@ -38,4 +38,4 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: media
+  targetNamespace: gaming

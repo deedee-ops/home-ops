@@ -8,3 +8,5 @@ components:
 resources:
   - ./_namespace.yaml
   - ./_postgresql.yaml
+  - ./ps5brew.yaml
+  - ./romm.yaml

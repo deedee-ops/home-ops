@@ -54,15 +54,15 @@ spec:
               TZ: Europe/Warsaw
               DB_HOST:
                 secretKeyRef:
-                  name: media-db-app
+                  name: gaming-db-app
                   key: host
               DB_PASSWD:
                 secretKeyRef:
-                  name: media-db-app
+                  name: gaming-db-app
                   key: password
               DB_USER:
                 secretKeyRef:
-                  name: media-db-app
+                  name: gaming-db-app
                   key: username
             envFrom:
               - secretRef:
