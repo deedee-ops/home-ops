@@ -21,6 +21,7 @@ spec:
       APP: bookorbit
       CLUSTER: deedee
       DBCLUSTER: media
+      PGBACKUP_SECRET: bookorbit-db-secret
       NFS_VOLUME: tank
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   patches: []

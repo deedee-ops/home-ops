@@ -6,7 +6,7 @@ metadata:
   name: geopulse
 spec:
   name: geopulse
-  owner: app
+  owner: geopulse
   cluster:
     name: default-db
   extensions:

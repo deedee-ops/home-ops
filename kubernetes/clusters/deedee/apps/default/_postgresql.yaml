@@ -47,6 +47,18 @@ spec:
             # recovery:
             #   source: default-db-restore
             #   database: app
+          managed:
+            roles:
+              - name: airtrail
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: airtrail-db-secret
+              - name: geopulse
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: geopulse-db-secret
           postgresql:
             shared_preload_libraries:
               - "vchord.so"

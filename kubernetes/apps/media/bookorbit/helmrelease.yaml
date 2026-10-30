@@ -34,15 +34,15 @@ spec:
               POSTGRES_PORT: 5432
               POSTGRES_HOST:
                 secretKeyRef:
-                  name: media-db-app
+                  name: bookorbit-db-secret
                   key: host
               POSTGRES_PASSWORD:
                 secretKeyRef:
-                  name: media-db-app
+                  name: bookorbit-db-secret
                   key: password
               POSTGRES_USER:
                 secretKeyRef:
-                  name: media-db-app
+                  name: bookorbit-db-secret
                   key: username
             envFrom:
               - secretRef:

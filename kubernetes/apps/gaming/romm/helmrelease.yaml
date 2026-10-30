@@ -54,15 +54,15 @@ spec:
               TZ: Europe/Warsaw
               DB_HOST:
                 secretKeyRef:
-                  name: gaming-db-app
+                  name: romm-db-secret
                   key: host
               DB_PASSWD:
                 secretKeyRef:
-                  name: gaming-db-app
+                  name: romm-db-secret
                   key: password
               DB_USER:
                 secretKeyRef:
-                  name: gaming-db-app
+                  name: romm-db-secret
                   key: username
             envFrom:
               - secretRef:

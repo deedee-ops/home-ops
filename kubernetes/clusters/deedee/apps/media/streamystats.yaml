@@ -16,6 +16,7 @@ spec:
     substitute:
       APP: streamystats
       DBCLUSTER: media
+      PGBACKUP_SECRET: streamystats-db-secret
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   patches: []
   prune: true

@@ -52,11 +52,11 @@ spec:
               GEOPULSE_POSTGRES_URL: jdbc:postgresql://default-db-rw:5432/geopulse
               GEOPULSE_POSTGRES_PASSWORD:
                 secretKeyRef:
-                  name: default-db-app
+                  name: geopulse-db-secret
                   key: password
               GEOPULSE_POSTGRES_USERNAME:
                 secretKeyRef:
-                  name: default-db-app
+                  name: geopulse-db-secret
                   key: username
             envFrom:
               - secretRef:

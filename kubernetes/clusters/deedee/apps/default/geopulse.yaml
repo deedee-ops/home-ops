@@ -17,6 +17,7 @@ spec:
     substitute:
       APP: geopulse
       DBCLUSTER: default
+      PGBACKUP_SECRET: geopulse-db-secret
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:

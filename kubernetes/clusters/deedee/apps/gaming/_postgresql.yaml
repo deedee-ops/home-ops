@@ -47,6 +47,13 @@ spec:
             # recovery:
             #   source: gaming-db-restore
             #   database: app
+          managed:
+            roles:
+              - name: romm
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: romm-db-secret
           postgresql:
             shared_preload_libraries:
               - "vchord.so"

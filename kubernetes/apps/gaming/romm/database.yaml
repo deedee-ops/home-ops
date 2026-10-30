@@ -6,7 +6,7 @@ metadata:
   name: romm
 spec:
   name: romm
-  owner: app
+  owner: romm
   cluster:
     name: gaming-db
   extensions:

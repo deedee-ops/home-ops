@@ -45,19 +45,19 @@ spec:
               TZ: Europe/Warsaw
               POSTGRES_HOST:
                 secretKeyRef:
-                  name: default-db-app
+                  name: airtrail-db-secret
                   key: host
               POSTGRES_PORT:
                 secretKeyRef:
-                  name: default-db-app
+                  name: airtrail-db-secret
                   key: port
               POSTGRES_USER:
                 secretKeyRef:
-                  name: default-db-app
+                  name: airtrail-db-secret
                   key: username
               POSTGRES_PASSWORD:
                 secretKeyRef:
-                  name: default-db-app
+                  name: airtrail-db-secret
                   key: password
             envFrom:
               - secretRef:

@@ -6,6 +6,6 @@ metadata:
   name: airtrail
 spec:
   name: airtrail
-  owner: app
+  owner: airtrail
   cluster:
     name: default-db

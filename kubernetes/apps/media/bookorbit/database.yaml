@@ -6,7 +6,7 @@ metadata:
   name: bookorbit
 spec:
   name: bookorbit
-  owner: app
+  owner: bookorbit
   cluster:
     name: media-db
   extensions:

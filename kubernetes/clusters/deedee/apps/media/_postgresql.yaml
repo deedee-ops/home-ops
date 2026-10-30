@@ -47,6 +47,18 @@ spec:
             recovery:
               source: media-db-restore
               database: app
+          managed:
+            roles:
+              - name: bookorbit
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: bookorbit-db-secret
+              - name: streamystats
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: streamystats-db-secret
           postgresql:
             shared_preload_libraries:
               - "vchord.so"

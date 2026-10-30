@@ -7,5 +7,6 @@ resources:
   - ./externalsecret.yaml
   - ./networkpolicy.yaml
   - ./objectstore.yaml
+  - ./password.yaml
   - ./scheduledbackup.yaml
   - ./secret.yaml

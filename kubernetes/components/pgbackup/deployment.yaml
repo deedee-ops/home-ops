@@ -44,17 +44,17 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: host
-                  name: ${DBCLUSTER}-db-app
+                  name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: ${DBCLUSTER}-db-app
+                  name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   key: username
-                  name: ${DBCLUSTER}-db-app
+                  name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
             - name: SCHEDULE
               value: '@hourly'
           image: docker.io/prodrigestivill/postgres-backup-local:18@sha256:f70742ebe42b2277689b028d1fd15aa80f77cffa01da163cc9f85a6ff1866e7f

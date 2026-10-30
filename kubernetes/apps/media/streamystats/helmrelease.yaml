@@ -37,19 +37,19 @@ spec:
               TZ: Europe/Warsaw
               PGHOST: &pghost
                 secretKeyRef:
-                  name: media-db-app
+                  name: streamystats-db-secret
                   key: host
               PGPORT: &pgport
                 secretKeyRef:
-                  name: media-db-app
+                  name: streamystats-db-secret
                   key: port
               PGUSER: &pguser
                 secretKeyRef:
-                  name: media-db-app
+                  name: streamystats-db-secret
                   key: username
               PGPASSWORD: &pgpassword
                 secretKeyRef:
-                  name: media-db-app
+                  name: streamystats-db-secret
                   key: password
             envFrom:
               - secretRef:
