@@ -20,7 +20,7 @@ spec:
         type: statefulset
         containers:
           app:
-            image:
+            image: &image
               repository: ghcr.io/jellyfin/jellyfin
               tag: 12.4@sha256:7da5184caa38c553f219f6772476540081f392a68049e2b68c923f6daf877f8e
             env:
@@ -65,21 +65,15 @@ spec:
                 - name: gpu
         initContainers:
           01-set-oidc:
-            image:
-              repository: nixery.dev/shell/xmlstarlet
-              tag: latest
+            image: *image
             command:
               - sh
               - -c
               - |
-                xmlstarlet ed \
-                  --update "//OidConfigs/item[key/string='pocket-id']/value/PluginConfiguration/OidClientId" \
-                  --value "$OAUTH_CLIENT_ID" \
-                  --update "//OidConfigs/item[key/string='pocket-id']/value/PluginConfiguration/OidSecret" \
-                  --value "$OAUTH_CLIENT_SECRET" \
-                  /config/plugins/configurations/SSO-Auth.xml \
-                  > /tmp/SSO-Auth.xml \
-                  && mv /tmp/SSO-Auth.xml /config/plugins/configurations/SSO-Auth.xml
+                sed -i \
+                  -e "/<string>pocket-id<\/string>/,/<\/item>/s|<OidClientId>[^<]*|<OidClientId>$OAUTH_CLIENT_ID|" \
+                  -e "/<string>pocket-id<\/string>/,/<\/item>/s|<OidSecret>[^<]*|<OidSecret>$OAUTH_CLIENT_SECRET|" \
+                  /config/plugins/configurations/SSO-Auth.xml
             envFrom:
               - secretRef:
                   name: jellyfin-oidc-credentials

@@ -20,7 +20,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/pyload-ng
-              tag: latest
+              tag: latest@sha256:e0d6c5fb1282c4e44840f7278fd58af0fcbdd484c6294558b84b012fac854324
             env:
               TZ: Europe/Warsaw
             probes:

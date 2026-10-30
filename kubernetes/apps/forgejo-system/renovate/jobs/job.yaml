@@ -28,7 +28,7 @@ spec:
       name: homelab-root-ca
       subPath: ca.crt
       readOnly: true
-  image: ghcr.io/renovatebot/renovate:44.182.2
+  image: ghcr.io/renovatebot/renovate:44.182.2@sha256:a3bb448e88ac8517754beccbde3a5621e41eced3f3e4e61c1f6db0ced2affb37
   metadata:
     labels:
       app.kubernetes.io/name: renovate-job

@@ -13,7 +13,7 @@ services:
       - "-watchdoginterval=3600"
       - "-stoponwatchdog"
       - "-shutdowngracetime=5"
-    image: ghcr.io/wollomatic/socket-proxy:1.13.2
+    image: ghcr.io/wollomatic/socket-proxy:1.13.2@sha256:82db5c4728e4fd68d969ec3d74d99bf6d990d06428b583a6f1daabab27de1bd3
     container_name: docker-socket-proxy
     restart: unless-stopped
     user: 1000:1000

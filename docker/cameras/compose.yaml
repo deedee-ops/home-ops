@@ -4,7 +4,7 @@ services:
   cameras:
     environment:
       VTH_IP: vth.internal
-    image: "registry.${ROOT_DOMAIN}/home/cameras"
+    image: registry.ajgon.casa/home/cameras:latest@sha256:29395956b60879307325fac8dbb260e4b24f71e4df3cdd8ed605c753c4d78ab4
     container_name: cameras
     restart: unless-stopped
     ports:

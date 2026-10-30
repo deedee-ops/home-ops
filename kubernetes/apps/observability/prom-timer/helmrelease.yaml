@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: registry.ajgon.casa/tools/prom-timer
-              tag: latest
+              tag: latest@sha256:6cb9c7affac20ec150347a00d9c56b23360bc72907d0f6fb5e449595d38cb971
             env:
               TZ: Europe/Warsaw
             probes:

@@ -181,10 +181,9 @@ spec:
     httpRoute:
       enabled: false
     image:
+      # renovate: datasource=docker depName=code.forgejo.org/forgejo/forgejo
+      fullOverride: code.forgejo.org/forgejo/forgejo:17.0.1-rootless@sha256:5ef02fbcf22beef56b8c844952ffad58cfe177b6f98e46e6abb5df90b88dc8d3
       rootless: true
-      registry: code.forgejo.org
-      repository: forgejo/forgejo
-      tag: 17.0.1-rootless
     persistence:
       create: false
       claimName: forgejo
