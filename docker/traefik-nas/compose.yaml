@@ -28,13 +28,37 @@ services:
         target: /config/extra/truenas.yaml
     volumes:
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DATA_DOCKER_DIR}/traefik/certs:/certs
       - ${DATA_DOCKER_DIR}/traefik/plugins-storage:/plugins-storage
       - ${DATA_DOCKER_DIR}/openbao/data/cert.pem:/openbao-internal.pem
     networks:
       - default
       - internal
+      - socket
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
+  traefik-socket-proxy:
+    command:
+      - "-loglevel=info"
+      - "-listenip=0.0.0.0"
+      - "-allowfrom=traefik"
+      - "-allowHEAD=/_ping"
+      - "-allowGET=(/v1\\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9][a-zA-Z0-9_.-]*/json)"
+    image: ghcr.io/wollomatic/socket-proxy:1.13.2@sha256:82db5c4728e4fd68d969ec3d74d99bf6d990d06428b583a6f1daabab27de1bd3
+    container_name: traefik-socket-proxy
+    restart: always
+    user: 1000:1000
+    group_add:
+      - "999"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - socket
+    mem_limit: 64M
     # security
     cap_drop:
       - all
@@ -75,3 +99,5 @@ networks:
   internal:
     name: internal
     external: true
+  socket:
+    internal: true

@@ -32,7 +32,7 @@ experimental:
       version: "v0.20.1"
 providers:
   docker:
-    endpoint: "unix:///var/run/docker.sock"
+    endpoint: "tcp://traefik-socket-proxy:2375"
     exposedByDefault: false
   file:
     directory: /config
