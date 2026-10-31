@@ -44,6 +44,8 @@ spec:
           name: homelab-root-ca
         name: homelab-root-ca
     fullnameOverride: renovate-operator
+    rbac:
+      ownNamespaceOnly: true
     route:
       enabled: true
       hostnames:
