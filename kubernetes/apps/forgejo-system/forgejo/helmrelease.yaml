@@ -140,6 +140,11 @@ spec:
           groupClaimName: groups
           provider: openidConnect
           scopes: profile email groups
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     deployment:
       annotations:
         glance/name: Forgejo
@@ -187,6 +192,14 @@ spec:
     persistence:
       create: false
       claimName: forgejo
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+      runAsGroup: 1000
+      runAsNonRoot: true
+      runAsUser: 1000
+      seccompProfile:
+        type: RuntimeDefault
     resources:
       requests:
         cpu: 100m
@@ -194,6 +207,8 @@ spec:
     service:
       ssh:
         port: *sshPort
+    serviceAccount:
+      create: true
     tcpRoute:
       enabled: true
       parentRefs:
