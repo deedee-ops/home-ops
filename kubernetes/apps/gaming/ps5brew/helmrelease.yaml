@@ -95,6 +95,13 @@ spec:
             scrapeTimeout: 10s
     route:
       app:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            group: internal
+            guarded: true
+            ui:
+              hide-hostname: true
+              hide-url: true
         hostnames:
           - "ps5brew.${ROOT_DOMAIN}"
         parentRefs:
@@ -112,6 +119,11 @@ spec:
                   type: PathPrefix
                   value: /
       manuals:
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            client:
+              insecure: true
+            group: services
         hostnames:
           - "manuals.playstation.net"
         parentRefs:
