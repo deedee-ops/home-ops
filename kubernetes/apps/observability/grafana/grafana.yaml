@@ -45,6 +45,8 @@ spec:
             app.kubernetes.io/part-of: grafana-operator
             egress.cilium.io/auth: "true"
         spec:
+          automountServiceAccountToken: false
+          enableServiceLinks: false
           containers:
             - name: grafana
               envFrom:

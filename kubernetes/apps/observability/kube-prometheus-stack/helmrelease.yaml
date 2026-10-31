@@ -40,6 +40,8 @@ spec:
                       script-src 'self' 'unsafe-inline';
                       style-src 'self' 'unsafe-inline';
       alertmanagerSpec:
+        automountServiceAccountToken: false
+        enableServiceLinks: false
         alertmanagerConfiguration:
           name: alertmanager
         externalUrl: "https://alertmanager.${ROOT_DOMAIN}"
@@ -104,6 +106,7 @@ spec:
                       script-src 'self' 'unsafe-inline';
                       style-src 'self' 'unsafe-inline';
       prometheusSpec:
+        enableServiceLinks: false
         externalUrl: https://prometheus.${ROOT_DOMAIN}
         securityContext:
           runAsNonRoot: true
