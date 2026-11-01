@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: wealthfolio-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: wealthfolio
+  egress:
+    - toFQDNs:
+        - matchName: api.live.deutsche-boerse.com
+        - matchName: api.openfigi.com
+        - matchName: fc.yahoo.com
+        - matchName: query1.finance.yahoo.com
+        - matchName: query2.finance.yahoo.com
+        - matchName: www.analizy.pl
+      toPorts:
+        - ports:
+            - port: "443"

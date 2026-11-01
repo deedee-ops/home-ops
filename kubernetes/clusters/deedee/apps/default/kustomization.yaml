@@ -33,3 +33,4 @@ resources:
   - ./syncthing.yaml
   - ./vaultwarden.yaml
   - ./wakapi.yaml
+  - ./wealthfolio.yaml
