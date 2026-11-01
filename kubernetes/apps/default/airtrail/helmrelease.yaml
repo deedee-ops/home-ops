@@ -135,8 +135,8 @@ spec:
                     - name: Content-Security-Policy
                       value: >-
                         default-src 'self' data: mediastream: blob: wss:
-                        https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://flagcdn.com
-                        https://services.arcgisonline.com https://api.github.com;
+                        https://tiles.openfreemap.org https://flagcdn.com https://services.arcgisonline.com
+                        https://api.rainviewer.com https://tilecache.rainviewer.com https://api.github.com;
                         object-src 'none';
                         script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:;
                         style-src 'self' 'unsafe-inline';

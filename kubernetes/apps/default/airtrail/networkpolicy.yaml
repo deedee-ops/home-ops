@@ -15,8 +15,8 @@ spec:
         - matchName: codeload.github.com
         - matchName: davidmegginson.github.io
         - matchName: raw.githubusercontent.com
+        - matchName: tiles.openfreemap.org
         - matchPattern: "api.*.openaip.net"
-        - matchPattern: "*.cartocdn.com"
     - toEndpoints:
         - matchLabels:
             app.kubernetes.io/component: database
