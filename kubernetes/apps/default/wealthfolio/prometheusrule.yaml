@@ -1,0 +1,40 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: wealthfolio-rules
+spec:
+  groups:
+    - name: wealthfolio.rules
+      rules:
+        - alert: WealthfolioSidecarSyncFailing
+          expr: |-
+            time() - wealthfolio_sidecar_last_success_timestamp_seconds > 26 * 3600
+          for: 15m
+          annotations:
+            summary: >-
+              Wealthfolio bond prices have not been updated for over a day; check the pricer container logs
+          labels:
+            severity: warning
+
+        - alert: WealthfolioSidecarSourceDown
+          expr: |-
+            wealthfolio_sidecar_source_up == 0
+          for: 1d
+          annotations:
+            summary: >-
+              Wealthfolio pricer data source {{ $labels.source }} has been failing for a day (a fallback may be
+              covering for it); its parser probably needs an update
+          labels:
+            severity: warning
+
+        - alert: WealthfolioSidecarAbsent
+          expr: |-
+            absent(wealthfolio_sidecar_build_info)
+          for: 1h
+          annotations:
+            summary: >-
+              The Wealthfolio pricer sidecar is not reporting metrics
+          labels:
+            severity: warning

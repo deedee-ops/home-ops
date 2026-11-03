@@ -12,10 +12,13 @@ spec:
     - toFQDNs:
         - matchName: api.live.deutsche-boerse.com
         - matchName: api.openfigi.com
+        - matchName: api-dbw.stat.gov.pl
         - matchName: fc.yahoo.com
         - matchName: query1.finance.yahoo.com
         - matchName: query2.finance.yahoo.com
+        - matchName: stat.gov.pl
         - matchName: www.analizy.pl
+        - matchName: www.obligacjeskarbowe.pl
       toPorts:
         - ports:
             - port: "443"

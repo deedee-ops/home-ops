@@ -66,7 +66,7 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
+            securityContext: &sc
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities:
@@ -78,6 +78,25 @@ spec:
                 memory: 128Mi
               limits:
                 memory: 512Mi
+          pricer:
+            image:
+              repository: registry.ajgon.casa/tools/wealthfolio-sidecar
+              tag: latest@sha256:925fb51b2e7a1eceda0eefa050734c389d2976f94eee2327c512dcb3d1a2d470
+            env:
+              TZ: Europe/Warsaw
+              WF_MCP_URL: http://127.0.0.1:8088/mcp
+              WF_MCP_HOST: "wealthfolio.${ROOT_DOMAIN}"
+            envFrom:
+              - secretRef:
+                  name: wealthfolio-sidecar-secret
+                  optional: true
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -98,6 +117,12 @@ spec:
           http:
             port: 80
             targetPort: *port
+          metrics:
+            port: 8090
+    serviceMonitor:
+      app:
+        endpoints:
+          - port: metrics
     route:
       app:
         hostnames:
@@ -112,15 +137,19 @@ spec:
     persistence:
       data:
         existingClaim: wealthfolio
-        globalMounts:
-          - path: /data
+        advancedMounts:
+          main:
+            app:
+              - path: /data
       homelab-root-ca:
         type: configMap
         name: homelab-root-ca
-        globalMounts:
-          - path: /etc/ssl/certs/ca-certificates.crt
-            subPath: ca.crt
-            readOnly: true
+        advancedMounts:
+          main:
+            app:
+              - path: /etc/ssl/certs/ca-certificates.crt
+                subPath: ca.crt
+                readOnly: true
       tmp:
         type: emptyDir
         globalMounts:
