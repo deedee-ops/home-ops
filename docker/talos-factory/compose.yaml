@@ -35,7 +35,7 @@ services:
       talos-factory-secrets:
         condition: service_completed_successfully
     # don't need sha, these tags are immutable by design
-    image: ghcr.io/siderolabs/image-factory:v1.7.2@sha256:0d6250337f67bb66f9e2ffcac09b09a4820deb962afd74cb63e20842909ebbd9
+    image: ghcr.io/siderolabs/image-factory:v1.8.0@sha256:f281a1e56195c0fb5bac8e8fd584613f9693796324691d64ce6df1861593454c
     container_name: talos-factory
     restart: unless-stopped
     user: 1000:1000
