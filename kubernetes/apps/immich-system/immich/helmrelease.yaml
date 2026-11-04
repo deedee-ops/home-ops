@@ -38,6 +38,7 @@ spec:
               IMMICH_WORKERS_INCLUDE: "api"
               NODE_ENV: *appEnv
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
+              ORT_DISABLE_TELEMETRY: "1"
               REDIS_HOSTNAME: immich-dragonfly
               DB_DATABASE_NAME: &dbname "immich"
               DB_HOSTNAME: &dbhost
@@ -143,6 +144,7 @@ spec:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v3.3.5@sha256:5b28c9352c8374b8a1ed96fbdd8d6755fea6e43510ec43fdf6538aa02ea40f56
             env:
+              ORT_DISABLE_TELEMETRY: "1"
               MACHINE_LEARNING_HTTP_KEEPALIVE_TIMEOUT_S: "0" # https://github.com/immich-app/immich/discussions/12064
               TRANSFORMERS_CACHE: /cache
               HF_XET_CACHE: /cache/huggingface-xet
