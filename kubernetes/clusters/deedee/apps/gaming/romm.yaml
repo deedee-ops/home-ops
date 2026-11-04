@@ -27,6 +27,9 @@ spec:
         - op: replace
           path: /spec/args/1
           value: --proactor_threads=4
+        - op: replace
+          path: /spec/snapshot/cron
+          value: "45 * * * *"
   path: ./kubernetes/apps/gaming/romm
   postBuild:
     substitute:
