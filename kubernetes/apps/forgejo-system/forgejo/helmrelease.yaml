@@ -23,7 +23,7 @@ spec:
           DISABLE_REGULAR_ORG_CREATION: false
         attachment:
           ENABLED: true
-          MAX_SIZE: 64
+          MAX_SIZE: 256
           PATH: /data/data/attachments
           STORAGE_TYPE: local
         avatar:

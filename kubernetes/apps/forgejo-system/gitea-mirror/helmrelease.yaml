@@ -1,0 +1,129 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gitea-mirror
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: gitea-mirror
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: Gitea Mirror
+          glance/icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/gitea-mirror.png
+          glance/url: https://gitsync.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/raylabshq/gitea-mirror
+              tag: v3.51.1@sha256:39fcb330f3882b7f11fc38af1ebb98903ba496e6b159f7c92dbe3438dda0f13d
+            env:
+              AUTH_DEFAULT_METHOD: sso
+              BETTER_AUTH_URL: https://gitsync.${ROOT_DOMAIN}
+              DESTINATION_PROVIDER: forgejo
+              GITEA_EXTERNAL_URL: https://git.${ROOT_DOMAIN}
+              GITEA_ORG_VISIBILITY: private
+              GITEA_URL: http://forgejo-http:3000
+              MIRROR_RELEASES: "true"
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+              PORT: &port 4321
+              PUBLIC_BETTER_AUTH_URL: https://gitsync.${ROOT_DOMAIN}
+              SCHEDULE_TIMEZONE: &tz Europe/Warsaw
+              TZ: *tz
+            envFrom:
+              - secretRef:
+                  name: gitea-mirror-secret
+            probes:
+              liveness:
+                enabled: true
+                spec:
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/health
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        hostnames:
+          - "gitsync.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: gitea-mirror
+                port: *port
+            filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: Content-Security-Policy
+                      value: >-
+                        default-src 'self';
+                        font-src 'self' data:;
+                        img-src 'self' data: https:;
+                        object-src 'none';
+                        script-src 'self' 'unsafe-inline';
+                        style-src 'self' 'unsafe-inline';
+    persistence:
+      data:
+        existingClaim: gitea-mirror
+        globalMounts:
+          - path: /app/data
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
+      tmp:
+        type: emptyDir

@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gitea-mirror-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: gitea-mirror
+  egress:
+    - toFQDNs:
+        - matchName: api.github.com
+        - matchName: codeberg.org
+        - matchName: github.com
+        - matchName: gitlab.com
+        - matchPattern: "*.githubusercontent.com"
+      toPorts:
+        - ports:
+            - protocol: TCP
+              port: "443"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gitea-mirror-egress-internal
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: gitea-mirror
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: forgejo
+      toPorts:
+        - ports:
+            - protocol: TCP
+              port: "3000"

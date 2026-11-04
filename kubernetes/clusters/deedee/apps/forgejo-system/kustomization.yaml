@@ -10,5 +10,6 @@ resources:
   - ./dufs-dnslists.yaml
   - ./dufs-schemas.yaml
   - ./forgejo.yaml
+  - ./gitea-mirror.yaml
   - ./renovate.yaml
   - ./runner.yaml
