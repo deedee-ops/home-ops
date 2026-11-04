@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/fatedier/frps
-              tag: v0.71.1@sha256:48720c81f048e842f7f0b8053753c1a8514053d59d2dee8a953f67995de73a18
+              tag: v0.72.0@sha256:17abb20dd392557a44070d9726954630c0eb1f7a9bd6ead5ae9150d165179ea4
             args:
               - -c
               - /etc/frp/frps.toml
