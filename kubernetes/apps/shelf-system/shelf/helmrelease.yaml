@@ -336,7 +336,7 @@ spec:
           app:
             image:
               repository: docker.io/library/caddy
-              tag: 2.11.8@sha256:4fcafa98afd1c2e642e353e3c5cf9ddbe892fcee14bc990e7ba2c5b78e51f9cf
+              tag: 2.11.9@sha256:13d490f64f99ee3e3dcd828add6d3b822a916cdb3490d9d272a8d761678da624
             command:
               - caddy
               - run
