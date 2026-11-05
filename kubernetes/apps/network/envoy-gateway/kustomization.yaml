@@ -11,3 +11,4 @@ resources:
   - ./networkpolicy.yaml
   - ./observability.yaml
   - ./ocirepository.yaml
+  - ./prometheusrule.yaml

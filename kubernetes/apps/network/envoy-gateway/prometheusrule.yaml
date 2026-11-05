@@ -1,0 +1,22 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: envoy-gateway-rules
+spec:
+  groups:
+    - name: envoy-gateway.rules
+      rules:
+        - alert: EnvoyGatewaySecurityPolicyNotAccepted
+          expr: |
+            envoy_gateway_resource_info{customresource_kind="SecurityPolicy", accepted!="True"} == 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "SecurityPolicy {{ $labels.name }} in {{ $labels.exported_namespace }} is not accepted"
+            description: >-
+              SecurityPolicy {{ $labels.name }} in namespace {{ $labels.exported_namespace }} has not been
+              accepted for more than 5 minutes (reason: {{ $labels.reason }}). Envoy Gateway answers every
+              request on its routes with a 500 until the policy is accepted.

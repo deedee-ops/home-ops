@@ -178,6 +178,13 @@ spec:
             verbs:
               - "list"
               - "watch"
+          - apiGroups:
+              - gateway.envoyproxy.io
+            resources:
+              - securitypolicies
+            verbs:
+              - "list"
+              - "watch"
       customResourceState:
         enabled: true
         config:
@@ -269,6 +276,39 @@ spec:
                         - spec
                         - sourceRef
                         - name
+              - groupVersionKind:
+                  group: gateway.envoyproxy.io
+                  version: v1alpha1
+                  kind: SecurityPolicy
+                metricNamePrefix: envoy_gateway
+                metrics:
+                  - name: "resource_info"
+                    help: "The current state of an Envoy Gateway SecurityPolicy resource."
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name:
+                            - metadata
+                            - name
+                    labelsFromPath:
+                      exported_namespace:
+                        - metadata
+                        - namespace
+                      accepted:
+                        - status
+                        - ancestors
+                        - "0"
+                        - conditions
+                        - "[type=Accepted]"
+                        - status
+                      reason:
+                        - status
+                        - ancestors
+                        - "0"
+                        - conditions
+                        - "[type=Accepted]"
+                        - reason
     grafana:
       enabled: false
       forceDeployDashboards: true

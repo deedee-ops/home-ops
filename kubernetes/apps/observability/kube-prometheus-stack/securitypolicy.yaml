@@ -12,6 +12,9 @@ spec:
   oidc:
     provider:
       issuer: "https://id.${ROOT_DOMAIN}"
+      authorizationEndpoint: "https://id.${ROOT_DOMAIN}/authorize"
+      tokenEndpoint: "https://id.${ROOT_DOMAIN}/api/oidc/token"
+      endSessionEndpoint: "https://id.${ROOT_DOMAIN}/api/oidc/end-session"
       backendRefs:
         - group: gateway.envoyproxy.io
           kind: Backend
@@ -42,6 +45,9 @@ spec:
   oidc:
     provider:
       issuer: "https://id.${ROOT_DOMAIN}"
+      authorizationEndpoint: "https://id.${ROOT_DOMAIN}/authorize"
+      tokenEndpoint: "https://id.${ROOT_DOMAIN}/api/oidc/token"
+      endSessionEndpoint: "https://id.${ROOT_DOMAIN}/api/oidc/end-session"
       backendRefs:
         - group: gateway.envoyproxy.io
           kind: Backend

@@ -12,6 +12,9 @@ spec:
   oidc:
     provider:
       issuer: https://id.ajgon.casa
+      authorizationEndpoint: https://id.ajgon.casa/authorize
+      tokenEndpoint: https://id.ajgon.casa/api/oidc/token
+      endSessionEndpoint: https://id.ajgon.casa/api/oidc/end-session
       backendRefs:
         - group: gateway.envoyproxy.io
           kind: Backend
