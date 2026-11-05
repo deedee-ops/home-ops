@@ -12,10 +12,6 @@ services:
     volumes:
       - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt:ro
       - ${DATA_DOCKER_DIR}/openbao/data:/openbao/data
-      - ${DATA_DOCKER_DIR}/openbao/secret:/secret:ro
-    depends_on:
-      openbao-unseal-secret:
-        condition: service_completed_successfully
     networks:
       - internal
     environment:
@@ -35,11 +31,44 @@ services:
       traefik.http.routers.openbao.tls: true
       traefik.http.routers.openbao.tls.certresolver: openbao-ecdsa
       traefik.http.routers.openbao.tls.domains[0].main: "bao.${ROOT_DOMAIN}"
-    post_start:
-      - command:
-          - /bin/sh
-          - -ec
-          - 'until bao operator unseal "$(cat /secret/unseal-key)"; do sleep 1; done'
+
+  openbao-unsealer:
+    image: ghcr.io/openbao/openbao:2.7.2@sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f
+    container_name: openbao-unsealer
+    init: true
+    user: 100:1000
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        while :; do
+          rc=0
+          bao status >/dev/null 2>&1 || rc=$$?
+          if [ "$$rc" -eq 2 ]; then
+            if bao write sys/unseal key=@/secret/unseal-key >/dev/null 2>&1; then
+              echo "unseal key submitted"
+            else
+              echo "unseal failed" >&2
+            fi
+          fi
+          sleep 5
+        done
+    depends_on:
+      openbao-unseal-secret:
+        condition: service_completed_successfully
+    volumes:
+      - ${DATA_DOCKER_DIR}/openbao/secret:/secret:ro
+    networks:
+      - internal
+    environment:
+      VAULT_ADDR: http://openbao:8200
+    # security
+    cap_drop:
+      - all
+    security_opt:
+      - no-new-privileges
+    read_only: true
 
   openbao-unseal-secret:
     image: alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a

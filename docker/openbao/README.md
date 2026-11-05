@@ -1,5 +1,17 @@
 # OpenBao
 
+## Unseal
+
+`openbao-unsealer` checks the seal status every 5 seconds and unseals OpenBao whenever it is sealed, including after
+a NAS reboot. To keep OpenBao sealed on purpose, stop it first:
+
+```bash
+docker stop openbao-unsealer
+bao operator seal # needs a token with sudo on sys/seal
+```
+
+`restart: unless-stopped` keeps it stopped, also across reboots, until the next `docker compose up` of this stack.
+
 ## OIDC
 
 ```bash
