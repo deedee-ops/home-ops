@@ -17,7 +17,7 @@ spec:
     substitute:
       APP: gitea-mirror
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
-      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_CAPACITY: 10Gi
       KOPIUR_PGID: "1001"
       KOPIUR_PUID: "1001"
   prune: true
