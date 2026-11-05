@@ -38,5 +38,11 @@
         "**2. Eviction is off -- check whether it can be turned on yet.** `--cache-max-size` / `--cache-lru-schedule` are unset because closure pinning is broken: `GetPinnedClosureHashes` (`pkg/cache/cache.go`) walks `References` with `narInfoHashLength = 52`, but narinfo hashes are 32 chars and references are `<32-hash>-<name>-<version>` basenames, so no reference resolves and a pin protects only the exact narinfo pinned. Enable a cap only once that constant is 32 (or the walk is rewritten) **and** an LRU run is shown to retain a full closure.",
       ],
     },
+    {
+      description: "gotenberg: paperless-ngx client can't use v9 yet (gotenberg-client#149)",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["docker.io/gotenberg/gotenberg"],
+      allowedVersions: "<9",
+    },
   ],
 }
