@@ -17,7 +17,7 @@ spec:
           app:
             image:
               repository: ghcr.io/huggingface/text-embeddings-inference
-              tag: cpu-latest@sha256:b11dcdbf419a2a8a834c454d4ac7fad4647378b016221f1f652cc15717a5b095
+              tag: cpu-latest@sha256:fc09c0862101bd9b069527ae1be91d39833302003c4b15bc3f14fa25e059e8b5
             args:
               - --model-id
               - mixedbread-ai/mxbai-embed-large-v1
