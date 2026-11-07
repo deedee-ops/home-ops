@@ -13,7 +13,7 @@ spec:
     onMissingSnapshot: Continue
   repository:
     kind: ClusterRepository
-    name: nas
+    name: ${KOPIUR_REPOSITORY:=nas}
   source:
     fromPolicy:
       name: ${APP}

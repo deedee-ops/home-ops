@@ -38,6 +38,7 @@ spec:
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_ACCESSMODES: ReadWriteMany
       KOPIUR_CAPACITY: 50Gi
+      KOPIUR_REPOSITORY: nas-ephemeral
       KOPIUR_SCHEDULE: "0 1 * * *"
       KOPIUR_SNAPSHOTCLASS: csi-ceph-filesystem
       KOPIUR_STAGING_ACCESSMODES: '["ReadOnlyMany"]'
