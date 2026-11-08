@@ -46,6 +46,8 @@ spec:
           capabilities:
             drop:
               - ALL
+    extraArgs:
+      - --min-ttl=5m
     triggerLoopOnEvent: true
     enableGatewayListenerSets: true
     policy: sync
