@@ -5,6 +5,7 @@ kind: PocketIDOIDCClient
 metadata:
   name: immich
 spec:
+  pkceEnabled: true
   launchUrl: https://immich.${ROOT_DOMAIN}
   callbackUrls:
     - "https://immich.${ROOT_DOMAIN}/auth/login"
