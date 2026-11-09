@@ -31,3 +31,4 @@ specs:
         toPorts:
           - ports:
               - port: "25"
+              - port: "587"

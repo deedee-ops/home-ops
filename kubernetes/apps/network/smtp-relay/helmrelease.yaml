@@ -12,6 +12,8 @@ spec:
   values:
     controllers:
       main:
+        annotations:
+          reloader.stakater.com/auto: "true"
         replicas: 2
         strategy: RollingUpdate
         containers:
@@ -21,6 +23,7 @@ spec:
               tag: 0.9.7@sha256:b7423da1e97768ace9d790e441e59a698896d35432d8cdfa55b7c229d7847e72
             env:
               SMTP_RELAY_SMTP_PORT: &port 25
+              SMTP_RELAY_SUBMISSION_PORT: &submission 587
               SMTP_RELAY_METRICS_PORT: &metrics 9745
             envFrom:
               - secretRef:
@@ -61,6 +64,8 @@ spec:
         ports:
           smtp:
             port: *port
+          submission:
+            port: *submission
           metrics:
             port: *metrics
     serviceMonitor:
@@ -84,6 +89,18 @@ spec:
                     deliver_to &remote_queue
                 }
             }
+
+            submission tcp://0.0.0.0:{env:SMTP_RELAY_SUBMISSION_PORT} {
+                tls file /certs/tls.crt /certs/tls.key {
+                    protocols tls1.2 tls1.3
+                }
+                auth pass_table static {
+                    entry "{env:SMTP_RELAY_STARTTLS_USERNAME}" "{env:SMTP_RELAY_STARTTLS_HASH}"
+                }
+                default_source {
+                    deliver_to &remote_queue
+                }
+            }
             target.queue remote_queue {
                 target &remote_smtp
             }
@@ -95,6 +112,12 @@ spec:
     persistence:
       cache:
         type: emptyDir
+      certs:
+        type: secret
+        name: smtp-relay-tls
+        globalMounts:
+          - path: /certs
+            readOnly: true
       config-file:
         type: configMap
         identifier: config
