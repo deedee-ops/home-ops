@@ -44,6 +44,7 @@ in
     pkgs.kustomize
     pkgs.minijinja
     pkgs.openbao
+    pkgs.openssl
     pkgs.sops
     pkgs.talosctl
     # in case of a need of version override
@@ -180,6 +181,20 @@ in
     tc="$ROOT_DIR/talos/$CLUSTER/talosconfig"
     [ -f "$tc" ] && export TALOSCONFIG=$tc
     ${pkgs.lib.getExe pkgs.openbao} kv get -field=TALOSCONFIG "$CLUSTER/talos" > "$ROOT_DIR/talos/$CLUSTER/talosconfig"
+
+    # admin client certs (1y TTL) are not auto-renewed and nothing in the cluster alerts on the talosconfig one
+    _cert_warn() {
+      local crt end
+      crt="$(${pkgs.lib.getExe pkgs.yq-go} -r "$2" "$3" 2>/dev/null | base64 -d 2>/dev/null)" || return 0
+      end="$(${pkgs.lib.getExe pkgs.openssl} x509 -noout -enddate <<< "$crt" 2>/dev/null | cut -d= -f2)"
+      [ -n "$end" ] || return 0
+      ${pkgs.lib.getExe pkgs.openssl} x509 -noout -checkend 2592000 <<< "$crt" > /dev/null 2>&1 && return 0
+      printf '\n\033[1;31mWARNING: %s client certificate expires %s, run: just talos renew-certs\033[0m\n\n' "$1" "$end" >&2
+    }
+    _cert_warn talosconfig '.contexts[.context].crt' "$ROOT_DIR/talos/$CLUSTER/talosconfig"
+    _cert_warn kubeconfig '.["current-context"] as $c | (.contexts[] | select(.name == $c) | .context.user) as $u
+      | .users[] | select(.name == $u) | .user["client-certificate-data"]' "$ROOT_DIR/talos/$CLUSTER/kubeconfig"
+    unset -f _cert_warn
 
     # opentofu
     echo "$TOFU_TFVARS" > "$ROOT_DIR/opentofu/terraform.tfvars"
