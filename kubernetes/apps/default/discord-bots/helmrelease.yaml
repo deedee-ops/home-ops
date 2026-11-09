@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/kyrela/fixtweetbot
-              tag: 3.3.8@sha256:a8ddda2f0731e92cfd61a5e36e720a9eabc615c52686a99fabd84d3839767a17
+              tag: 3.4.0@sha256:ae009180c16a4c767414c9e64b992216d506fdaeeb67b1c04ae41a65b2fa81d1
             env:
               DATABASE_HOST: localhost
               DATABASE_PORT: 3306
