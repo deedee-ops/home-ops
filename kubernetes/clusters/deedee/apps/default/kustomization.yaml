@@ -30,6 +30,7 @@ resources:
   - ./paperless-ngx.yaml
   - ./redlib.yaml
   - ./searxng.yaml
+  - ./subtrackr.yaml
   - ./syncthing.yaml
   - ./vaultwarden.yaml
   - ./wakapi.yaml
