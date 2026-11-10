@@ -1,0 +1,148 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: immich-rules
+spec:
+  groups:
+    - name: immich-exporter
+      rules:
+        - alert: ImmichExporterMissing
+          expr: |-
+            absent(immich_exporter_build_info)
+              unless on() kube_deployment_spec_replicas{namespace="immich-system", deployment="immich-api"} == 0
+          for: 10m
+          annotations:
+            summary: >-
+              No immich-exporter is being scraped
+          labels:
+            severity: warning
+
+        - alert: ImmichExporterPollFailing
+          expr: |-
+            immich_exporter_up == 0
+          for: 15m
+          annotations:
+            summary: >-
+              immich-exporter cannot poll the Immich API on {{ $labels.instance }}, check
+              immich_exporter_collector_success and the exporter log
+          labels:
+            severity: warning
+
+        - alert: ImmichExporterStale
+          expr: |-
+            time() - immich_exporter_last_success_timestamp_seconds > 1800
+          for: 5m
+          annotations:
+            summary: >-
+              immich-exporter's last successful poll was {{ $value | humanizeDuration }} ago
+          labels:
+            severity: warning
+
+        - alert: ImmichDown
+          expr: |-
+            immich_up == 0
+          for: 5m
+          annotations:
+            summary: >-
+              Immich has not answered /server/ping for 5 minutes
+          labels:
+            severity: critical
+
+    - name: immich
+      rules:
+        - alert: ImmichMaintenanceMode
+          expr: |-
+            immich_server_maintenance_mode == 1
+          for: 30m
+          annotations:
+            summary: >-
+              Immich has been in maintenance mode for 30 minutes, a restore or other maintenance task may be stuck
+          labels:
+            severity: warning
+
+        - alert: ImmichJobsFailing
+          expr: |-
+            max by (queue) (immich_job_queue{state="failed"})
+              > max by (queue) (immich_job_queue{state="failed"} offset 1h)
+          for: 15m
+          annotations:
+            summary: >-
+              More Immich jobs failed in the {{ $labels.queue }} queue in the last hour
+          labels:
+            severity: warning
+
+        - alert: ImmichQueueStalled
+          expr: |-
+            max by (queue) (immich_job_queue{state="waiting"}) > 0
+              and max by (queue) (immich_job_queue{state="active"}) == 0
+              unless max by (queue) (immich_job_queue_paused) == 1
+          for: 1h
+          annotations:
+            summary: >-
+              Immich's {{ $labels.queue }} queue has had waiting jobs and none running for an hour
+          labels:
+            severity: warning
+
+        - alert: ImmichQueuePaused
+          expr: |-
+            max by (queue) (immich_job_queue_paused) == 1
+          for: 1d
+          annotations:
+            summary: >-
+              Immich's {{ $labels.queue }} queue has been paused for a day
+          labels:
+            severity: info
+
+        - alert: ImmichStorageLow
+          expr: |-
+            immich_storage_available_bytes / immich_storage_size_bytes < 0.05
+          for: 15m
+          annotations:
+            summary: >-
+              Immich's library volume is over 95% full, only {{ $value | humanizePercentage }} free
+          labels:
+            severity: critical
+
+        - alert: ImmichStorageFillingUp
+          expr: |-
+            predict_linear(immich_storage_available_bytes[7d], 30 * 24 * 3600) < 0
+              and immich_storage_available_bytes / immich_storage_size_bytes < 0.25
+          for: 6h
+          annotations:
+            summary: >-
+              Immich's library volume is under 25% free and fills up within 30 days at the past week's rate
+          labels:
+            severity: warning
+
+        - alert: ImmichAssetsOffline
+          expr: |-
+            immich_assets_offline > 0
+          for: 1h
+          annotations:
+            summary: >-
+              Immich has {{ $value }} offline assets, check the external library mount and rescan
+          labels:
+            severity: warning
+
+        - alert: ImmichIntegrityIssues
+          expr: |-
+            immich_integrity_issues{type=~"missing_file|checksum_mismatch"} > 0
+          for: 1h
+          annotations:
+            summary: >-
+              Immich's integrity checks flagged {{ $value }} files ({{ $labels.type }}),
+              see Administration > Maintenance
+          labels:
+            severity: warning
+
+        - alert: ImmichUserQuotaNearlyFull
+          expr: |-
+            immich_user_usage_bytes / immich_user_quota_bytes > 0.9
+          for: 1h
+          annotations:
+            summary: >-
+              {{ $labels.user }} has used over 90% of their Immich storage quota
+          labels:
+            severity: warning

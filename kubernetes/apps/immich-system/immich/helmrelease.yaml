@@ -79,6 +79,37 @@ spec:
               capabilities:
                 drop:
                   - ALL
+          exporter:
+            image:
+              repository: ghcr.io/moond4rk/immich-exporter
+              tag: 1.4.0@sha256:2477267a8b84d042aee2c5f3240a73c1cb61eee17a35bec7a9e16941218ef989
+            env:
+              COLLECT_PEOPLE: "true"
+              IMMICH_HOST: "127.0.0.1"
+              IMMICH_PORT: *port
+              TZ: Europe/Warsaw
+              IMMICH_API_TOKEN:
+                secretKeyRef:
+                  name: immich-secret
+                  key: IMMICH_EXPORTER_API_KEY
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &exporterPort 8000
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+            securityContext: *sc
       microservices:
         pod:
           affinity:
@@ -234,6 +265,8 @@ spec:
             port: *port
           metrics:
             port: *apiPort
+          exporter:
+            port: *exporterPort
       microservices:
         controller: microservices
         ports:
@@ -246,11 +279,14 @@ spec:
             port: *mlport
     serviceMonitor:
       api:
-        serviceName: api
+        service:
+          identifier: api
         endpoints:
           - port: metrics
+          - port: exporter
       microservices:
-        serviceName: microservices
+        service:
+          identifier: microservices
         endpoints:
           - port: metrics
     route:

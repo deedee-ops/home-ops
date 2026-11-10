@@ -5,9 +5,11 @@ kind: Kustomization
 resources:
   - ./database.yaml
   - ./externalsecret.yaml
+  - ./grafanadashboard.yaml
   - ./helmrelease.yaml
   - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
   - ./pocketidoidcclient.yaml
+  - ./prometheusrule.yaml
   - ./secret.yaml
