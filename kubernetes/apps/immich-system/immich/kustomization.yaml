@@ -13,3 +13,11 @@ resources:
   - ./pocketidoidcclient.yaml
   - ./prometheusrule.yaml
   - ./secret.yaml
+configMapGenerator:
+  - name: immich-dashboard
+    files:
+      - ./resources/immich-dashboard.json
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

@@ -12,4 +12,6 @@ spec:
   datasources:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
-  url: https://grafana.com/api/dashboards/26030/revisions/1/download
+  configMapRef:
+    name: immich-dashboard
+    key: immich-dashboard.json
