@@ -32,6 +32,7 @@ spec:
               GENERIC_TIMEZONE: &tz Europe/Warsaw
               N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
               N8N_DIAGNOSTICS_ENABLED: "false"
+              N8N_DYNAMIC_BANNERS_ENABLED: "false"
               N8N_EDITOR_BASE_URL: "https://n8n.${ROOT_DOMAIN}"
               N8N_EMAIL_MODE: "smtp"
               N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "false"
@@ -46,6 +47,7 @@ spec:
               N8N_SMTP_SSL: "false"
               N8N_TEMPLATES_ENABLED: "false"
               N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+              N8N_VERSION_NOTIFICATIONS_WHATS_NEW_ENABLED: "false"
               NODES_EXCLUDE: "[]"
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
               WEBHOOK_URL: "https://n8n.${ROOT_DOMAIN}"

@@ -40,6 +40,8 @@ spec:
           OLDER_THAN: 2h
           RUN_AT_START: true
           SCHEDULE: "@every 1h"
+        cron.update_checker:
+          ENABLED: false
         database:
           DB_TYPE: sqlite3
           PATH: /data/data/database/forgejo.db

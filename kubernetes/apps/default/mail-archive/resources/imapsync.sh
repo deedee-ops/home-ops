@@ -11,6 +11,7 @@ imapsync \
   --usecache \
   --exclude "INBOX|Sent|Drafts|Junk|Trash" \
   --nofoldersizes \
+  --noreleasecheck \
   --tmpdir "/data" \
   --logdir "/data" \
   --logfile "log.txt" \

@@ -43,6 +43,7 @@ spec:
             env:
               INFLUXDB_DATA_INDEX_VERSION: tsi1
               INFLUXDB_DB: *dbName
+              INFLUXDB_REPORTING_DISABLED: "true"
               TZ: Europe/Warsaw
             securityContext:
               allowPrivilegeEscalation: false

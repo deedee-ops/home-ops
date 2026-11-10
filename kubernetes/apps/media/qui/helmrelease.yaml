@@ -23,6 +23,7 @@ spec:
               repository: ghcr.io/autobrr/qui
               tag: v1.35.0@sha256:a5b2f5faf6388cce257137c88e4b189458fd799cf9119ed476c980e5a69341b2
             env:
+              QUI__CHECK_FOR_UPDATES: "false"
               QUI__HOST: 0.0.0.0
               QUI__LOG_LEVEL: INFO
               QUI__METRICS_ENABLED: true

@@ -24,6 +24,7 @@ spec:
               tag: 1.6.2@sha256:b8434a7339ebd9c2bfe4464c28db79944e0f52f47da85345fc7e0563c19f83ac
             env:
               BAZARR__PORT: &port 80
+              DYNACONF_ANALYTICS__ENABLED: "false"
               TZ: Europe/Warsaw
             envFrom:
               - secretRef:

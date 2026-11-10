@@ -149,4 +149,7 @@ cameras:
         # https://docs.frigate.video/configuration/license_plate_recognition#model-requirements
         # - license_plate
 
+telemetry:
+  version_check: false
+
 version: 0.16-0

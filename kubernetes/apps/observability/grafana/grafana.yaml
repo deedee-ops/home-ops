@@ -35,6 +35,7 @@ spec:
       plugin_admin_enabled: "false"
     security:
       angular_support_enabled: "true"
+      disable_gravatar: "true"
     server:
       enable_gzip: "true"
       root_url: "https://grafana.${ROOT_DOMAIN}"

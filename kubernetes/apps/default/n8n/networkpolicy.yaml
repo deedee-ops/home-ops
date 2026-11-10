@@ -30,6 +30,8 @@ specs:
           - ports:
               - port: "10443"
       - toFQDNs:
+          # mcp-registry and verified community nodes catalogs
+          - matchName: api.n8n.io
           - matchName: license.n8n.io
           # community modes
           - matchName: registry.npmjs.org
