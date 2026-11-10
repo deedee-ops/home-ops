@@ -19,6 +19,12 @@ spec:
       enabled: "false"
     auth.proxy:
       enabled: "false"
+    # yamllint disable rule:line-length
+    geomap:
+      default_baselayer_config: >-
+        {"type": "xyz", "config": {"attribution": "Tiles © Esri",
+        "url": "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"}}
+    # yamllint enable rule:line-length
     log:
       mode: console
     metrics:
