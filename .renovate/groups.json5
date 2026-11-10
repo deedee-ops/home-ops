@@ -81,6 +81,16 @@
       minimumGroupSize: 2,
     },
     {
+      description: "Streamystats Group",
+      groupName: "streamystats",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/streamystats/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      minimumGroupSize: 2,
+    },
+    {
       description: "Talos Group",
       groupName: "talos",
       matchDatasources: ["docker", "custom.talos-factory", "github-releases"],
