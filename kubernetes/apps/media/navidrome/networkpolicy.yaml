@@ -1,0 +1,26 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: navidrome-egress-external
+specs:
+  - endpointSelector:
+      matchLabels:
+        app.kubernetes.io/name: navidrome
+    egress:
+      - toFQDNs:
+          # deezer
+          - matchName: api.deezer.com
+          - matchName: auth.deezer.com
+          - matchName: pipe.deezer.com
+          - matchPattern: "*.dzcdn.net"
+          # last.fm
+          - matchName: lastfm.freetls.fastly.net
+          - matchName: ws.audioscrobbler.com
+          # listenbrainz
+          - matchName: api.listenbrainz.org
+          - matchName: labs.api.listenbrainz.org
+        toPorts:
+          - ports:
+              - port: "443"

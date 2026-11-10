@@ -24,6 +24,7 @@ specs:
           - matchPattern: "*.thetvdb.com"
           # plugins
           - matchName: cdn.jsdelivr.net
+          - matchName: database.skipme.deno.net
           - matchName: github.com
           - matchName: intro-skipper.org
           - matchName: raw.githubusercontent.com
