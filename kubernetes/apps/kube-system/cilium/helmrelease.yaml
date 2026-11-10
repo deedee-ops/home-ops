@@ -49,8 +49,8 @@ spec:
       enabled: true
       metrics:
         enabled:
-          - dns:query
-          - drop
+          - dns:query;labelsContext=source_namespace,source_workload
+          - drop:labelsContext=source_namespace,source_workload;destinationContext=dns|workload|reserved-identity
           - tcp
           - flow
           - port-distribution
