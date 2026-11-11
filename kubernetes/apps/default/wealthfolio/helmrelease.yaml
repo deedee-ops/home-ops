@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: docker.io/wealthfolio/wealthfolio
-              tag: 3.12.0@sha256:5790528fcd9795b571176cad78bcca09e3fa5875ec20968356586939e154c3cb
+              tag: 3.13.0@sha256:6600feaa06910a35854bc07a4cdf943a29b4a7a443190912e3d3c02288533ed2
             env:
               TZ: Europe/Warsaw
               WF_LISTEN_ADDR: "0.0.0.0:8088"
