@@ -6,6 +6,7 @@ distSpecVersion: 1.1.1
 http:
   address: 0.0.0.0
   port: "5000"
+  writeTimeout: 30m
   # accept docker v2 schema2 manifests as-is (default is OCI-only, sync would reject them)
   compat:
     - docker2s2
@@ -53,6 +54,7 @@ extensions:
       - urls:
           - https://registry-1.docker.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -62,6 +64,7 @@ extensions:
       - urls:
           - https://codeberg.org
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -71,6 +74,7 @@ extensions:
       - urls:
           - https://ghcr.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -80,6 +84,7 @@ extensions:
       - urls:
           - https://gsoci.azurecr.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -89,6 +94,7 @@ extensions:
       - urls:
           - https://mirror.gcr.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -98,6 +104,7 @@ extensions:
       - urls:
           - https://quay.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true
@@ -107,6 +114,7 @@ extensions:
       - urls:
           - https://registry.k8s.io
         onDemand: true
+        stream: true
         # serve cached manifests locally, only re-check upstream after this long
         manifestCheckInterval: 24h
         tlsVerify: true

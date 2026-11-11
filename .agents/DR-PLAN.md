@@ -60,6 +60,11 @@ Audience: Claude only. Terse by design. Verify every "FACT" again before acting 
     fallback. Small images stay under timeout.
   - regression vs old distribution proxy (it streamed blobs while caching).
   - NOT fixable via Talos (containerd response-header timeout not exposed in RegistryMirrorConfig).
+  - MITIGATED 2026-11-11 (branch `claude/zot-stream-sync`): zot v2.1.23 `stream: true` on every sync registry
+    serves the upstream manifest at once and streams blobs while syncing; `http.writeTimeout: 30m` covers slow blobs.
+    containerd's 30s `ResponseHeaderTimeout` is hard-coded (containerd 2.3 `core/remotes/docker/registry.go`).
+    An upstream reset mid-blob still gives `ErrImagePull` (truncated body), but slow cold pulls stay in Pulling.
+    T7 is still useful (warm before DR / before kubelet pulls).
   - `onDemandInBackground: true` only turns timeout into fast 404 -> same retry outcome; not a fix.
   - mitigation: pre-warm (T7). If insufficient: investigate S3 push speed to garage (the slower half: ~80s vs ~23s
     download) — zot/garage upload chunking, dedupe overhead.
