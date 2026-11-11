@@ -72,6 +72,7 @@ rules:
       - watch
   # GET-only API server proxy to Prometheus/Alertmanager web ports (queries, alerts, silences listing).
   # Their mutating endpoints need POST/PUT/DELETE (create/update/delete verbs), so stay out of reach.
+  # Loki only via its read-only gateway (Loki serves /flush and /ingester/shutdown on GET).
   - apiGroups:
       - ""
     resources:
@@ -81,6 +82,8 @@ rules:
       - kube-prometheus-stack-alertmanager:http-web
       - kube-prometheus-stack-prometheus:9090
       - kube-prometheus-stack-prometheus:http-web
+      - loki-gateway:80
+      - loki-gateway:http
     verbs:
       - get
   - apiGroups:

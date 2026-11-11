@@ -12,6 +12,7 @@ resources:
   - ./grafana.yaml
   - ./kromgo.yaml
   - ./kube-prometheus-stack.yaml
+  - ./loki.yaml
   - ./prom-timer.yaml
   - ./prometheus-adapter.yaml
   - ./silence-operator.yaml

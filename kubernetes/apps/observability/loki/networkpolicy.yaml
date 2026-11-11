@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: loki-ingress
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/component: single-binary
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: alloy
+            io.kubernetes.pod.namespace: kube-system
+        - matchLabels:
+            app: grafana
+            io.kubernetes.pod.namespace: observability
+        - matchLabels:
+            app.kubernetes.io/name: loki
+            app.kubernetes.io/component: gateway
+            io.kubernetes.pod.namespace: observability
+        - matchLabels:
+            app.kubernetes.io/name: prometheus
+            io.kubernetes.pod.namespace: observability
+      toPorts:
+        - ports:
+            - port: "3100"
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumclusterwidenetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: loki-egress-label
+specs:
+  - endpointSelector:
+      matchLabels:
+        egress.cilium.io/loki: "true"
+    egress:
+      - toEndpoints:
+          - matchLabels:
+              app.kubernetes.io/name: loki
+              app.kubernetes.io/component: single-binary
+              io.kubernetes.pod.namespace: observability
+        toPorts:
+          - ports:
+              - port: "3100"

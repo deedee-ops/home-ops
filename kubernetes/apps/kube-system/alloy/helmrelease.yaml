@@ -1,0 +1,172 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: alloy
+  interval: 1h
+  postRenderers:
+    - kustomize:
+        patches:
+          - # chart copies the image tag into this label; tag@sha256 is not a valid label value
+            patch: |-
+              - op: remove
+                path: /metadata/labels/app.kubernetes.io~1version
+            target:
+              labelSelector: app.kubernetes.io/name=alloy,app.kubernetes.io/version
+  values:
+    fullnameOverride: alloy
+    crds:
+      create: false
+    image:
+      repository: grafana/alloy
+      tag: v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
+
+    alloy:
+      storagePath: /var/lib/alloy
+      enableReporting: false
+      clustering:
+        enabled: true
+      mounts:
+        extra:
+          - name: pod-logs
+            mountPath: /var/log/pods
+            readOnly: true
+          - name: data
+            mountPath: /var/lib/alloy
+      # pod logs are root:root 0640
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+      resources:
+        requests:
+          cpu: 20m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
+      configMap:
+        content: |
+          logging {
+            level  = "info"
+            format = "logfmt"
+          }
+
+          local.file_match "pods" {
+            path_targets = [{"__path__" = "/var/log/pods/*/*/*.log"}]
+          }
+
+          discovery.relabel "pods" {
+            targets = local.file_match.pods.targets
+
+            rule {
+              source_labels = ["__path__"]
+              regex         = "/var/log/pods/([^_]+)_([^_]+)_[^/]+/([^/]+)/.*"
+              target_label  = "namespace"
+              replacement   = "$1"
+            }
+            rule {
+              source_labels = ["__path__"]
+              regex         = "/var/log/pods/([^_]+)_([^_]+)_[^/]+/([^/]+)/.*"
+              target_label  = "pod"
+              replacement   = "$2"
+            }
+            rule {
+              source_labels = ["__path__"]
+              regex         = "/var/log/pods/([^_]+)_([^_]+)_[^/]+/([^/]+)/.*"
+              target_label  = "container"
+              replacement   = "$3"
+            }
+            rule {
+              target_label = "node"
+              replacement  = sys.env("HOSTNAME")
+            }
+            rule {
+              target_label = "job"
+              replacement  = "pods"
+            }
+          }
+
+          loki.source.file "pods" {
+            targets    = discovery.relabel.pods.output
+            forward_to = [loki.process.pods.receiver]
+          }
+
+          loki.process "pods" {
+            stage.cri {}
+
+            stage.label_drop {
+              values = ["filename"]
+            }
+
+            forward_to = [loki.write.loki.receiver]
+          }
+
+          loki.source.kubernetes_events "events" {
+            job_name   = "events"
+            log_format = "json"
+
+            clustering {
+              enabled = true
+            }
+
+            forward_to = [loki.process.events.receiver]
+          }
+
+          loki.process "events" {
+            stage.label_drop {
+              values = ["instance"]
+            }
+
+            forward_to = [loki.write.loki.receiver]
+          }
+
+          loki.write "loki" {
+            endpoint {
+              url = "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push"
+
+              max_backoff_retries = 0
+            }
+          }
+
+    controller:
+      type: daemonset
+      podLabels:
+        egress.cilium.io/kube-apiserver: "true"
+        egress.cilium.io/loki: "true"
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+      volumes:
+        extra:
+          - name: pod-logs
+            hostPath:
+              path: /var/log/pods
+              type: Directory
+          - name: data
+            hostPath:
+              path: /var/lib/alloy
+              type: DirectoryOrCreate
+
+    rbac:
+      create: false
+
+    serviceMonitor:
+      enabled: true
+      relabelings:
+        - action: drop
+          sourceLabels:
+            - __meta_kubernetes_service_name
+          regex: alloy-cluster
