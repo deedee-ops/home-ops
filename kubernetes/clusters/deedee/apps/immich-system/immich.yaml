@@ -24,6 +24,18 @@ spec:
   interval: 1h
   patches:
     - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+      patch: |-
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: _
+        spec:
+          upgrade:
+            strategy:
+              name: RetryOnFailure
+    - target:
         kind: Dragonfly
       patch: |
         - op: add

@@ -17,6 +17,9 @@ configMapGenerator:
   - name: immich-dashboard
     files:
       - ./resources/immich-dashboard.json
+  - name: immich-otel-preload
+    files:
+      - ./resources/otel-prometheus-host.mjs
 generatorOptions:
   disableNameSuffixHash: true
   annotations:

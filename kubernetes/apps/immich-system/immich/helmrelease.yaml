@@ -9,6 +9,7 @@ spec:
     kind: OCIRepository
     name: immich
   interval: 1h
+  timeout: 15m
   # Immich is a beast
   values:
     controllers:
@@ -38,6 +39,7 @@ spec:
               IMMICH_WORKERS_INCLUDE: "api"
               NODE_ENV: *appEnv
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
+              NODE_OPTIONS: --import=/usr/src/app/server/otel-prometheus-host.mjs
               ORT_DISABLE_TELEMETRY: "1"
               REDIS_HOSTNAME: immich-dragonfly
               DB_DATABASE_NAME: &dbname "immich"
@@ -322,6 +324,16 @@ spec:
               - subPath: config.yaml
                 path: /config/config.yaml
           microservices: *configMount
+      otel-preload:
+        type: configMap
+        name: immich-otel-preload
+        advancedMounts:
+          api: &otelMount
+            app:
+              - subPath: otel-prometheus-host.mjs
+                path: /usr/src/app/server/otel-prometheus-host.mjs
+                readOnly: true
+          microservices: *otelMount
       data:
         existingClaim: immich
         advancedMounts:
