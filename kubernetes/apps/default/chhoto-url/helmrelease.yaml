@@ -21,14 +21,15 @@ spec:
           app:
             image:
               repository: ghcr.io/sintan1729/chhoto-url
-              tag: 7.10.8@sha256:f0178ec1b57491dd4ad24bba3db5d990c58aa7d1af5a5fca1680fbb394d63f6e
+              tag: 7.11.1@sha256:33300cf19cdc8321f4adb25c8092ee5aef4065f06f14a584de20c60c750cdd20
             env:
-              CHHOTO_ALLOW_CAPITAL_LETTERS: true
+              CHHOTO_ALLOW_CAPITAL_LETTERS: "True"
               CHHOTO_DB_URL: /config/urls.sqlite
               CHHOTO_EXTRA_PROTOCOLS: obsidian,obtainium
-              CHHOTO_HASH_ALGORITHM: Argon2
+              CHHOTO_API_KEY_HASH_ALGORITHM: SHA512
               CHHOTO_LISTEN_ADDRESS: 0.0.0.0
               CHHOTO_LISTEN_PORT: &port 80
+              CHHOTO_PASSWORD_HASH_ALGORITHM: Argon2
               CHHOTO_SITE_URL: https://u.${ROOT_DOMAIN}
               CHHOTO_SLUG_LENGTH: 6
               CHHOTO_SLUG_STYLE: UID
