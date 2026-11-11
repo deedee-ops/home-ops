@@ -8,5 +8,3 @@ resources:
   - ./hpa.yaml
   - ./networkpolicy.yaml
   - ./ocirepository.yaml
-  - ./prometheusrule.yaml
-  - ./scrapeconfig.yaml
