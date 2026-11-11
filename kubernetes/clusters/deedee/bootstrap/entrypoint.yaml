@@ -30,7 +30,7 @@ spec:
           path: /spec/retryInterval
           value: 1m
         - op: add
-          path: /spec/patches/-
+          path: /spec/patches/0
           value:
             patch: |-
               apiVersion: helm.toolkit.fluxcd.io/v2
