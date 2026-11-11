@@ -24,16 +24,29 @@ spec:
               tag: v3.51.7@sha256:70a6a1913cae929260f8b59449613537b77ffd44398d9b8ff8a2ce935fc11d7b
             env:
               AUTH_DEFAULT_METHOD: sso
+              AUTO_MIRROR_REPOS: "true"
               BETTER_AUTH_URL: https://gitsync.${ROOT_DOMAIN}
+              CLEANUP_DRY_RUN: "true"
               DESTINATION_PROVIDER: forgejo
+              GITEA_ADD_TOPICS: "true"
               GITEA_EXTERNAL_URL: https://git.${ROOT_DOMAIN}
               GITEA_ORG_VISIBILITY: private
               GITEA_URL: http://forgejo-http:3000
+              INCLUDE_COLLABORATOR_REPOS: "false"
+              INCLUDE_ORGANIZATIONS: dummy
               MIRROR_RELEASES: "true"
+              MIRROR_STARRED: "false"
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+              ONLY_MIRROR_ORGS: "true"
               PORT: &port 4321
+              PRIVATE_REPOSITORIES: "false"
               PUBLIC_BETTER_AUTH_URL: https://gitsync.${ROOT_DOMAIN}
+              SCHEDULE_AUTO_RETRY: "true"
+              SCHEDULE_ENABLED: "true"
+              SCHEDULE_NOTIFY_ON_FAILURE: "true"
+              SCHEDULE_SKIP_RECENTLY_MIRRORED: "true"
               SCHEDULE_TIMEZONE: &tz Europe/Warsaw
+              SKIP_FORKS: "false"
               TZ: *tz
             envFrom:
               - secretRef:
