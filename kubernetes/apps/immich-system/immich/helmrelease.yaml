@@ -26,7 +26,7 @@ spec:
           app:
             image: &img
               repository: ghcr.io/immich-app/immich-server
-              tag: v3.4.0@sha256:7b7b575029168bfb9eb901d868ce7dbfda0d7818e78aaace29b7b8a08cd4e7d5
+              tag: v3.4.1@sha256:7c489add298fc2f92cda4c777de6462aa206877e04087b815f62c7664af0b53b
             env: &env
               IMMICH_API_METRICS_PORT: &apiPort 8081
               IMMICH_CONFIG_FILE: /config/config.yaml
@@ -39,7 +39,6 @@ spec:
               IMMICH_WORKERS_INCLUDE: "api"
               NODE_ENV: *appEnv
               NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt # has to be via ENV, or it falls back to builtins
-              NODE_OPTIONS: --import=/usr/src/app/server/otel-prometheus-host.mjs
               ORT_DISABLE_TELEMETRY: "1"
               REDIS_HOSTNAME: immich-dragonfly
               DB_DATABASE_NAME: &dbname "immich"
@@ -175,7 +174,7 @@ spec:
           app:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v3.4.0@sha256:f4e7275c9fbd956ed7bccc738ac57890bcbd9f9c17844d2ea0b137e38a083454
+              tag: v3.4.1@sha256:8adebf414256f6e4f837bfbb66fa94f14f4da7260e3a1d65cbba49e4e35d8764
             env:
               ORT_DISABLE_TELEMETRY: "1"
               MACHINE_LEARNING_HTTP_KEEPALIVE_TIMEOUT_S: "0" # https://github.com/immich-app/immich/discussions/12064
@@ -324,16 +323,6 @@ spec:
               - subPath: config.yaml
                 path: /config/config.yaml
           microservices: *configMount
-      otel-preload:
-        type: configMap
-        name: immich-otel-preload
-        advancedMounts:
-          api: &otelMount
-            app:
-              - subPath: otel-prometheus-host.mjs
-                path: /usr/src/app/server/otel-prometheus-host.mjs
-                readOnly: true
-          microservices: *otelMount
       data:
         existingClaim: immich
         advancedMounts:
