@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/raylabshq/gitea-mirror
-              tag: v3.51.5@sha256:00e8c4d67fc1c403dfa2eeb03e5d9454d6ab69dc710ec3caeacaaa848a12ddac
+              tag: v3.51.6@sha256:d0c68119051d3d64ec89a0b83ec28afb13df4c5a5dd20124799d0de32f3d9887
             env:
               AUTH_DEFAULT_METHOD: sso
               BETTER_AUTH_URL: https://gitsync.${ROOT_DOMAIN}
