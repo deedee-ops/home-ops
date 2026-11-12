@@ -20,8 +20,8 @@ spec:
         containers:
           app:
             image:
-              repository: registry.ajgon.casa/tools/redlib
-              tag: latest@sha256:4c44a752f88351a927e1a726fe1b1dee71d903588dd2467040227ef934d39134
+              repository: ghcr.io/nachtalb/redlib
+              tag: latest@sha256:aa16bc4d091892b0cc04dbff0622c987364d712b07c68644a409f78bef583308
             env:
               PORT: &port 8080
               # Instance-level settings.
@@ -30,6 +30,7 @@ spec:
               REDLIB_PUSHSHIFT_FRONTEND: undelete.pullpush.io
               REDLIB_ROBOTS_DISABLE_INDEXING: "on"
               REDLIB_SFW_ONLY: "off"
+              REDLIB_STALE_CACHE_MAX_AGE: "1440"
               # Settings defaults
               REDLIB_DEFAULT_BLUR_NSFW: "on"
               REDLIB_DEFAULT_BLUR_SPOILER: "on"
@@ -47,6 +48,9 @@ spec:
               REDLIB_DEFAULT_USE_HLS: "on"
               REDLIB_DEFAULT_WIDE: "on"
               TZ: Europe/Warsaw
+            envFrom:
+              - secretRef:
+                  name: redlib-secret
             probes:
               liveness:
                 enabled: true
@@ -59,7 +63,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /settings
+                    path: /healthz
                     port: *port
                   periodSeconds: 10
                   timeoutSeconds: 5
