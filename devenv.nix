@@ -8,11 +8,6 @@
 
 let
   isDevShell = !config.devenv.isTesting;
-  # TODO: drop once NixOS/nixpkgs#584921 reaches nixos-unstable
-  zizmor = pkgs.zizmor.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkg-config ];
-    buildInputs = old.buildInputs ++ [ pkgs.aws-lc ];
-  });
 in
 {
   profiles.deedee.module.env = {
@@ -129,8 +124,8 @@ in
           ".forgejo/zizmor.yaml"
         ];
         name = "zizmor";
-        package = zizmor;
-        entry = "${pkgs.lib.getExe zizmor}";
+        package = pkgs.zizmor;
+        entry = "${pkgs.lib.getExe pkgs.zizmor}";
         files = ".forgejo/workflows/.+\.yaml";
       };
 
