@@ -12,7 +12,7 @@ terraform {
 
     tailscale = {
       source  = "tailscale/tailscale"
-      version = "0.29.3"
+      version = "0.30.0"
     }
   }
   required_version = ">= 1.6.0"
