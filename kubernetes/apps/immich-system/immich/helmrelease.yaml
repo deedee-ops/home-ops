@@ -83,7 +83,7 @@ spec:
           exporter:
             image:
               repository: ghcr.io/moond4rk/immich-exporter
-              tag: 1.4.0@sha256:2477267a8b84d042aee2c5f3240a73c1cb61eee17a35bec7a9e16941218ef989
+              tag: 1.5.0@sha256:0d0e8538bfe523fcae01b55e465497f463048b668b9d99a307c51478f36348ab
             env:
               COLLECT_PEOPLE: "true"
               IMMICH_HOST: "127.0.0.1"
