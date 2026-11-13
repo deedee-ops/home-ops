@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/fredrikburmester/streamystats-nextjs
-              tag: v2.22.2@sha256:de183b3e4361377d7b7795dee7a7f0e2cddbb9c6cb43a1e7ea13298d654d99fa
+              tag: v2.22.3@sha256:251d4ad094946d9711922b38878aacad0721c1f0db43c042df172f98a4294732
             command:
               - "/bin/sh"
               - "-c"
@@ -91,7 +91,7 @@ spec:
           job:
             image:
               repository: ghcr.io/fredrikburmester/streamystats-job-server
-              tag: v2.22.2@sha256:433302aec2dfd3588bb421ad6b580b8c85099d9e300f926c1e31843e805bf049
+              tag: v2.22.3@sha256:9bce17604d1a853044871edf53f8edcecf4e4139c46589c9f43521df37508b13
             command:
               - "/bin/sh"
               - "-c"
