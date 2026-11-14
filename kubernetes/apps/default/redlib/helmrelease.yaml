@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/nachtalb/redlib
-              tag: latest@sha256:317303864eb34546defd033eae921ec2072c2ffa90d68be26adf7d2573be4b26
+              tag: latest@sha256:d5947e142a4c09419c2046da20d7910ea2cff6556868c61a3d973f3cad05936e
             env:
               PORT: &port 8080
               # Instance-level settings.
