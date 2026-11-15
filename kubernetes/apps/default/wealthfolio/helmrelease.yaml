@@ -81,7 +81,7 @@ spec:
           pricer:
             image:
               repository: registry.ajgon.casa/tools/wealthfolio-sidecar
-              tag: latest@sha256:925fb51b2e7a1eceda0eefa050734c389d2976f94eee2327c512dcb3d1a2d470
+              tag: latest@sha256:02cccdf9fb4941dce7a44b22f6acafc85170fbfded6e89f8a2e56373563a04d2
             env:
               TZ: Europe/Warsaw
               WF_MCP_URL: http://127.0.0.1:8088/mcp
