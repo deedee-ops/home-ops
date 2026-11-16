@@ -6,10 +6,11 @@ services:
     container_name: arcane-agent
     restart: always
     environment:
-      AGENT_MODE: "true"
+      ARCANE_AGENT: "true"
+      ARCANE_AGENT_TOKEN: "${ARCANE_AGENT_TOKEN}"
+      ARCANE_AGENT_TRANSPORT: "auto"
+      ARCANE_MANAGER_API_URL: http://localhost:9120
       EDGE_TRANSPORT: poll
-      AGENT_TOKEN: "${ARCANE_AGENT_TOKEN}"
-      MANAGER_API_URL: http://localhost:3552
     ports:
       - "127.0.0.1:3553:3553"
     volumes:

@@ -11,7 +11,9 @@ vps:
         - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOrBLT88ZZ+lO8hHcj+4jqtor79OLhQZcDWF98kkWkfn"
 
       docker_compose_stacks:
-        - arcane-agent
+        # - arcane-agent
+        - rustdesk
+        # used for external endpoints in k8s envoy as an forwarding proxy entrypoint
         - traefik-vps
 
 nut:
