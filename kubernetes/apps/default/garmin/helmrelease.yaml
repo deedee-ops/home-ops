@@ -38,7 +38,7 @@ spec:
                 memory: "512Mi"
           influxdb:
             image:
-              repository: public.ecr.aws/docker/library/influxdb
+              repository: docker.io/library/influxdb
               tag: 1.13.2@sha256:ffa96366d916545608b8ae8dcc09d1efb5d792e4139096dfdcb1daf8789b211a
             env:
               INFLUXDB_DATA_INDEX_VERSION: tsi1
