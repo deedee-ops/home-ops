@@ -18,6 +18,7 @@ spec:
       APP: mail-archive
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 25Gi
+      KOPIUR_CACHE_CAPACITY: 25Gi
     substituteFrom:
       - kind: Secret
         name: mail-archive-oidc-credentials

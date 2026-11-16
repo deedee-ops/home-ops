@@ -32,6 +32,7 @@ spec:
       DBCLUSTER: shelf
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 20Gi
+      KOPIUR_CACHE_CAPACITY: 20Gi
     substituteFrom:
       - kind: Secret
         name: shelf-oidc-credentials

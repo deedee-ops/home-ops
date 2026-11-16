@@ -28,6 +28,7 @@ spec:
       NFS_VOLUME: fast
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 10Gi
+      KOPIUR_CACHE_CAPACITY: 10Gi
   prune: true
   sourceRef:
     kind: GitRepository

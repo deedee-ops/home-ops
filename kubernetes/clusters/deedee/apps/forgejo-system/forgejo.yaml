@@ -27,6 +27,7 @@ spec:
       CLUSTER_NAME: deedee
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
       KOPIUR_CAPACITY: 50Gi
+      KOPIUR_CACHE_CAPACITY: 25Gi
   prune: true
   sourceRef:
     kind: GitRepository
