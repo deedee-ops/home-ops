@@ -48,6 +48,7 @@ spec:
               - ALL
     extraArgs:
       - --min-ttl=5m
+      - --webhook-provider-read-timeout=60s
     triggerLoopOnEvent: true
     enableGatewayListenerSets: true
     policy: sync
