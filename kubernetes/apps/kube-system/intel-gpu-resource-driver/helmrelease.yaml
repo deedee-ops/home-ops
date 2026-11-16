@@ -13,6 +13,9 @@ spec:
     cdi:
       staticPath: /run/cdi
       dynamicPath: /run/cdi
+    image:
+      # renovate: datasource=docker depName=ghcr.io/intel/intel-gpu-resource-driver
+      tag: v0.12.1@sha256:1479956240397c7207c3d38c0d296bd591cd66f26d432452f9a2d75336843776
     kubeletPlugin:
       privileged: true
       healthMonitoring:
