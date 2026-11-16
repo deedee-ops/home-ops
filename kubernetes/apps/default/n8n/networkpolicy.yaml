@@ -11,9 +11,6 @@ specs:
     egress:
       - toEndpoints:
           - matchLabels:
-              app.kubernetes.io/name: firefly
-      - toEndpoints:
-          - matchLabels:
               app.kubernetes.io/name: forgejo
       - toEndpoints:
           - matchLabels:

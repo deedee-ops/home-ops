@@ -16,7 +16,6 @@ resources:
   - ./crypt.yaml
   - ./davis.yaml
   - ./discord-bots.yaml
-  - ./firefly.yaml
   - ./garmin.yaml
   - ./geopulse.yaml
   - ./glance.yaml
