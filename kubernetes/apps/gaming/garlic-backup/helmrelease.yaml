@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: fclairamb/ftpserver
-              tag: 0.16.7-alpine@sha256:68891420729431b44527a2d1bd8f719195be9a41aa42652bcfb5500f1e0c60b6
+              tag: 0.16.8-alpine@sha256:f7d9ff90af96dd35e4e3ff4f538360d12aed8269647094ac6135c343162d68ba
             args:
               - -conf
               - /config/ftpserver.json
