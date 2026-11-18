@@ -20,7 +20,7 @@ spec:
           app:
             image:
               repository: ghcr.io/bscott/subtrackr
-              tag: 0.7.0@sha256:92ad6c586f21f44807f0cd33808aca16fbff1df2ebd94c83e7744a2e5e70003e
+              tag: 0.7.1@sha256:dc1092d8f9f229cd7980063e3a989402d18f86cb546e45b5b0606e1d32ed153c
             env:
               DATABASE_PATH: /app/data/subtrackr.db
               GIN_MODE: release
