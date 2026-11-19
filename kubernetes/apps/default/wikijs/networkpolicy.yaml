@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: wikijs-egress-external
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: wikijs
+  egress:
+    - toFQDNs:
+        - matchName: api.iconify.design
+        - matchName: "s3.${ROOT_DOMAIN}"
+      toPorts:
+        - ports:
+            - port: "443"
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/component: database
+    # git storage target
+    - toEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace: forgejo-system
+            app.kubernetes.io/name: forgejo
+      toPorts:
+        - ports:
+            - port: "2222"
+            - port: "3000"

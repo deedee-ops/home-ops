@@ -1,0 +1,163 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/other/app-template-hr.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: wikijs
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: wikijs
+  interval: 1h
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+          glance/name: Wiki.js
+          glance/icon: di:wikijs
+          glance/url: https://wiki.${ROOT_DOMAIN}
+        containers:
+          app:
+            image:
+              repository: ghcr.io/requarks/wiki
+              tag: 3.4.0@sha256:9424867464d9d899f975bbadb8ff1f794341eadd720b5fb5c22f0988c62e29bf
+            env:
+              CONFIG_FILE: /etc/wiki/config.yml
+              DB_HOST:
+                secretKeyRef:
+                  name: wikijs-db-secret
+                  key: host
+              DB_PORT:
+                secretKeyRef:
+                  name: wikijs-db-secret
+                  key: port
+              DB_USER:
+                secretKeyRef:
+                  name: wikijs-db-secret
+                  key: username
+              DB_PASS:
+                secretKeyRef:
+                  name: wikijs-db-secret
+                  key: password
+              DB_NAME: wikijs
+              KUBERNETES_SERVICE_HOST: kubernetes.default.svc
+              NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+              TZ: Europe/Warsaw
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /_live
+                    port: &port 3000
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /_ready
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /_live
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+    configMaps:
+      config:
+        data:
+          config.yml: |-
+            port: 3000
+            bindIP: 0.0.0.0
+            db:
+              host: '$(DB_HOST)'
+              port: $(DB_PORT)
+              user: '$(DB_USER)'
+              pass: '$(DB_PASS)'
+              db: '$(DB_NAME)'
+              schema: wiki
+              ssl: false
+            logLevel: info
+            logFormat: json
+            offline: false
+            dataPath: ./data
+            scheduler:
+              workers: 2
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      labels:
+        egress.cilium.io/auth: "true"
+        egress.cilium.io/smtp-relay: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+    service:
+      app:
+        ports:
+          http:
+            port: 80
+            targetPort: *port
+    route:
+      app:
+        hostnames:
+          - "wiki.${ROOT_DOMAIN}"
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+        rules:
+          - backendRefs:
+              - name: wikijs
+                port: 80
+    persistence:
+      config:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /etc/wiki/config.yml
+            subPath: config.yml
+            readOnly: true
+      homelab-root-ca:
+        type: configMap
+        name: homelab-root-ca
+        globalMounts:
+          - path: /etc/ssl/certs/ca-certificates.crt
+            subPath: ca.crt
+            readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+            subPath: tmp
+          - path: /home/node
+            subPath: home
+          - path: /wiki/data
+            subPath: data

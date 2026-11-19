@@ -59,6 +59,11 @@ spec:
                 login: true
                 passwordSecret:
                   name: geopulse-db-secret
+              - name: wikijs
+                ensure: present
+                login: true
+                passwordSecret:
+                  name: wikijs-db-secret
           postgresql:
             shared_preload_libraries:
               - "vchord.so"

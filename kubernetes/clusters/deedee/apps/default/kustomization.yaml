@@ -34,3 +34,4 @@ resources:
   - ./vaultwarden.yaml
   - ./wakapi.yaml
   - ./wealthfolio.yaml
+  - ./wikijs.yaml
