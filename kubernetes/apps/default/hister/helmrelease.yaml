@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/asciimoo/hister
-              tag: v0.21.0@sha256:4dab1cbd7aabe8ade8e696e4085ecd3254e1170467c4502debec792a904abdbc
+              tag: v0.22.0@sha256:d1b427c7f876e64e6212e000df60d33c2e418b60372582b56cfee719eafd4107
             env:
               HISTER_DATA_DIR: /config/data
               HISTER__APP__DIRECTORY: /config/app
