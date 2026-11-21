@@ -47,7 +47,7 @@ services:
       - "-allowfrom=traefik"
       - "-allowHEAD=/_ping"
       - "-allowGET=(/v1\\.[0-9]+)?/(_ping|version|events|containers/json|containers/[a-zA-Z0-9][a-zA-Z0-9_.-]*/json)"
-    image: ghcr.io/wollomatic/socket-proxy:1.13.2@sha256:82db5c4728e4fd68d969ec3d74d99bf6d990d06428b583a6f1daabab27de1bd3
+    image: ghcr.io/wollomatic/socket-proxy:1.14.0@sha256:b9e5b7e320287ea329229c9cbe9c2f78492befe408c4510c6c76cd897696fa88
     container_name: traefik-socket-proxy
     restart: always
     user: 1000:1000
