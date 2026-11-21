@@ -20,8 +20,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/nachtalb/redlib
-              tag: latest@sha256:37a6d73271029d9a2071c4c8ff9a258d64e14379863dbc8a3cf30a038e5f23d2
+              repository: registry.ajgon.casa/tools/redlib
+              tag: latest@sha256:4b80df1bd6e0424f295565221fb3d4230dc15bfd22ace68853d296a57bdc9fa0
             env:
               PORT: &port 8080
               # Instance-level settings.
