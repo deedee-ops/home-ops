@@ -18,8 +18,10 @@ specs:
           - matchName: yts.lt
 
           - matchName: api.althub.co.za
+          - matchName: drunkenslug.com
           - matchName: discord.com
           - matchName: indexers.prowlarr.com
+          - matchName: ninjacentral.co.za
         toPorts:
           - ports:
               - port: "443"
