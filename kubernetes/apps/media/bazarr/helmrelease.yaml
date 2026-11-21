@@ -26,9 +26,6 @@ spec:
               BAZARR__PORT: &port 80
               DYNACONF_ANALYTICS__ENABLED: "false"
               TZ: Europe/Warsaw
-            envFrom:
-              - secretRef:
-                  name: "bazarr-secret"
             probes:
               liveness:
                 enabled: true
@@ -131,11 +128,5 @@ spec:
         globalMounts:
           - path: /data/media
             subPath: media
-      scripts:
-        type: configMap
-        name: bazarr-configmap
-        defaultMode: 0775
-        globalMounts:
-          - readOnly: true
       tmp:
         type: emptyDir
