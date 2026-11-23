@@ -48,13 +48,13 @@ spec:
               - secretRef:
                   name: "bookorbit-secret"
             probes:
-              liveness:
+              liveness: &liveProbe
                 enabled: true
                 spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 5
-              readiness:
+              readiness: &readProbe
                 enabled: true
                 custom: true
                 spec:
@@ -64,7 +64,7 @@ spec:
                   periodSeconds: 10
                   timeoutSeconds: 5
                   failureThreshold: 5
-              startup:
+              startup: &startupProbe
                 enabled: true
                 spec:
                   failureThreshold: 30
@@ -81,6 +81,21 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 2Gi
+          lubimyczytac:
+            image:
+              repository: ghcr.io/bookorbit/lubimyczytac-provider
+              tag: 0.1.0@sha256:1131d621b25d591716c3e38d29ab5deafdc94b2e7658bb23ea2784323cbea778
+            probes:
+              liveness: *liveProbe
+              readiness: *readProbe
+              startup: *startupProbe
+            securityContext: *sc
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
