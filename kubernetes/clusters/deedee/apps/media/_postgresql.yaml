@@ -59,9 +59,6 @@ spec:
                 login: true
                 passwordSecret:
                   name: streamystats-db-secret
-          postgresql:
-            shared_preload_libraries:
-              - "vchord.so"
       target:
         group: postgresql.cnpg.io
         kind: Cluster

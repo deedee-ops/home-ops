@@ -67,6 +67,13 @@
   ],
   packageRules: [
     {
+      description: "Hold CNPG PostgreSQL majors, they need a coordinated upgrade (extension images, pgbackup)",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/cloudnative-pg/postgresql"],
+      matchUpdateTypes: ["major"],
+      enabled: false,
+    },
+    {
       commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
       commitMessageTopic: "dashboard {{sourceDirectory}}",
       matchDatasources: ["custom.grafana-dashboards"],

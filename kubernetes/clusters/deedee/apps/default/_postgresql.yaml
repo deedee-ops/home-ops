@@ -65,8 +65,6 @@ spec:
                 passwordSecret:
                   name: wikijs-db-secret
           postgresql:
-            shared_preload_libraries:
-              - "vchord.so"
             extensions:
               - name: postgis
                 image:

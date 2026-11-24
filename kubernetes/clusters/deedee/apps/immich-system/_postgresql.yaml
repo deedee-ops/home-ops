@@ -49,6 +49,14 @@ spec:
           postgresql:
             shared_preload_libraries:
               - "vchord.so"
+            extensions:
+              - name: vchord
+                image:
+                  reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.1.1@sha256:bdea43bed2a414e21bbf71767bf6f0739747ac480b267b51772dc214ac28dcb3
+                dynamic_library_path:
+                  - /usr/lib/postgresql/18/lib
+                extension_control_path:
+                  - /usr/share/postgresql/18
       target:
         group: postgresql.cnpg.io
         kind: Cluster
