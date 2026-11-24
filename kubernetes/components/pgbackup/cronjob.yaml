@@ -1,0 +1,96 @@
+---
+# yaml-language-server: $schema=https://schemas.ajgon.casa/cronjob-batch-v1.json
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/controller: dbbackup
+    app.kubernetes.io/instance: ${APP}
+    app.kubernetes.io/name: ${APP}
+  name: ${APP}-dbbackup
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 900
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/controller: dbbackup
+            app.kubernetes.io/instance: ${APP}
+            app.kubernetes.io/name: ${APP}
+        spec:
+          automountServiceAccountToken: false
+          containers:
+            - command:
+                - bash
+                - /scripts/backup.sh
+              env:
+                - name: BACKUP_DIR
+                  value: /backups
+                - name: PGDATABASE
+                  value: ${APP}
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      key: host
+                      name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: ${PGBACKUP_SECRET:=${DBCLUSTER}-db-app}
+              image: ghcr.io/cloudnative-pg/postgresql:18.7-standard-bookworm@sha256:4eae19c85f20f9ad1457b25f0dfeabef8673e67a96a6fa37ef91e6af343d6631
+              imagePullPolicy: IfNotPresent
+              name: app
+              resources:
+                limits:
+                  memory: 512Mi
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
+                runAsUser: 999
+              volumeMounts:
+                - mountPath: /backups
+                  name: dbbackup
+                  subPath: ${APP}
+                - mountPath: /scripts
+                  name: scripts
+                  readOnly: true
+          enableServiceLinks: false
+          restartPolicy: Never
+          securityContext:
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          volumes:
+            - csi:
+                driver: nfs.csi.k8s.io
+                volumeAttributes:
+                  server: nas-k8s.internal
+                  share: /mnt/fast/backups/kubernetes/deedee/databases
+              name: dbbackup
+            - configMap:
+                name: ${APP}-dbbackup
+              name: scripts
+      ttlSecondsAfterFinished: 3600
+  schedule: "0 * * * *"
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 1

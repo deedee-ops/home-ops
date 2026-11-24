@@ -16,14 +16,7 @@ spec:
     - name: pocket-id-operator
       namespace: security
   interval: 1h
-  patches:
-    - patch: |-
-        - op: replace
-          path: /spec/scaleTargetRef/name
-          value: shelf-dbbackup
-      target:
-        group: autoscaling
-        kind: HorizontalPodAutoscaler
+  patches: []
   path: ./kubernetes/apps/shelf-system/shelf
   postBuild:
     substitute:
