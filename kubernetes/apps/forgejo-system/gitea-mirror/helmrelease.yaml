@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/raylabshq/gitea-mirror
-              tag: v3.56.0@sha256:4667eb1d53ff9d0ab447572f4b8da513b247fe5426db49cd4a23f78c94d05d58
+              tag: v3.56.1@sha256:b07c6c1bd705729e51838a2fa7205bc037db1ab0474f52e2def16009c5fa68d3
             env:
               AUTH_DEFAULT_METHOD: sso
               AUTO_MIRROR_REPOS: "true"
