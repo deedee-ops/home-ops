@@ -8,8 +8,7 @@ metadata:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
   instances: 3
-  # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.7-standard-bookworm@sha256:4eae19c85f20f9ad1457b25f0dfeabef8673e67a96a6fa37ef91e6af343d6631
+  imageName: ${PGDB_IMAGE:=unset}
   enableSuperuserAccess: false
   inheritedMetadata:
     labels:
