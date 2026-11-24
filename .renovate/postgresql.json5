@@ -60,10 +60,10 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
       semanticCommitScope: "container",
-      // cluster, pgbackup, postgis, vchord paths, operator support
-      minimumGroupSize: 5,
+      // 5 clusters and the component, pgbackup, postgis, vchord paths, operator support
+      minimumGroupSize: 10,
       prBodyNotes: [
-        "⚠️ Before merging: check that all 4 packages are listed, that the **deployed** CNPG operator supports the new major, and that barman `serverName` changes with it (`pg_upgrade` creates a new system ID).",
+        "⚠️ Before merging: check that all 4 packages are listed, that the **deployed** CNPG operator supports the new major, and that `PGDB_SERVER_NAME` changes with it (`pg_upgrade` creates a new system ID).",
       ],
     },
   ],

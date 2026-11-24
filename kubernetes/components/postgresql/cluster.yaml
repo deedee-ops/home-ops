@@ -46,11 +46,11 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: ${APP}-db-store
-        serverName: ${APP}-db
+        serverName: ${PGDB_SERVER_NAME:=${APP}-db}
   externalClusters:
     - name: ${APP}-db-restore
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: ${APP}-db-store
-          serverName: ${APP}-db
+          serverName: ${PGDB_SERVER_NAME:=${APP}-db}

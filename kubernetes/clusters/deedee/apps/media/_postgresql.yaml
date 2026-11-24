@@ -66,6 +66,9 @@ spec:
   postBuild:
     substitute:
       APP: media
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql
+      PGDB_IMAGE: ghcr.io/cloudnative-pg/postgresql:18.7-standard-bookworm@sha256:4eae19c85f20f9ad1457b25f0dfeabef8673e67a96a6fa37ef91e6af343d6631
+      PGDB_SERVER_NAME: media-db
       ROOT_DOMAIN: "${ROOT_DOMAIN}"
   prune: true
   sourceRef:
