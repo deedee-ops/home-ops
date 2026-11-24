@@ -12,6 +12,7 @@
     "local>deedee/mark13//.renovate/exclusions.json5",
     "local>deedee/mark13//.renovate/groups.json5",
     "local>deedee/mark13//.renovate/labels.json5",
+    "local>deedee/mark13//.renovate/postgresql.json5",
     "local>deedee/mark13//.renovate/talosFactory.json5",
   ],
   packageRules: [

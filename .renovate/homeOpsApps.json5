@@ -67,13 +67,6 @@
   ],
   packageRules: [
     {
-      description: "Hold CNPG PostgreSQL majors, they need a coordinated upgrade (extension images, pgbackup)",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["ghcr.io/cloudnative-pg/postgresql"],
-      matchUpdateTypes: ["major"],
-      enabled: false,
-    },
-    {
       commitMessageExtra: "({{currentVersion}} ➔ {{newVersion}})",
       commitMessageTopic: "dashboard {{sourceDirectory}}",
       matchDatasources: ["custom.grafana-dashboards"],
@@ -86,12 +79,6 @@
       matchDatasources: ["docker"],
       matchPackageNames: ["ghcr.io/searxng/searxng"],
       versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-[a-f0-9]+$",
-    },
-    {
-      description: "CNPG extension images are shaped '<version>-<build stamp>-<pg major>-<debian codename>'; compatibility keeps them on the operand's major + distro",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["ghcr.io/cloudnative-pg/postgis-extension"],
-      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)-(?<compatibility>\\d+-\\w+)$",
     },
     {
       description: "Jellyfin omits the patch component when it is 0 ('12.0'), and docker versioning's isCompatible only accepts candidates with an identical release-part count, so '10.11.11' can never reach '12.0'. Regex versioning defaults a missing patch to 0 instead, and the anchored pattern drops the '<version>.<date>-<time>' build tags, the '-rcN' prereleases and the '-amd64'/'-arm64' per-arch tags",

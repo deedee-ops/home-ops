@@ -1,0 +1,70 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  customDatasources: {
+    // "| 1.30.x | Yes | 29 Jun 2026 | ~ Mar 2027 | <k8s> | <k8s> | 15 - 18 |" -> "18"
+    // previews and main are "No ...", so a major counts only once a released operator supports it
+    "cnpg-postgresql": {
+      defaultRegistryUrlTemplate: "https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/main/docs/src/supported_releases.md",
+      format: "plain",
+      transformTemplates: [
+        '{"releases": [$distinct(releases.version[$contains($, /^\\|\\s*\\d+\\.\\d+\\.x\\s*\\|\\s*Yes\\s*\\|/)].$match(/-\\s*(\\d+)\\s*\\|\\s*$/).groups[0]).{"version": $}]}',
+      ],
+    },
+    // PostgreSQL majors shipped in the deployed vchord release, "postgresql-19-vchord_1.5.0_x86_64-linux-gnu.zip" -> "19"
+    "vchord-postgresql": {
+      defaultRegistryUrlTemplate: "https://api.github.com/repos/pgsty/vchord/releases/tags/{{packageName}}",
+      format: "json",
+      transformTemplates: [
+        '{"releases": [assets.name[$contains($, /^postgresql-\\d+-vchord_.*_x86_64-linux-gnu\\.zip$/)].$match(/^postgresql-(\\d+)-/).groups[0].{"version": $}]}',
+      ],
+    },
+  },
+  customManagers: [
+    {
+      description: "PostgreSQL major in the paths of the vchord extension image",
+      customType: "regex",
+      managerFilePatterns: ["/_postgresql\\.yaml$/"],
+      matchStringsStrategy: "recursive",
+      matchStrings: [
+        "ghcr\\.io/home-operations/vchord:(?<packageName>[^@\\s]+)\\S*\\s+dynamic_library_path:\\s+- /usr/lib/postgresql/\\d+/lib\\s+extension_control_path:\\s+- /usr/share/postgresql/\\d+",
+        "/usr/lib/postgresql/(?<currentValue>\\d+)/lib\\s+extension_control_path:\\s+- /usr/share/postgresql/\\d+",
+      ],
+      depNameTemplate: "vchord-postgresql",
+      datasourceTemplate: "custom.vchord-postgresql",
+      versioningTemplate: "regex:^(?<major>\\d+)$",
+    },
+  ],
+  packageRules: [
+    {
+      description: "CNPG extension images are shaped '<version>-<build stamp>-<pg major>-<debian codename>'; the PostgreSQL major is the major",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/cloudnative-pg/postgis-extension"],
+      versioning: "regex:^(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)-(?<revision>\\d+)-(?<major>\\d+)-(?<compatibility>\\w+)$",
+    },
+    {
+      matchDatasources: ["custom.cnpg-postgresql"],
+      versioning: "regex:^(?<major>\\d+)$",
+    },
+    {
+      description: "PostgreSQL major: a single PR, once every part supports it",
+      groupName: "postgresql",
+      matchDepNames: [
+        "cnpg-postgresql",
+        "ghcr.io/cloudnative-pg/postgis-extension",
+        "ghcr.io/cloudnative-pg/postgresql",
+        "vchord-postgresql",
+      ],
+      matchUpdateTypes: ["major"],
+      separateMultipleMajor: true,
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+      semanticCommitScope: "container",
+      // cluster, pgbackup, postgis, vchord paths, operator support
+      minimumGroupSize: 5,
+      prBodyNotes: [
+        "⚠️ Before merging: check that all 4 packages are listed, that the **deployed** CNPG operator supports the new major, and that barman `serverName` changes with it (`pg_upgrade` creates a new system ID).",
+      ],
+    },
+  ],
+}
