@@ -138,7 +138,7 @@ spec:
           app:
             image:
               repository: ghcr.io/supabase/gotrue
-              tag: v2.198.0@sha256:ba8c0c82c574756c835c696df2a2c698020cc408a42034013d3712e34de7964d
+              tag: v2.199.0@sha256:85c8323c05854ba911a8b2968c513e7e1b4cf7ebf75a30124ae923e7127cf01f
             command:
               - /bin/sh
               - -c
