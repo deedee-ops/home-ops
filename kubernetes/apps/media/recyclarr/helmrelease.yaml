@@ -13,6 +13,7 @@ spec:
     controllers:
       main:
         type: cronjob
+        forceRename: recyclarr
         cronjob:
           schedule: 0 12 * * *
           backoffLimit: 0
@@ -44,6 +45,47 @@ spec:
                 memory: 128Mi
         pod:
           restartPolicy: Never
+      cutoff-search:
+        type: cronjob
+        cronjob:
+          schedule: 17 4 * * 0
+          backoffLimit: 0
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
+          ttlSecondsAfterFinished: 86400
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/busybox
+              tag: 1.38.0@sha256:ff88728f0d5fe50a9984f6cc04d7d1185590b628f29ef4e6a3ec8cae7169e0c8
+            envFrom:
+              - secretRef:
+                  name: "recyclarr-secret"
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                set -eu
+                wget -qO- --header "X-Api-Key: $${SONARR_API_KEY}" --header "Content-Type: application/json" \
+                  --post-data '{"name":"CutoffUnmetEpisodeSearch","monitored":true}' http://sonarr/api/v3/command
+                wget -qO- --header "X-Api-Key: $${RADARR_API_KEY}" --header "Content-Type: application/json" \
+                  --post-data '{"name":"CutoffUnmetMoviesSearch"}' http://radarr/api/v3/command
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
+            resources:
+              requests:
+                cpu: 10m
+                memory: 8Mi
+              limits:
+                memory: 32Mi
+        pod:
+          restartPolicy: Never
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
@@ -58,11 +100,21 @@ spec:
     persistence:
       config:
         existingClaim: recyclarr
+        advancedMounts:
+          main:
+            app:
+              - path: /config
       config-file:
         type: configMap
         name: "recyclarr-configmap"
-        globalMounts:
-          - path: /config/recyclarr.yml
-            subPath: recyclarr.yml
+        advancedMounts:
+          main:
+            app:
+              - path: /config/recyclarr.yml
+                subPath: recyclarr.yml
       tmp:
         type: emptyDir
+        advancedMounts:
+          main:
+            app:
+              - path: /tmp

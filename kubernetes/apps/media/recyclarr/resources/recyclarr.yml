@@ -23,9 +23,59 @@ sonarr:
       - trash_id: dfa5eaae7894077ad6449169b6eb03e0 # WEB-2160p (Alternative)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: WEB 2160p
+            qualities:
+              - WEBRip-2160p
+              - WEBDL-2160p
+          - name: Bluray-2160p
+          - name: Bluray-2160p Remux
+            enabled: false
+          - name: HDTV-2160p
+            enabled: false
+          - name: WEB 1080p
+            qualities:
+              - WEBRip-1080p
+              - WEBDL-1080p
+          - name: Bluray-1080p
+          - name: Bluray-1080p Remux
+            enabled: false
+          - name: HDTV-1080p
+          - name: WEB 720p
+            qualities:
+              - WEBRip-720p
+              - WEBDL-720p
+          - name: Bluray-720p
+          - name: HDTV-720p
       - trash_id: 9d142234e45d6143785ac55f5a9e8dc9 # WEB-1080p (Alternative)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: Bluray-2160p Remux
+            enabled: false
+          - name: WEB 2160p
+            enabled: false
+            qualities:
+              - WEBRip-2160p
+              - WEBDL-2160p
+          - name: Bluray-2160p
+            enabled: false
+          - name: HDTV-2160p
+            enabled: false
+          - name: WEB 1080p
+            qualities:
+              - WEBRip-1080p
+              - WEBDL-1080p
+          - name: Bluray-1080p
+          - name: Bluray-1080p Remux
+            enabled: false
+          - name: HDTV-1080p
+          - name: WEB 720p
+            qualities:
+              - WEBRip-720p
+              - WEBDL-720p
+          - name: Bluray-720p
+          - name: HDTV-720p
       - trash_id: 20e0fc959f1f1704bed501f23bdae76f # [Anime] Remux-1080p
         reset_unmatched_scores:
           enabled: true
@@ -76,9 +126,55 @@ radarr:
       - trash_id: 5128baeb2b081b72126bc8482b2a86a0 # [SQP] SQP-1 (2160p)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: Bluray-2160p
+          - name: WEB 2160p
+            qualities:
+              - WEBRip-2160p
+              - WEBDL-2160p
+          - name: Remux-2160p
+            enabled: false
+          - name: HDTV-2160p
+            enabled: false
+          - name: Bluray|WEB-1080p
+            qualities:
+              - Bluray-1080p
+              - WEBDL-1080p
+              - WEBRip-1080p
+          - name: Remux-1080p
+            enabled: false
+          - name: Bluray|WEB-720p
+            qualities:
+              - Bluray-720p
+              - WEBDL-720p
+              - WEBRip-720p
       - trash_id: 0896c29d74de619df168d23b98104b22 # [SQP] SQP-1 (1080p)
         reset_unmatched_scores:
           enabled: true
+        qualities:
+          - name: Remux-2160p
+            enabled: false
+          - name: Bluray-2160p
+            enabled: false
+          - name: WEB 2160p
+            enabled: false
+            qualities:
+              - WEBRip-2160p
+              - WEBDL-2160p
+          - name: HDTV-2160p
+            enabled: false
+          - name: Bluray|WEB-1080p
+            qualities:
+              - Bluray-1080p
+              - WEBRip-1080p
+              - WEBDL-1080p
+          - name: Remux-1080p
+            enabled: false
+          - name: Bluray|WEB-720p
+            qualities:
+              - Bluray-720p
+              - WEBRip-720p
+              - WEBDL-720p
       - trash_id: 722b624f9af1e492284c4bc842153a38 # [Anime] Remux-1080p
         reset_unmatched_scores:
           enabled: true
@@ -95,6 +191,10 @@ radarr:
         assign_scores_to:
           - trash_id: 5128baeb2b081b72126bc8482b2a86a0 # [SQP] SQP-1 (2160p)
           - trash_id: 0896c29d74de619df168d23b98104b22 # [SQP] SQP-1 (1080p)
+      - trash_ids:
+          - caa37d0df9c348912df1fb1d88f9273a # HDR10+ Boost
+        assign_scores_to:
+          - trash_id: 5128baeb2b081b72126bc8482b2a86a0 # [SQP] SQP-1 (2160p)
       - trash_ids:
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
         assign_scores_to:
