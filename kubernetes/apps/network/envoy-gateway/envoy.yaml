@@ -331,4 +331,6 @@ spec:
         showDetails: true
         locale: auto
         logLevel: warn
+        excludeDomains:
+          - '(?i)^wiki\.${ROOT_DOMAIN}(:[0-9]+)?$'
       failOpen: false
