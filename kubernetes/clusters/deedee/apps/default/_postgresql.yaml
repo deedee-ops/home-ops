@@ -69,7 +69,7 @@ spec:
               - name: postgis
                 image:
                   # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgis-extension
-                  reference: ghcr.io/cloudnative-pg/postgis-extension:3.7.0-202611251238-18-bookworm@sha256:8553f6cda5d425d7180aa769c6e7471386d7a6b2541f1e9e1330560f0e7e362c
+                  reference: ghcr.io/cloudnative-pg/postgis-extension:3.7.0-202611271432-18-bookworm@sha256:72b21fe20115da45e56ea633da4aa7932637057812bef0515f1aae7f7ef9987d
                 ld_library_path:
                   - system
       target:
