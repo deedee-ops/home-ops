@@ -2,7 +2,7 @@
 # yaml-language-server: $schema=https://schemas.ajgon.casa/other/docker-compose.json
 services:
   arcane-agent:
-    image: ghcr.io/getarcaneapp/agent:v3.1.1@sha256:63e9ed625daa26fb189fc1e52b0d96634c44b3668f831ecf5e07358f40ba8d73
+    image: ghcr.io/getarcaneapp/agent:v3.2.0@sha256:c0a5ed4b2bfa643153f5b31a11ec4a5ca843da8a65231a9161802fd5e60ae1af
     container_name: arcane-agent
     restart: always
     environment:
