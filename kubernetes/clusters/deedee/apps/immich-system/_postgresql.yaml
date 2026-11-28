@@ -52,7 +52,8 @@ spec:
             extensions:
               - name: vchord
                 image:
-                  reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.1.1@sha256:bdea43bed2a414e21bbf71767bf6f0739747ac480b267b51772dc214ac28dcb3
+                  # renovate: datasource=docker depName=ghcr.io/home-operations/vchord
+                  reference: ghcr.io/home-operations/vchord:1.5.0@sha256:97b4a1aa15b65c29fa97e84b4270cb235e7bd39e80d4a4b2e91d9fa17997566d
                 dynamic_library_path:
                   - /usr/lib/postgresql/18/lib
                 extension_control_path:

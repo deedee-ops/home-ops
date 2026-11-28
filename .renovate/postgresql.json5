@@ -46,6 +46,15 @@
       versioning: "regex:^(?<major>\\d+)$",
     },
     {
+      description: "vchord: the image and the extension version in the immich Database move together",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["ghcr.io/home-operations/vchord"],
+      automerge: false,
+      prBodyNotes: [
+        "⚠️ Stop immich-api and immich-microservices before merging, and start them once the extension is updated. Started in between, immich drops its vector indexes and crash-loops.",
+      ],
+    },
+    {
       description: "PostgreSQL major: a single PR, once every part supports it",
       groupName: "postgresql",
       matchDepNames: [
