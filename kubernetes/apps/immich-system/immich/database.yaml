@@ -24,3 +24,5 @@ spec:
       name: vector
     - ensure: present
       name: vchord # requires: vector
+      # renovate: datasource=docker depName=ghcr.io/home-operations/vchord
+      version: 1.5.0
